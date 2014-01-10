@@ -6,45 +6,16 @@
 
 package com.epimorphics.data_api.libs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
-import com.epimorphics.data_api.data_queries.Range;
-import com.epimorphics.data_api.data_queries.Slice;
-import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.reporting.Problems;
 
 // Error handling not written yet.
 public class JSONLib {
-
-	public static class DataQuery {
-		
-		final List<Range> ranges;
-		
-		public DataQuery(List<Range> ranges) {
-			this.ranges = ranges;
-		}
-		
-		public List<Sort> sorts() {
-			return new ArrayList<Sort>();
-		}
-		
-		public List<Range> ranges() {
-			return ranges;
-		}
-		
-		public String lang() {
-			return null;
-		}
-		
-		public Slice slice() {
-			return new Slice();
-		}
-	}
 
 	public static String getFieldAsString(Problems p, JsonObject r,	String key) {
 		if (r.hasKey(key)) {

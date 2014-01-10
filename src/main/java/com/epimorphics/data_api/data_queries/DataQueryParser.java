@@ -17,7 +17,7 @@ import com.epimorphics.data_api.reporting.Problems;
 
 public class DataQueryParser {
 	
-	public static JSONLib.DataQuery Do(Problems p, JsonObject jo) {
+	public static DataQuery Do(Problems p, JsonObject jo) {
 		if (jo.isObject()) {
 			List<Range> ranges = new ArrayList<Range>();
 			for (String key: jo.getAsObject().keys()) {
@@ -40,7 +40,7 @@ public class DataQueryParser {
 					}
 				}
 			}
-			return new JSONLib.DataQuery(ranges);
+			return new DataQuery(ranges);
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
 		}

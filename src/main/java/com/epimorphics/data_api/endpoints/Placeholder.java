@@ -15,8 +15,8 @@ import javax.ws.rs.core.Response;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 
+import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 
 @Path( "/placeholder") public class Placeholder {
@@ -27,7 +27,7 @@ import com.epimorphics.data_api.reporting.Problems;
 
 		try {
 			JsonObject jo = JSON.parse(posted);
-			JSONLib.DataQuery q = DataQueryParser.Do(p, jo);
+			DataQuery q = DataQueryParser.Do(p, jo);
 			
 			if (p.size() > 0) {
 				return Response.serverError().entity("Problems detected: " + p).build();

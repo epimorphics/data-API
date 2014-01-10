@@ -15,11 +15,11 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 
 public class TestParseDataQuery {
@@ -28,7 +28,7 @@ public class TestParseDataQuery {
 		String incoming = "{}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		JSONLib.DataQuery q = DataQueryParser.Do(p, jo);
+		DataQuery q = DataQueryParser.Do(p, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -41,7 +41,7 @@ public class TestParseDataQuery {
 		String incoming = "{'pre:local': {'op' : 'eq', 'operands': [17]}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
-		JSONLib.DataQuery q = DataQueryParser.Do(p, jo);
+		DataQuery q = DataQueryParser.Do(p, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
