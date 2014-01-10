@@ -1,3 +1,9 @@
+/*                                                                                                                            
+    LICENCE summary to go here.                                                                                        
+    
+    (c) Copyright 2014 Epimorphics Limited
+*/
+
 package run;
 
 import java.io.File;
