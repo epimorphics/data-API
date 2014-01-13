@@ -14,10 +14,11 @@ import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQueryParser {
 	
-	public static DataQuery Do(Problems p, JsonObject jo) {
+	public static DataQuery Do(Problems p, PrefixMapping pm, JsonObject jo) {
 		if (jo.isObject()) {
 			List<Filter> filters = new ArrayList<Filter>();
 			for (String key: jo.getAsObject().keys()) {
@@ -31,7 +32,8 @@ public class DataQueryParser {
 						List<JsonValue> operands = JSONLib.getFieldAsArray(p, r, "operands");			
 						if (op.equals("eq") && operands.size() == 1) {
 							Value v = JSONLib.getAsValue(operands.get(0));
-							filters.add( new Filter( key, Range.EQ(v) ) );
+							Shortname sn = new Shortname(pm, key);
+							filters.add( new Filter(sn, Range.EQ(v) ) );
 						} else {
 							throw new RuntimeException("Error handling to be done here.");	
 						}

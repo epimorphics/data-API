@@ -8,6 +8,9 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
 	
@@ -31,5 +34,17 @@ public class DataQuery {
 	
 	public Slice slice() {
 		return new Slice();
+	}
+	
+	public String toSparql(PrefixMapping pm) {
+		StringBuilder sb = new StringBuilder();
+		Map<String, String> prefixes = pm.getNsPrefixMap();
+		for (String key: prefixes.keySet()) 
+			sb.append( "PREFIX " )
+			.append( key ).append(": " )
+			.append( "<" ).append( prefixes.get(key)).append(">")
+			.append("\n")
+			;
+		return sb.toString();
 	}
 }

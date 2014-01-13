@@ -19,9 +19,11 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
+import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestParseDataQuery {
 	
@@ -29,7 +31,7 @@ public class TestParseDataQuery {
 		String incoming = "{}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, jo);
+		DataQuery q = DataQueryParser.Do(p, pm, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -38,18 +40,24 @@ public class TestParseDataQuery {
 		assertTrue("expected no filters in query.", q.filters().isEmpty());
 	}	
 	
+	static final PrefixMapping pm = PrefixMapping.Factory.create()
+		.setNsPrefix("pre",  "eh:/prefixPart/" )
+		.lock()
+		;
+	
 	@Test public void testSingleFilterQuery() {
+		Shortname sn = new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'op' : 'eq', 'operands': [17]}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, jo);
+		DataQuery q = DataQueryParser.Do(p, pm, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 	//
-		List<Filter> expected = BunchLib.list(new Filter( "pre:local", Range.EQ(Value.wrap(new BigDecimal(17)))));		
+		List<Filter> expected = BunchLib.list(new Filter( sn, Range.EQ(Value.wrap(new BigDecimal(17)))));		
 		assertEquals(expected, q.filters());
 	}
 

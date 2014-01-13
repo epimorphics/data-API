@@ -18,16 +18,19 @@ import org.apache.jena.atlas.json.JsonObject;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 @Path( "/placeholder") public class Placeholder {
 
 	@POST @Produces("text/plain") public Response placeholderPOST(String posted) {
 		
 		Problems p = new Problems();
+		
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefixes(PrefixMapping.Extended).lock();
 
 		try {
 			JsonObject jo = JSON.parse(posted);
-			DataQuery q = DataQueryParser.Do(p, jo);
+			DataQuery q = DataQueryParser.Do(p, pm, jo);
 			
 			if (p.size() > 0) {
 				return Response.serverError().entity("Problems detected: " + p).build();

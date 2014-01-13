@@ -8,9 +8,9 @@ package com.epimorphics.data_api.data_queries;
 public class Filter {
 	
 	final Range range;
-	final String name;
+	final Shortname name;
 	
-	public Filter(String name, Range range) {
+	public Filter(Shortname name, Range range) {
 		this.range = range;
 		this.name = name;
 	}
