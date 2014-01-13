@@ -33,7 +33,7 @@ import com.epimorphics.data_api.reporting.Problems;
 				return Response.serverError().entity("Problems detected: " + p).build();
 			}
 			
-			return Response.ok("OK (POST) : " + posted + "." + "\n" + q.ranges() + ".\n").build();
+			return Response.ok("OK (POST) : " + posted + "." + "\n" + q.filters() + ".\n").build();
 		} catch (Exception e) {
 			return Response.serverError().entity("Broken: " + e).build();
 		}		

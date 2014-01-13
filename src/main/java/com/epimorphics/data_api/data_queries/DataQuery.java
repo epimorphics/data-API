@@ -11,18 +11,18 @@ import java.util.List;
 
 public class DataQuery {
 	
-	final List<Range> ranges;
+	final List<Filter> filters;
 	
-	public DataQuery(List<Range> ranges) {
-		this.ranges = ranges;
+	public DataQuery(List<Filter> filters) {
+		this.filters = filters;
 	}
 	
 	public List<Sort> sorts() {
 		return new ArrayList<Sort>();
 	}
 	
-	public List<Range> ranges() {
-		return ranges;
+	public List<Filter> filters() {
+		return filters;
 	}
 	
 	public String lang() {

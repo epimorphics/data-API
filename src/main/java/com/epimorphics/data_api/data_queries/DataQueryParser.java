@@ -19,7 +19,7 @@ public class DataQueryParser {
 	
 	public static DataQuery Do(Problems p, JsonObject jo) {
 		if (jo.isObject()) {
-			List<Range> ranges = new ArrayList<Range>();
+			List<Filter> filters = new ArrayList<Filter>();
 			for (String key: jo.getAsObject().keys()) {
 				if (key.startsWith("_")) {
 					throw new RuntimeException("Error handling to be done here.");
@@ -31,7 +31,7 @@ public class DataQueryParser {
 						List<JsonValue> operands = JSONLib.getFieldAsArray(p, r, "operands");			
 						if (op.equals("eq") && operands.size() == 1) {
 							Value v = JSONLib.getAsValue(operands.get(0));
-							ranges.add( Range.EQ(v) );
+							filters.add( new Filter( key, Range.EQ(v) ) );
 						} else {
 							throw new RuntimeException("Error handling to be done here.");	
 						}
@@ -40,7 +40,7 @@ public class DataQueryParser {
 					}
 				}
 			}
-			return new DataQuery(ranges);
+			return new DataQuery(filters);
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
 		}

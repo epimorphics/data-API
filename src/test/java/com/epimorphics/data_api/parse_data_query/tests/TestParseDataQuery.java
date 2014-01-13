@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
+import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.libs.BunchLib;
@@ -34,7 +35,7 @@ public class TestParseDataQuery {
 		assertTrue(q.slice().isAll());
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
-		assertTrue("expected no ranges in query.", q.ranges().isEmpty());
+		assertTrue("expected no filters in query.", q.filters().isEmpty());
 	}	
 	
 	@Test public void testSingleFilterQuery() {
@@ -48,8 +49,8 @@ public class TestParseDataQuery {
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 	//
-		List<Range> expected = BunchLib.list(Range.EQ(Value.wrap(new BigDecimal(17))));		
-		assertEquals(expected, q.ranges());
+		List<Filter> expected = BunchLib.list(new Filter( "pre:local", Range.EQ(Value.wrap(new BigDecimal(17)))));		
+		assertEquals(expected, q.filters());
 	}
 
 }
