@@ -17,11 +17,12 @@ import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestTranslateDataQuery {
 	
-	@Test public void testEqualityFilter() {
+	@Test public void testSingleEqualityFilter() {
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Shortname sn = new Shortname( pm, "pre:post" );
 		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
@@ -29,9 +30,12 @@ public class TestTranslateDataQuery {
 		DataQuery q = new DataQuery(filters);
 	//
 		String sq = q.toSparql(pm);
-		
-		System.err.println( ">> " + sq );
-		
-		assertEquals( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?post_value WHERE { ?item pre:post ?post_value }", sq );
+		assertLegalSparqlSelect(sq);	
+		assertEquals( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_post WHERE { ?item pre:post ?pre_post }", sq );
+	}
+	
+	private void assertLegalSparqlSelect(String sq) {
+		try { QueryFactory.create( sq ); }
+		catch (Exception e) {fail("bad SPARQL: " + sq + "\n(" + e.getMessage() + ")\n"); }
 	}
 }

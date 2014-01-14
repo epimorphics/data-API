@@ -45,4 +45,8 @@ public class Shortname {
 	private boolean same(Shortname other) {
 		return URI.equals(other.URI) && prefixed.equals(other.prefixed);
 	}
+
+	public String asVar() {
+		return "?" + prefixed.replace(":", "_");
+	}
 }
