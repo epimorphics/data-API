@@ -17,6 +17,7 @@ import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
@@ -30,8 +31,13 @@ public class TestTranslateDataQuery {
 		DataQuery q = new DataQuery(filters);
 	//
 		String sq = q.toSparql(pm);
-		assertLegalSparqlSelect(sq);	
-		assertEquals( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_post WHERE { ?item pre:post ?pre_post }", sq );
+		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_post WHERE { ?item pre:post ?pre_post }", sq );
+	}
+	
+	private void assertSameSparql(String expected, String toTest) {
+		Query e = QueryFactory.create(expected);
+		Query t = QueryFactory.create(toTest);
+		assertEquals(e, t);
 	}
 	
 	private void assertLegalSparqlSelect(String sq) {
