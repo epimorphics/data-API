@@ -6,9 +6,26 @@
 
 package com.epimorphics.data_api.reporting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Problems {
+
+	final List<Problem> problems = new ArrayList<Problem>();
+	
+	public Problems() {
+	}
 	
 	public int size() {
-		return 0;
+		return problems.size();
+	}
+
+	public Problems add(String message) {
+		problems.add(new Problem(message));
+		return this;
+	}
+
+	public List<Problem> getProblems() {
+		return problems;
 	}
 }

@@ -36,7 +36,12 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 				return Response.serverError().entity("Problems detected: " + p).build();
 			}
 			
-			return Response.ok("OK (POST) : " + posted + "." + "\n" + q.filters() + ".\n").build();
+			String sq = q.toSparql(p, pm);
+			if (p.size() > 0) {
+				return Response.serverError().entity("Problems detected: " + p).build();
+			}
+			
+			return Response.ok("OK (POST) : " + posted + "." + "\n" + sq + ".\n").build();
 		} catch (Exception e) {
 			return Response.serverError().entity("Broken: " + e).build();
 		}		

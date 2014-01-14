@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
@@ -36,7 +37,12 @@ public class DataQuery {
 		return new Slice();
 	}
 	
-	public String toSparql(PrefixMapping pm) {
+	public String toSparql(Problems p, PrefixMapping pm) {
+		try { return toSparqlString(p, pm); }
+		catch (Exception e) { return null; }
+	}
+
+	private String toSparqlString(Problems p, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> prefixes = pm.getNsPrefixMap();
 	//
@@ -59,7 +65,7 @@ public class DataQuery {
 			dot = ". ";
 		}
 		sb.append( " }");
-		
+	//
 		return sb.toString();
 	}
 }
