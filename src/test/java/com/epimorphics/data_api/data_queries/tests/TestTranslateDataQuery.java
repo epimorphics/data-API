@@ -32,16 +32,24 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(pm);
 		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_post WHERE { ?item pre:post ?pre_post }", sq );
+	}	
+	
+	@Test public void testDoubleEqualityFilter() {
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
+		Shortname snA = new Shortname( pm, "pre:A" );
+		Shortname snB = new Shortname( pm, "pre:B" );
+		Filter fA = new Filter(snA, Range.EQ(Value.wrap(8)));
+		Filter fB = new Filter(snB, Range.EQ(Value.wrap(9)));
+		List<Filter> filters = BunchLib.list(fA, fB);
+		DataQuery q = new DataQuery(filters);
+	//
+		String sq = q.toSparql(pm);
+		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_A ?pre_B WHERE { ?item pre:A ?pre_A. ?item pre:B ?pre_B }", sq );
 	}
 	
 	private void assertSameSparql(String expected, String toTest) {
 		Query e = QueryFactory.create(expected);
 		Query t = QueryFactory.create(toTest);
 		assertEquals(e, t);
-	}
-	
-	private void assertLegalSparqlSelect(String sq) {
-		try { QueryFactory.create( sq ); }
-		catch (Exception e) {fail("bad SPARQL: " + sq + "\n(" + e.getMessage() + ")\n"); }
 	}
 }
