@@ -7,7 +7,9 @@
 package com.epimorphics.data_api.libs;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 // "Bunch" to cover List and Set with few syllables.
 public class BunchLib {
@@ -17,6 +19,15 @@ public class BunchLib {
 	*/
 	@SafeVarargs public static <T> List<T> list( T... elements ) {
 		return Arrays.asList( elements );
+	}
+
+	/**
+	    set(x...) returns a set(T) whose elements are the given elements.
+	*/
+	@SafeVarargs public static <T> Set<T> set(T... elements) {
+		Set<T> result = new HashSet<T>();
+		for (T e: elements) result.add(e);
+		return result;
 	}
 
 }

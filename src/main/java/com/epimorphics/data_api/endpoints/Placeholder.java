@@ -15,6 +15,8 @@ import javax.ws.rs.core.Response;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 
+import com.epimorphics.appbase.core.App;
+import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.reporting.Problems;
@@ -28,11 +30,26 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileManager;
 
 @Path( "/placeholder") public class Placeholder {
+	
+	public static class Config {
+		String filePath;
+		
+		public void setFilePath(String filePath) {
+			this.filePath = filePath;
+		}
+		
+	}
 
 	static Model m = loadExampleModel();
 	
 	static Model loadExampleModel() {
-		return FileManager.get().loadModel("/home/chris/EldaThings/elda-in-github/elda-standalone/src/main/webapp/data/example-data.ttl");
+		App a = AppConfig.getApp();
+		Config c = (Config) a.getComponent("configA");
+		String filePath = AppConfig.theConfig.expandFileLocation(c.filePath);
+		
+		System.err.println( ">> filePath: " + filePath );
+		
+		return FileManager.get().loadModel(filePath);
 	}
 
 	@POST @Produces("text/plain") public Response placeholderPOST(String posted) {
