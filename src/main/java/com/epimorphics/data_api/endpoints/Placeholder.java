@@ -18,16 +18,29 @@ import org.apache.jena.atlas.json.JsonObject;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryExecution;
+import com.hp.hpl.jena.query.QueryExecutionFactory;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.util.FileManager;
 
 @Path( "/placeholder") public class Placeholder {
+
+	static Model m = loadExampleModel();
+	
+	static Model loadExampleModel() {
+		return FileManager.get().loadModel("/home/chris/EldaThings/elda-in-github/elda-standalone/src/main/webapp/data/example-data.ttl");
+	}
 
 	@POST @Produces("text/plain") public Response placeholderPOST(String posted) {
 		
 		Problems p = new Problems();
 		
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefixes(PrefixMapping.Extended).lock();
-
+		
 		try {
 			JsonObject jo = JSON.parse(posted);
 			DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -41,7 +54,21 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 				return Response.serverError().entity("Problems detected: " + p).build();
 			}
 			
-			return Response.ok("OK (POST) : " + posted + "." + "\n" + sq + ".\n").build();
+			Query qq = QueryFactory.create(sq);
+			QueryExecution qe = QueryExecutionFactory.create( qq, m );
+			ResultSet rs = qe.execSelect();
+			
+			StringBuilder sb = new StringBuilder();
+			while (rs.hasNext()) sb.append(rs.next()).append("\n");
+			
+			return Response.ok
+				( "OK (POST) : " + posted + "." 
+				+ "\n" + qq.toString() 
+				+ ".\n resultset:"
+				+ "\n" + sb.toString() 
+				+ "\n"
+				).build();
+			
 		} catch (Exception e) {
 			return Response.serverError().entity("Broken: " + e).build();
 		}		

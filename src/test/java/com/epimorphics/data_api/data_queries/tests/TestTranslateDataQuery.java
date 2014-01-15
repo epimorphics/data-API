@@ -34,7 +34,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, pm);
 		assertNoProblems(p);
-		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_post WHERE { ?item pre:post ?pre_post }", sq );
+		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_post WHERE { ?item pre:post ?pre_post FILTER(?pre_post = 17)}", sq );
 	}	
 	
 	@Test public void testDoubleEqualityFilter() {
@@ -49,7 +49,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, pm);
 		assertNoProblems(p);
-		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_A ?pre_B WHERE { ?item pre:A ?pre_A. ?item pre:B ?pre_B }", sq );
+		assertSameSparql( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_A ?pre_B WHERE { ?item pre:A ?pre_A FILTER(?pre_A = 8). ?item pre:B ?pre_B FILTER(?pre_B = 9)}", sq );
 	}
 	
 	private void assertNoProblems(Problems p) {

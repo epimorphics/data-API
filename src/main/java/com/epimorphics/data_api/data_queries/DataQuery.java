@@ -60,8 +60,11 @@ public class DataQuery {
 		sb.append(" WHERE {");
 		String dot = "";
 		for (Filter f: filters) {
+			String fVar = f.name.asVar();
+			String value = f.range.operands.get(0).asSparqlTerm();
 			sb.append(dot);
-			sb.append(" ").append("?item").append(" ").append(f.name.prefixed).append(" ").append(f.name.asVar());
+			sb.append(" ").append("?item").append(" ").append(f.name.prefixed).append(" ").append(fVar);
+			sb.append(" FILTER(" ).append(fVar).append( " = ").append(value).append(")");
 			dot = ". ";
 		}
 		sb.append( " }");

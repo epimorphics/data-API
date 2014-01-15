@@ -38,4 +38,9 @@ public class Value {
 	@Override public boolean equals(Object other) {
 		return other instanceof Value && wrapped.equals(((Value) other).wrapped);
 	}
+
+	public String asSparqlTerm() {
+		System.err.println( ">> TODO: asSparqlTerm needs proper definition." );
+		return wrapped.toString();
+	}
 }
