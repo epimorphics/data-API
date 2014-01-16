@@ -86,6 +86,21 @@
 
   </dependencies>
 
+  <build>
+  <plugins>
+      <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat6-maven-plugin</artifactId>
+          <version>2.1</version>
+          <configuration>
+              <port>8080</port>
+              <!-- <mode>both</mode> -->
+	      <path>/data-api</path>
+          </configuration>
+      </plugin>
+  </plugins>
+  </build>
+
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>

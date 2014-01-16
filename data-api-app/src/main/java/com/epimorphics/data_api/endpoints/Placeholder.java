@@ -54,6 +54,8 @@ import com.hp.hpl.jena.util.FileManager;
 
 	@POST @Produces("text/plain") public Response placeholderPOST(String posted) {
 		
+		System.err.println( ">> placeholderPOST:" );
+		
 		Problems p = new Problems();
 		
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefixes(PrefixMapping.Extended).lock();
