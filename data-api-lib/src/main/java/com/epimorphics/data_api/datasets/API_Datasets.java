@@ -8,8 +8,6 @@ package com.epimorphics.data_api.datasets;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.epimorphics.data_api.datasets.tests.TestAPI_Datasets;
-
 public class API_Datasets {
 
 	final Set<API_Dataset> datasets = new HashSet<API_Dataset>();
