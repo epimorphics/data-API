@@ -29,5 +29,4 @@ public class TestProblems {
 		assertEquals(1, p.size());
 		assertEquals("oops", p.get(0).toText());
 	}
-
 }
