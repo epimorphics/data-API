@@ -47,7 +47,7 @@ public class TestParseDataQuery {
 	
 	@Test public void testSingleFilterQuery() {
 		Shortname sn = new Shortname(pm, "pre:local");
-		String incoming = "{'pre:local': {'op' : 'eq', 'operands': [17]}}";
+		String incoming = "{'pre:local': {'eq': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);

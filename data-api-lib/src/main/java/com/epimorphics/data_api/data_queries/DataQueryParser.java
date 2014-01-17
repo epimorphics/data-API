@@ -25,18 +25,21 @@ public class DataQueryParser {
 				if (key.startsWith("_")) {
 					throw new RuntimeException("Error handling to be done here.");
 				} else {
+					Shortname sn = new Shortname(pm, key);
 					JsonValue range = jo.get(key);			
 					if (range.isObject()) {
-						JsonObject r = range.getAsObject();
-						String op = JSONLib.getFieldAsString(p, r, "op");
-						List<JsonValue> operands = JSONLib.getFieldAsArray(p, r, "operands");			
-						if (op.equals("eq") && operands.size() == 1) {
-							Value v = JSONLib.getAsValue(operands.get(0));
-							Shortname sn = new Shortname(pm, key);
-							filters.add( new Filter(sn, Range.EQ(v) ) );
-						} else {
-							throw new RuntimeException("Error handling to be done here.");	
+						JsonObject rob = range.getAsObject();
+						
+						for (String op: rob.keys()) {
+							Value v = JSONLib.getAsValue(rob.get(op));
+							if (op.equals("eq")) {
+								filters.add( new Filter(sn, Range.EQ(v) ) );
+								
+							} else {
+								throw new RuntimeException("Error handling to be done here.");	
+							}
 						}
+						
 					} else {
 						throw new RuntimeException("Error handling to be done here.");
 					}
