@@ -9,6 +9,7 @@ package com.epimorphics.data_api.endpoints;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -29,7 +30,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileManager;
 
-@Path( "/placeholder") public class Placeholder {
+@Path( "/dataset") public class Placeholder {
 	
 	public static class Config {
 		String filePath;
@@ -51,10 +52,12 @@ import com.hp.hpl.jena.util.FileManager;
 		
 		return FileManager.get().loadModel(filePath);
 	}
+	
 
-	@POST @Produces("text/plain") public Response placeholderPOST(String posted) {
+	@POST @Path("{name}/data") @Produces("text/plain") public Response placeholderPOST
+		(@PathParam("name") String datasetName, String posted) {
 		
-		System.err.println( ">> placeholderPOST:" );
+		System.err.println( ">> placeholderPOST for " + datasetName + ":" );
 		
 		Problems p = new Problems();
 		

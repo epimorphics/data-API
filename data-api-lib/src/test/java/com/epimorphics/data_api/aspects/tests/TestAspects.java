@@ -10,7 +10,9 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestAspects {
@@ -52,6 +54,17 @@ public class TestAspects {
 		assertEquals("http://full-uri.org/local", a.getID());
 		assertEquals("http://full-uri.org/local", a.getID());
 		assertEquals("http://full-uri.org/local", a.getID());
+	}
+	
+	@Test public void testAspectBunch() {
+		Aspect A = new MockAspect("eh:/mock/aspect/A");
+		Aspect B = new MockAspect("eh:/mock/aspect/B");
+		Aspects a = new Aspects();
+		assertEquals(0, a.getAspects().size());
+		assertSame(a, a.include(A));
+		assertEquals(BunchLib.set(A), a.getAspects());
+		assertSame(a, a.include(B));
+		assertEquals(BunchLib.set(A, B), a.getAspects());
 	}
 	
 	public static class MockAspect extends Aspect {

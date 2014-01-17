@@ -25,4 +25,12 @@ public class Aspect {
 		return name;
 	}
 
+	public String asVar() {
+		return name.asVar();
+	}
+
+	public String asProperty() {
+		return name.getCURIE();
+	}
+
 }
