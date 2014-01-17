@@ -40,7 +40,10 @@ public class Value {
 	}
 
 	public String asSparqlTerm() {
+		Object w = wrapped;
 		System.err.println( ">> TODO: asSparqlTerm needs proper definition." );
-		return wrapped.toString();
+		System.err.println( ">> w = (" + w + "), " + w.getClass().getSimpleName() );
+		if (w instanceof String) return "'" + w + "'";
+		return w.toString();
 	}
 }
