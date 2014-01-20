@@ -7,31 +7,19 @@ package com.epimorphics.data_api.aspects.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestAspects {
-
-	/*
-
-    label -- a set (encoded as array) of strings or @value/@language objects of labels for this aspect.
-
-    description -- a set (encoded as array) of strings or @value/@language objects of descriptions for this aspect.
-
-    rangeType -- the URI of the type of values delivered by the aspect. 
-
-    isOptional -- true iff this aspect is an attribute that need not be present on every element.
-
-    isMultiValued -- true iff this aspect is an attribute that may appear multiple times for a single element.
-
-    range -- range constraints on values of this aspect, as described below.
-
-	*/
 	
 	static final PrefixMapping pm = PrefixMapping.Extended;
 		
@@ -65,6 +53,53 @@ public class TestAspects {
 		assertEquals(BunchLib.set(A), a.getAspects());
 		assertSame(a, a.include(B));
 		assertEquals(BunchLib.set(A, B), a.getAspects());
+	}
+	
+	@Test public void testAspectLabel() {
+		Aspect a = new MockAspect("eh:/mock/aspect/A");
+		assertEquals(BunchLib.list(), a.getLabels());
+		List<Node> stringies = BunchLib.list(stringNode("paddington"), stringNode("marylebone"));
+		assertSame(a, a.setLabels(stringies));
+		assertEquals(stringies, a.getLabels());
+	}
+	
+	Node stringNode(String s) {
+		return NodeFactory.createLiteral(s, "", null);
+	}
+	
+	@Test public void testAspectDescription() {
+		Aspect a = new MockAspect("eh:/mock/aspect/B");
+		assertEquals(BunchLib.list(), a.getDescriptions());
+		List<Node> stringies = BunchLib.list
+			( stringNode("a very long way from anywhere")
+			, stringNode("a maze of twisty little passages, all alike"
+			));
+		assertSame(a, a.setDescriptions(stringies));
+		assertEquals(stringies, a.getDescriptions());
+	}
+	
+	@Test public void testAspectRangeType() {
+		Aspect a = new MockAspect("eh:/mock/aspect/C");
+		System.err.println( ">> testAspectRangeType TBD" );
+	}
+	
+	@Test public void testAspectIsOptional() {
+		Aspect a = new MockAspect("eh:/mock/aspect/D");
+		assertEquals(false, a.getIsOptional());
+		assertSame(a, a.setIsOptional(true));
+		assertEquals(true, a.getIsOptional());
+	}
+	
+	@Test public void testAspectIsMultiValued() {
+		Aspect a = new MockAspect("eh:/mock/aspect/E");;
+		assertEquals(false, a.getIsMultiValued());
+		assertSame(a, a.setIsMultiValued(true));
+		assertEquals(true, a.getIsMultiValued());
+	}
+	
+	@Test public void testAspectRange() {
+		Aspect a = new MockAspect("eh:/mock/aspect/A");
+		System.err.println( ">> testAspectRange TBD" );
 	}
 	
 	public static class MockAspect extends Aspect {

@@ -5,12 +5,21 @@
 */
 package com.epimorphics.data_api.aspects;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.hp.hpl.jena.graph.Node;
 
 public class Aspect {
 	
 	final String ID;
 	final Shortname name;
+	
+	List<Node> labels = new ArrayList<Node>();
+	List<Node> descriptions = new ArrayList<Node>();
+	boolean isMultiValued = false;
+	boolean isOptional = false;
 	
 	public Aspect(String ID, Shortname name) {
 		this.ID = ID;
@@ -31,6 +40,42 @@ public class Aspect {
 
 	public String asProperty() {
 		return name.getCURIE();
+	}
+
+	public List<Node> getLabels() {
+		return labels;
+	}
+
+	public Aspect setLabels(List<Node> labels) {
+		this.labels = labels;
+		return this;
+	}
+
+	public List<Node> getDescriptions() {
+		return descriptions;
+	}
+
+	public Aspect setDescriptions(List<Node> descriptions) {
+		this.descriptions = descriptions;
+		return this;
+	}
+
+	public boolean getIsMultiValued() {
+		return isMultiValued;
+	}
+
+	public Aspect setIsMultiValued(boolean isMultiValued) {
+		this.isMultiValued = isMultiValued;
+		return this;
+	}
+
+	public boolean getIsOptional() {
+		return isOptional;
+	}
+
+	public Aspect setIsOptional(boolean isOptional) {
+		this.isOptional = isOptional;
+		return this;
 	}
 
 }
