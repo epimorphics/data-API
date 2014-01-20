@@ -106,7 +106,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 		Problems p = new Problems();
 		List<String> comments = new ArrayList<String>();
 	
-		comments.add( "posted JSON: " + posted );
+		comments.add( "posted JSON:\n" + posted + "\n");
 		
 		JsonObject jo = null;
 		DataQuery q = null;
@@ -119,18 +119,29 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 			q = DataQueryParser.Do(p, pm, jo);
 			
 			if (p.size() == 0) sq = q.toSparql(p, aspects, pm);
+			try {
+				qq = QueryFactory.create(sq);
+				comments.add("Generated SPARQL:\n\n" + qq );
+			} catch (Exception e) {
+				p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
+			}
 					
 			if (p.size() == 0) {
-				qq = QueryFactory.create(sq);
 				QueryExecution qe = QueryExecutionFactory.create( qq, m );
 				ResultSet rs = qe.execSelect();
 			
 				StringBuilder sb = new StringBuilder();
 				while (rs.hasNext()) sb.append(rs.next()).append("\n");
-				comments.add("resultset:\n" + sb.toString());
+				comments.add("resultset:\n\n" + sb.toString());
 			}
 			
-			if (p.size() == 0) {
+		} catch (Exception e) {
+			System.err.println("BROKEN: " + e);
+			e.printStackTrace(System.err);
+			p.add("BROKEN: " + e);
+		}	
+		
+		if (p.size() == 0) {
 				return Response.ok
 					( "OK\n" 
 					+ BunchLib.join(comments)		
@@ -143,12 +154,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 					+ BunchLib.join(p.getProblemStrings())
 					).build()
 					;
-			}
-			
-		} catch (Exception e) {
-			System.err.println("BROKEN: " + e);
-			e.printStackTrace(System.err);
-			return Response.serverError().entity("Broken: " + e).build();
-		}		
+			}	
 	}
 }
