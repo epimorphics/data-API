@@ -22,6 +22,7 @@ public class DataQueryParser {
 		if (jo.isObject()) {
 			List<Filter> filters = new ArrayList<Filter>();
 			for (String key: jo.getAsObject().keys()) {
+				System.err.println( ">> key: " + key );
 				if (key.startsWith("_")) {
 					throw new RuntimeException("Error handling to be done here.");
 				} else {

@@ -30,4 +30,16 @@ public class BunchLib {
 		return result;
 	}
 
+	public static String join(String...strings) {
+		StringBuilder sb = new StringBuilder();
+		for (String s: strings) sb.append(s).append("\n");
+		return sb.toString();
+	}
+
+	public static String join(List<String> strings) {
+		StringBuilder sb = new StringBuilder();
+		for (String s: strings) sb.append(s).append("\n");
+		return sb.toString();
+	}
+
 }

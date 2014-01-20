@@ -28,4 +28,10 @@ public class Problems {
 	public List<Problem> getProblems() {
 		return problems;
 	}
+
+	public String getProblemStrings() {
+		StringBuilder sb = new StringBuilder();
+		for (Problem p: problems) sb.append(p.message).append("\n");
+		return sb.toString();
+	}
 }

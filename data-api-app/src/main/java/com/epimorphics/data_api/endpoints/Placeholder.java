@@ -6,6 +6,10 @@
 
 package com.epimorphics.data_api.endpoints;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -23,6 +27,7 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -35,7 +40,9 @@ import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
-@Path( "/dataset") public class Placeholder {
+// placeholder endpoint, has a fake setup rather than a proper
+// configuration.
+@Path( "/placeholder") public class Placeholder {
 	
 	public static class Config {
 		String filePath;
@@ -58,66 +65,90 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 		return FileManager.get().loadModel(filePath);
 	}
 	
-	@POST @Path("{name}/data") @Produces("text/plain") public Response placeholderPOST
-		(@PathParam("name") String datasetName, String posted) {
-		
-		System.err.println( ">> placeholderPOST for " + datasetName + ":" );
-		
-		Problems p = new Problems();
-		
-		PrefixMapping pm = PrefixMapping.Factory
+	PrefixMapping pm = PrefixMapping.Factory
 			.create()
 			.setNsPrefixes(PrefixMapping.Extended)
 			.setNsPrefixes(m)
 			.lock();
+	
+	String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
+	
+	Aspects aspects = new Aspects()
+		.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
+		.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
+		.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
+		.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
+		;
+	
+	@GET @Path("submit") @Produces("text/html") public Response submit
+		() {
+		String entity = BunchLib.join(
+			"<html>"
+			, "<head>"
+			, "<title>data API placeholder query submitter</title>"
+			, "</head>"
+			, "<body>"
+			, "<h1>submit JSON query</h1>"
+			, "<form method='POST' action='/placeholder/dataset/name/data'>"
+			, "<textarea cols='80' rows='20' name='json'>"
+			, "</textarea>"
+			, "<div><input type='submit' name='button' value='SUBMIT' /></div>"
+			, "</form>"
+			, "</body>"
+			, "</html>"
+			);
+		return Response.ok(entity).build();
+	}
+	
+	@POST @Path("dataset/{name}/data") @Produces("text/plain") public Response placeholderPOST
+		(@PathParam("name") String datasetName, @FormParam("json") String posted) {
 		
-		String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
+		Problems p = new Problems();
+		List<String> comments = new ArrayList<String>();
+	
+		comments.add( "posted JSON: " + posted );
 		
-		Aspects aspects = new Aspects()
-			.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
-			.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
-			.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
-			.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
-			;
+		JsonObject jo = null;
+		DataQuery q = null;
+		String sq = null;
+		Query qq = null;
 		
 		try {
-			JsonObject jo = JSON.parse(posted);
-			DataQuery q = DataQueryParser.Do(p, pm, jo);
+			jo = JSON.parse(posted);
 			
-			if (p.size() > 0) {
-				return Response.serverError().entity("Problems detected: " + p).build();
+			q = DataQueryParser.Do(p, pm, jo);
+			
+			if (p.size() == 0) sq = q.toSparql(p, aspects, pm);
+					
+			if (p.size() == 0) {
+				qq = QueryFactory.create(sq);
+				QueryExecution qe = QueryExecutionFactory.create( qq, m );
+				ResultSet rs = qe.execSelect();
+			
+				StringBuilder sb = new StringBuilder();
+				while (rs.hasNext()) sb.append(rs.next()).append("\n");
+				comments.add("resultset:\n" + sb.toString());
 			}
 			
-			String sq = q.toSparql(p, aspects, pm);
-			if (p.size() > 0) {
-				return Response.serverError().entity("Problems detected: " + p).build();
+			if (p.size() == 0) {
+				return Response.ok
+					( "OK\n" 
+					+ BunchLib.join(comments)		
+					).build()
+					;
+			} else {
+				return Response.ok
+					( "FAILED:\n"
+					+ BunchLib.join(comments)
+					+ BunchLib.join(p.getProblemStrings())
+					).build()
+					;
 			}
-			
-			System.err.println( ">> SQ:\n" + sq + "\n" );
-			
-			Query qq = QueryFactory.create(sq);
-			QueryExecution qe = QueryExecutionFactory.create( qq, m );
-			ResultSet rs = qe.execSelect();
-			
-			StringBuilder sb = new StringBuilder();
-			while (rs.hasNext()) sb.append(rs.next()).append("\n");
-			
-			return Response.ok
-				( "OK (POST) : " + posted + "." 
-				+ "\n" + qq.toString() 
-				+ ".\n resultset:"
-				+ "\n" + sb.toString() 
-				+ "\n"
-				).build();
 			
 		} catch (Exception e) {
 			System.err.println("BROKEN: " + e);
 			e.printStackTrace(System.err);
 			return Response.serverError().entity("Broken: " + e).build();
 		}		
-	}
-	
-	@GET @Produces("text/plain") public Response placeholderGET() { 
-		return Response.ok("OK (GET).").build();
 	}
 }
