@@ -18,12 +18,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.apache.jena.atlas.json.JSON;
+import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.conversions.Convert;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -125,14 +127,21 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 			} catch (Exception e) {
 				p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
 			}
+			
+			List<String> vars = new ArrayList<String>();
+			for (Aspect a: aspects.getAspects()) vars.add(a.asVar());
 					
 			if (p.size() == 0) {
 				QueryExecution qe = QueryExecutionFactory.create( qq, m );
 				ResultSet rs = qe.execSelect();
 			
-				StringBuilder sb = new StringBuilder();
-				while (rs.hasNext()) sb.append(rs.next()).append("\n");
-				comments.add("resultset:\n\n" + sb.toString());
+				JsonArray them = new JsonArray();
+				while (rs.hasNext()) {
+					// sb.append(rs.next()).append("\n");
+					JsonObject row = Convert.toJson(vars, rs.next());
+					them.add(row);
+				}
+				comments.add("resultset:\n\n" + them);
 			}
 			
 		} catch (Exception e) {
