@@ -44,7 +44,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 // placeholder endpoint, has a fake setup rather than a proper
 // configuration.
-@Path( "/placeholder") public class Placeholder {
+@Path( "placeholder") public class Placeholder {
 	
 	public static class Config {
 		String filePath;
@@ -91,7 +91,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 			, "</head>"
 			, "<body>"
 			, "<h1>submit JSON query</h1>"
-			, "<form method='POST' action='/placeholder/dataset/name/data'>"
+			, "<form method='POST' action='/data-api/placeholder/dataset/name/data'>"
 			, "<textarea cols='80' rows='20' name='json'>"
 			, "</textarea>"
 			, "<div><input type='submit' name='button' value='SUBMIT' /></div>"

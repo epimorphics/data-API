@@ -20,7 +20,7 @@ public class server {
 
         tomcat.setBaseDir(".");
 
-        String contextPath = "/";
+        String contextPath = "/data-api";
 
         File rootF = new File(root);
         if (!rootF.exists()) {
