@@ -30,12 +30,20 @@ public class BunchLib {
 		return result;
 	}
 
+	/**
+	    join returns the concatenation of the given strings separated
+	    by a newline.
+	*/
 	public static String join(String...strings) {
 		StringBuilder sb = new StringBuilder();
 		for (String s: strings) sb.append(s).append("\n");
 		return sb.toString();
 	}
 
+	/**
+	    join returns the concatenation of the given strings separated
+	    by a newline.
+	*/
 	public static String join(List<String> strings) {
 		StringBuilder sb = new StringBuilder();
 		for (String s: strings) sb.append(s).append("\n");
