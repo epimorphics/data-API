@@ -38,6 +38,10 @@ public class Shortname {
 		return URI.hashCode() ^ prefixed.hashCode();
 	}
 	
+	@Override public String toString() {
+		return prefixed;
+	}
+	
 	@Override public boolean equals(Object other) {
 		return other instanceof Shortname && same( (Shortname) other);
 	}

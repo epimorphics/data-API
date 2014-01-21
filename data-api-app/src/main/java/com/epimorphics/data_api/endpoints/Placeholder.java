@@ -7,7 +7,10 @@
 package com.epimorphics.data_api.endpoints;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -37,6 +40,9 @@ import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.RDF;
@@ -48,39 +54,17 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 	
 	public static class Config {
 		String filePath;
+		String name;
 		
 		public void setFilePath(String filePath) {
 			this.filePath = filePath;
 		}
 		
-	}
-
-	static Model m = loadExampleModel();
-	
-	static Model loadExampleModel() {
-		App a = AppConfig.getApp();
-		Config c = (Config) a.getComponent("configA");
-		String filePath = AppConfig.theConfig.expandFileLocation(c.filePath);
+		public void setName(String name) {
+			this.name = name;
+		}
 		
-		System.err.println( ">> filePath: " + filePath );
-		
-		return FileManager.get().loadModel(filePath);
 	}
-	
-	PrefixMapping pm = PrefixMapping.Factory
-			.create()
-			.setNsPrefixes(PrefixMapping.Extended)
-			.setNsPrefixes(m)
-			.lock();
-	
-	String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
-	
-	Aspects aspects = new Aspects()
-		.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
-		.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
-		.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
-		.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
-		;
 	
 	@GET @Path("submit") @Produces("text/html") public Response submit
 		() {
@@ -91,7 +75,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 			, "</head>"
 			, "<body>"
 			, "<h1>submit JSON query</h1>"
-			, "<form method='POST' action='/data-api/placeholder/dataset/name/data'>"
+			, "<form method='POST' action='/data-api/placeholder/dataset/sprint2/data'>"
 			, "<textarea cols='80' rows='20' name='json'>"
 			, "</textarea>"
 			, "<div><input type='submit' name='button' value='SUBMIT' /></div>"
@@ -102,37 +86,130 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 		return Response.ok(entity).build();
 	}
 	
+	static class Example {
+		
+		final PrefixMapping pm;
+		final Aspects aspects;
+		final Model model;
+		
+		Example(PrefixMapping pm, Aspects aspects, Model model) {
+			this.pm = pm;
+			this.aspects = aspects;
+			this.model = model;
+		}
+		
+	}
+	
+	static Example configureGames(Model m) {
+		PrefixMapping pm = PrefixMapping.Factory
+				.create()
+				.setNsPrefixes(PrefixMapping.Extended)
+				.setNsPrefixes(m)
+				.lock();
+		
+		String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
+		
+		Aspects aspects = new Aspects()
+			.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
+			.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
+			.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
+			.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
+			;
+
+		return new Example( pm, aspects, m );
+	}
+	
+	static Example configureICM(Model m) {
+		
+		PrefixMapping pm = PrefixMapping.Factory
+				.create()
+				.setNsPrefixes(PrefixMapping.Extended)
+				.setNsPrefixes(m)
+				.setNsPrefix( "wbc", "http://environment.data.gov.uk/def/waterbody-classification/" )
+				.setNsPrefix( "qb", "http://purl.org/linked-data/cube#" )
+//				.setNsPrefix( "", "" )
+//				.setNsPrefix( "", "" )
+				.lock();
+		
+		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
+		
+		Aspects aspects = new Aspects();
+		
+		for (Property p: predicates) {
+			String ID = p.getURI();
+			String sn = pm.shortForm(ID);
+			Aspect a = new Aspect(ID, new Shortname(pm, sn));
+			aspects.include(a);
+		}
+		
+		return new Example(pm, aspects, m);
+	}
+	
+	static Map<String, Example> examples = new HashMap<String, Example>();
+
+	static void loadConfigs() {
+		Map<String, Model> models = new HashMap<String, Model>();
+		App a = AppConfig.getApp();
+		for (String name: a.listComponentNames()) {
+			if (name.startsWith("placeholder")) {
+				Config c = (Config) a.getComponent(name);
+				String filePath = AppConfig.theConfig.expandFileLocation(c.filePath);
+				Model m = FileManager.get().loadModel(filePath);
+				models.put(c.name, m);
+			}
+		}
+	//
+		examples.put("games", configureGames( models.get("games" ) ));
+		examples.put("sprint2", configureICM( models.get("sprint2" ) ));
+	}
+	
+	static { loadConfigs(); }
+	
 	@POST @Path("dataset/{name}/data") @Produces("text/plain") public Response placeholderPOST
 		(@PathParam("name") String datasetName, @FormParam("json") String posted) {
+		
+		Example example = examples.get(datasetName);
 		
 		Problems p = new Problems();
 		List<String> comments = new ArrayList<String>();
 	
+		comments.add( "datasetName: " + datasetName );
 		comments.add( "posted JSON:\n" + posted + "\n");
 		
+		comments.add( "aspects:" );
+		for (Aspect a: example.aspects.getAspects()) {
+			comments.add( "  " + a );
+		}
+		comments.add( "" );
+				
 		JsonObject jo = null;
 		DataQuery q = null;
 		String sq = null;
 		Query qq = null;
 		
+		if (example == null) p.add("dataset '" + datasetName + "' not found." );
+		
 		try {
 			jo = JSON.parse(posted);
 			
-			q = DataQueryParser.Do(p, pm, jo);
+			if (p.size() == 0) q = DataQueryParser.Do(p, example.pm, jo);
 			
-			if (p.size() == 0) sq = q.toSparql(p, aspects, pm);
-			try {
-				qq = QueryFactory.create(sq);
-				comments.add("Generated SPARQL:\n\n" + qq );
-			} catch (Exception e) {
-				p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
+			if (p.size() == 0) sq = q.toSparql(p, example.aspects, example.pm);
+			
+			if (p.size() == 0) {
+				try {
+					qq = QueryFactory.create(sq);
+					comments.add("Generated SPARQL:\n\n" + qq );
+				} catch (Exception e) {
+					p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
+				}
 			}
 			
 			List<String> vars = new ArrayList<String>();
-			for (Aspect a: aspects.getAspects()) vars.add(a.asVar());
+			for (Aspect a: example.aspects.getAspects()) vars.add(a.asVar());
 					
 			if (p.size() == 0) {
-				QueryExecution qe = QueryExecutionFactory.create( qq, m );
+				QueryExecution qe = QueryExecutionFactory.create( qq, example.model );
 				ResultSet rs = qe.execSelect();
 			
 				JsonArray them = new JsonArray();

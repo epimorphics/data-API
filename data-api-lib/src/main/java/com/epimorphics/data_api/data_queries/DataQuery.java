@@ -62,6 +62,7 @@ public class DataQuery {
 			sb.append( "PREFIX " )
 			.append( key ).append(": " )
 			.append( "<" ).append( prefixes.get(key)).append(">")
+			.append( "\n" )
 			;
 	//
 		List<Aspect> ordered = new ArrayList<Aspect>(a.getAspects());

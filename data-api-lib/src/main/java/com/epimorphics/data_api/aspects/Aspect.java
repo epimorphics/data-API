@@ -77,5 +77,9 @@ public class Aspect {
 		this.isOptional = isOptional;
 		return this;
 	}
+	
+	@Override public String toString() {
+		return name.toString();
+	}
 
 }
