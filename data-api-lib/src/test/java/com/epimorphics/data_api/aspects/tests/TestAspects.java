@@ -17,7 +17,9 @@ import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class TestAspects {
 	
@@ -79,8 +81,11 @@ public class TestAspects {
 	}
 	
 	@Test public void testAspectRangeType() {
+		Resource type = RDFS.Class;
 		Aspect a = new MockAspect("eh:/mock/aspect/C");
-		System.err.println( ">> testAspectRangeType TBD" );
+		assertNull(a.getRangeType());
+		assertSame(a, a.setRangeType(type));
+		assertEquals(type, a.getRangeType());
 	}
 	
 	@Test public void testAspectIsOptional() {

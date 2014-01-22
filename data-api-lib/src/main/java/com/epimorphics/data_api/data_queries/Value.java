@@ -6,6 +6,8 @@
 
 package com.epimorphics.data_api.data_queries;
 
+import com.hp.hpl.jena.graph.Node_Literal;
+
 /**
     A Value wraps an Object. Only a limited set of classes of object
     can be Wrapped; they correspond to values that can conveniently be
@@ -44,6 +46,11 @@ public class Value {
 		System.err.println( ">> TODO: asSparqlTerm needs proper definition." );
 		System.err.println( ">> w = (" + w + "), " + w.getClass().getSimpleName() );
 		if (w instanceof String) return "'" + w + "'";
+		if (w instanceof Node_Literal) {
+			Node_Literal nl = (Node_Literal) w;
+			String type = nl.getLiteralDatatypeURI();
+			return "'" + nl.getLiteralLexicalForm() + "'^^<" + type + ">";
+		}
 		return w.toString();
 	}
 }

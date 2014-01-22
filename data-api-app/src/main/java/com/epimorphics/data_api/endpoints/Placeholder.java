@@ -41,10 +41,13 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.util.iterator.Map1;
 import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
@@ -127,8 +130,6 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 				.setNsPrefixes(m)
 				.setNsPrefix( "wbc", "http://environment.data.gov.uk/def/waterbody-classification/" )
 				.setNsPrefix( "qb", "http://purl.org/linked-data/cube#" )
-//				.setNsPrefix( "", "" )
-//				.setNsPrefix( "", "" )
 				.lock();
 		
 		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
@@ -136,15 +137,31 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 		Aspects aspects = new Aspects();
 		
 		for (Property p: predicates) {
+			Resource rangeType = findRangeType(m, p);
 			String ID = p.getURI();
 			String sn = pm.shortForm(ID);
 			Aspect a = new Aspect(ID, new Shortname(pm, sn));
+			if (rangeType != null) a.setRangeType(rangeType);
 			aspects.include(a);
 		}
 		
 		return new Example(pm, aspects, m);
 	}
 	
+	static final Map1<RDFNode, String> getType = new Map1<RDFNode, String>() {
+
+		@Override public String map1(RDFNode o) {
+			if (o.isLiteral()) return o.asNode().getLiteralDatatypeURI();
+			return null;
+		}
+		
+	};
+	
+	private static Resource findRangeType(Model m, Property p) {
+		Set<String> types = m.listStatements( null, p, (RDFNode) null ).mapWith(Statement.Util.getObject).mapWith(getType).toSet();
+		return types.size() == 1 ? m.createResource( types.iterator().next() ) : null;
+	}
+
 	static Map<String, Example> examples = new HashMap<String, Example>();
 
 	static void loadConfigs() {
@@ -178,7 +195,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 		
 		comments.add( "aspects:" );
 		for (Aspect a: example.aspects.getAspects()) {
-			comments.add( "  " + a );
+			Resource rt = a.getRangeType();
+			comments.add( "  " + a + (rt == null ? "" : " [range: " + rt + "]" ) );
 		}
 		comments.add( "" );
 				

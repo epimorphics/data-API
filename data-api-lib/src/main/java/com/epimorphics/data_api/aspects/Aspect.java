@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 public class Aspect {
 	
@@ -18,12 +19,19 @@ public class Aspect {
 	
 	List<Node> labels = new ArrayList<Node>();
 	List<Node> descriptions = new ArrayList<Node>();
+	
 	boolean isMultiValued = false;
 	boolean isOptional = false;
+	
+	Resource rangeType = null;
 	
 	public Aspect(String ID, Shortname name) {
 		this.ID = ID;
 		this.name = name;
+	}
+	
+	@Override public String toString() {
+		return name.toString();
 	}
 
 	public String getID() {
@@ -77,9 +85,14 @@ public class Aspect {
 		this.isOptional = isOptional;
 		return this;
 	}
+
+	public Aspect setRangeType(Resource type) {
+		this.rangeType = type;
+		return this;
+	}
 	
-	@Override public String toString() {
-		return name.toString();
+	public Resource getRangeType() {
+		return rangeType;
 	}
 
 }

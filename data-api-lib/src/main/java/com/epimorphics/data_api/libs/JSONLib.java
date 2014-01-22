@@ -13,6 +13,11 @@ import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.datatypes.BaseDatatype;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.graph.impl.LiteralLabel;
+import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
 
 // Error handling not written yet.
 public class JSONLib {
@@ -34,6 +39,15 @@ public class JSONLib {
 		if (jv.isBoolean()) return Value.wrap(jv.getAsBoolean().value());
 		if (jv.isString()) return Value.wrap(jv.getAsString().value());
 		if (jv.isNumber()) return Value.wrap(jv.getAsNumber().value());
+		if (jv.isObject()) {			
+			JsonObject jo = jv.getAsObject();
+			JsonValue value = jo.get("@value");
+			JsonValue type = jo.get("@type");
+			LiteralLabel ll = LiteralLabelFactory.create(value.getAsString().value(), "", new BaseDatatype(type.getAsString().value()));
+			Node n = NodeFactory.createLiteral(ll);
+			System.err.println( ">> created literal node " + n );
+			return Value.wrap(n);
+		}
 		throw new RuntimeException("Error handling to be done here.");
 	}
 
