@@ -23,4 +23,20 @@ public class TestShortname {
 		assertEquals( "pre:post", s.getCURIE() );
 	}
 	
+	@Test public void testAsVar() {
+		PrefixMapping pm = PrefixMapping.Factory.create();
+		pm.setNsPrefix( "pre", "eh:/prefixPart/" );
+	//
+		assertEquals( "?pre_post", new Shortname(pm, "pre:post").asVar());
+		assertEquals( "?pre_po_st", new Shortname(pm, "pre:po_st").asVar());
+		assertEquals( "?pre_post17", new Shortname(pm, "pre:post17").asVar());
+		assertEquals( "?pre_po_st", new Shortname(pm, "pre:po:st").asVar());
+	//
+		assertEquals( "?pre_po2Dst", new Shortname(pm, "pre:po-st").asVar());
+		assertEquals( "?pre_po2Est", new Shortname(pm, "pre:po.st").asVar());
+		assertEquals( "?pre_po24st", new Shortname(pm, "pre:po$st").asVar());
+		assertEquals( "?pre_po2Ast", new Shortname(pm, "pre:po*st").asVar());
+		assertEquals( "?pre_po2Bst", new Shortname(pm, "pre:po+st").asVar());
+		assertEquals( "?pre_po3Dst", new Shortname(pm, "pre:po=st").asVar());
+	}
 }

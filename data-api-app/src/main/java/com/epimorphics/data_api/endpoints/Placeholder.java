@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonString;
 
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.appbase.core.AppConfig;
@@ -44,12 +45,9 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.iterator.Map1;
-import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.RDFS;
 
 // placeholder endpoint, has a fake setup rather than a proper
 // configuration.
@@ -69,16 +67,16 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 		
 	}
 	
-	@GET @Path("submit") @Produces("text/html") public Response submit
-		() {
+	@GET @Path("dataset/{name}/submit") @Produces("text/html") public Response submit
+		(@PathParam("name") String name) {
 		String entity = BunchLib.join(
 			"<html>"
 			, "<head>"
 			, "<title>data API placeholder query submitter</title>"
 			, "</head>"
 			, "<body>"
-			, "<h1>submit JSON query</h1>"
-			, "<form method='POST' action='/data-api/placeholder/dataset/sprint2/data'>"
+			, "<h1>submit JSON query on " + name + " </h1>"
+			, "<form method='POST' action='/data-api/placeholder/dataset/" + name + "/data'>"
 			, "<textarea cols='80' rows='20' name='json'>"
 			, "</textarea>"
 			, "<div><input type='submit' name='button' value='SUBMIT' /></div>"
@@ -110,14 +108,27 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 				.setNsPrefixes(m)
 				.lock();
 		
-		String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
+//		String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
+//		
+//		Aspects aspects = new Aspects()
+//			.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
+//			.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
+//			.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
+//			.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
+//			;		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
 		
-		Aspects aspects = new Aspects()
-			.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
-			.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
-			.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
-			.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
-			;
+		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
+
+		Aspects aspects = new Aspects();
+		
+		for (Property p: predicates) {
+			Resource rangeType = findRangeType(m, p);
+			String ID = p.getURI();
+			String sn = pm.shortForm(ID);
+			Aspect a = new Aspect(ID, new Shortname(pm, sn));
+			if (rangeType != null) a.setRangeType(rangeType);
+			aspects.include(a);
+		}
 
 		return new Example( pm, aspects, m );
 	}
@@ -181,6 +192,36 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 	}
 	
 	static { loadConfigs(); }
+	
+	@GET @Path("dataset") @Produces("application/json") public Response deliverDatasetNamesAsJSON() {
+		JsonArray ja = new JsonArray();
+		for (String name: examples.keySet()) ja.add(new JsonString(name) );
+		return Response.ok(ja.toString(), "application/json").build();
+	}
+	
+	@GET @Path("dataset.html") @Produces("text/html") public Response deliverDatasetNamesAsHTML() {
+		StringBuilder links = new StringBuilder();
+		for (String name: examples.keySet()) 
+			links
+				.append("<div>")
+				.append( "<a href='dataset/" + name + "/submit" + "'>")
+				.append(name)
+				.append("</a>")
+				.append("</div>")
+				.append("\n");
+		String entity = BunchLib.join
+			( "<html>"
+			, "<head>"
+			, "<title>data API placeholder query submitter</title>"
+			, "</head>"
+			, "<body>"
+			, "<h1>available examples</h1>"
+			, links.toString()
+			, "</body>"
+			, "</html>"
+			);
+		return Response.ok(entity, "text/html").build();
+	}
 	
 	@POST @Path("dataset/{name}/data") @Produces("text/plain") public Response placeholderPOST
 		(@PathParam("name") String datasetName, @FormParam("json") String posted) {

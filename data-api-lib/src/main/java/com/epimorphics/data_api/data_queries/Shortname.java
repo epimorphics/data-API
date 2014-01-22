@@ -20,12 +20,31 @@ public class Shortname {
 	
 	final String URI;
 	final String prefixed;
+	final String varName;
 	
 	public Shortname(PrefixMapping pm, String prefixed ) {
 		this.prefixed = prefixed;
 		this.URI = pm.expandPrefix(prefixed);
+		this.varName = asVar(prefixed);
 	}
 	
+	static final char[] digit = "0123456789ABCDEF".toCharArray();
+	
+	private String asVar(String s) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("?");
+		for (int i = 0; i < s.length(); i += 1) {
+			char ch = s.charAt(i);
+			if (Character.isLetter(ch) || Character.isDigit(ch) || ch == '_') 
+				sb.append(ch);
+			else if (ch == ':')
+				sb.append('_');
+			else
+				sb.append(digit[ch >> 4]).append(digit[ch & 0xf]);
+		}
+		return sb.toString();
+	}
+
 	public String getCURIE() {
 		return prefixed;
 	}
@@ -51,6 +70,6 @@ public class Shortname {
 	}
 
 	public String asVar() {
-		return "?" + prefixed.replace(":", "_");
+		return varName;
 	}
 }
