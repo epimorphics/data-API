@@ -7,6 +7,7 @@ package com.epimorphics.data_api.conversions;
 
 import java.util.List;
 
+import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonBoolean;
 import org.apache.jena.atlas.json.JsonNumber;
 import org.apache.jena.atlas.json.JsonObject;
@@ -15,6 +16,7 @@ import org.apache.jena.atlas.json.JsonValue;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class Convert {
 
@@ -66,13 +68,18 @@ public class Convert {
 		return job;
 	}
 
+	static final JsonArray emptyArray = new JsonArray();
+	
 	/**
 	    toJson(vars, qs) returns the data API JSON representation of
 	    a ARQ query solution restricted to the named vars.
 	*/
 	public static JsonObject toJson(List<String> vars, QuerySolution qs) {
 		JsonObject result = new JsonObject();
-		for (String var: vars) result.put(var, toJson(qs.get(var).asNode()));
+		for (String var: vars) {
+			RDFNode value = qs.get(var);
+			result.put(var, (value == null ? emptyArray : toJson(value.asNode())));
+		}
 		return result;
 	}
 

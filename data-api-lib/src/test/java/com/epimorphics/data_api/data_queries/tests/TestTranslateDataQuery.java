@@ -30,6 +30,8 @@ public class TestTranslateDataQuery {
 	
 	static final Aspect X = new TestAspects.MockAspect("eh:/mock-aspect/X");
 	static final Aspect Y = new TestAspects.MockAspect("eh:/mock-aspect/Y");
+	
+	static final Aspect Yopt = new TestAspects.MockAspect("eh:/mock-aspect/Y").setIsOptional(true);
 
 	PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
 	
@@ -71,6 +73,20 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, pm);
 		assertNoProblems(p);
 		assertSameSparql( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). ?item pre:Y ?pre_Y}", sq );
+	}		
+	
+	@Test public void testSingleEqualityFilterWithOptionalAspect() {
+		Problems p = new Problems();
+		Shortname sn = new Shortname( pm, "pre:X" );
+		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
+		List<Filter> filters = BunchLib.list(f);
+		DataQuery q = new DataQuery(filters);
+	//
+		Aspects a = new Aspects().include(X).include(Yopt);
+	//
+		String sq = q.toSparql(p, a, pm);
+		assertNoProblems(p);
+		assertSameSparql( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
 	}		
 	
 	@Test public void testDoubleEqualityFilter() {

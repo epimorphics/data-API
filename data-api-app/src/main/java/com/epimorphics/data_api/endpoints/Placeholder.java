@@ -109,7 +109,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 				.setNsPrefixes(m)
 				.lock();
 		
-//		String egc = "http://epimorphics.com/public/vocabulary/games.ttl#";
+//		String egc = "httpp://epimorphics.com/public/vocabulary/games.ttl#";
 //		
 //		Aspects aspects = new Aspects()
 //			.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
@@ -128,17 +128,27 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		multiple.add("egc:players");
 		multiple.add("rdfs:label");
 		
+		Set<String> allowed = new HashSet<String>();
+		
+		allowed.add("rdfs:label");
+		allowed.add("rdf:type");
+//		allowed.add("egc:players");
+		allowed.add("egc:pubYear");
+		allowed.add("egc:playTimeMinutes");
+		
 		Aspects aspects = new Aspects();
 		
 		for (Property p: predicates) {
 			Resource rangeType = findRangeType(m, p);
 			String ID = p.getURI();
 			String sn = pm.shortForm(ID);
-			Aspect a = new Aspect(ID, new Shortname(pm, sn));
-			if (optional.contains(sn)) a.setIsOptional(true);
-			if (multiple.contains(sn)) a.setIsMultiValued(true);
-			if (rangeType != null) a.setRangeType(rangeType);
-			aspects.include(a);
+			if (allowed.contains(sn)) {
+				Aspect a = new Aspect(ID, new Shortname(pm, sn));
+				if (optional.contains(sn)) a.setIsOptional(true);
+				if (multiple.contains(sn)) a.setIsMultiValued(true);
+				if (rangeType != null) a.setRangeType(rangeType);
+				aspects.include(a);
+			}
 		}
 
 		return new Example( pm, aspects, m );
@@ -198,8 +208,8 @@ import com.hp.hpl.jena.util.iterator.Map1;
 			}
 		}
 	//
-		examples.put("games", configureGames( models.get("games" ) ));
-		examples.put("sprint2", configureICM( models.get("sprint2" ) ));
+		examples.put("games", configureGames( models.get("games") ));
+		examples.put("sprint2", configureICM( models.get("sprint2") ));
 	}
 	
 	static { loadConfigs(); }

@@ -23,7 +23,8 @@ public class DataQuery {
 	private static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
 
 		@Override public int compare(Aspect a, Aspect b) {
-			return a.getID().compareTo(b.getID());
+			if (a.getIsOptional() == b.getIsOptional()) return a.getID().compareTo(b.getID());
+			return a.getIsOptional() ? +1 : -1;
 		}
 	};
 	
@@ -78,18 +79,18 @@ public class DataQuery {
 	//	
 		sb.append(" WHERE {");
 		String dot = "";
-		for (Aspect x: ordered) {  // for (Filter f: filters) {
+		for (Aspect x: ordered) {
 			String fVar = x.asVar();
 			sb.append(dot);
+			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
 			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);
-			
+			if (x.getIsOptional()) sb.append( " }" );
+		//
 			Filter f = sf.get(fVar);
 			if (f != null) {
 				String value = f.range.operands.get(0).asSparqlTerm();
 				sb.append(" FILTER(" ).append(fVar).append( " = ").append(value).append(")");
 			}
-			
-			
 			dot = ". ";
 		}
 		sb.append( " }");
