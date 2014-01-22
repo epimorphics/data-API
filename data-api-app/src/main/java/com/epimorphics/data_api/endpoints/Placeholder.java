@@ -8,6 +8,7 @@ package com.epimorphics.data_api.endpoints;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,6 +120,14 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		
 		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
 
+		Set<String> optional = new HashSet<String>();
+		Set<String> multiple = new HashSet<String>();
+		
+		optional.add("egc:playTimeMinutes");
+		
+		multiple.add("egc:players");
+		multiple.add("rdfs:label");
+		
 		Aspects aspects = new Aspects();
 		
 		for (Property p: predicates) {
@@ -126,6 +135,8 @@ import com.hp.hpl.jena.util.iterator.Map1;
 			String ID = p.getURI();
 			String sn = pm.shortForm(ID);
 			Aspect a = new Aspect(ID, new Shortname(pm, sn));
+			if (optional.contains(sn)) a.setIsOptional(true);
+			if (multiple.contains(sn)) a.setIsMultiValued(true);
 			if (rangeType != null) a.setRangeType(rangeType);
 			aspects.include(a);
 		}
@@ -237,7 +248,13 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		comments.add( "aspects:" );
 		for (Aspect a: example.aspects.getAspects()) {
 			Resource rt = a.getRangeType();
-			comments.add( "  " + a + (rt == null ? "" : " [range: " + rt + "]" ) );
+			boolean optional = a.getIsOptional(), multiple = a.getIsMultiValued();
+			comments.add
+				( "  " + a 
+				+ (rt == null ? "" : " [range: " + rt + "]" ) 
+				+ (optional ? ", optional" : "")
+				+ (multiple ? ", multivalued" : "")
+				);
 		}
 		comments.add( "" );
 				
