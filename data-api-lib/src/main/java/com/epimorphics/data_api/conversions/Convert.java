@@ -11,6 +11,7 @@ import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonBoolean;
 import org.apache.jena.atlas.json.JsonNumber;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonString;
 import org.apache.jena.atlas.json.JsonValue;
 
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -33,7 +34,7 @@ public class Convert {
 			if (type == null) {
 				String language = n.getLiteralLanguage();
 				if (language.equals("")) {
-					return Convert.objectWith("@value", spelling);
+					return new JsonString(spelling); // Convert.objectWith("@value", spelling);
 				} else {
 					return Convert.objectWith("@value", spelling, "@language", language);
 				}

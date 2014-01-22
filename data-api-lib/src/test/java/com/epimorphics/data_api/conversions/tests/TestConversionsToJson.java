@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import org.apache.jena.atlas.json.JsonBoolean;
 import org.apache.jena.atlas.json.JsonNumber;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonString;
 import org.apache.jena.atlas.json.JsonValue;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class TestConversionsToJson {
 	
 	@Test public void testTranslatePlainString() {
 		Node string = NodeFactory.createLiteral("spelling", "", null);
-		JsonObject expected = Convert.objectWith("@value", "spelling");
+		JsonValue expected = new JsonString("spelling");
 		assertEquals(expected, Convert.toJson(string));
 	}
 	

@@ -39,13 +39,13 @@ public class TestTranslateQuerySolution {
 		assertEquals( expected, js );		
 	}
 	
-	static class LocalQuerySolution implements QuerySolution {
+	public static class LocalQuerySolution implements QuerySolution {
 
 		final Map<String, RDFNode> results = new HashMap<String, RDFNode>();
 		
 		static final Model model = ModelFactory.createDefaultModel();
 		
-		LocalQuerySolution(Object ...bindings) {
+		public LocalQuerySolution(Object ...bindings) {
 			for (int i = 0; i < bindings.length; i += 2) {
 				String key = (String) bindings[i];
 				Node value = (Node) bindings[i+1];
