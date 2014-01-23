@@ -8,6 +8,7 @@ package com.epimorphics.data_api.libs;
 
 import java.util.List;
 
+import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
@@ -62,6 +63,16 @@ public class JSONLib {
 		} else {
 			throw new RuntimeException("Error handling to be done here.");
 		}
+	}
+
+	/**
+	    jsonArray(elements...) returns a JSON array with the given elements
+	    in the same order.
+	*/
+	public static JsonArray jsonArray(JsonValue... elements) {
+		JsonArray result = new JsonArray();
+		for (JsonValue v: elements) result.add(v);
+		return result;
 	}
 
 }

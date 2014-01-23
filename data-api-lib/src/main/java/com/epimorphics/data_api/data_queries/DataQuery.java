@@ -70,17 +70,17 @@ public class DataQuery {
 		Collections.sort(ordered, compareAspects);
 	//
 		Map<String, Filter> sf = new HashMap<String, Filter>();
-		for (Filter f: filters) sf.put(f.name.asVar(), f);
+		for (Filter f: filters) sf.put("?" + f.name.asVar(), f);
 	//
 		sb.append( " SELECT ?item");
 		for (Aspect x: ordered) {
-			sb.append(" ").append( x.asVar() );
+			sb.append(" ?").append( x.asVar() );
 		}
 	//	
 		sb.append(" WHERE {");
 		String dot = "";
 		for (Aspect x: ordered) {
-			String fVar = x.asVar();
+			String fVar = "?" + x.asVar();
 			sb.append(dot);
 			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
 			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);

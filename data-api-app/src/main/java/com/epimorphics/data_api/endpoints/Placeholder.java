@@ -291,8 +291,8 @@ import com.hp.hpl.jena.util.iterator.Map1;
 				}
 			}
 			
-			List<String> vars = new ArrayList<String>();
-			for (Aspect a: example.aspects.getAspects()) vars.add(a.asVar());
+			List<Aspect> aspects = new ArrayList<Aspect>();
+			for (Aspect a: example.aspects.getAspects()) aspects.add(a);
 					
 			if (p.size() == 0) {
 				QueryExecution qe = QueryExecutionFactory.create( qq, example.model );
@@ -301,7 +301,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 				JsonArray them = new JsonArray();
 				while (rs.hasNext()) {
 					// sb.append(rs.next()).append("\n");
-					JsonObject row = Convert.toJson(vars, rs.next());
+					JsonObject row = Convert.toJson(aspects, rs.next());
 					them.add(row);
 				}
 				comments.add("resultset:\n\n" + them);

@@ -32,7 +32,6 @@ public class Shortname {
 	
 	private String asVar(String s) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("?");
 		for (int i = 0; i < s.length(); i += 1) {
 			char ch = s.charAt(i);
 			if (Character.isLetter(ch) || Character.isDigit(ch) || ch == '_') 

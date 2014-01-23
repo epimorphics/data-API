@@ -5,6 +5,7 @@
 */
 package com.epimorphics.data_api.conversions;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -14,6 +15,8 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonString;
 import org.apache.jena.atlas.json.JsonValue;
 
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.libs.JSONLib;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -75,11 +78,30 @@ public class Convert {
 	    toJson(vars, qs) returns the data API JSON representation of
 	    a ARQ query solution restricted to the named vars.
 	*/
-	public static JsonObject toJson(List<String> vars, QuerySolution qs) {
+	public static JsonObject toJson(List<Aspect> aspects, QuerySolution qs) {
+		
+//		System.err.println( ">> qs: " );
+//		Iterator<String> it = qs.varNames();
+//		while (it.hasNext()) System.err.print( " " + it.next() );
+//		System.err.println();
+		
 		JsonObject result = new JsonObject();
-		for (String var: vars) {
-			RDFNode value = qs.get(var);
-			result.put(var, (value == null ? emptyArray : toJson(value.asNode())));
+		for (Aspect a: aspects) {
+			String key = a.getName().getCURIE();
+			
+			System.err.println( ">> asVar: " + a.asVar() );
+			
+			RDFNode value = qs.get(a.asVar());
+			
+			// System.err.println( ">> value of " + var + " is " + value );
+			
+			if (value == null) {
+				result.put(key, emptyArray);				
+			}
+			else {
+				JsonValue v = toJson(value.asNode());
+				result.put(key, (a.getIsMultiValued() ? JSONLib.jsonArray(v) : v));
+			}
 		}
 		return result;
 	}

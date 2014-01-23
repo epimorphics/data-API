@@ -15,6 +15,9 @@ import java.util.Map;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.conversions.Convert;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.graph.Node;
@@ -31,11 +34,17 @@ public class TestTranslateQuerySolution {
 	Node A = NodeFactory.createURI("eh:/some-A");
 	Node B = NodeFactory.createLiteral("hello, world");
 	
+	Aspect aspectA = new TestAspects.MockAspect("eh:/aspect/a");
+	Aspect aspectB = new TestAspects.MockAspect("eh:/aspect/b");
+	
 	@Test public void testMe() {
-		List<String> vars = BunchLib.list("a", "b");
-		QuerySolution qs = new LocalQuerySolution("a", A, "b", B);
-		JsonObject js = Convert.toJson(vars, qs);
-		JsonObject expected = Convert.objectWith("a", Convert.toJson(A), "b", Convert.toJson(B));
+		QuerySolution qs = new LocalQuerySolution("pre_a", A, "pre_b", B);
+		List<Aspect> aspects = BunchLib.list(aspectA, aspectB);
+		
+		System.err.println( ">> aspects: " + aspects );
+		
+		JsonObject js = Convert.toJson(aspects, qs);
+		JsonObject expected = Convert.objectWith("pre:a", Convert.toJson(A), "pre:b", Convert.toJson(B));
 		assertEquals( expected, js );		
 	}
 	

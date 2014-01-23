@@ -57,8 +57,11 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, pm);
-		assertNoProblems(p);
-		assertSameSparql( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17)}", sq );
+		assertNoProblems(p);		
+		assertSameSparql
+			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17)}"
+			, sq 
+			);
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {
