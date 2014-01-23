@@ -79,7 +79,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 			, "</head>"
 			, "<body>"
 			, "<h1>submit JSON query on " + name + " </h1>"
-			, "<form method='POST' action='/data-api/placeholder/dataset/" + name + "/data'>"
+			, "<form method='POST' action='/data-api/placeholder/dataset/" + name + "/explain-query'>"
 			, "<textarea cols='80' rows='20' name='json'>"
 			, "</textarea>"
 			, "<div><input type='submit' name='button' value='SUBMIT' /></div>"
@@ -110,16 +110,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 				.setNsPrefixes(PrefixMapping.Extended)
 				.setNsPrefixes(m)
 				.lock();
-		
-//		String egc = "httpp://epimorphics.com/public/vocabulary/games.ttl#";
-//		
-//		Aspects aspects = new Aspects()
-//			.include(new Aspect( RDF.getURI() + "type", new Shortname(pm, "rdf:type" )))
-//			.include(new Aspect( RDFS.getURI() + "label", new Shortname(pm, "rdfs:label" )))
-//			.include(new Aspect( egc + "players", new Shortname(pm, "egc:players" )))
-//			.include(new Aspect( egc + "pubYear", new Shortname(pm, "egc:pubYear" )))
-//			;		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
-		
+
 		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
 
 		Set<String> optional = new HashSet<String>();
@@ -232,6 +223,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 				.append("</a>")
 				.append("</div>")
 				.append("\n");
+		//
 		String entity = BunchLib.join
 			( "<html>"
 			, "<head>"
@@ -246,7 +238,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		return Response.ok(entity, "text/html").build();
 	}
 	
-	@POST @Path("dataset/{name}/data") @Produces("text/plain") public Response placeholderPOST
+	@POST @Path("dataset/{name}/explain-query") @Produces("text/plain") public Response placeholder_explain_POST
 		(@PathParam("name") String datasetName, @FormParam("json") String posted) {
 		
 		Example example = examples.get(datasetName);
@@ -328,5 +320,68 @@ import com.hp.hpl.jena.util.iterator.Map1;
 					).build()
 					;
 			}	
-	}
+	}	
+	
+	
+	@POST @Path("dataset/{name}/data") @Produces("application/json") public Response placeholder_query_POST
+		(@PathParam("name") String datasetName, @FormParam("json") String posted) {
+		
+	Example example = examples.get(datasetName);
+	
+	Problems p = new Problems();
+	final JsonArray result = new JsonArray();
+			
+	JsonObject jo = null;
+	DataQuery q = null;
+	String sq = null;
+	Query qq = null;
+	
+	if (example == null) p.add("dataset '" + datasetName + "' not found." );
+	
+	try {
+		jo = JSON.parse(posted);
+		
+		if (p.size() == 0) q = DataQueryParser.Do(p, example.pm, jo);
+		
+		if (p.size() == 0) sq = q.toSparql(p, example.aspects, example.pm);
+		
+		if (p.size() == 0) {
+			try {
+				qq = QueryFactory.create(sq);
+			} catch (Exception e) {
+				p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
+			}
+		}
+		
+		List<Aspect> aspects = new ArrayList<Aspect>();
+		for (Aspect a: example.aspects.getAspects()) aspects.add(a);
+				
+		if (p.size() == 0) {
+			QueryExecution qe = QueryExecutionFactory.create( qq, example.model );
+			ResultSet rs = qe.execSelect();
+		
+			JSONConsumer consumeToArray = new JSONConsumer() {
+				@Override public void consume(JsonValue jo) { result.add(jo); }
+			};
+			ResultsToJson.convert(aspects, consumeToArray, rs);
+		}
+		
+	} catch (Exception e) {
+		System.err.println("BROKEN: " + e);
+		e.printStackTrace(System.err);
+		p.add("BROKEN: " + e);
+	}	
+	
+	if (p.size() == 0) {
+		return Response.ok(result.toString()).build();
+
+	} else {
+		return Response.ok
+			( "FAILED:\n"
+			+ BunchLib.join(p.getProblemStrings())
+			).build()
+			;
+	}	
+}
+
 }
