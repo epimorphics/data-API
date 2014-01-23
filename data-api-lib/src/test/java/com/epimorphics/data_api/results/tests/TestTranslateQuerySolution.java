@@ -16,7 +16,6 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.conversions.Convert;
 import com.epimorphics.data_api.libs.BunchLib;

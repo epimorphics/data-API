@@ -25,12 +25,14 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonString;
+import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
-import com.epimorphics.data_api.conversions.Convert;
+import com.epimorphics.data_api.conversions.ResultsToJson;
+import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -132,7 +134,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		
 		allowed.add("rdfs:label");
 		allowed.add("rdf:type");
-//		allowed.add("egc:players");
+		allowed.add("egc:players");
 		allowed.add("egc:pubYear");
 		allowed.add("egc:playTimeMinutes");
 		
@@ -298,13 +300,12 @@ import com.hp.hpl.jena.util.iterator.Map1;
 				QueryExecution qe = QueryExecutionFactory.create( qq, example.model );
 				ResultSet rs = qe.execSelect();
 			
-				JsonArray them = new JsonArray();
-				while (rs.hasNext()) {
-					// sb.append(rs.next()).append("\n");
-					JsonObject row = Convert.toJson(aspects, rs.next());
-					them.add(row);
-				}
-				comments.add("resultset:\n\n" + them);
+				final JsonArray result = new JsonArray();
+				JSONConsumer consumeToArray = new JSONConsumer() {
+					@Override public void consume(JsonValue jo) { result.add(jo); }
+				};
+				ResultsToJson.convert(aspects, consumeToArray, rs);
+				comments.add("resultset:\n\n" + result);
 			}
 			
 		} catch (Exception e) {
