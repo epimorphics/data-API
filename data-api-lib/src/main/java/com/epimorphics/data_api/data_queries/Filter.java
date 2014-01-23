@@ -15,6 +15,10 @@ public class Filter {
 		this.name = name;
 	}
 	
+	@Override public String toString() {
+		return "<filter " + name + ": " + range;
+	}
+	
 	@Override public int hashCode() {
 		return name.hashCode() ^ range.hashCode();
 	}
@@ -25,6 +29,10 @@ public class Filter {
 
 	private boolean same(Filter other) {
 		return this.name.equals(other.name) && this.range.equals(other.range);
+	}
+
+	public String getRangeOp() {
+		return range.op;
 	}
 
 }

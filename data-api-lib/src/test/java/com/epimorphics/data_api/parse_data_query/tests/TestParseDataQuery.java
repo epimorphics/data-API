@@ -44,7 +44,7 @@ public class TestParseDataQuery {
 		.setNsPrefix("pre",  "eh:/prefixPart/" )
 		.lock()
 		;
-	
+
 	@Test public void testSingleFilterQuery() {
 		Shortname sn = new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'eq': 17}}";
@@ -58,6 +58,47 @@ public class TestParseDataQuery {
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 	//
 		List<Filter> expected = BunchLib.list(new Filter( sn, Range.EQ(Value.wrap(new BigDecimal(17)))));		
+		assertEquals(expected, q.filters());
+	}
+	
+	@Test public void testSingleFilterQueryForEQ() {
+		testSingleFilterQueryWithNumericOp("eq");
+	}
+	
+	@Test public void testSingleFilterQueryForNE() {
+		testSingleFilterQueryWithNumericOp("ne");
+	}
+	
+	@Test public void testSingleFilterQueryForLT() {
+		testSingleFilterQueryWithNumericOp("lt");
+	}
+	
+	@Test public void testSingleFilterQueryForLE() {
+		testSingleFilterQueryWithNumericOp("le");
+	}
+	
+	@Test public void testSingleFilterQueryForGE() {
+		testSingleFilterQueryWithNumericOp("ge");
+	}
+	
+	@Test public void testSingleFilterQueryForGT() {
+		testSingleFilterQueryWithNumericOp("gt");
+	}
+
+	private void testSingleFilterQueryWithNumericOp(String op) {
+		Shortname sn = new Shortname(pm, "pre:local");
+		String incoming = "{'pre:local': {'" + op + "': 17}}";
+		JsonObject jo = JSON.parse(incoming);		
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, pm, jo);
+//
+		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
+		assertTrue(q.slice().isAll());
+		assertNull(q.lang());
+		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
+//
+		Range range = new Range(op, BunchLib.list(Value.wrap(new BigDecimal(17))));
+		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
 		assertEquals(expected, q.filters());
 	}
 

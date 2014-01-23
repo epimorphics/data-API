@@ -7,22 +7,27 @@
 package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQueryParser {
 	
+	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList("eq ne le lt ge gt".split(" ")));
+	
 	public static DataQuery Do(Problems p, PrefixMapping pm, JsonObject jo) {
 		if (jo.isObject()) {
 			List<Filter> filters = new ArrayList<Filter>();
 			for (String key: jo.getAsObject().keys()) {
-				System.err.println( ">> key: " + key );
 				if (key.startsWith("_")) {
 					throw new RuntimeException("Error handling to be done here.");
 				} else {
@@ -30,14 +35,13 @@ public class DataQueryParser {
 					JsonValue range = jo.get(key);			
 					if (range.isObject()) {
 						JsonObject rob = range.getAsObject();
-						
 						for (String op: rob.keys()) {
 							Value v = JSONLib.getAsValue(rob.get(op));
-							if (op.equals("eq")) {
-								filters.add( new Filter(sn, Range.EQ(v) ) );
+							if (isRelationalOp(op)) {
+								filters.add( new Filter(sn, new Range(op, BunchLib.list(v)) ) );
 								
 							} else {
-								throw new RuntimeException("Error handling to be done here.");	
+								p.add("unknown operator '" + op + "' in data query.");
 							}
 						}
 						
@@ -50,5 +54,9 @@ public class DataQueryParser {
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
 		}
+	}
+
+	private static boolean isRelationalOp(String op) {
+		return allowedOps.contains(op);
 	}
 }

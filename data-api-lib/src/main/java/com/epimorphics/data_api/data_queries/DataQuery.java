@@ -87,14 +87,30 @@ public class DataQuery {
 			if (x.getIsOptional()) sb.append( " }" );
 		//
 			Filter f = sf.get(fVar);
+			String op = opForFilter(f);
 			if (f != null) {
 				String value = f.range.operands.get(0).asSparqlTerm();
-				sb.append(" FILTER(" ).append(fVar).append( " = ").append(value).append(")");
+				sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");
 			}
 			dot = ". ";
 		}
 		sb.append( " }");
 	//
 		return sb.toString();
+	}
+
+	private String opForFilter(Filter f) {
+		String rangeOp = f.getRangeOp();
+		return opFor(rangeOp);
+	}
+	
+	private String opFor(String rangeOp) {
+		if (rangeOp.equals("eq")) return "=";
+		if (rangeOp.equals("ne")) return "!=";
+		if (rangeOp.equals("le")) return "<=";
+		if (rangeOp.equals("lt")) return "<";
+		if (rangeOp.equals("ge")) return ">=";
+		if (rangeOp.equals("gt")) return ">";
+		throw new RuntimeException("should never happen: unexpected range op '" + rangeOp + "'");
 	}
 }
