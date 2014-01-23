@@ -9,9 +9,11 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -55,7 +57,7 @@ public class TestResultSetConversion {
 		QuerySolution C = new TestTranslateQuerySolution.LocalQuerySolution("item", itemB, "pre_multiple", value3);
 		List<QuerySolution> x = BunchLib.list(A, B, C);
 		
-		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" );
+		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" ).setIsMultiValued(true);
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
 		JsonArray ja = convert(aspects, x);
@@ -76,56 +78,62 @@ public class TestResultSetConversion {
 				
 		Node current = null;
 		JsonObject pending = null;		
-		List<JsonValue> values = new ArrayList<JsonValue>();
+		
+		Map<String, List<JsonValue>> valuess = new HashMap<String, List<JsonValue>>();
+		
+		Map<String, String> shorts = new HashMap<String, String>();
+		
+		for (Aspect a: aspects) 
+			if (a.getIsMultiValued()) {
+				valuess.put(a.asVar(), new ArrayList<JsonValue>() );
+				shorts.put(a.asVar(), a.getName().getCURIE() );
+			}
 		
 		for (QuerySolution row: rows) {
 
 			Node item = row.get("item").asNode();
-
-			System.err.println( "\n>> next row [" + item + "] -----------------------------------" );
-			
-			Iterator<String> it = row.varNames();
-			while (it.hasNext()) {
-				String v = it.next();
-				System.err.println( ">> " + v + " = " + row.get(v) );
-			}
-			
-			System.err.println( ">> pending converted row: " + pending );
 			
 			if (item.equals(current)) {
-				// more for this item
-				System.err.println( ">> another row for the current item.");
-				
-				JsonValue AAA = pending.get("pre:multiple");
-				
-				System.err.println( ">>> pre_multiple: " + AAA );
-				
-				values.add(Convert.toJson(row.get("pre_multiple").asNode()));
-				
+				multipleValueFetch(valuess, row);
 			} else {
 				// new item, flush any existing item & reset current
-				System.err.println( ">> new item, flush existing row and reset." );
 				if (pending != null) {
-					pending.put("pre:multiple", jsonArrayFrom(values));
+//					
+					for (Map.Entry<String, List<JsonValue>> e: valuess.entrySet()) {	
+						String curi = shorts.get(e.getKey());
+						pending.put(curi, jsonArrayFrom(e.getValue()));
+					}
 					result.add( pending );
 				}
 				pending = Convert.toJson(aspects, row); 
 				pending.put("item", Convert.toJson(item) );
-				
-				System.err.println( ">> starting new item with pending = " + pending );
-				
+								
 				current = item;
-				values.clear();
-				values.add(pending.get("pre:multiple"));
+				
+				for (Map.Entry<String, List<JsonValue>> e: valuess.entrySet()) {
+					e.getValue().clear();
+					e.getValue().add( Convert.toJson(row.get(e.getKey()).asNode()));
+				}
 			}
 		}
 		
 		if (pending != null) {
-			pending.put("pre:multiple", jsonArrayFrom(values));
+
+			for (Map.Entry<String, List<JsonValue>> e: valuess.entrySet()) {	
+				String curi = shorts.get(e.getKey());
+				pending.put(curi, jsonArrayFrom(e.getValue()));
+			}
+			
 			result.add(pending);
 		}
 		
 		return result;
+	}
+
+	private void multipleValueFetch(Map<String, List<JsonValue>> valuess, QuerySolution row) {
+		for (Map.Entry<String, List<JsonValue>> e: valuess.entrySet()) {
+			e.getValue().add( Convert.toJson(row.get(e.getKey()).asNode()));
+		}
 	}
 
 	private JsonValue jsonArrayFrom(Collection<JsonValue> values) {

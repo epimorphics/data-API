@@ -87,14 +87,9 @@ public class Convert {
 		
 		JsonObject result = new JsonObject();
 		for (Aspect a: aspects) {
-			String key = a.getName().getCURIE();
-			
-			System.err.println( ">> asVar: " + a.asVar() );
-			
+			String key = a.getName().getCURIE();		
 			RDFNode value = qs.get(a.asVar());
-			
-			// System.err.println( ">> value of " + var + " is " + value );
-			
+		//			
 			if (value == null) {
 				result.put(key, emptyArray);				
 			}
