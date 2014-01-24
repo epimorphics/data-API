@@ -87,10 +87,22 @@ public class DataQuery {
 			if (x.getIsOptional()) sb.append( " }" );
 		//
 			Filter f = sf.get(fVar);
-			if (f != null) {			
+			if (f != null) {		
+				String rangeOp = f.getRangeOp();	
+				if (rangeOp.equals("oneof")) {
+					String orOp = "";
+					List<Value> operands = f.range.operands;
+					sb.append(" FILTER(" );
+					for (Value v: operands) {
+						sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm());
+						orOp = " || ";
+					}
+					sb.append(")");
+				} else {
 				String op = opForFilter(f);
 				String value = f.range.operands.get(0).asSparqlTerm();
 				sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");
+				}
 			}
 			dot = ". ";
 		}

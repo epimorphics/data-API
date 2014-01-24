@@ -6,6 +6,7 @@
 
 package com.epimorphics.data_api.libs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.atlas.json.JsonArray;
@@ -44,12 +45,18 @@ public class JSONLib {
 			JsonObject jo = jv.getAsObject();
 			JsonValue value = jo.get("@value");
 			JsonValue type = jo.get("@type");
+		//
 			LiteralLabel ll = LiteralLabelFactory.create(value.getAsString().value(), "", new BaseDatatype(type.getAsString().value()));
 			Node n = NodeFactory.createLiteral(ll);
-			System.err.println( ">> created literal node " + n );
 			return Value.wrap(n);
 		}
-		throw new RuntimeException("Error handling to be done here.");
+		if (jv.isArray()) {
+			JsonArray ja = jv.getAsArray();
+			List<Value> values = new ArrayList<Value>(ja.size());
+			for (JsonValue element: ja) values.add(getAsValue(element));
+			return Value.wrap(values);
+		}
+		throw new RuntimeException("Error handling to be done here: " + jv);
 	}
 
 	public static List<JsonValue> getFieldAsArray(Problems p, JsonObject r, String key) {

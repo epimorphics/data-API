@@ -39,7 +39,8 @@ public class DataQueryParser {
 							Value v = JSONLib.getAsValue(rob.get(op));
 							if (isRelationalOp(op)) {
 								filters.add( new Filter(sn, new Range(op, BunchLib.list(v)) ) );
-								
+							} else if (op.equals("oneof")) {
+								filters.add( new Filter(sn, new Range(op, (List<Value>) v.wrapped)));
 							} else {
 								p.add("unknown operator '" + op + "' in data query.");
 							}

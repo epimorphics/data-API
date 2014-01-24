@@ -101,5 +101,22 @@ public class TestParseDataQuery {
 		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
 		assertEquals(expected, q.filters());
 	}
+	
+	@Test public void testSingleOneof() {
+		Shortname sn = new Shortname(pm, "pre:local");
+		String incoming = "{'pre:local': {'oneof': [17, 99]}}";
+		JsonObject jo = JSON.parse(incoming);		
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, pm, jo);
+//
+		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
+		assertTrue(q.slice().isAll());
+		assertNull(q.lang());
+		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
+//
+		Range range = new Range("oneof", BunchLib.list(Value.wrap(new BigDecimal(17)), Value.wrap(new BigDecimal(99))));
+		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
+		assertEquals(expected, q.filters());
+	}
 
 }

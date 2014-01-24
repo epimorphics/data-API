@@ -103,6 +103,23 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)}"
 			, sq 
 			);
+	}
+	
+	@Test public void testSingleOneofFilter() {	
+		Problems p = new Problems();
+		Shortname sn = new Shortname( pm, "pre:X" );
+		Filter f = new Filter(sn, new Range("oneof", BunchLib.list(Value.wrap(17), Value.wrap(99))));
+		List<Filter> filters = BunchLib.list(f);
+		DataQuery q = new DataQuery(filters);
+	//
+		Aspects a = new Aspects().include(X);
+	//
+		String sq = q.toSparql(p, a, pm);
+		assertNoProblems(p);		
+		assertSameSparql
+			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17 || ?pre_X = 99)}"
+			, sq 
+			);
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
