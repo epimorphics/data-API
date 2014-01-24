@@ -52,7 +52,7 @@ public class DataQuery {
 	
 	public String toSparql(Problems p, Aspects a, PrefixMapping pm) {
 		try { return toSparqlString(p, a, pm); }
-		catch (Exception e) { return null; }
+		catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
 	}
 
 	private String toSparqlString(Problems p, Aspects a, PrefixMapping pm) {
@@ -87,8 +87,8 @@ public class DataQuery {
 			if (x.getIsOptional()) sb.append( " }" );
 		//
 			Filter f = sf.get(fVar);
-			String op = opForFilter(f);
-			if (f != null) {
+			if (f != null) {			
+				String op = opForFilter(f);
 				String value = f.range.operands.get(0).asSparqlTerm();
 				sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");
 			}

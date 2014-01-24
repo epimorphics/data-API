@@ -25,7 +25,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-// Apply DRY to the tests.
+// TODO Apply DRY to the tests.
 public class TestTranslateDataQuery {
 	
 	static final Aspect X = new TestAspects.MockAspect("eh:/mock-aspect/X");
@@ -36,10 +36,6 @@ public class TestTranslateDataQuery {
 	PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
 	
 	@Test public void testUnfilteredSingleAspect() {
-		
-		System.err.println( ">> FIX ME" );
-		if (true) return;
-		
 		Problems p = new Problems();
 		List<Filter> filters = BunchLib.list();
 		DataQuery q = new DataQuery(filters);
@@ -109,10 +105,7 @@ public class TestTranslateDataQuery {
 			);
 	}		
 	
-	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {
-		System.err.println( ">> FIX ME" );
-		if (true) return;
-		
+	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
 		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
@@ -127,9 +120,6 @@ public class TestTranslateDataQuery {
 	}		
 	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
-		System.err.println( ">> FIX ME" );
-		if (true) return;
-		
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
 		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
@@ -161,7 +151,7 @@ public class TestTranslateDataQuery {
 	}
 	
 	private void assertNoProblems(Problems p) {
-		if (p.size() > 0) fail("translation failed: " + p);
+		if (p.size() > 0) fail("translation failed: " + p.getProblemStrings());
 	}
 
 	private void assertSameSparql(String expected, String toTest) {
