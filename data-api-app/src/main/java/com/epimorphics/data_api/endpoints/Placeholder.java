@@ -67,7 +67,6 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		public void setName(String name) {
 			this.name = name;
 		}
-		
 	}
 	
 	@GET @Path("dataset/{name}/submit") @Produces("text/html") public Response submit

@@ -20,6 +20,8 @@ import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
+// this should be data-driven, ie, a bunch of plugins that respond to
+// operator names.
 public class DataQueryParser {
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList("eq ne le lt ge gt".split(" ")));

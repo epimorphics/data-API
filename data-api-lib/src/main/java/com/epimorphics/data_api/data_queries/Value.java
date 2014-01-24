@@ -46,7 +46,8 @@ public class Value {
 		Object w = wrapped;
 		System.err.println( ">> TODO: asSparqlTerm needs proper definition." );
 		System.err.println( ">> w = (" + w + "), " + w.getClass().getSimpleName() );
-		if (w instanceof String) return "'" + w + "'";
+		if (w instanceof String) 
+			return "'" + w + "'";
 		if (w instanceof Node_Literal) {
 			Node_Literal nl = (Node_Literal) w;
 			String type = nl.getLiteralDatatypeURI();
