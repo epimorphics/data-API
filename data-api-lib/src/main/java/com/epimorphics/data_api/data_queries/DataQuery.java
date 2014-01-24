@@ -59,6 +59,13 @@ public class DataQuery {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> prefixes = pm.getNsPrefixMap();
 	//
+		boolean needsSKOS = false;
+		for (Filter f: filters) {
+			if (f.range.op.equals("below")) needsSKOS = true;
+		}
+		if (needsSKOS) 
+			prefixes.put("skos", "http://www.w3.org/2004/02/skos/core");
+	//
 		for (String key: prefixes.keySet()) 
 			sb.append( "PREFIX " )
 			.append( key ).append(": " )
@@ -88,6 +95,7 @@ public class DataQuery {
 		//
 			Filter f = sf.get(fVar);
 			if (f != null) {		
+				String value = f.range.operands.get(0).asSparqlTerm();
 				String rangeOp = f.getRangeOp();	
 				if (rangeOp.equals("oneof")) {
 					String orOp = "";
@@ -98,10 +106,11 @@ public class DataQuery {
 						orOp = " || ";
 					}
 					sb.append(")");
+				} else if (rangeOp.equals("below")) {
+					sb.append(". ").append(fVar).append(" ").append("skos:broader").append(" ").append(value);
 				} else {
-				String op = opForFilter(f);
-				String value = f.range.operands.get(0).asSparqlTerm();
-				sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");
+					String op = opForFilter(f);
+					sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");
 				}
 			}
 			dot = ". ";

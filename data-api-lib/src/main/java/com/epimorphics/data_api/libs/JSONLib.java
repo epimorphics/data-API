@@ -20,6 +20,8 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 // Error handling not written yet.
 public class JSONLib {
@@ -43,6 +45,18 @@ public class JSONLib {
 		if (jv.isNumber()) return Value.wrap(jv.getAsNumber().value());
 		if (jv.isObject()) {			
 			JsonObject jo = jv.getAsObject();
+			
+			JsonValue id = jo.get("@id");
+			
+			if (id != null) {
+				if (id.isString()) {
+					Node r = NodeFactory.createURI(id.getAsString().value()); 
+					return Value.wrap(r);
+				} else {
+					throw new RuntimeException("Error handling to be done here: " + jv);
+				}
+			}
+			
 			JsonValue value = jo.get("@value");
 			JsonValue type = jo.get("@type");
 		//

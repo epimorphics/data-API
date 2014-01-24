@@ -41,6 +41,8 @@ public class DataQueryParser {
 								filters.add( new Filter(sn, new Range(op, BunchLib.list(v)) ) );
 							} else if (op.equals("oneof")) {
 								filters.add( new Filter(sn, new Range(op, (List<Value>) v.wrapped)));
+							} else if (op.equals("below")) {
+								filters.add( new Filter(sn, new Range(op, BunchLib.list(v))));
 							} else {
 								p.add("unknown operator '" + op + "' in data query.");
 							}

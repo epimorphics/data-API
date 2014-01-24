@@ -7,6 +7,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.hp.hpl.jena.graph.Node_Literal;
+import com.hp.hpl.jena.graph.Node_URI;
 
 /**
     A Value wraps an Object. Only a limited set of classes of object
@@ -50,6 +51,9 @@ public class Value {
 			Node_Literal nl = (Node_Literal) w;
 			String type = nl.getLiteralDatatypeURI();
 			return "'" + nl.getLiteralLexicalForm() + "'^^<" + type + ">";
+		}
+		if (w instanceof Node_URI) {
+			return "<" + ((Node_URI) w).getURI() + ">";
 		}
 		return w.toString();
 	}

@@ -23,6 +23,10 @@ import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestParseDataQuery {
@@ -115,6 +119,24 @@ public class TestParseDataQuery {
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 //
 		Range range = new Range("oneof", BunchLib.list(Value.wrap(new BigDecimal(17)), Value.wrap(new BigDecimal(99))));
+		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
+		assertEquals(expected, q.filters());
+	}
+	
+	@Test public void testSingleBelow() {
+		Shortname sn = new Shortname(pm, "pre:local");
+		Node stairs = NodeFactory.createURI("pre:stairs");
+		String incoming = "{'pre:local': {'below': {'@id': 'pre:stairs'}}}";
+		JsonObject jo = JSON.parse(incoming);		
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, pm, jo);
+//
+		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
+		assertTrue(q.slice().isAll());
+		assertNull(q.lang());
+		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
+//
+		Range range = new Range("below", BunchLib.list(Value.wrap(stairs)));
 		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
 		assertEquals(expected, q.filters());
 	}
