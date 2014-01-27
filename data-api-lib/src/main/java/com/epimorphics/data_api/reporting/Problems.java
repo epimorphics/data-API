@@ -19,6 +19,10 @@ public class Problems {
 	public int size() {
 		return problems.size();
 	}
+	
+	public boolean isOK() {
+		return problems.isEmpty();
+	}
 
 	public Problems add(String message) {
 		problems.add(new Problem(message));

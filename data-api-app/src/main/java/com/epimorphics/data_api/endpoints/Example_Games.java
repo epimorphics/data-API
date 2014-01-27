@@ -61,5 +61,4 @@ public class Example_Games {
 	
 		return new Example( pm, aspects, m );
 	}
-
 }

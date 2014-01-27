@@ -13,6 +13,7 @@ import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
+import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.Value;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
@@ -20,8 +21,6 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 // Error handling not written yet.
 public class JSONLib {
@@ -94,6 +93,12 @@ public class JSONLib {
 		JsonArray result = new JsonArray();
 		for (JsonValue v: elements) result.add(v);
 		return result;
+	}
+
+	public static JSONConsumer consumeToArray(final JsonArray ja) {
+		return new JSONConsumer() {
+			@Override public void consume(JsonValue jo) { ja.add(jo); }
+		};
 	}
 
 }
