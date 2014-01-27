@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.endpoints;
 
+import java.util.Set;
+
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.data.impl.BaseSparqlSource;
 import com.epimorphics.data_api.aspects.Aspects;
@@ -13,7 +15,12 @@ import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.util.iterator.Map1;
 
 public class Example {
 	
@@ -49,5 +56,24 @@ public class Example {
 	        model.getLock().leaveCriticalSection();
 	    }
 		
+	}
+	
+	static final Map1<RDFNode, String> getType = new Map1<RDFNode, String>() {
+	
+		@Override public String map1(RDFNode o) {
+			if (o.isLiteral()) return o.asNode().getLiteralDatatypeURI();
+			return null;
+		}
+	
+	};
+	
+
+	static Resource findRangeType(Model m, Property p) {
+		Set<String> types = m
+			.listStatements(null, p, (RDFNode) null)
+			.mapWith(Statement.Util.getObject)
+			.mapWith(Example.getType).toSet()
+			;
+		return types.size() == 1 ? m.createResource(types.iterator().next()) : null;
 	}
 }

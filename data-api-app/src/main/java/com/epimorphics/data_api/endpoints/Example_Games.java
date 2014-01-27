@@ -47,7 +47,7 @@ public class Example_Games {
 		Aspects aspects = new Aspects();
 		
 		for (Property p: predicates) {
-			Resource rangeType = Placeholder.findRangeType(m, p);
+			Resource rangeType = Example.findRangeType(m, p);
 			String ID = p.getURI();
 			String sn = pm.shortForm(ID);
 			if (allowed.contains(sn)) {

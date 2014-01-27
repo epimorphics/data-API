@@ -21,19 +21,19 @@ public class Example_Legacy {
 	public static Example configureLegacy(Model m) {
 		
 		PrefixMapping pm = PrefixMapping.Factory
-				.create()
-				.setNsPrefixes(PrefixMapping.Extended)
-				.setNsPrefixes(m)
-				.setNsPrefix( "wbc", "http://environment.data.gov.uk/def/waterbody-classification/" )
-				.setNsPrefix( "qb", "http://purl.org/linked-data/cube#" )
-				.lock();
+			.create()
+			.setNsPrefixes(PrefixMapping.Extended)
+			.setNsPrefixes(m)
+			.setNsPrefix( "wbc", "http://environment.data.gov.uk/def/waterbody-classification/" )
+			.setNsPrefix( "qb", "http://purl.org/linked-data/cube#" )
+			.lock();
 		
 		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
 		
 		Aspects aspects = new Aspects();
 		
 		for (Property p: predicates) {
-			Resource rangeType = Placeholder.findRangeType(m, p);
+			Resource rangeType = Example.findRangeType(m, p);
 			String ID = p.getURI();
 			String sn = pm.shortForm(ID);
 			Aspect a = new Aspect(ID, new Shortname(pm, sn));

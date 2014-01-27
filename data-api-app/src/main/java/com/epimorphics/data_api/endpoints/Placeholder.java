@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -38,34 +37,12 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.util.iterator.Map1;
 
 // placeholder endpoint, has a fake setup rather than a proper
 // configuration.
 @Path("placeholder") public class Placeholder {
-
-	static final Map1<RDFNode, String> getType = new Map1<RDFNode, String>() {
-
-		@Override
-		public String map1(RDFNode o) {
-			if (o.isLiteral())
-				return o.asNode().getLiteralDatatypeURI();
-			return null;
-		}
-
-	};
-
-	static Resource findRangeType(Model m, Property p) {
-		Set<String> types = m.listStatements(null, p, (RDFNode) null)
-				.mapWith(Statement.Util.getObject).mapWith(getType).toSet();
-		return types.size() == 1 ? m.createResource(types.iterator().next())
-				: null;
-	}
 
 	static Map<String, Example> examples = new HashMap<String, Example>();
 
@@ -83,13 +60,10 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		}
 		//
 		examples.put("games", Example_Games.configureGames(models.get("games")));
-		examples.put("sprint2",
-				Example_Legacy.configureLegacy(models.get("sprint2")));
+		examples.put("sprint2",	Example_Legacy.configureLegacy(models.get("sprint2")));
 	}
 
-	static {
-		loadConfigs();
-	}
+	static { loadConfigs(); }
 
 	@GET @Path("dataset") @Produces("application/json")	public Response deliverDatasetNamesAsJSON() {
 		JsonArray ja = new JsonArray();
