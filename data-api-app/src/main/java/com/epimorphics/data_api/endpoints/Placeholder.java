@@ -69,26 +69,6 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		}
 	}
 	
-	@GET @Path("dataset/{name}/submit") @Produces("text/html") public Response submit
-		(@PathParam("name") String name) {
-		String entity = BunchLib.join(
-			"<html>"
-			, "<head>"
-			, "<title>data API placeholder query submitter</title>"
-			, "</head>"
-			, "<body>"
-			, "<h1>submit JSON query on " + name + " </h1>"
-			, "<form method='POST' action='/data-api/placeholder/dataset/" + name + "/explain-query'>"
-			, "<textarea cols='80' rows='20' name='json'>"
-			, "</textarea>"
-			, "<div><input type='submit' name='button' value='SUBMIT' /></div>"
-			, "</form>"
-			, "</body>"
-			, "</html>"
-			);
-		return Response.ok(entity).build();
-	}
-	
 	static class Example {
 		
 		final PrefixMapping pm;
@@ -217,7 +197,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		for (String name: examples.keySet()) 
 			links
 				.append("<div>")
-				.append( "<a href='dataset/" + name + "/submit" + "'>")
+				.append( "<a href='/data-api/offer-query-submission?name=" + name + "'>")
 				.append(name)
 				.append("</a>")
 				.append("</div>")
