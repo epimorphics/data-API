@@ -8,7 +8,6 @@ package com.epimorphics.data_api.endpoints;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,12 +29,10 @@ import org.apache.jena.atlas.json.JsonValue;
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.conversions.ResultsToJson;
 import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.query.Query;
@@ -48,109 +45,12 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.util.iterator.Map1;
 
 // placeholder endpoint, has a fake setup rather than a proper
 // configuration.
 @Path( "placeholder") public class Placeholder {
-	
-	public static class Config {
-		String filePath;
-		String name;
-		
-		public void setFilePath(String filePath) {
-			this.filePath = filePath;
-		}
-		
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
-	
-	static class Example {
-		
-		final PrefixMapping pm;
-		final Aspects aspects;
-		final Model model;
-		
-		Example(PrefixMapping pm, Aspects aspects, Model model) {
-			this.pm = pm;
-			this.aspects = aspects;
-			this.model = model;
-		}
-		
-	}
-	
-	static Example configureGames(Model m) {
-		PrefixMapping pm = PrefixMapping.Factory
-				.create()
-				.setNsPrefixes(PrefixMapping.Extended)
-				.setNsPrefixes(m)
-				.lock();
-
-		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
-
-		Set<String> optional = new HashSet<String>();
-		Set<String> multiple = new HashSet<String>();
-		
-		optional.add("egc:playTimeMinutes");
-		
-		multiple.add("egc:players");
-		multiple.add("rdfs:label");
-		
-		Set<String> allowed = new HashSet<String>();
-		
-		allowed.add("rdfs:label");
-		allowed.add("rdf:type");
-		allowed.add("egc:players");
-		allowed.add("egc:pubYear");
-		allowed.add("egc:playTimeMinutes");
-		
-		Aspects aspects = new Aspects();
-		
-		for (Property p: predicates) {
-			Resource rangeType = findRangeType(m, p);
-			String ID = p.getURI();
-			String sn = pm.shortForm(ID);
-			if (allowed.contains(sn)) {
-				Aspect a = new Aspect(ID, new Shortname(pm, sn));
-				if (optional.contains(sn)) a.setIsOptional(true);
-				if (multiple.contains(sn)) a.setIsMultiValued(true);
-				if (rangeType != null) a.setRangeType(rangeType);
-				aspects.include(a);
-			}
-		}
-
-		return new Example( pm, aspects, m );
-	}
-	
-	static Example configureICM(Model m) {
-		
-		PrefixMapping pm = PrefixMapping.Factory
-				.create()
-				.setNsPrefixes(PrefixMapping.Extended)
-				.setNsPrefixes(m)
-				.setNsPrefix( "wbc", "http://environment.data.gov.uk/def/waterbody-classification/" )
-				.setNsPrefix( "qb", "http://purl.org/linked-data/cube#" )
-				.lock();
-		
-		Set<Property> predicates = m.listStatements().mapWith(Statement.Util.getPredicate).toSet();
-		
-		Aspects aspects = new Aspects();
-		
-		for (Property p: predicates) {
-			Resource rangeType = findRangeType(m, p);
-			String ID = p.getURI();
-			String sn = pm.shortForm(ID);
-			Aspect a = new Aspect(ID, new Shortname(pm, sn));
-			if (rangeType != null) a.setRangeType(rangeType);
-			aspects.include(a);
-		}
-		
-		return new Example(pm, aspects, m);
-	}
 	
 	static final Map1<RDFNode, String> getType = new Map1<RDFNode, String>() {
 
@@ -161,7 +61,7 @@ import com.hp.hpl.jena.util.iterator.Map1;
 		
 	};
 	
-	private static Resource findRangeType(Model m, Property p) {
+	static Resource findRangeType(Model m, Property p) {
 		Set<String> types = m.listStatements( null, p, (RDFNode) null ).mapWith(Statement.Util.getObject).mapWith(getType).toSet();
 		return types.size() == 1 ? m.createResource( types.iterator().next() ) : null;
 	}
@@ -180,8 +80,8 @@ import com.hp.hpl.jena.util.iterator.Map1;
 			}
 		}
 	//
-		examples.put("games", configureGames( models.get("games") ));
-		examples.put("sprint2", configureICM( models.get("sprint2") ));
+		examples.put("games", Example_Games.configureGames( models.get("games") ));
+		examples.put("sprint2", Example_Legacy.configureLegacy( models.get("sprint2") ));
 	}
 	
 	static { loadConfigs(); }

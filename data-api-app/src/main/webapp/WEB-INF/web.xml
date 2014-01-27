@@ -37,6 +37,10 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <filter-name>Jersey Web Application</filter-name>
     <url-pattern>/placeholder/*</url-pattern>
   </filter-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
   
   <context-param>
     <param-name>AppConfig.app</param-name>
