@@ -111,7 +111,7 @@ public class DataQuery {
 				} else if (rangeOp.equals("contains")) {
 					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
 				} else if (rangeOp.equals("matches")) {
-					// XXX
+					sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
 				} else if (rangeOp.equals("search")) {
 					// XXX
 				} else {
