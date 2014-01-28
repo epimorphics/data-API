@@ -176,8 +176,8 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleSearchFilter() {
 		testSingleSimpleFilter
 			("search"
-			, Term.URI("look for me")
-			, "?pre_X text:query 'look for me'"
+			, Term.string("look for me")
+			, "?pre_X <http://jena.apache.org/text#query> 'look for me'"
 			);
 	}
 	
@@ -253,6 +253,7 @@ public class TestTranslateDataQuery {
 	}
 
 	private void assertSameSelect(String expected, String toTest) {
+		System.err.println( ">> " + expected );
 		Query t = QueryFactory.create(toTest);
 		Query e = QueryFactory.create(expected);
 		assertEquals(e, t);
