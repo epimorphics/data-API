@@ -22,7 +22,7 @@ public class TestValue {
 		assertEquals(new Integer(17).hashCode(), Term.number(17).hashCode() );
 		assertEquals("hedgehog".hashCode(), Term.string("hedgehog").hashCode() );
 	//
-		assertEquals("answer", Term.string("answer").unwrap());
-		assertEquals(66, Term.number(66).unwrap());
+		assertEquals("'answer'", Term.string("answer").asSparqlTerm());
+		assertEquals("66", Term.number(66).asSparqlTerm());
 	}
 }

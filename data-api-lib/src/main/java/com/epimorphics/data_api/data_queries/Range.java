@@ -36,11 +36,11 @@ public class Range {
 		return op.equals(other.op) && operands.equals(other.operands); 
 	}
 
-	String joinStrings(List<Term> operands) {
+	private String joinStrings(List<Term> operands) {
 		StringBuilder sb = new StringBuilder();
 		String comma = "";
-		for (Term v: operands) {
-			sb.append(comma).append(v.unwrap());
+		for (Term t: operands) {
+			sb.append(comma).append(t.toString());
 			comma = ", ";
 		}
 		return sb.toString();
