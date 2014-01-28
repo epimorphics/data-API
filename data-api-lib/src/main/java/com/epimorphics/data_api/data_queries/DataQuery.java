@@ -108,6 +108,12 @@ public class DataQuery {
 					sb.append(")");
 				} else if (rangeOp.equals("below")) {
 					sb.append(". ").append(fVar).append(" ").append("skos:broader").append(" ").append(value);
+				} else if (rangeOp.equals("contains")) {
+					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+				} else if (rangeOp.equals("matches")) {
+					// XXX
+				} else if (rangeOp.equals("search")) {
+					// XXX
 				} else {
 					String op = opForFilter(f);
 					sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");

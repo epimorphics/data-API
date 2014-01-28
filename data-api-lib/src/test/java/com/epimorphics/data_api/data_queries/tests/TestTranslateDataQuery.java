@@ -130,7 +130,8 @@ public class TestTranslateDataQuery {
 			);
 	}	
 	
-	@Test public void testSingleBelowFilter() {	
+	//---------------------------------------
+	@Test public void testSingleBeloxwFilter() {	
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
 		Node r = NodeFactory.createURI("eh:/prefixPart/stairs");
@@ -146,6 +147,60 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/mock-aspect/> PREFIX skos: <" + SKOS + "> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X . ?pre_X skos:broader <eh:/prefixPart/stairs> }"
 			, sq 
 			);
+	}
+	
+	@Test public void testSingleBelowFilter() {
+		testSingleSimpleFilter
+			("below"
+			, Term.URI("eh:/prefixPart/stairs")
+			, "?pre_X skos:broader <eh:/prefixPart/stairs>"
+			);
+	}
+	
+	@Test public void testSingleContainsFilter() {
+		testSingleSimpleFilter
+			("contains"
+			, Term.string("substring")
+			, "FILTER(CONTAINS(?pre_X, 'substring'))"
+			);
+	}
+	
+	@Test public void testSingleMatchesFilter() {
+		testSingleSimpleFilter
+			("matches"
+			, Term.string("alpha.*beta")
+			, "FILTER(REGEX(?pre_X, 'alpha.*beta'))"
+			);
+	}
+	
+	@Test public void testSingleSearchFilter() {
+		testSingleSimpleFilter
+			("search"
+			, Term.URI("look for me")
+			, "?pre_X text:query 'look for me'"
+			);
+	}
+	
+	private void testSingleSimpleFilter(String op, Term term, String filter) {
+		Problems p = new Problems();
+		Shortname sn = new Shortname( pm, "pre:X" );
+		
+		Filter f = new Filter(sn, new Range(op, BunchLib.list(term)));
+		List<Filter> filters = BunchLib.list(f);
+		DataQuery q = new DataQuery(filters);
+	//
+		Aspects a = new Aspects().include(X);
+	//
+		String sq = q.toSparql(p, a, pm);
+		assertNoProblems(p);
+		
+		String prefix_p = "PREFIX pre: <eh:/mock-aspect/>\n";
+		String prefix_skos = (op.equals("below") ? "PREFIX skos: <" + SKOS + "> " : "");
+		String select = "SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X . " + filter + " }";
+		
+		String expected = prefix_p + prefix_skos + select;
+		
+		assertSameSelect( expected, sq	);
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
@@ -198,8 +253,8 @@ public class TestTranslateDataQuery {
 	}
 
 	private void assertSameSelect(String expected, String toTest) {
-		Query e = QueryFactory.create(expected);
 		Query t = QueryFactory.create(toTest);
+		Query e = QueryFactory.create(expected);
 		assertEquals(e, t);
 	}
 }

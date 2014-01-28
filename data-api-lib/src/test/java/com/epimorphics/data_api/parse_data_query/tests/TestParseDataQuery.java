@@ -9,6 +9,7 @@ package com.epimorphics.data_api.parse_data_query.tests;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.jena.atlas.json.JSON;
@@ -105,26 +106,31 @@ public class TestParseDataQuery {
 	}
 	
 	@Test public void testSingleOneof() {
-		Shortname sn = new Shortname(pm, "pre:local");
-		String incoming = "{'pre:local': {'oneof': [17, 99]}}";
-		JsonObject jo = JSON.parse(incoming);		
-		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
-//
-		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
-		assertTrue(q.slice().isAll());
-		assertNull(q.lang());
-		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
-//
-		Range range = new Range("oneof", BunchLib.list(Term.number(new BigDecimal(17)), Term.number(new BigDecimal(99))));
-		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
-		assertEquals(expected, q.filters());
+		testSingleOperator("oneof", "[17, 99]", Term.number(new BigDecimal(17)), Term.number(new BigDecimal(99)) );
+	}
+	
+	@Test public void testSingleMatches() {
+		testSingleOperator("matches", "'reg.*exp'", Term.string("reg.*exp"));
+	}
+	
+	@Test public void testSingleContains() {
+		testSingleOperator("contains", "'substring'", Term.string("substring") );
+	}
+	
+	@Test public void testSingleSearch() {
+		testSingleOperator("search", "'texty bits'", Term.string("texty bits") );
 	}
 	
 	@Test public void testSingleBelow() {
+		testSingleOperator("below", "{'@id': 'eh:/resource'}", Term.URI("eh:/resource") );
+	}
+		
+	public void testSingleOperator(String op, String operand, Term...values) {
 		Shortname sn = new Shortname(pm, "pre:local");
-		Node stairs = NodeFactory.createURI("pre:stairs");
-		String incoming = "{'pre:local': {'below': {'@id': 'pre:stairs'}}}";
+		String incoming = "{'pre:local': {'_OP': _ARGS}}"
+			.replaceAll("_OP", op)
+			.replaceAll("_ARGS", operand)
+			;
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -134,7 +140,7 @@ public class TestParseDataQuery {
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 //
-		Range range = new Range("below", BunchLib.list(Term.URI(stairs.getURI())));
+		Range range = new Range(op, Arrays.asList(values));
 		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
 		assertEquals(expected, q.filters());
 	}

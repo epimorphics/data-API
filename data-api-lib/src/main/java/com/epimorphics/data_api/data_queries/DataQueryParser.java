@@ -23,7 +23,9 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 // operator names.
 public class DataQueryParser {
 	
-	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList("eq ne le lt ge gt".split(" ")));
+	static final String opNames = "eq ne le lt ge gt contains matches search below oneof";
+	
+	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
 	
 	public static DataQuery Do(Problems p, PrefixMapping pm, JsonObject jo) {
 		if (jo.isObject()) {
@@ -38,11 +40,7 @@ public class DataQueryParser {
 						JsonObject rob = range.getAsObject();
 						for (String op: rob.keys()) {
 							List<Term> v = DataQueryParser.jsonToTerms(p, rob.get(op));
-							if (isRelationalOp(op)) {
-								filters.add( new Filter(sn, new Range(op, v) ) );
-							} else if (op.equals("oneof")) {
-								filters.add( new Filter(sn, new Range(op, v) ) );
-							} else if (op.equals("below")) {
+							if (isKnownOp(op)) {
 								filters.add( new Filter(sn, new Range(op, v) ) );
 							} else {
 								p.add("unknown operator '" + op + "' in data query.");
@@ -60,10 +58,11 @@ public class DataQueryParser {
 		}
 	}
 
-	private static boolean isRelationalOp(String op) {
+	private static boolean isKnownOp(String op) {
 		return allowedOps.contains(op);
 	}
 
+	// TODO literals with a language
 	public static Term jsonToTerm(Problems p, JsonValue jv) {
 		if (jv.isBoolean()) return Term.bool(jv.getAsBoolean().value());
 		if (jv.isString()) return Term.string(jv.getAsString().value());
