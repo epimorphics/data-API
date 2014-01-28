@@ -157,7 +157,7 @@ public abstract class Term {
 		}
 
 		@Override public String toString() {
-			return value.toString() + "::" + type.toString();
+			return value.toString() + "^^" + type.toString();
 		}
 		
 		@Override public int hashCode() {
@@ -175,6 +175,39 @@ public abstract class Term {
 		@Override public String asSparqlTerm() {
 			// TODO handle prefixing
 			return "'" + value + "'^^" + "<" + type + ">";
+		}
+	}
+
+	
+	public static class TermLanguaged extends Term {
+
+		final String value;
+		final String lang;
+		
+		public TermLanguaged(String value, String type) {
+			this.value = value;
+			this.lang = type;
+		}
+
+		@Override public String toString() {
+			return value.toString() + "@" + lang.toString();
+		}
+		
+		@Override public int hashCode() {
+			return value.hashCode() ^ lang.hashCode();
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof TermLanguaged && same((TermLanguaged) other);
+		}
+		
+		private boolean same(TermLanguaged other) {
+			return value.equals(other.value) && lang.equals(other.lang);
+		}
+
+		@Override public String asSparqlTerm() {
+			// TODO handle prefixing
+			return "'" + value + "'@" + lang;
 		}
 	}
 
@@ -196,6 +229,12 @@ public abstract class Term {
 	
 	public static Term URI(String spelling) {
 		return new TermResource(spelling);
+	}
+	
+	public static Term languaged(String spelling, String lang) {
+//		LiteralLabel ll = LiteralLabelFactory.create(spelling, "", new BaseDatatype(type));
+//		Node n = NodeFactory.createLiteral(ll);
+		return new TermLanguaged(spelling, lang);
 	}
 	
 	public static Term typed(String spelling, String type) {
