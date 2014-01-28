@@ -1,0 +1,120 @@
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix qb:    <http://purl.org/linked-data/cube#> .
+
+@prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix :    <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+
+# Simple vocabulary to enable datasets and dsds to be annotated for improved API access
+
+dsapi: a owl:Ontology;
+    rdfs:label "DS API"@en;
+    rdfs:comment "Vocabulary for configuring Data Services API"@en;
+    dct:contributor "Dave Reynolds";
+    .
+    
+# Base level properties for configuring a dataset
+
+:Dataset a owl:Class;
+    rdfs:label "Dataset";
+    rdfs:comment """Specification for a data set to accessed through the data services API. 
+Needs either a qb_dataset or a baseQuery to define the contents of the dataset.
+The structure is taken from either the :aspect definitions given here, from directly reference
+DSD or implicitly from the DSD associated with the QB dataset.  """@en;
+    rdfs:subClassOf [owl:onProperty skos:notation    ; owl:cardinality 1];
+    rdfs:subClassOf [owl:onProperty rdfs:label       ; owl:minCardinality 1];
+    rdfs:subClassOf [owl:onProperty dct:description  ; owl:minCardinality 0];
+    .
+    
+:qb_dataset a owl:ObjectProperty;
+    rdfs:label "qb dataset"@en;
+    rdfs:comment "Indicates a Data Cube dataset whose observations are the contents of this dsapi data set"@en;
+    rdfs:domain :Dataset;
+    rdfs:range  qb:DataSet;
+    .
+    
+:qb_dsd a owl:ObjectProperty;
+    rdfs:label "qb dsd"@en;
+    rdfs:comment "Indicates a Data Cube DataStructureDefinition defining the aspect structure of the data set."@en;
+    rdfs:domain :Dataset;
+    rdfs:range  qb:DataStructureDefinition;
+    .
+    
+:baseQuery  a owl:DatatypeProperty;
+    rdfs:label "base query"@en;
+    rdfs:comment """Gives the textual source of a SPARQL BGP which will bind any member
+of the dataset to the ?item variable."""@en;
+    rdfs:domain :Dataset;
+    rdfs:range  xsd:string
+    .    
+:aspect a owl:ObjectProperty;
+    rdfs:label "aspect"@en;
+    rdfs:comment "Indicates a locally-configured 'aspect' of the data set."@en;
+    rdfs:domain :Dataset;
+    rdfs:range  :Aspect;
+    .
+    
+# Configuration an aspect definition
+
+:Aspect a owl:Class;
+    rdfs:label "Aspect";
+    rdfs:comment "Specification of a single aspect of the data set"@en;
+    rdfs:subClassOf [owl:onProperty skos:notation    ; owl:cardinality 1];
+    rdfs:subClassOf [owl:onProperty rdfs:label       ; owl:minCardinality 1];
+    rdfs:subClassOf [owl:onProperty dct:description  ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty rdfs:range       ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty :optional        ; owl:minCardinality 0; owl:maxCardinality 1];
+    rdfs:subClassOf [owl:onProperty :multivalued     ; owl:minCardinality 0; owl:maxCardinality 1];
+    rdfs:subClassOf [owl:onProperty :propertyPath    ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty :rangeConstraint ; owl:minCardinality 0];
+    .
+    
+:optional a owl:DatatypeProperty;
+    rdfs:label "optional"@en;
+    rdfs:comment "Set to true if the aspect is optional, default is false"@en;
+    rdfs:domain :Aspect;
+    rdfs:range  xsd:boolean;
+    .    
+    
+:multivalued a owl:DatatypeProperty;
+    rdfs:label "multi-valued"@en;
+    rdfs:comment "Set to true if the aspect can have multiple values, default is false"@en;
+    rdfs:domain :Aspect;
+    rdfs:range  xsd:boolean;
+    .    
+    
+:propertyPath a owl:DatatypeProperty;
+    rdfs:label "property path"@en;
+    rdfs:comment "Source text of a SPARQL property path expression that links a element of the data set to the aspect value."@en;
+    rdfs:domain :Aspect;
+    rdfs:range  xsd:string;
+    .    
+    
+:rangeConstraint a owl:ObjectProperty;
+    rdfs:label "range constraint"@en;
+    rdfs:comment "Indicates limits to the range of values which will be present for this aspect."@en;
+    rdfs:domain :Aspect;
+    rdfs:range  :RangeConstraint;
+    .
+    
+:RangeConstraint  a owl:Class;
+    rdfs:label "Range constraint";
+    rdfs:comment "Constraint on the range of values which will be present for the corresponding aspect."@en;
+    .
+ 
+:lowerBound a owl:DatatypeProperty;
+    rdfs:label "lower bound"@en;
+    rdfs:comment "Lowest value expected for a measure or other cube component"@en;
+    rdfs:domain :RangeConstraint;
+    .
+    
+:upperBound a owl:DatatypeProperty;
+    rdfs:label "upper bound"@en;
+    rdfs:comment "Highest value expected for a measure or other cube component"@en;
+    rdfs:domain :RangeConstraint;
+    .
+    
