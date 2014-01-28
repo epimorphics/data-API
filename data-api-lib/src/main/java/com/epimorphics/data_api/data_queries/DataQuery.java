@@ -99,9 +99,9 @@ public class DataQuery {
 				String rangeOp = f.getRangeOp();	
 				if (rangeOp.equals("oneof")) {
 					String orOp = "";
-					List<Value> operands = f.range.operands;
+					List<Term> operands = f.range.operands;
 					sb.append(" FILTER(" );
-					for (Value v: operands) {
+					for (Term v: operands) {
 						sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm());
 						orOp = " || ";
 					}

@@ -16,7 +16,6 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.data_api.libs.BunchLib;
-import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
@@ -38,13 +37,13 @@ public class DataQueryParser {
 					if (range.isObject()) {
 						JsonObject rob = range.getAsObject();
 						for (String op: rob.keys()) {
-							Value v = JSONLib.getAsValue(rob.get(op));
+							List<Term> v = DataQueryParser.jsonToTerms(p, rob.get(op));
 							if (isRelationalOp(op)) {
-								filters.add( new Filter(sn, new Range(op, BunchLib.list(v)) ) );
+								filters.add( new Filter(sn, new Range(op, v) ) );
 							} else if (op.equals("oneof")) {
-								filters.add( new Filter(sn, new Range(op, (List<Value>) v.wrapped)));
+								filters.add( new Filter(sn, new Range(op, v) ) );
 							} else if (op.equals("below")) {
-								filters.add( new Filter(sn, new Range(op, BunchLib.list(v))));
+								filters.add( new Filter(sn, new Range(op, v) ) );
 							} else {
 								p.add("unknown operator '" + op + "' in data query.");
 							}
@@ -63,5 +62,45 @@ public class DataQueryParser {
 
 	private static boolean isRelationalOp(String op) {
 		return allowedOps.contains(op);
+	}
+
+	public static Term jsonToTerm(Problems p, JsonValue jv) {
+		if (jv.isBoolean()) return Term.bool(jv.getAsBoolean().value());
+		if (jv.isString()) return Term.string(jv.getAsString().value());
+		if (jv.isNumber()) return Term.number(jv.getAsNumber().value());
+		if (jv.isObject()) {			
+			JsonObject jo = jv.getAsObject();
+			
+			JsonValue id = jo.get("@id");
+			
+			if (id != null) {
+				if (id.isString()) {
+					return Term.URI(id.getAsString().value());
+				} else {
+					p.add("Cannot convert JSON value '" + jv + "' to Term: @id has a non-string value.");
+					return Term.bad(jv);
+				}
+			}
+			
+			JsonValue value = jo.get("@value");
+			JsonValue type = jo.get("@type");
+			
+			String typeString = type.getAsString().value();
+			String valueString = value.getAsString().value();
+		//
+			return Term.typed(valueString, typeString);
+		}
+		p.add("Cannot convert JSON value '" + jv + "' to Term.");
+		return Term.bad(jv);
+	}
+
+	public static List<Term> jsonToTerms(Problems p, JsonValue jv) {
+		if (jv.isArray()) {
+			List<Term> values = new ArrayList<Term>();
+			for (JsonValue element: jv.getAsArray()) values.add(jsonToTerm(p, element));
+			return values;
+		} else {
+			return BunchLib.list(jsonToTerm(p, jv));
+		}
 	}
 }

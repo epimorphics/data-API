@@ -10,19 +10,19 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.epimorphics.data_api.data_queries.Value;
+import com.epimorphics.data_api.data_queries.Term;
 
 public class TestValue {
 	
 	@Test public void testValue() {
-		assertEquals(Value.wrap(17), Value.wrap(17));
-		assertEquals(Value.wrap("17"), Value.wrap("17"));
-		assertEquals(Value.wrap(true), Value.wrap(true));
+		assertEquals(Term.number(17), Term.number(17));
+		assertEquals(Term.string("17"), Term.string("17"));
+		assertEquals(Term.bool(true), Term.bool(true));
 	//
-		assertEquals(new Integer(17).hashCode(), Value.wrap(17).hashCode() );
-		assertEquals("hedgehog".hashCode(), Value.wrap("hedgehog").hashCode() );
+		assertEquals(new Integer(17).hashCode(), Term.number(17).hashCode() );
+		assertEquals("hedgehog".hashCode(), Term.string("hedgehog").hashCode() );
 	//
-		assertEquals("answer", Value.wrap("answer").unwrap());
-		assertEquals(66, Value.wrap(66).unwrap());
+		assertEquals("answer", Term.string("answer").unwrap());
+		assertEquals(66, Term.number(66).unwrap());
 	}
 }
