@@ -253,7 +253,6 @@ public class TestTranslateDataQuery {
 	}
 
 	private void assertSameSelect(String expected, String toTest) {
-		System.err.println( ">> " + expected );
 		Query t = QueryFactory.create(toTest);
 		Query e = QueryFactory.create(expected);
 		assertEquals(e, t);

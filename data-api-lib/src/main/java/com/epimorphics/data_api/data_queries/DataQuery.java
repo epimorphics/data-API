@@ -29,13 +29,19 @@ public class DataQuery {
 	};
 	
 	final List<Filter> filters;
+	final List<Sort> sortby;
+
+	public DataQuery(List<Filter> filters, List<Sort> sortby) {
+		this.filters = filters;
+		this.sortby = sortby;
+	}
 	
 	public DataQuery(List<Filter> filters) {
-		this.filters = filters;
+		this(filters, new ArrayList<Sort>() );
 	}
 	
 	public List<Sort> sorts() {
-		return new ArrayList<Sort>();
+		return sortby;
 	}
 	
 	public List<Filter> filters() {

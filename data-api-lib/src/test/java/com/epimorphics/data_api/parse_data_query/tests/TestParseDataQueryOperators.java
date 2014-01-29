@@ -28,7 +28,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TestParseDataQuery {
+public class TestParseDataQueryOperators {
 	
 	@Test public void testEmptyQuery() {
 		String incoming = "{}";
@@ -125,7 +125,7 @@ public class TestParseDataQuery {
 		testSingleOperator("below", "{'@id': 'eh:/resource'}", Term.URI("eh:/resource") );
 	}
 		
-	public void testSingleOperator(String op, String operand, Term...values) {
+	void testSingleOperator(String op, String operand, Term...values) {
 		Shortname sn = new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'_OP': _ARGS}}"
 			.replaceAll("_OP", op)

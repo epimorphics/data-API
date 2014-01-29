@@ -17,12 +17,14 @@ import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.json.JsonUtil;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 // this should be data-driven, ie, a bunch of plugins that respond to
 // operator names.
 public class DataQueryParser {
 	
+	// these would be built up from the plugins. Probably use the appbase configure stuff.
 	static final String opNames = "eq ne le lt ge gt contains matches search below oneof";
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
@@ -30,9 +32,15 @@ public class DataQueryParser {
 	public static DataQuery Do(Problems p, PrefixMapping pm, JsonObject jo) {
 		if (jo.isObject()) {
 			List<Filter> filters = new ArrayList<Filter>();
+			List<Sort> sortby = new ArrayList<Sort>();
+			
 			for (String key: jo.getAsObject().keys()) {
 				if (key.startsWith("_")) {
-					throw new RuntimeException("Error handling to be done here.");
+					if (key.equals("_sort")) {
+						extractSorts(pm, p, jo, sortby, key);
+					} else {
+						p.add("unknown directive '" + key + "' in data query " + jo + ".");
+					}
 				} else {
 					Shortname sn = new Shortname(pm, key);
 					JsonValue range = jo.get(key);			
@@ -52,9 +60,36 @@ public class DataQueryParser {
 					}
 				}
 			}
-			return new DataQuery(filters);
+			return new DataQuery(filters, sortby);
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
+		}
+	}
+
+	private static void extractSorts(PrefixMapping pm, Problems p, JsonObject jo, List<Sort> sortby, String key) {
+		JsonValue x = jo.get(key);
+		if (x.isArray()) {
+			for (JsonValue candidate: x.getAsArray()) {
+				if (candidate.isObject()) {
+					JsonObject sort = candidate.getAsObject();
+					String up = JsonUtil.getStringValue(sort, "@up", null);
+					String down = JsonUtil.getStringValue(sort, "@down", null);
+					if (up == null && down == null) {
+						p.add("sort term " + sort + " has neither @up nor @down member.");
+					} else if (up != null && down != null) {
+						p.add("sort term " + sort + " has both @up and @down members.");
+					} else {
+						String name = (up == null ? down : up);
+						Shortname sn = new Shortname(pm, name);
+						Sort s = new Sort(sn, down == null);
+						sortby.add(s);
+					}
+				} else {
+					p.add("sort term " + candidate + " should be an object.");
+				}
+			}
+		} else {
+			p.add("value of _sort must be array, was given " + x + ".");
 		}
 	}
 
