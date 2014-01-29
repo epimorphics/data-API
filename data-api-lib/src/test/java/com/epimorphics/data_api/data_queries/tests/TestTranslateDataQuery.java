@@ -18,6 +18,7 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
@@ -54,6 +55,22 @@ public class TestTranslateDataQuery {
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X }", sq );
 	}		
+	
+	@Test public void testSingleSort() {
+		Problems p = new Problems();
+		List<Filter> filters = BunchLib.list();
+		List<Sort> sorts = BunchLib.list(new Sort(new Shortname(pm, "pre:X"), true));
+		DataQuery q = new DataQuery(filters, sorts);
+	//
+		Aspects a = new Aspects().include(X);
+	//
+		String sq = q.toSparql(p, a, pm);
+		assertNoProblems(p);
+		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
+	
+	}
+	
+	
 	
 	@Test public void testSingleEqualityFilter() {
 		Problems p = new Problems();

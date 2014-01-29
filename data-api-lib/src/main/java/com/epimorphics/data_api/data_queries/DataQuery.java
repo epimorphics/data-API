@@ -129,6 +129,14 @@ public class DataQuery {
 		}
 		sb.append( " }");
 	//
+		if (sortby.size() > 0) {
+			sb.append(" ORDER BY");
+			for (Sort s: sortby) {
+				sb.append( " ?" ).append(s.by.asVar());
+			}
+			
+		}
+	//
 		return sb.toString();
 	}
 
