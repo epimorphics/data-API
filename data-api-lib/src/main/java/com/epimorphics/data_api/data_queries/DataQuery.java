@@ -132,7 +132,10 @@ public class DataQuery {
 		if (sortby.size() > 0) {
 			sb.append(" ORDER BY");
 			for (Sort s: sortby) {
-				sb.append( " ?" ).append(s.by.asVar());
+				sb.append(" ");
+				if (!s.upwards) sb.append("DESC(");
+				sb.append( "?" ).append(s.by.asVar());
+				if (!s.upwards)sb.append(")"); 
 			}
 			
 		}

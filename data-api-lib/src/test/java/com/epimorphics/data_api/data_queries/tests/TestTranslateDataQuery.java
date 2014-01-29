@@ -67,7 +67,22 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
+	}	
 	
+	@Test public void testMultipleSorts() {
+		Problems p = new Problems();
+		List<Filter> filters = BunchLib.list();
+		List<Sort> sorts = BunchLib.list
+			( new Sort(new Shortname(pm, "pre:X"), true)
+			, new Sort(new Shortname(pm, "pre:Y"), false)
+			);
+		DataQuery q = new DataQuery(filters, sorts);
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, pm);
+		assertNoProblems(p);
+		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
 	}
 	
 	
