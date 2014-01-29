@@ -60,11 +60,11 @@ public class DataQuery {
 		Map<String, String> prefixes = pm.getNsPrefixMap();
 	//
 		boolean needsSKOS = false;
+		
 		for (Filter f: filters) {
 			if (f.range.op.equals("below")) needsSKOS = true;
 		}
-		if (needsSKOS) 
-			prefixes.put("skos", "http://www.w3.org/2004/02/skos/core");
+		if (needsSKOS) prefixes.put("skos", "http://www.w3.org/2004/02/skos/core");
 	//
 		for (String key: prefixes.keySet()) 
 			sb.append( "PREFIX " )
@@ -99,18 +99,24 @@ public class DataQuery {
 				String rangeOp = f.getRangeOp();	
 				if (rangeOp.equals("oneof")) {
 					String orOp = "";
-					List<Value> operands = f.range.operands;
+					List<Term> operands = f.range.operands;
 					sb.append(" FILTER(" );
-					for (Value v: operands) {
+					for (Term v: operands) {
 						sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm());
 						orOp = " || ";
 					}
 					sb.append(")");
 				} else if (rangeOp.equals("below")) {
 					sb.append(". ").append(fVar).append(" ").append("skos:broader").append(" ").append(value);
+				} else if (rangeOp.equals("contains")) {
+					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+				} else if (rangeOp.equals("matches")) {
+					sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+				} else if (rangeOp.equals("search")) {
+					sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
 				} else {
 					String op = opForFilter(f);
-					sb.append(" FILTER(" ).append(fVar).append( " ").append(op).append(" ").append(value).append(")");
+					sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 				}
 			}
 			dot = ". ";

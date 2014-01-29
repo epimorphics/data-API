@@ -18,18 +18,14 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
-import com.epimorphics.data_api.data_queries.Value;
+import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
-import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.util.NodeFactoryExtra;
 
 // TODO Apply DRY to the tests.
 public class TestTranslateDataQuery {
@@ -62,7 +58,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleEqualityFilter() {
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
+		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -103,7 +99,7 @@ public class TestTranslateDataQuery {
 	private void testSingleFilterWithSpecifiedOp(String opName, String opSparql) {	
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range(opName, BunchLib.list(Value.wrap(17))));
+		Filter f = new Filter(sn, new Range(opName, BunchLib.list(Term.number(17))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -120,7 +116,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleOneofFilter() {	
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range("oneof", BunchLib.list(Value.wrap(17), Value.wrap(99))));
+		Filter f = new Filter(sn, new Range("oneof", BunchLib.list(Term.number(17), Term.number(99))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -134,11 +130,12 @@ public class TestTranslateDataQuery {
 			);
 	}	
 	
-	@Test public void testSingleBelowFilter() {	
+	//---------------------------------------
+	@Test public void testSingleBeloxwFilter() {	
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
 		Node r = NodeFactory.createURI("eh:/prefixPart/stairs");
-		Filter f = new Filter(sn, new Range("below", BunchLib.list(Value.wrap(r))));
+		Filter f = new Filter(sn, new Range("below", BunchLib.list(Term.URI(r.getURI()))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -150,12 +147,66 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/mock-aspect/> PREFIX skos: <" + SKOS + "> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X . ?pre_X skos:broader <eh:/prefixPart/stairs> }"
 			, sq 
 			);
+	}
+	
+	@Test public void testSingleBelowFilter() {
+		testSingleSimpleFilter
+			("below"
+			, Term.URI("eh:/prefixPart/stairs")
+			, "?pre_X skos:broader <eh:/prefixPart/stairs>"
+			);
+	}
+	
+	@Test public void testSingleContainsFilter() {
+		testSingleSimpleFilter
+			("contains"
+			, Term.string("substring")
+			, "FILTER(CONTAINS(?pre_X, 'substring'))"
+			);
+	}
+	
+	@Test public void testSingleMatchesFilter() {
+		testSingleSimpleFilter
+			("matches"
+			, Term.string("alpha.*beta")
+			, "FILTER(REGEX(?pre_X, 'alpha.*beta'))"
+			);
+	}
+	
+	@Test public void testSingleSearchFilter() {
+		testSingleSimpleFilter
+			("search"
+			, Term.string("look for me")
+			, "?pre_X <http://jena.apache.org/text#query> 'look for me'"
+			);
+	}
+	
+	private void testSingleSimpleFilter(String op, Term term, String filter) {
+		Problems p = new Problems();
+		Shortname sn = new Shortname( pm, "pre:X" );
+		
+		Filter f = new Filter(sn, new Range(op, BunchLib.list(term)));
+		List<Filter> filters = BunchLib.list(f);
+		DataQuery q = new DataQuery(filters);
+	//
+		Aspects a = new Aspects().include(X);
+	//
+		String sq = q.toSparql(p, a, pm);
+		assertNoProblems(p);
+		
+		String prefix_p = "PREFIX pre: <eh:/mock-aspect/>\n";
+		String prefix_skos = (op.equals("below") ? "PREFIX skos: <" + SKOS + "> " : "");
+		String select = "SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X . " + filter + " }";
+		
+		String expected = prefix_p + prefix_skos + select;
+		
+		assertSameSelect( expected, sq	);
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
+		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -169,7 +220,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, Range.EQ(Value.wrap(17)));
+		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -185,8 +236,8 @@ public class TestTranslateDataQuery {
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
 		Shortname snA = new Shortname( pm, "pre:X" );
 		Shortname snB = new Shortname( pm, "pre:Y" );
-		Filter fA = new Filter(snA, Range.EQ(Value.wrap(8)));
-		Filter fB = new Filter(snB, Range.EQ(Value.wrap(9)));
+		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(filters);
 	//
@@ -202,8 +253,9 @@ public class TestTranslateDataQuery {
 	}
 
 	private void assertSameSelect(String expected, String toTest) {
-		Query e = QueryFactory.create(expected);
+		System.err.println( ">> " + expected );
 		Query t = QueryFactory.create(toTest);
+		Query e = QueryFactory.create(expected);
 		assertEquals(e, t);
 	}
 }

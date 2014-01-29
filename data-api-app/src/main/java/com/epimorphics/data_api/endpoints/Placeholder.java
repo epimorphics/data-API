@@ -130,6 +130,8 @@ import com.hp.hpl.jena.util.FileManager;
 				sq = q.toSparql(p, example.aspects, example.pm);
 
 			checkLegalSPARQL(p, sq);
+			
+			if (p.isOK()) comments.add("generated SPARQL:\n\n" + QueryFactory.create(sq));
 
 			if (p.isOK()) {
 				ResultSet rs = example.source.select(sq);
@@ -200,8 +202,7 @@ import com.hp.hpl.jena.util.FileManager;
 			return Response.ok(result.toString()).build();
 
 		} else {
-			return Response.ok(
-					"FAILED:\n" + BunchLib.join(p.getProblemStrings())).build();
+			return Response.ok("FAILED:\n" + BunchLib.join(p.getProblemStrings())).build();
 		}
 	}
 

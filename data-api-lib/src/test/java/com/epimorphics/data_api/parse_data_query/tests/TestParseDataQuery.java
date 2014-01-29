@@ -9,6 +9,7 @@ package com.epimorphics.data_api.parse_data_query.tests;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.jena.atlas.json.JSON;
@@ -20,13 +21,11 @@ import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
-import com.epimorphics.data_api.data_queries.Value;
+import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestParseDataQuery {
@@ -61,7 +60,7 @@ public class TestParseDataQuery {
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 	//
-		List<Filter> expected = BunchLib.list(new Filter( sn, Range.EQ(Value.wrap(new BigDecimal(17)))));		
+		List<Filter> expected = BunchLib.list(new Filter( sn, Range.EQ(Term.number(new BigDecimal(17)))));		
 		assertEquals(expected, q.filters());
 	}
 	
@@ -101,32 +100,37 @@ public class TestParseDataQuery {
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 //
-		Range range = new Range(op, BunchLib.list(Value.wrap(new BigDecimal(17))));
+		Range range = new Range(op, BunchLib.list(Term.number(new BigDecimal(17))));
 		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
 		assertEquals(expected, q.filters());
 	}
 	
 	@Test public void testSingleOneof() {
-		Shortname sn = new Shortname(pm, "pre:local");
-		String incoming = "{'pre:local': {'oneof': [17, 99]}}";
-		JsonObject jo = JSON.parse(incoming);		
-		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
-//
-		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
-		assertTrue(q.slice().isAll());
-		assertNull(q.lang());
-		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
-//
-		Range range = new Range("oneof", BunchLib.list(Value.wrap(new BigDecimal(17)), Value.wrap(new BigDecimal(99))));
-		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
-		assertEquals(expected, q.filters());
+		testSingleOperator("oneof", "[17, 99]", Term.number(new BigDecimal(17)), Term.number(new BigDecimal(99)) );
+	}
+	
+	@Test public void testSingleMatches() {
+		testSingleOperator("matches", "'reg.*exp'", Term.string("reg.*exp"));
+	}
+	
+	@Test public void testSingleContains() {
+		testSingleOperator("contains", "'substring'", Term.string("substring") );
+	}
+	
+	@Test public void testSingleSearch() {
+		testSingleOperator("search", "'texty bits'", Term.string("texty bits") );
 	}
 	
 	@Test public void testSingleBelow() {
+		testSingleOperator("below", "{'@id': 'eh:/resource'}", Term.URI("eh:/resource") );
+	}
+		
+	public void testSingleOperator(String op, String operand, Term...values) {
 		Shortname sn = new Shortname(pm, "pre:local");
-		Node stairs = NodeFactory.createURI("pre:stairs");
-		String incoming = "{'pre:local': {'below': {'@id': 'pre:stairs'}}}";
+		String incoming = "{'pre:local': {'_OP': _ARGS}}"
+			.replaceAll("_OP", op)
+			.replaceAll("_ARGS", operand)
+			;
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -136,7 +140,7 @@ public class TestParseDataQuery {
 		assertNull(q.lang());
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 //
-		Range range = new Range("below", BunchLib.list(Value.wrap(stairs)));
+		Range range = new Range(op, Arrays.asList(values));
 		List<Filter> expected = BunchLib.list(new Filter( sn, range));		
 		assertEquals(expected, q.filters());
 	}
