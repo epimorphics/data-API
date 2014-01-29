@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.apache.jena.atlas.json.JSON;
@@ -155,11 +158,35 @@ import com.hp.hpl.jena.util.FileManager;
 							+ BunchLib.join(p.getProblemStrings())).build();
 		}
 	}
+	
+	static final Map<String, String> lookback = new HashMap<String, String>();
+	
+	@GET @Path("lookback/{token}") @Produces("text/html") public Response lookback_at_query
+		( @Context HttpServletRequest req
+		, @PathParam("token") String token
+		) {
+		
+		Object result = lookback.get(token);
+		String skel = BunchLib.join
+			( "<html>"
+			, "<head>"
+			, "</head>"
+			, "</body>"
+			, "<h1>lookback:</h1>"
+			, "LOOKBACK"
+			, "</body>"
+			, "</html>"
+			);
+			
+		return Response.ok(skel.replaceFirst("LOOKBACK",  result.toString() )).build();
+	}
 
 	@POST @Path("dataset/{name}/data") @Produces("application/json") public Response placeholder_query_POST(
-			@PathParam("name") String datasetName,
-			@FormParam("json") String posted) {
-
+			@PathParam("name") String datasetName
+			, @FormParam("json") String posted
+			, @Context HttpServletRequest req
+			) {
+		
 		Example example = examples.get(datasetName);
 
 		Problems p = new Problems();
@@ -197,12 +224,16 @@ import com.hp.hpl.jena.util.FileManager;
 			e.printStackTrace(System.err);
 			p.add("BROKEN: " + e);
 		}
-
+		
+		String token = "Fortinbras";
+		
+		lookback.put(token, "you asked about " + posted);
+		
 		if (p.isOK()) {
-			return Response.ok(result.toString()).build();
+			return Response.ok(result.toString()).header("x-epi-token", token).build();
 
 		} else {
-			return Response.ok("FAILED:\n" + BunchLib.join(p.getProblemStrings())).build();
+			return Response.serverError().header("x-epi-token", token).entity("FAILED:\n" + BunchLib.join(p.getProblemStrings())).build();
 		}
 	}
 
