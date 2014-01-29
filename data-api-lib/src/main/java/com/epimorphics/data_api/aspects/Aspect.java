@@ -11,8 +11,13 @@ import java.util.List;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Aspect {
+	
+	final PrefixMapping pm = PrefixMapping.Factory.create()
+		.setNsPrefix("skos", "http://www.w3.org/2004/02/skos/core")
+		;
 	
 	final String ID;
 	final Shortname name;
@@ -24,6 +29,7 @@ public class Aspect {
 	boolean isOptional = false;
 	
 	Resource rangeType = null;
+	Shortname belowPredicate = new Shortname(pm, "skos:broader" );
 	
 	public Aspect(String ID, Shortname name) {
 		this.ID = ID;
@@ -48,6 +54,15 @@ public class Aspect {
 
 	public String asProperty() {
 		return name.getCURIE();
+	}
+	
+	public Shortname getBelowPredicate() {
+		return belowPredicate;
+	}
+	
+	public Aspect setBelowPredicate(Shortname belowPredicate) {
+		this.belowPredicate = belowPredicate;
+		return this;
 	}
 
 	public List<Node> getLabels() {

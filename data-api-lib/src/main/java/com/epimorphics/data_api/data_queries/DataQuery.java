@@ -113,7 +113,8 @@ public class DataQuery {
 					}
 					sb.append(")");
 				} else if (rangeOp.equals("below")) {
-					sb.append(". ").append(fVar).append(" ").append("skos:broader").append(" ").append(value);
+					Shortname below = x.getBelowPredicate();
+					sb.append(". ").append(fVar).append(" ").append(below.getCURIE()).append(" ").append(value);
 				} else if (rangeOp.equals("contains")) {
 					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
 				} else if (rangeOp.equals("matches")) {
