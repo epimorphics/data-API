@@ -10,7 +10,6 @@
 package com.epimorphics.data_api.config;
 
 import com.epimorphics.rdfutil.RDFUtil;
-import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 
@@ -21,12 +20,10 @@ import com.hp.hpl.jena.rdf.model.Resource;
  * @author <a href="mailto:dave@epimorphics.com">Dave Reynolds</a>
  */
 public class ResourceBasedConfig {
-    protected Model config;
     protected Resource root;
     
-    public ResourceBasedConfig(Model config) {
-        this.config = config;
-        this.root = RDFUtil.findRoot(config);
+    public ResourceBasedConfig(Resource config) {
+        this.root = config;
     }
     
     /**

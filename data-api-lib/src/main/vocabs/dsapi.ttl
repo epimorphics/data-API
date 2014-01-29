@@ -32,7 +32,7 @@ DSD or implicitly from the DSD associated with the QB dataset.  """@en;
     
 :qb_dataset a owl:ObjectProperty;
     rdfs:label "qb dataset"@en;
-    rdfs:comment "Indicates a Data Cube dataset whose observations are the contents of this dsapi data set"@en;
+    rdfs:comment "Indicates a Data Cube dataset whose observations are the contents of this dsapi data set."@en;
     rdfs:domain :Dataset;
     rdfs:range  qb:DataSet;
     .
