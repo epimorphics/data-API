@@ -1,0 +1,241 @@
+# baseURI: http://environment.data.gov.uk/def/waterbody-classification/
+# imports: http://environment.data.gov.uk/def/classification/
+# imports: http://location.data.gov.uk/def/am/wfd/
+# imports: http://purl.org/linked-data/cube
+
+# c14n-version: 3
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix qb: <http://purl.org/linked-data/cube#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix wb-classification: <http://environment.data.gov.uk/def/waterbody-classification/> .
+@prefix wfd: <http://location.data.gov.uk/def/am/wfd/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+wb-classification:
+  rdf:type owl:Ontology ;
+  owl:imports <http://environment.data.gov.uk/def/classification/> ;
+  owl:imports wfd: ;
+  owl:imports <http://purl.org/linked-data/cube> ;
+  owl:versionInfo "Created with TopBraid Composer"^^xsd:string ;
+.
+wb-classification:Classification
+  rdf:type owl:Class ;
+  rdfs:comment "The class of observations that are observations in a water body classification datacube."@en ;
+  rdfs:label "Classification observation"@en ;
+  rdfs:subClassOf qb:Observation ;
+.
+wb-classification:ObjectiveOutcome
+  rdf:type owl:Class ;
+  rdfs:comment "The class of datacube observations that are objective outome observations."@en ;
+  rdfs:label "objective outcome observation"@en ;
+  rdfs:subClassOf qb:Observation ;
+.
+wb-classification:PredictedOutcome
+  rdf:type owl:Class ;
+  rdfs:comment "The class of waterbody predicted outcome observations."@en ;
+  rdfs:label "waterbody predicted outcome observation"@en ;
+  rdfs:subClassOf qb:Observation ;
+.
+wb-classification:StatusOrPotential
+  rdf:type owl:Class ;
+  rdfs:comment "A class of concepts that are used as attributes of a classification observation."@en ;
+  rdfs:label "status or potential"@en ;
+  rdfs:subClassOf skos:Concept ;
+.
+wb-classification:WaterBodyClassificationDataset
+  rdf:type owl:Class ;
+  rdfs:comment "The class of datasets of waterbody classifications."@en ;
+  rdfs:label "Water body classification dataset"@en ;
+  rdfs:subClassOf qb:DataSet ;
+.
+wb-classification:WaterBodyClassificationItem
+  rdf:type owl:Class ;
+  rdfs:comment "The class of items that are classified for waterbodies."@en ;
+  rdfs:label "WaterBodyClassification item"@en ;
+  rdfs:subClassOf <http://environment.data.gov.uk/def/classification/ClassificationItem> ;
+.
+wb-classification:WaterBodyObjectiveOutcomeDataset
+  rdf:type owl:Class ;
+  rdfs:comment "The class of datasets of waterbody classification objective outcomes."@en ;
+  rdfs:label "Water body classification objective outcome dataset"@en ;
+  rdfs:subClassOf qb:DataSet ;
+.
+wb-classification:WaterBodyPredicatedOutcomeDataset
+  rdf:type owl:Class ;
+  rdfs:comment "The class of datasets of waterbody classification predicated outcomes."@en ;
+  rdfs:label "Water body classification predicted outcome dataset"@en ;
+  rdfs:subClassOf qb:DataSet ;
+.
+wb-classification:classification
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "An open domained property for referencing an classification observation."^^xsd:string ;
+  rdfs:range wb-classification:Classification ;
+.
+wb-classification:classificationDSD
+  rdf:type qb:DataStructureDefinition ;
+  qb:component [
+      qb:attribute wb-classification:statusOrPotential ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:classificationItem ;
+      qb:order "30"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:classificationYear ;
+      qb:order "20"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:waterBody ;
+      qb:order "10"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:measure wb-classification:classificationValue ;
+    ] ;
+  rdfs:comment "The datastructure definition for a water body classification data cube."@en ;
+  rdfs:label "waterbody classification dsd"@en ;
+.
+wb-classification:classificationItem
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "A data cube dimension property that relates a resource to classifcation item."@en ;
+  rdfs:domain qb:Observation ;
+  rdfs:label "classification item"@en ;
+  rdfs:range <http://environment.data.gov.uk/def/classification/ClassificationItem> ;
+  rdfs:subPropertyOf <http://environment.data.gov.uk/def/classification/classificationItem> ;
+  rdfs:subPropertyOf qb:dimension ;
+.
+wb-classification:classificationValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "The property classificationValue relates an observation to a classification values."@en ;
+  rdfs:domain qb:Observation ;
+  rdfs:label "classification value"@en ;
+  rdfs:range <http://environment.data.gov.uk/def/classification/ClassificationValue> ;
+  rdfs:subPropertyOf <http://environment.data.gov.uk/def/classification/classificationValue> ;
+  rdfs:subPropertyOf qb:measure ;
+.
+wb-classification:classificationValueScheme
+  rdf:type skos:ConceptScheme ;
+  rdfs:comment "A SKOS concept scheme of classification values."@en ;
+  rdfs:label "classification value scheme"@en ;
+.
+wb-classification:classificationYear
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The property classificationYear is a dimension property that relates an observation to a year for which a classification applies."@en ;
+  rdfs:domain qb:Observation ;
+  rdfs:label "classification year"@en ;
+  rdfs:range xsd:gYear ;
+  rdfs:subPropertyOf <http://environment.data.gov.uk/def/classification/classificationYear> ;
+  rdfs:subPropertyOf qb:dimension ;
+.
+wb-classification:objectiveOutcome
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "An open domained property for referencing an objective outcome observation."^^xsd:string ;
+  rdfs:range wb-classification:ObjectiveOutcome ;
+.
+wb-classification:objectiveOutcomeDSD
+  rdf:type qb:DataStructureDefinition ;
+  qb:component [
+      qb:attribute wb-classification:statusOrPotential ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:classificationItem ;
+      qb:order "30"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:classificationYear ;
+      qb:order "20"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:publicationDateTime ;
+      qb:order "50"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:waterBody ;
+      qb:order "10"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:measure wb-classification:classificationValue ;
+    ] ;
+  rdfs:comment "The datastructure definition for a water body classification objective outcomes data cube."@en ;
+  rdfs:label "waterbody classification objective outcome dsd"@en ;
+.
+wb-classification:predictedOutcome
+  rdf:type owl:ObjectProperty ;
+  rdfs:label "An open domained property for referencing a predicted outcome observation."^^xsd:string ;
+  rdfs:range wb-classification:PredictedOutcome ;
+.
+wb-classification:predictedOutcomeDSD
+  rdf:type qb:DataStructureDefinition ;
+  qb:component [
+      qb:attribute wb-classification:statusOrPotential ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:classificationItem ;
+      qb:order "30"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:classificationYear ;
+      qb:order "20"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:publicationDateTime ;
+      qb:order "50"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:dimension wb-classification:waterBody ;
+      qb:order "10"^^xsd:int ;
+    ] ;
+  qb:component [
+      qb:measure wb-classification:classificationValue ;
+    ] ;
+  rdfs:comment "The datastructure definition for a water body classification predicated outcomes data cube."@en ;
+  rdfs:label "waterbody classification predicated outcome dsd"@en ;
+.
+wb-classification:publicationDateTime
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The property publicationDateTimeDimension relates an observation to the date and time of publication of the observation.   Whether this is the formal date/time or the actual date/time is unspecified."@en ;
+  rdfs:domain qb:Observation ;
+  rdfs:label "publication date time"@en ;
+  rdfs:range xsd:dateTime ;
+  rdfs:subPropertyOf qb:dimension ;
+.
+wb-classification:sop_potential
+  rdf:type wb-classification:StatusOrPotential ;
+  rdfs:comment "Used to annotate the classification of a heavily modified or artificial water body.  It indicates that the classification is in accordance with the relevant provisions of Annex V. (Art 2.23) and represents the degree to which the quality of the surface water body's aquatic ecosystem approaches the maximum it could achieve, given the heavily modified or artificial characteristics of the water body that are necessary for the use or for the protection of the wider environment."@en ;
+  rdfs:label "potential"@en ;
+.
+wb-classification:sop_status
+  rdf:type wb-classification:StatusOrPotential ;
+  rdfs:comment "Used to annotate a waterbody classification.  Indicates that the classification is a classification of the actual status of the water body."@en ;
+  rdfs:label "status"@en ;
+  skos:topConceptOf wb-classification:statusOrPotentialConceptScheme ;
+.
+wb-classification:statusOrPotential
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "The property statusOrPotential is an attribute component property indicating whether the measure of the observation it is attached to is a status or potential measure."@en ;
+  rdfs:domain qb:Observation ;
+  rdfs:label "status or potential"@en ;
+  rdfs:range wb-classification:StatusOrPotential ;
+  rdfs:subPropertyOf qb:attribute ;
+.
+wb-classification:statusOrPotentialConceptScheme
+  rdf:type skos:ConceptScheme ;
+  rdfs:comment "The concept scheme of status or potential."@en ;
+  rdfs:label "status or potential concept scheme"@en ;
+  skos:hasTopConcept wb-classification:sop_potential ;
+  skos:hasTopConcept wb-classification:sop_status ;
+.
+wb-classification:waterBody
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "The property waterbodyDimension is a dimension property that relates an observation to a waterbody."@en ;
+  rdfs:domain qb:Observation ;
+  rdfs:label "waterbody"@en ;
+  rdfs:range wfd:WaterBody ;
+  rdfs:subPropertyOf wfd:waterBody ;
+  rdfs:subPropertyOf qb:dimension ;
+.
+wb-classification:wbClassificationItemScheme
+  rdf:type skos:ConceptScheme ;
+  rdfs:comment "A SKOS concept scheme of classification items for water bodies."@en ;
+  rdfs:label "waterbody classification item scheme"@en ;
+.

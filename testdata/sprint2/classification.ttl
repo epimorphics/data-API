@@ -1,0 +1,214 @@
+# baseURI: http://environment.data.gov.uk/def/classification/
+# imports: http://www.w3.org/2004/02/skos/core
+
+# c14n-version: 3
+@prefix classification: <http://environment.data.gov.uk/def/classification/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+classification:
+  rdf:type owl:Ontology ;
+  rdfs:comment "A general ontology for classifying entities such as environmental entities.  A classification is the result of an assessment of the status of the entity.  This ontology supports hierarchical classifications, i.e. where a parent classification if determined, at least in part, by more specific child classifications."^^xsd:string ;
+  owl:imports <http://www.w3.org/2004/02/skos/core> ;
+  owl:versionInfo "Created with TopBraid Composer"^^xsd:string ;
+.
+classification:ChemicalClassificationValue
+  rdf:type owl:Class ;
+  rdfs:comment "A class of classification values for chemical classifications.   How these are determined depends on the context of use."@en ;
+  rdfs:label "chemical classification value"@en ;
+  rdfs:subClassOf classification:ClassificationValue ;
+.
+classification:Classification
+  rdf:type owl:Class ;
+  rdfs:comment "The class of classifications of environmental entities.  An instance of this class is a classification of an entity with properties classificationItem to indicate what aspect of the item has been classified, and classificationValue to indicate the value of the classification."@en ;
+  rdfs:label "Classification"@en ;
+  rdfs:subClassOf owl:Thing ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty classification:classificationItem ;
+    ] ;
+  rdfs:subClassOf [
+      rdf:type owl:Restriction ;
+      owl:cardinality "1"^^xsd:nonNegativeInteger ;
+      owl:onProperty classification:classificationValue ;
+    ] ;
+.
+classification:ClassificationItem
+  rdf:type owl:Class ;
+  rdfs:comment "The class of items reported in  classifications."^^xsd:string ;
+  rdfs:label "Classification item"@en ;
+  rdfs:subClassOf skos:Concept ;
+.
+classification:ClassificationItemIdNotation
+  rdf:type rdfs:Datatype ;
+  rdfs:label "classification item id datatype"@en ;
+.
+classification:ClassificationItemUidNotation
+  rdf:type rdfs:Datatype ;
+  rdfs:label "classification item UID datatype"@en ;
+.
+classification:ClassificationValue
+  rdf:type owl:Class ;
+  rdfs:comment "A class of values that classification items can have."@en ;
+  rdfs:label "Classification value"@en ;
+  rdfs:subClassOf skos:Concept ;
+.
+classification:EcologicalClassificationValue
+  rdf:type owl:Class ;
+  rdfs:comment "A class of classification values for ecological classifications.  How these should be interpretted depends on the context in which they are used."@en ;
+  rdfs:label "ecological classification value"@en ;
+  rdfs:subClassOf classification:ClassificationValue ;
+.
+classification:GroundWaterClassificationValue
+  rdf:type owl:Class ;
+  rdfs:comment "The class of classification values for groundwaters."@en ;
+  rdfs:label "Groundwater classification value"@en ;
+  rdfs:subClassOf classification:ClassificationValue ;
+.
+classification:ccv_dnra
+  rdf:type classification:ChemicalClassificationValue ;
+  classification:order 0 ;
+  rdfs:comment "The chemical classification value of does not require assessment."@en ;
+  rdfs:label "Does Not Require Assessment"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ccv_fail
+  rdf:type classification:ChemicalClassificationValue ;
+  classification:order 100 ;
+  rdfs:comment "The chemical classification value of fail."@en ;
+  rdfs:label "fail"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ccv_good
+  rdf:type classification:ChemicalClassificationValue ;
+  classification:order 600 ;
+  rdfs:comment "The chemical classification value ofgood."@en ;
+  rdfs:label "good"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:classifcationValueScheme
+  rdf:type skos:ConceptScheme ;
+  rdfs:comment "A skos concept scheme of the values that classifications can take."^^xsd:string ;
+  rdfs:label "classification value scheme"@en ;
+  skos:hasTopConcept classification:ccv_dnra ;
+  skos:hasTopConcept classification:ccv_fail ;
+  skos:hasTopConcept classification:ccv_good ;
+  skos:hasTopConcept classification:ecv_bad ;
+  skos:hasTopConcept classification:ecv_good ;
+  skos:hasTopConcept classification:ecv_high ;
+  skos:hasTopConcept classification:ecv_moderate ;
+  skos:hasTopConcept classification:ecv_notassessed ;
+  skos:hasTopConcept classification:ecv_nothigh ;
+  skos:hasTopConcept classification:ecv_poor ;
+  skos:hasTopConcept classification:gwcv_good ;
+  skos:hasTopConcept classification:gwcv_poor ;
+.
+classification:classificationItem
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "Relates a resource to a classification item."@en ;
+  rdfs:label "classification item"@en ;
+  rdfs:range classification:ClassificationItem ;
+.
+classification:classificationItemId
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "classification item id"^^xsd:string ;
+  rdfs:range classification:ClassificationItemIdNotation ;
+  rdfs:subPropertyOf skos:notation ;
+.
+classification:classificationItemUid
+  rdf:type owl:DatatypeProperty ;
+  rdfs:label "classification item UID"^^xsd:string ;
+  rdfs:range classification:ClassificationItemUidNotation ;
+  rdfs:subPropertyOf skos:notation ;
+.
+classification:classificationItemValueRange
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "The property classificationItemValueRange relates a classification item to the class of values classifications of that item can take."@en ;
+  rdfs:domain classification:ClassificationItem ;
+  rdfs:label "classification item value range"@en ;
+  rdfs:range owl:Class ;
+.
+classification:classificationValue
+  rdf:type owl:ObjectProperty ;
+  rdfs:comment "Relates a resource to a classification value."@en ;
+  rdfs:label "classificationValue"@en ;
+  rdfs:range classification:EcologicalClassificationValue ;
+.
+classification:classificationYear
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "An open domained property,classificationYear that relates something to the associated a year for which a classification applies."@en ;
+  rdfs:label "classificationYear"@en ;
+  rdfs:range xsd:gYear ;
+.
+classification:ecv_bad
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 100 ;
+  rdfs:label "bad"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ecv_good
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 400 ;
+  rdfs:label "good"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ecv_high
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 600 ;
+  rdfs:label "high"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ecv_moderate
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 300 ;
+  rdfs:label "moderate"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ecv_notassessed
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 0 ;
+  rdfs:label "not assessed"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ecv_nothigh
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 500 ;
+  rdfs:label "not high"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:ecv_poor
+  rdf:type classification:EcologicalClassificationValue ;
+  classification:order 200 ;
+  rdfs:label "poor"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:gwcv_good
+  rdf:type classification:GroundWaterClassificationValue ;
+  classification:order 600 ;
+  rdfs:comment "The groundwater classification value of good."@en ;
+  rdfs:label "good"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:gwcv_moderate
+  rdf:type classification:GroundWaterClassificationValue ;
+  classification:order 300 ;
+  rdfs:comment "The groundwater classification value of moderate."@en ;
+  rdfs:label "moderate"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:gwcv_poor
+  rdf:type classification:GroundWaterClassificationValue ;
+  classification:order 100 ;
+  rdfs:comment "The groundwater classification value of poor."@en ;
+  rdfs:label "poor"@en ;
+  skos:topConceptOf classification:classifcationValueScheme ;
+.
+classification:order
+  rdf:type owl:DatatypeProperty ;
+  rdfs:comment "The property order may be used to relate an entity to an integer.  This may be used to order entities, e.g. to order classification values."@en ;
+  rdfs:label "order"@en ;
+  rdfs:range xsd:integer ;
+.
