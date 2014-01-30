@@ -11,7 +11,11 @@ package com.epimorphics.data_api.config;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.epimorphics.appbase.monitor.ConfigMonitor;
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
@@ -23,7 +27,15 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 
+/**
+ * Monitor a directory of configuration files, each of which species
+ * an API Dataset to be made available.
+ * 
+ * @author <a href="mailto:dave@epimorphics.com">Dave Reynolds</a>
+ */
 public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
+    static Logger log = LoggerFactory.getLogger(DatasetMonitor.class);
+
     protected DSAPIManager manager;
     
     public void setManager(DSAPIManager manager) {
@@ -47,10 +59,48 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             }
             if (dsd != null && !hasProperties(dsd)) {
                 addClosure(dsd);
-                // TODO  Scan for component properties and pull those in
+                if (dsd.isURIResource()) {
+                    // Try to fetch the descriptions of the components
+                    String componentQuery = String.format("PREFIX qb: <%s#> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
+                            Cube.getURI(), dsd.getURI());
+                    addClosure(dataset, manager.getSource().describe(componentQuery));
+                }
             }
         }
-        return new API_Dataset(configRoot);
+        
+        API_Dataset dsapi = new API_Dataset(configRoot); 
+        if (dsd != null) {
+            parseDSD(dsapi, dsd);
+        } else {
+            parseAspects(dsapi, dataset);
+        }
+        return dsapi;
+    }
+    
+    private void parseDSD(API_Dataset dsapi, Resource dsd) {
+        for (Resource component : RDFUtil.allResourceValues(dsd, Cube.component)) {
+            if (component.hasProperty(Cube.dimension)) {
+                addAspect(dsapi, RDFUtil.getResourceValue(dsd, Cube.dimension), false);
+            } else if (component.hasProperty(Cube.measure)) {
+                addAspect(dsapi, RDFUtil.getResourceValue(dsd, Cube.measure), false);
+            } else if (component.hasProperty(Cube.attribute)) {
+                boolean required = RDFUtil.getBooleanValue(component, Cube.componentRequired, false);
+                addAspect(dsapi, RDFUtil.getResourceValue(dsd, Cube.attribute), required);
+            } else {
+                log.warn("Failed to parse on of the components of dsd " + dsd + ", component was " + component);
+            }
+        }
+    }
+    
+    private void addAspect(API_Dataset dsapi, Resource aspect, boolean required) {
+        // TODO configure aspect as a Resource based config
+        Aspect a = null;
+        a.setIsOptional(!required);
+        dsapi.add(a);
+    }
+    
+    private void parseAspects(API_Dataset dsapi, Resource dataset) {
+        // TODO implement
     }
     
     private boolean hasProperties(Resource r) {
@@ -63,8 +113,12 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     private void addClosure(Resource root) {
         if (root.isURIResource()) {
             Graph closure = manager.getSource().describeAll( root.getURI() );
-            root.getModel().add( ModelFactory.createModelForGraph(closure) );
+            addClosure(root, closure);
         }
+    }
+    
+    private void addClosure(Resource root, Graph closure) {
+        root.getModel().add( ModelFactory.createModelForGraph(closure) );
     }
 
 }

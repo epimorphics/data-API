@@ -43,7 +43,6 @@ public class DSAPIManager extends ComponentBase {
     public void setMonitoredDatasets(DatasetMonitor monitoredDatasets) {
         this.monitoredDatasets = monitoredDatasets;
         monitoredDatasets.setManager(this);
-        monitoredDatasets.refresh();   // Is this necessary?
     }
 
     public Collection<API_Dataset> getDatasets() {

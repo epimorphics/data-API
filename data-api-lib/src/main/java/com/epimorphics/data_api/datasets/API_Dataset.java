@@ -16,12 +16,11 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
+import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
-import com.hp.hpl.jena.rdf.model.Model;
+import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.rdf.model.Resource;
-
-import static com.epimorphics.data_api.config.JSONConstants.*;
 
 public class API_Dataset extends ResourceBasedConfig implements ConfigInstance, JSONWritable {
     static Logger log = LoggerFactory.getLogger(API_Dataset.class);
@@ -39,8 +38,9 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance, 
 	}
 	
 	public API_Dataset(Resource config) {
-	    // TODO implement - or do parsing externally
-	    // TODO issue of when and how to retrieve any DSD from the source if not inline
+	    super(config);
+	    configureBaseQuery();
+	    configureName();
 	}
 	
     private void configureBaseQuery() {
@@ -53,6 +53,10 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance, 
                 query = "";
             }
         }
+    }
+    
+    private void configureName() {
+        name = RDFUtil.getStringValue(root, SKOS.notation, RDFUtil.getLocalname(root));
     }
     
 	public void setName(String name) {
