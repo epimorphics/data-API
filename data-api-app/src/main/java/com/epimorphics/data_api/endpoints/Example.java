@@ -5,11 +5,13 @@
 */
 package com.epimorphics.data_api.endpoints;
 
+import java.util.List;
 import java.util.Set;
 
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.data.impl.BaseSparqlSource;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.data_queries.Restriction;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -28,10 +30,12 @@ public class Example {
 	final Aspects aspects;
 	final Model model;
 	final SparqlSource source;
+	final List<Restriction> restrictions;
 	
-	Example(PrefixMapping pm, Aspects aspects, Model model) {
+	Example(PrefixMapping pm, Aspects aspects, List<Restriction> restrictions, Model model) {
 		this.pm = pm;
 		this.aspects = aspects;
+		this.restrictions = restrictions;
 		this.model = model;
 		this.source = new ModelSparqlSource(model);
 	}
@@ -67,7 +71,6 @@ public class Example {
 	
 	};
 	
-
 	static Resource findRangeType(Model m, Property p) {
 		Set<String> types = m
 			.listStatements(null, p, (RDFNode) null)
@@ -75,5 +78,9 @@ public class Example {
 			.mapWith(Example.getType).toSet()
 			;
 		return types.size() == 1 ? m.createResource(types.iterator().next()) : null;
+	}
+
+	public List<Restriction> restrictions() {
+		return restrictions;
 	}
 }

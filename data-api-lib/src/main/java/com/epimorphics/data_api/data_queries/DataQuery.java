@@ -56,12 +56,14 @@ public class DataQuery {
 		return new Slice();
 	}
 	
-	public String toSparql(Problems p, Aspects a, PrefixMapping pm) {
-		try { return toSparqlString(p, a, pm); }
+	public String toSparql(Problems p, Aspects a, List<Restriction> restrictions, PrefixMapping pm) {
+		try { return toSparqlString(p, a, restrictions, pm); }
 		catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
 	}
 
-	private String toSparqlString(Problems p, Aspects a, PrefixMapping pm) {
+	static final Term item = Term.var("item");
+	
+	private String toSparqlString(Problems p, Aspects a, List<Restriction> restrictions, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> prefixes = pm.getNsPrefixMap();
 	//
@@ -85,13 +87,19 @@ public class DataQuery {
 		Map<String, Filter> sf = new HashMap<String, Filter>();
 		for (Filter f: filters) sf.put("?" + f.name.asVar(), f);
 	//
-		sb.append( " SELECT ?item");
+		sb.append( "\nSELECT ?item");
 		for (Aspect x: ordered) {
 			sb.append(" ?").append( x.asVar() );
 		}
 	//	
-		sb.append(" WHERE {");
+		sb.append("\nWHERE {");
 		String dot = "";
+	//
+		for (Restriction r: restrictions) {
+			sb.append(dot).append( r.asSparqlTriple(item));
+			dot = "\n. ";
+		}
+	//
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
 			sb.append(dot);
@@ -126,7 +134,7 @@ public class DataQuery {
 					sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 				}
 			}
-			dot = ". ";
+			dot = "\n. ";
 		}
 		sb.append( " }");
 	//

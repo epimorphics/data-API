@@ -28,6 +28,7 @@ import com.epimorphics.data_api.conversions.ResultsToJson;
 import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
+import com.epimorphics.data_api.data_queries.Restriction;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
@@ -125,7 +126,7 @@ import com.hp.hpl.jena.util.FileManager;
 				q = DataQueryParser.Do(p, example.pm, jo);
 
 			if (p.isOK())
-				sq = q.toSparql(p, example.aspects, example.pm);
+				sq = q.toSparql(p, example.aspects, Restriction.NONE, example.pm);
 
 			checkLegalSPARQL(p, sq);
 			
@@ -190,6 +191,7 @@ import com.hp.hpl.jena.util.FileManager;
 		l.addComment( "JSON-coded query", posted );
 	//
 		Example example = examples.get(datasetName);
+		List<Restriction> restrictions = example.restrictions();
 		Problems p = new Problems();
 		final JsonArray result = new JsonArray();
 	//
@@ -211,8 +213,9 @@ import com.hp.hpl.jena.util.FileManager;
 			if (p.isOK())
 				q = DataQueryParser.Do(p, example.pm, jo);
 
-			if (p.isOK())
-				sq = q.toSparql(p, example.aspects, example.pm);
+			if (p.isOK()) {
+				sq = q.toSparql(p, example.aspects, restrictions, example.pm);
+			}
 			
 			l.addComment("Generated SPARQL", sq);
 

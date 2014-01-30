@@ -10,6 +10,7 @@ import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.data_queries.Restriction;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -59,6 +60,6 @@ public class Example_Games {
 			}
 		}
 	
-		return new Example( pm, aspects, m );
+		return new Example( pm, aspects, Restriction.NONE, m );
 	}
 }
