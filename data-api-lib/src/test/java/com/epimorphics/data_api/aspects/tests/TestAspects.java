@@ -57,6 +57,9 @@ public class TestAspects {
 		assertEquals(BunchLib.set(A, B), a.getAspects());
 	}
 	
+	/*
+     * Tests removed as part of refactoring Aspect implementation
+     * 
 	@Test public void testAspectLabel() {
 		Aspect a = new MockAspect("eh:/mock/aspect/A");
 		assertEquals(BunchLib.list(), a.getLabels());
@@ -79,6 +82,7 @@ public class TestAspects {
 		assertSame(a, a.setDescriptions(stringies));
 		assertEquals(stringies, a.getDescriptions());
 	}
+     */
 	
 	@Test public void testAspectRangeType() {
 		Resource type = RDFS.Class;

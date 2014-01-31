@@ -12,6 +12,7 @@ package com.epimorphics.data_api.config;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 /**
  * Utility or base class for objects which have been configured via an
@@ -27,7 +28,7 @@ public class ResourceBasedConfig {
     }
     
     /**
-     * Empty constructor used by extending classes that have a non-RDF test mode
+     * Empty constructor used by extending classes that have a non-RDF test mode.
      */
     public ResourceBasedConfig() {
     }
@@ -58,6 +59,13 @@ public class ResourceBasedConfig {
      */
     public Resource getRoot() {
         return root;
+    }
+    
+    /**
+     * The set of prefixes to use for the API over this dataset.
+     */
+    public PrefixMapping getPrefixes() {
+        return root.getModel();
     }
     
     /**

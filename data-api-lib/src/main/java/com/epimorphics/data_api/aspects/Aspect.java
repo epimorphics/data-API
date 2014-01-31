@@ -5,20 +5,15 @@
 */
 package com.epimorphics.data_api.aspects;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class Aspect {
+public class Aspect extends ResourceBasedConfig {
 	
 	final String ID;
 	final Shortname name;
-	
-	List<Node> labels = new ArrayList<Node>();
-	List<Node> descriptions = new ArrayList<Node>();
 	
 	boolean isMultiValued = false;
 	boolean isOptional = false;
@@ -28,6 +23,13 @@ public class Aspect {
 	public Aspect(String ID, Shortname name) {
 		this.ID = ID;
 		this.name = name;
+	}
+	
+	public Aspect(Resource aspect) {
+	    super(aspect);
+	    ID = aspect.getURI();
+	    PrefixMapping pm = getPrefixes();
+	    name = new Shortname(pm, pm.shortForm(ID));
 	}
 	
 	@Override public String toString() {
@@ -41,6 +43,10 @@ public class Aspect {
 	public Shortname getName() {
 		return name;
 	}
+    
+    // From base class have:
+    // getLabel()       getLabel(lang)
+    // getDescription() getDescription(lang)
 
 	public String asVar() {
 		return name.asVar();
@@ -48,24 +54,6 @@ public class Aspect {
 
 	public String asProperty() {
 		return name.getCURIE();
-	}
-
-	public List<Node> getLabels() {
-		return labels;
-	}
-
-	public Aspect setLabels(List<Node> labels) {
-		this.labels = labels;
-		return this;
-	}
-
-	public List<Node> getDescriptions() {
-		return descriptions;
-	}
-
-	public Aspect setDescriptions(List<Node> descriptions) {
-		this.descriptions = descriptions;
-		return this;
 	}
 
 	public boolean getIsMultiValued() {
