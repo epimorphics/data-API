@@ -7,6 +7,8 @@
 @prefix dct:   <http://purl.org/dc/terms/> .
 @prefix qb:    <http://purl.org/linked-data/cube#> .
 @prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix wb-classification: <http://environment.data.gov.uk/def/waterbody-classification/> .
+@prefix classification: <http://environment.data.gov.uk/def/classification/> .
 
 @prefix :  <http://www.epimorphics.com/test/dsapi/sprint2#> .
 
@@ -15,5 +17,13 @@
     dct:description "A data cube of waterbody classifications from EA catchment planning pilot";
     dsapi:qb_dataset <http://environment.data.gov.uk/data/waterbody/classification/dataset>;
     dsapi:baseQuery "?item qb:dataset classification:dataset" ;
+    
+    dsapi:aspect 
+        [ dsapi:property wb-classification:classificationValue; ],
+        [ dsapi:property wb-classification:waterBody; ],
+        [ dsapi:property wb-classification:classificationYear; ],
+        [ dsapi:property wb-classification:classificationItem; ],
+        [ dsapi:property wb-classification:statusOrPotential;   dsapi:optional true];
+        
     .
     

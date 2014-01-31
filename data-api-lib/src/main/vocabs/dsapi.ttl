@@ -89,11 +89,18 @@ of the dataset to the ?item variable."""@en;
     
 :propertyPath a owl:DatatypeProperty;
     rdfs:label "property path"@en;
-    rdfs:comment "Source text of a SPARQL property path expression that links a element of the data set to the aspect value."@en;
+    rdfs:comment "Source text of a SPARQL property path expression that links an element of the data set to the aspect value. May use prefixes defined for this dataset."@en;
     rdfs:domain :Aspect;
     rdfs:range  xsd:string;
     .    
     
+:property a owl:ObjectProperty;
+    rdfs:label "property"@en;
+    rdfs:comment "Property which links a data set element to this aspect. Default label, description and range information may be found on this resource."@en;
+    rdfs:domain :Aspect;
+    rdfs:range  rdf:Property;
+    .    
+
 :rangeConstraint a owl:ObjectProperty;
     rdfs:label "range constraint"@en;
     rdfs:comment "Indicates limits to the range of values which will be present for this aspect."@en;

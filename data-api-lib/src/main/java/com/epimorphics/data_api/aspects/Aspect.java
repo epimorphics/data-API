@@ -5,26 +5,24 @@
 */
 package com.epimorphics.data_api.aspects;
 
+import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.util.EpiException;
+import com.epimorphics.vocabs.Dsapi;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
-	
-	final PrefixMapping pm = PrefixMapping.Factory.create()
-		.setNsPrefix("skos", "http://www.w3.org/2004/02/skos/core")
-		;
-	
-	final String ID;
+	String ID;
 	final Shortname name;
 	
 	boolean isMultiValued = false;
 	boolean isOptional = false;
 	
 	Resource rangeType = null;
-	Shortname belowPredicate = new Shortname(pm, "skos:broader" );
+	Shortname belowPredicate = new Shortname(DefaultPrefixes.get(), "skos:broader" );
 	
 	public Aspect(String ID, Shortname name) {
 		this.ID = ID;
@@ -34,6 +32,15 @@ public class Aspect extends ResourceBasedConfig {
 	public Aspect(Resource aspect) {
 	    super(aspect);
 	    ID = aspect.getURI();
+	    if (ID == null) {
+	        Resource prop = aspect.getPropertyResourceValue(Dsapi.property);
+	        if (prop != null) {
+	            ID = prop.getURI();
+	        } else {
+	            // TODO The ID should not be tied to the aspect definition but needs more refactoring here to sort it out
+	            throw new EpiException("Internal error - can't handle bNode aspects properly yet");
+	        }
+	    }
 	    PrefixMapping pm = getPrefixes();
 	    name = new Shortname(pm, pm.shortForm(ID));
 	    

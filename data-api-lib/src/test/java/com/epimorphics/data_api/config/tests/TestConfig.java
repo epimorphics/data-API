@@ -29,7 +29,7 @@ public class TestConfig {
     
     @Before
     public void startup() throws IOException {
-        testapp = new App("testapp", new File("test/configTest/test2.conf"));
+        testapp = new App("testapp", new File("src/test/data/configTest/test2.conf"));
     }
 
     @Test
@@ -45,13 +45,22 @@ public class TestConfig {
         assertEquals("Waterbody classifications", dataset.getLabel("en")); 
         assertEquals("A data cube of waterbody classifications from EA catchment planning pilot", dataset.getDescription()); 
         assertEquals("?item qb:dataset classification:dataset", dataset.getBaseQuery());
+
+        assertEquals(5, dataset.getAspects().size());
+        Aspect aspect = aspectLabeled(dataset, "classification year");
+        assertNotNull(aspect);
+        assertFalse( aspect.getIsOptional() );
+        assertEquals( XSD.gYear, aspect.getRangeType());
         
+        aspect = aspectLabeled(dataset, "status or potential");
+        assertTrue( aspect.getIsOptional() );
+
         // Using DSD from the source data
         dataset = man.getDataset("wbclass");
         assertEquals("?item  <http://purl.org/linked-data/cube#dataSet> <http://environment.data.gov.uk/data/waterbody/classification/dataset> .", dataset.getBaseQuery());
         assertEquals(5, dataset.getAspects().size());
         
-        Aspect aspect = aspectLabeled(dataset, "classification year");
+        aspect = aspectLabeled(dataset, "classification year");
         assertNotNull(aspect);
         assertEquals("The property classificationYear is a dimension property that relates an observation to a year for which a classification applies.", 
                 aspect.getDescription("en"));
@@ -61,7 +70,6 @@ public class TestConfig {
         aspect = aspectLabeled(dataset, "status or potential");
         assertTrue( aspect.getIsOptional() );
         
-        dataset.getRoot().getModel().write(System.out, "Turtle");
     }
     
     private Aspect aspectLabeled(API_Dataset dataset, String label) {

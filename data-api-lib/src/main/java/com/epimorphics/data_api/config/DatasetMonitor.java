@@ -10,6 +10,7 @@
 package com.epimorphics.data_api.config;
 
 import java.io.File;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +18,21 @@ import org.slf4j.LoggerFactory;
 import com.epimorphics.appbase.monitor.ConfigMonitor;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
+import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
+import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 /**
  * Monitor a directory of configuration files, each of which species
@@ -45,11 +52,14 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     @Override
     protected API_Dataset configure(File file) {
         Model config = FileManager.get().loadModel( file.getPath() );
+        Resource configRoot = RDFUtil.findRoot(config);
+        
+        // Set the default global prefixes
+        // stops applications rebinding them in a way with might break internal assumptions
+        config.setNsPrefixes(DefaultPrefixes.get());
         
         // The config may reference dataset or DSD information in the source
         // If so pull in a local copy
-        Resource configRoot = RDFUtil.findRoot(config);
-        
         Resource dataset = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dataset);
         Resource dsd = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dsd);
         if (dataset != null && !hasProperties(dataset)) {
@@ -68,11 +78,19 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             }
         }
         
+        // Also pull in property definitions for any aspect property declared inline
+        List<Resource> aspectprops = QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:property");
+        if ( ! aspectprops.isEmpty() ) {
+            String[] uris = new String[ aspectprops.size() ];
+            for (int i = 0; i < aspectprops.size(); i++) uris[i] = aspectprops.get(i).getURI();
+            config.add( ModelFactory.createModelForGraph( manager.getSource().describeAll(uris)) );
+        }
+        
         API_Dataset dsapi = new API_Dataset(configRoot); 
         if (dsd != null) {
             parseDSD(dsapi, dsd);
         } else {
-            parseAspects(dsapi, dataset);
+            parseAspects(dsapi, configRoot);
         }
         return dsapi;
     }
@@ -98,8 +116,23 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
         dsapi.add(a);
     }
     
-    private void parseAspects(API_Dataset dsapi, Resource dataset) {
-        // TODO implement
+    private static Property[] mergeProps = new Property[]{ RDFS.label, SKOS.prefLabel, RDFS.comment, RDFS.range, DCTerms.description};
+    
+    private void parseAspects(API_Dataset dsapi, Resource root) {
+        for (Resource aspect : RDFUtil.allResourceValues(root, Dsapi.aspect)) {
+            Resource decl = RDFUtil.getResourceValue(aspect, Dsapi.property);
+            if (decl != null) {
+                for (Property p : mergeProps) {
+                    mergeProp(aspect, decl, p);
+                }
+            }
+            Aspect a = new Aspect(aspect);
+            a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
+            a.setIsOptional( RDFUtil.getBooleanValue(aspect, Dsapi.optional, false) );
+            // TODO parse property paths
+            // TODO parse range constraints
+            dsapi.add(a);
+        }
     }
     
     private boolean hasProperties(Resource r) {
@@ -120,4 +153,12 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
         root.getModel().add( ModelFactory.createModelForGraph(closure) );
     }
 
+    private void mergeProp(Resource aspect, Resource decl, Property prop) {
+        if ( ! aspect.hasProperty(prop) ) {
+            for (StmtIterator i = decl.listProperties(prop); i.hasNext();) {
+                Statement s = i.next();
+                aspect.addProperty(prop, s.getObject());
+            }
+        }
+    }
 }
