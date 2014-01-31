@@ -9,6 +9,7 @@ import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
 	
@@ -35,6 +36,8 @@ public class Aspect extends ResourceBasedConfig {
 	    ID = aspect.getURI();
 	    PrefixMapping pm = getPrefixes();
 	    name = new Shortname(pm, pm.shortForm(ID));
+	    
+	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
 	}
 	
 	@Override public String toString() {

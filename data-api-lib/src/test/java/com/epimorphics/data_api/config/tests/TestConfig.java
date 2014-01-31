@@ -19,8 +19,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import com.epimorphics.appbase.core.App;
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class TestConfig {
     App testapp;
@@ -44,11 +46,31 @@ public class TestConfig {
         assertEquals("A data cube of waterbody classifications from EA catchment planning pilot", dataset.getDescription()); 
         assertEquals("?item qb:dataset classification:dataset", dataset.getBaseQuery());
         
-        // Using DSD from the souce data
+        // Using DSD from the source data
         dataset = man.getDataset("wbclass");
         assertEquals("?item  <http://purl.org/linked-data/cube#dataSet> <http://environment.data.gov.uk/data/waterbody/classification/dataset> .", dataset.getBaseQuery());
+        assertEquals(5, dataset.getAspects().size());
+        
+        Aspect aspect = aspectLabeled(dataset, "classification year");
+        assertNotNull(aspect);
+        assertEquals("The property classificationYear is a dimension property that relates an observation to a year for which a classification applies.", 
+                aspect.getDescription("en"));
+        assertFalse( aspect.getIsOptional() );
+        assertEquals( XSD.gYear, aspect.getRangeType());
+        
+        aspect = aspectLabeled(dataset, "status or potential");
+        assertTrue( aspect.getIsOptional() );
         
         dataset.getRoot().getModel().write(System.out, "Turtle");
+    }
+    
+    private Aspect aspectLabeled(API_Dataset dataset, String label) {
+        for (Aspect aspect : dataset.getAspects()) {
+            if (label.equals( aspect.getLabel() )) {
+                return aspect;
+            }
+        }
+        return null;
     }
     
     @After

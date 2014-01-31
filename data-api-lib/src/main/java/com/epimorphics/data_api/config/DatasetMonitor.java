@@ -80,12 +80,12 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     private void parseDSD(API_Dataset dsapi, Resource dsd) {
         for (Resource component : RDFUtil.allResourceValues(dsd, Cube.component)) {
             if (component.hasProperty(Cube.dimension)) {
-                addAspect(dsapi, RDFUtil.getResourceValue(dsd, Cube.dimension), false);
+                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.dimension), true);
             } else if (component.hasProperty(Cube.measure)) {
-                addAspect(dsapi, RDFUtil.getResourceValue(dsd, Cube.measure), false);
+                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.measure), true);
             } else if (component.hasProperty(Cube.attribute)) {
                 boolean required = RDFUtil.getBooleanValue(component, Cube.componentRequired, false);
-                addAspect(dsapi, RDFUtil.getResourceValue(dsd, Cube.attribute), required);
+                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.attribute), required);
             } else {
                 log.warn("Failed to parse on of the components of dsd " + dsd + ", component was " + component);
             }
@@ -93,8 +93,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     }
     
     private void addAspect(API_Dataset dsapi, Resource aspect, boolean required) {
-        // TODO configure aspect as a Resource based config
-        Aspect a = null;
+        Aspect a = new Aspect(aspect);
         a.setIsOptional(!required);
         dsapi.add(a);
     }
