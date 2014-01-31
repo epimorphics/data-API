@@ -6,34 +6,33 @@
 
 package com.epimorphics.data_api.endpoints;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.PrintStream;
+import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import java.util.*;
 
-import org.apache.jena.atlas.json.JSON;
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonString;
+import javax.servlet.http.HttpServletRequest;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+
+import org.apache.jena.atlas.json.*;
 
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.appbase.core.AppConfig;
+
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.conversions.ResultsToJson;
 import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
+import com.epimorphics.data_api.data_queries.Restriction;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
+
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -127,7 +126,7 @@ import com.hp.hpl.jena.util.FileManager;
 				q = DataQueryParser.Do(p, example.pm, jo);
 
 			if (p.isOK())
-				sq = q.toSparql(p, example.aspects, example.pm);
+				sq = q.toSparql(p, example.aspects, Restriction.NONE, example.pm);
 
 			checkLegalSPARQL(p, sq);
 			
@@ -150,21 +149,52 @@ import com.hp.hpl.jena.util.FileManager;
 		if (p.isOK()) {
 			return Response.ok("OK\n" + BunchLib.join(comments)).build();
 		} else {
-			return Response.ok(
-					"FAILED:\n" + BunchLib.join(comments)
-							+ BunchLib.join(p.getProblemStrings())).build();
+			return Response.ok
+				( "FAILED:\n" + BunchLib.join(comments)	+ BunchLib.join(p.getProblemStrings())).build();
 		}
+	}
+	
+	static final Map<String, Lookback> lookbacks = new HashMap<String, Lookback>();
+	
+	@GET @Path("lookback/{token}") @Produces("text/plain") public Response lookback_at_query
+		( @Context HttpServletRequest req
+		, @PathParam("token") String token
+		) {
+		
+		Lookback l = lookbacks.get(token);
+		
+//		String skel = BunchLib.join
+//			( "<html>"
+//			, "<head>"
+//			, "</head>"
+//			, "</body>"
+//			, "<h1>lookback:</h1>"
+//			, l.toText()
+//			, "</body>"
+//			, "</html>"
+//			);
+			
+		return Response.ok(l.toText()).build();
 	}
 
 	@POST @Path("dataset/{name}/data") @Produces("application/json") public Response placeholder_query_POST(
-			@PathParam("name") String datasetName,
-			@FormParam("json") String posted) {
-
+			@PathParam("name") String datasetName
+			, @FormParam("json") String posted
+			, @Context HttpServletRequest req
+			, @QueryParam("token") String token
+			) throws UnsupportedEncodingException {
+	//
+		Lookback l = new Lookback();
+		if (token == null) token = UUID.randomUUID().toString();		
+		lookbacks.put(token, l);
+		l.addComment( "Dataset name", datasetName );
+		l.addComment( "JSON-coded query", posted );
+	//
 		Example example = examples.get(datasetName);
-
+		List<Restriction> restrictions = example.restrictions();
 		Problems p = new Problems();
 		final JsonArray result = new JsonArray();
-
+	//
 		if (example == null)
 			p.add("dataset '" + datasetName + "' not found.");
 
@@ -173,6 +203,8 @@ import com.hp.hpl.jena.util.FileManager;
 			for (Aspect a : example.aspects.getAspects())
 				aspects.add(a);
 
+			addAspectComments(l, example.aspects );
+			
 			JsonObject jo = JSON.parse(posted);
 
 			DataQuery q = null;
@@ -181,8 +213,11 @@ import com.hp.hpl.jena.util.FileManager;
 			if (p.isOK())
 				q = DataQueryParser.Do(p, example.pm, jo);
 
-			if (p.isOK())
-				sq = q.toSparql(p, example.aspects, example.pm);
+			if (p.isOK()) {
+				sq = q.toSparql(p, example.aspects, restrictions, example.pm);
+			}
+			
+			l.addComment("Generated SPARQL", sq);
 
 			checkLegalSPARQL(p, sq);
 
@@ -194,16 +229,36 @@ import com.hp.hpl.jena.util.FileManager;
 
 		} catch (Exception e) {
 			System.err.println("BROKEN: " + e);
-			e.printStackTrace(System.err);
-			p.add("BROKEN: " + e);
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			PrintStream ps = new PrintStream(os);
+			e.printStackTrace(ps);
+			ps.flush();
+			p.add("BROKEN: " + e + "\n" + os.toString("UTF-8"));
 		}
-
+				
 		if (p.isOK()) {
-			return Response.ok(result.toString()).build();
+			return Response.ok(result.toString()).header("x-epi-token", token).build();
 
 		} else {
-			return Response.ok("FAILED:\n" + BunchLib.join(p.getProblemStrings())).build();
+			String problemStrings = p.getProblemStrings();
+			l.addComment("Problems detected", problemStrings );
+			return Response.serverError().header("x-epi-token", token).entity("FAILED:\n" + BunchLib.join(problemStrings)).build();
 		}
+	}
+
+	private void addAspectComments(Lookback l, Aspects aspects) {		
+		StringBuilder comment = new StringBuilder();
+		
+		for (Aspect a : aspects.getAspects()) {
+			Resource rt = a.getRangeType();
+			boolean optional = a.getIsOptional(), multiple = a.getIsMultiValued();
+		//
+			comment.append( "  " ).append( a ).append( (rt == null ? "" : " [range: " + rt + "]") );
+			comment.append( (optional ? ", optional" : "") );
+			comment.append( (multiple ? ", multivalued" : "") );
+			comment.append( "\n" );
+		}
+		l.addComment("aspects", comment.toString());
 	}
 
 	private void checkLegalSPARQL(Problems p, String sq) {

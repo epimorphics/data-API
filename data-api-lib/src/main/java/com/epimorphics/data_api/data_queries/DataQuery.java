@@ -29,13 +29,19 @@ public class DataQuery {
 	};
 	
 	final List<Filter> filters;
+	final List<Sort> sortby;
+
+	public DataQuery(List<Filter> filters, List<Sort> sortby) {
+		this.filters = filters;
+		this.sortby = sortby;
+	}
 	
 	public DataQuery(List<Filter> filters) {
-		this.filters = filters;
+		this(filters, new ArrayList<Sort>() );
 	}
 	
 	public List<Sort> sorts() {
-		return new ArrayList<Sort>();
+		return sortby;
 	}
 	
 	public List<Filter> filters() {
@@ -50,12 +56,14 @@ public class DataQuery {
 		return new Slice();
 	}
 	
-	public String toSparql(Problems p, Aspects a, PrefixMapping pm) {
-		try { return toSparqlString(p, a, pm); }
+	public String toSparql(Problems p, Aspects a, List<Restriction> restrictions, PrefixMapping pm) {
+		try { return toSparqlString(p, a, restrictions, pm); }
 		catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
 	}
 
-	private String toSparqlString(Problems p, Aspects a, PrefixMapping pm) {
+	static final Term item = Term.var("item");
+	
+	private String toSparqlString(Problems p, Aspects a, List<Restriction> restrictions, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> prefixes = pm.getNsPrefixMap();
 	//
@@ -79,13 +87,19 @@ public class DataQuery {
 		Map<String, Filter> sf = new HashMap<String, Filter>();
 		for (Filter f: filters) sf.put("?" + f.name.asVar(), f);
 	//
-		sb.append( " SELECT ?item");
+		sb.append( "\nSELECT ?item");
 		for (Aspect x: ordered) {
 			sb.append(" ?").append( x.asVar() );
 		}
 	//	
-		sb.append(" WHERE {");
+		sb.append("\nWHERE {");
 		String dot = "";
+	//
+		for (Restriction r: restrictions) {
+			sb.append(dot).append( r.asSparqlTriple(item));
+			dot = "\n. ";
+		}
+	//
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
 			sb.append(dot);
@@ -107,7 +121,8 @@ public class DataQuery {
 					}
 					sb.append(")");
 				} else if (rangeOp.equals("below")) {
-					sb.append(". ").append(fVar).append(" ").append("skos:broader").append(" ").append(value);
+					Shortname below = x.getBelowPredicate();
+					sb.append(". ").append(fVar).append(" ").append(below.getCURIE()).append(" ").append(value);
 				} else if (rangeOp.equals("contains")) {
 					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
 				} else if (rangeOp.equals("matches")) {
@@ -119,9 +134,20 @@ public class DataQuery {
 					sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 				}
 			}
-			dot = ". ";
+			dot = "\n. ";
 		}
 		sb.append( " }");
+	//
+		if (sortby.size() > 0) {
+			sb.append(" ORDER BY");
+			for (Sort s: sortby) {
+				sb.append(" ");
+				if (!s.upwards) sb.append("DESC(");
+				sb.append( "?" ).append(s.by.asVar());
+				if (!s.upwards)sb.append(")"); 
+			}
+			
+		}
 	//
 		return sb.toString();
 	}

@@ -42,7 +42,6 @@ public abstract class Term {
 		@Override public String asSparqlTerm() {
 			return "BAD(" + problematic + ")";
 		}
-		
 	}
 	
 	public static class TermBool extends Term {
@@ -118,6 +117,31 @@ public abstract class Term {
 		
 		@Override public String asSparqlTerm() {
 			return toString();
+		}
+	}
+	
+	public static class TermVar extends Term {
+
+		final String name;
+		
+		public TermVar(String name) {
+			this.name = name;
+		}
+
+		@Override public String toString() {
+			return "<var " + name + ">";
+		}
+		
+		@Override public int hashCode() {
+			return name.hashCode();
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof TermVar && name.equals(((TermVar) other).name);
+		}
+		
+		@Override public String asSparqlTerm() {
+			return "?" + name;
 		}
 	}
 	
@@ -229,6 +253,10 @@ public abstract class Term {
 	
 	public static Term URI(String spelling) {
 		return new TermResource(spelling);
+	}
+	
+	public static Term var(String spelling) {
+		return new TermVar(spelling);
 	}
 	
 	public static Term languaged(String spelling, String lang) {
