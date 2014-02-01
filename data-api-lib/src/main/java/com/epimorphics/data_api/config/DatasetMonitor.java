@@ -86,7 +86,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             config.add( ModelFactory.createModelForGraph( manager.getSource().describeAll(uris)) );
         }
         
-        API_Dataset dsapi = new API_Dataset(configRoot); 
+        API_Dataset dsapi = new API_Dataset(configRoot, manager); 
         if (dsd != null) {
             parseDSD(dsapi, dsd);
         } else {

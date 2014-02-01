@@ -5,9 +5,14 @@
 */
 package com.epimorphics.data_api.aspects;
 
+import static com.epimorphics.data_api.config.JSONConstants.*;
+
 import com.epimorphics.data_api.config.DefaultPrefixes;
+import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.json.JSFullWriter;
+import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Dsapi;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -106,5 +111,34 @@ public class Aspect extends ResourceBasedConfig {
 	public Resource getRangeType() {
 		return rangeType;
 	}
+    
+    /**
+     * Full json serialization used to report the dataset structure, language specific
+     */
+    public JSONWritable asJson(String lang) {
+        return new Writer(lang);
+    }
+
+    public void writeJson(JSFullWriter out, String lang) {
+        out.startObject();
+        out.pair(JSONConstants.ID, name.getCURIE());
+        out.pair(URI, ID);
+        out.pair(LABEL, getLabel(lang));
+        out.pair(DESCRIPTION, getDescription(lang));
+        out.pair(IS_OPTIONAL, isOptional);
+        out.pair(IS_MULTIVALUED, isMultiValued);
+        out.pair(RANGE_TYPE, rangeType.getURI());
+        out.finishObject();
+    }
+    
+    class Writer implements JSONWritable {
+        String lang;
+        public Writer(String lang) {  this.lang = lang;  }
+        
+        @Override
+        public void writeTo(JSFullWriter out) {
+            writeJson(out, lang);
+        }
+    }
 
 }

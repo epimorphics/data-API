@@ -79,7 +79,11 @@ public class ResourceBasedConfig {
      * Return a suitable label for the resource, preferably in the given language
      */
     public String getLabel(String lang) {
-        return RDFUtil.getLabel(root, lang);
+        if (lang != null) {
+            return RDFUtil.getLabel(root, lang); 
+        } else {
+            return RDFUtil.getLabel(root); 
+        }
     }
     
     
@@ -94,7 +98,11 @@ public class ResourceBasedConfig {
      * Return a suitable description for the resource, preferably in the given language
      */
     public String getDescription(String lang) {
-        return RDFUtil.findLangMatchValue(root, lang, RDFUtil.descriptionProps);
+        if (lang != null) {
+            return RDFUtil.findLangMatchValue(root, lang, RDFUtil.descriptionProps);
+        } else {
+            return RDFUtil.getDescription(root);
+        }
     }
 
 }
