@@ -5,14 +5,15 @@
 */
 package com.epimorphics.data_api.datasets;
 
+import static com.epimorphics.data_api.config.JSONConstants.ASPECTS;
 import static com.epimorphics.data_api.config.JSONConstants.DATA_API;
 import static com.epimorphics.data_api.config.JSONConstants.DESCRIPTION;
 import static com.epimorphics.data_api.config.JSONConstants.DEV_API;
+import static com.epimorphics.data_api.config.JSONConstants.DSD;
 import static com.epimorphics.data_api.config.JSONConstants.ID;
 import static com.epimorphics.data_api.config.JSONConstants.LABEL;
 import static com.epimorphics.data_api.config.JSONConstants.STRUCTURE_API;
 import static com.epimorphics.data_api.config.JSONConstants.URI;
-import static com.epimorphics.data_api.config.JSONConstants.ASPECTS;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,6 +54,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    super(config);
 	    configureBaseQuery();
 	    configureName();
+	    this.manager = manager;
 	}
 	
     private void configureBaseQuery() {
@@ -97,19 +99,19 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	public String getBaseQuery() {
 	    return query;
 	}
-
-    /**
-     * Full json serialization used to report the dataset structure
-     */
-    public JSONWritable asJson() {
-        return asJson(null);
-    }
     
     /**
      * Full json serialization used to report the dataset structure, language specific
      */
     public JSONWritable asJson(String lang) {
         return new Writer(lang);
+    }
+    
+    /**
+     * Shortfurm summary json serialization
+     */
+    public JSONWritable asJsonShort(String lang) {
+        return new ShortWriter(lang);
     }
 
     /**
@@ -137,6 +139,10 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     public void writeJson(JSFullWriter out, String lang) {
         out.startObject();
         writeSummary(out, lang);
+        Resource dsd = root.getPropertyResourceValue(Dsapi.qb_dsd);
+        if (dsd != null) {
+            out.pair(DSD, dsd.getURI());
+        }
         out.key(ASPECTS);
         out.startArray();
         for (Iterator<Aspect> ai = aspects.iterator(); ai.hasNext();) {
@@ -156,6 +162,16 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
         @Override
         public void writeTo(JSFullWriter out) {
             writeJson(out, lang);
+        }
+    }
+    
+    class ShortWriter implements JSONWritable {
+        String lang;
+        public ShortWriter(String lang) {  this.lang = lang;  }
+        
+        @Override
+        public void writeTo(JSFullWriter out) {
+            writeShortTo(out, lang);
         }
     }
 

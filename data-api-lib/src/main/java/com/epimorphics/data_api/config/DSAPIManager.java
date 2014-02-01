@@ -17,6 +17,7 @@ import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
+import com.sun.jersey.api.NotFoundException;
 
 /**
  * An appbase component which manages a set of DSAPI dataset end points.
@@ -90,5 +91,60 @@ public class DSAPIManager extends ComponentBase {
             writeJson(out, lang);
         }
     }
+    
+    // Endpoint implementations - should be called from app-specific jersey bindings
+    
+    /**
+     * <pre>base/dataset</pre>
+     * 
+     * Return a JSON serialization of the list of available datasets
+     *  
+     * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
+     */
+    public JSONWritable datasetsEndpoint(String lang) {
+        return asJson(lang);
+    }
+    
+    /**
+     * <pre>base/dataset/{dataset}</pre>
+     * 
+     * Return a JSON serialization of the short form for a specific dataset, includes references
+     * to the endpoints for structure and data
+     *  
+     * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
+     */
+    public JSONWritable datasetEndpoint(String lang, String dataset) {
+        return  getAPI(dataset).asJsonShort(lang); 
+    }
+
+    private API_Dataset getAPI(String dataset) {
+        API_Dataset api = getDataset(dataset);
+        if (api == null) {
+            throw new NotFoundException("Dataset " + dataset + " not registered");
+        }
+        return api;
+    }
+    
+    /**
+     * <pre>base/dataset/{dataset}/structure</pre>
+     * 
+     * Return a JSON serialization of the full structure of a data set
+     *  
+     * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
+     */
+    public JSONWritable datasetStructureEndpoint(String lang, String dataset) {
+        return  getAPI(dataset).asJson(lang); 
+    }
+    
+    /**
+     * <pre>base/dataset/{dataset}/data</pre>
+     * 
+     * The data query endpoint
+     */
+    public JSONWritable datasetDataEndpoint(String lang, String dataset) {
+        // TODO - wire up
+        return null;
+    }
+
 
 }

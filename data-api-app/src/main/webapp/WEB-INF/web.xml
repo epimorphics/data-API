@@ -7,12 +7,16 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 
   <listener>
     <listener-class>com.epimorphics.appbase.core.AppConfig</listener-class>
-  </listener>  
-
-  <servlet-mapping>
-    <servlet-name>default</servlet-name>
+  </listener>
+    
+  <filter>
+    <filter-name>CORS</filter-name>
+    <filter-class>com.epimorphics.appbase.webapi.CorsFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>CORS</filter-name>
     <url-pattern>/*</url-pattern>
-  </servlet-mapping>
+  </filter-mapping>
   
   <filter>
     <filter-name>VelocityFilter</filter-name>
@@ -29,14 +33,27 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>com.epimorphics.data_api.endpoints</param-value>
+      <param-value>com.epimorphics.data_api.endpoints,com.epimorphics.server.webapi</param-value>
     </init-param>
+    <init-param>
+      <param-name>com.sun.jersey.config.feature.FilterForwardOn404</param-name>
+      <param-value>true</param-value>
+    </init-param>
+    <init-param>
+         <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+         <param-value>com.sun.jersey.api.container.filter.PostReplaceFilter</param-value>
+     </init-param>
   </filter>
 
   <filter-mapping>
     <filter-name>Jersey Web Application</filter-name>
-    <url-pattern>/placeholder/*</url-pattern>
+    <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
 
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
