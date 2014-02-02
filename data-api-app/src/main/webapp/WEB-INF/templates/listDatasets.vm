@@ -1,0 +1,12 @@
+#parse("header.vm")
+#set($nav="datasets")
+#parse("navbar.vm")
+<div class="container">
+  <h1>Available datasets</h1>
+  <ul>
+    #foreach($dataset in $dsapi.datasets)
+      <li><strong>$dataset.label</strong> $dataset.description </li>
+    #end
+  </ul>
+## outer container div is closed in footer.vm
+#parse("footer.vm")

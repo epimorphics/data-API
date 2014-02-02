@@ -9,27 +9,38 @@
 
 package com.epimorphics.data_api.endpoints;
 
-import java.io.InputStream;
-
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.jena.atlas.json.JsonObject;
 
 import com.epimorphics.appbase.core.AppConfig;
+import com.epimorphics.appbase.templates.VelocityRender;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.json.JSONWritable;
 
 @Path("dataset")
 public class Endpoints {
     protected DSAPIManager man;
+    protected VelocityRender velocity;
+    
     protected String lang = null;       // TODO set from request parameters
+    
+    protected @Context ServletContext context;
+    protected @Context UriInfo uriInfo;
+    protected @Context HttpServletRequest request;
+    
     
     public DSAPIManager getManager() {
         if (man == null) {
@@ -38,10 +49,23 @@ public class Endpoints {
         return man;
     }
     
+    public VelocityRender getVelocity() {
+        if (velocity == null) {
+            velocity = AppConfig.getApp().getA(VelocityRender.class);
+        }
+        return velocity;
+    }
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable listDatasets() {
         return getManager().datasetsEndpoint(lang);
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public StreamingOutput listDatasetsHtml() {
+       return getVelocity().render("listDatasets.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters());
     }
     
     @GET
