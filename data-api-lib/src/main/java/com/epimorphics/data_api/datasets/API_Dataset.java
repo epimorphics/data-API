@@ -62,7 +62,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
         if (query == null) {
             Resource dataset = getResourceValue(Dsapi.qb_dataset);
             if (dataset != null) {
-                query = "?item  <" + Cube.dataSet + "> <" + getResourceValue(Dsapi.qb_dataset).getURI() + "> .";
+                query = "?item  <" + Cube.dataSet + "> <" + getResourceValue(Dsapi.qb_dataset).getURI() + ">";
             } else {
                 query = "";
             }

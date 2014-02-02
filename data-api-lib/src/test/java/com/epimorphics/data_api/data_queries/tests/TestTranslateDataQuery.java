@@ -5,7 +5,8 @@
 */
 package com.epimorphics.data_api.data_queries.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -17,7 +18,6 @@ import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
-import com.epimorphics.data_api.data_queries.Restriction;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Term;
@@ -54,7 +54,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X }", sq );
 	}		
@@ -67,7 +67,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
 	}	
@@ -83,7 +83,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
 	}
@@ -97,7 +97,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);		
 		assertSameSelect
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17)}"
@@ -138,7 +138,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);		
 		assertSameSelect
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)}"
@@ -155,7 +155,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);		
 		assertSameSelect
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17 || ?pre_X = 99)}"
@@ -217,7 +217,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(useAspect);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		
 		String var = "?" + useAspect.asVar();
@@ -244,7 +244,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). ?item pre:Y ?pre_Y}", sq );
 	}		
@@ -258,7 +258,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Yopt);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
 	}		
@@ -275,7 +275,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, Restriction.NONE, pm);
+		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}", sq );
 	}
@@ -285,9 +285,8 @@ public class TestTranslateDataQuery {
 		DataQuery q = new DataQuery(BunchLib.<Filter>list());
 	//
 		Aspects a = new Aspects();
-		List<Restriction> restrictions = BunchLib.list(new Restriction(pm, "pre:has", "pre:value"));
 	//
-		String sq = q.toSparql(p, a, restrictions, pm);
+		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item WHERE { ?item pre:has pre:value }", sq );
 		}
@@ -297,9 +296,8 @@ public class TestTranslateDataQuery {
 		DataQuery q = new DataQuery(BunchLib.<Filter>list());
 	//
 		Aspects a = new Aspects().include(Y);
-		List<Restriction> restrictions = BunchLib.list(new Restriction(pm, "pre:has", "pre:value"));
 	//
-		String sq = q.toSparql(p, a, restrictions, pm);
+		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { ?item pre:has pre:value . ?item pre:Y ?pre_Y }", sq );
 		}
@@ -311,7 +309,7 @@ public class TestTranslateDataQuery {
 	}
 
 	private void assertSameSelect(String expected, String toTest) {
-		System.err.println( ">> " + toTest );
+//		System.err.println( ">> " + toTest );
 		Query t = QueryFactory.create(toTest);
 		Query e = QueryFactory.create(expected);
 		assertEquals(e, t);

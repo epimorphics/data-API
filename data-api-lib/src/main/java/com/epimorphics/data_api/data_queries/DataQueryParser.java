@@ -47,7 +47,7 @@ public class DataQueryParser {
 					if (range.isObject()) {
 						JsonObject rob = range.getAsObject();
 						for (String op: rob.keys()) {
-							List<Term> v = DataQueryParser.jsonToTerms(p, rob.get(op));
+							List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(op));
 							if (isKnownOp(op)) {
 								filters.add( new Filter(sn, new Range(op, v) ) );
 							} else {
@@ -98,7 +98,7 @@ public class DataQueryParser {
 	}
 
 	// TODO literals with a language
-	public static Term jsonToTerm(Problems p, JsonValue jv) {
+	public static Term jsonToTerm(Problems p, PrefixMapping pm, JsonValue jv) {
 		if (jv.isBoolean()) return Term.bool(jv.getAsBoolean().value());
 		if (jv.isString()) return Term.string(jv.getAsString().value());
 		if (jv.isNumber()) return Term.number(jv.getAsNumber().value());
@@ -109,7 +109,7 @@ public class DataQueryParser {
 			
 			if (id != null) {
 				if (id.isString()) {
-					return Term.URI(id.getAsString().value());
+					return Term.URI( pm.expandPrefix(id.getAsString().value()) );
 				} else {
 					p.add("Cannot convert JSON value '" + jv + "' to Term: @id has a non-string value.");
 					return Term.bad(jv);
@@ -128,13 +128,13 @@ public class DataQueryParser {
 		return Term.bad(jv);
 	}
 
-	public static List<Term> jsonToTerms(Problems p, JsonValue jv) {
+	public static List<Term> jsonToTerms(Problems p, PrefixMapping pm, JsonValue jv) {
 		if (jv.isArray()) {
 			List<Term> values = new ArrayList<Term>();
-			for (JsonValue element: jv.getAsArray()) values.add(jsonToTerm(p, element));
+			for (JsonValue element: jv.getAsArray()) values.add(jsonToTerm(p, pm, element));
 			return values;
 		} else {
-			return BunchLib.list(jsonToTerm(p, jv));
+			return BunchLib.list(jsonToTerm(p, pm, jv));
 		}
 	}
 }

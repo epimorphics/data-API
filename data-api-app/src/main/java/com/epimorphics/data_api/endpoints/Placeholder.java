@@ -126,7 +126,7 @@ import com.hp.hpl.jena.util.FileManager;
 				q = DataQueryParser.Do(p, example.pm, jo);
 
 			if (p.isOK())
-				sq = q.toSparql(p, example.aspects, Restriction.NONE, example.pm);
+				sq = q.toSparql(p, example.aspects, null, example.pm);
 
 			checkLegalSPARQL(p, sq);
 			
@@ -214,7 +214,7 @@ import com.hp.hpl.jena.util.FileManager;
 				q = DataQueryParser.Do(p, example.pm, jo);
 
 			if (p.isOK()) {
-				sq = q.toSparql(p, example.aspects, restrictions, example.pm);
+				sq = q.toSparql(p, example.aspects, null, example.pm);
 			}
 			
 			l.addComment("Generated SPARQL", sq);

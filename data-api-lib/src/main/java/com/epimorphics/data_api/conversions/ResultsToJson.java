@@ -26,7 +26,7 @@ public class ResultsToJson {
 		void consume(JsonValue jv);
 	}
 	
-	public static void convert(List<Aspect> aspects, JSONConsumer jc, Iterator<QuerySolution> rows) {
+	public static void convert(Collection<Aspect> aspects, JSONConsumer jc, Iterator<QuerySolution> rows) {
 				
 		Node current = null;
 		JsonObject pending = null;		

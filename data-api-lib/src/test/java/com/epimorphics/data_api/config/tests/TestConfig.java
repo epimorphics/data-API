@@ -66,7 +66,7 @@ public class TestConfig {
 
         // Using DSD from the source data
         dataset = man.getDataset("wbclass");
-        assertEquals("?item  <http://purl.org/linked-data/cube#dataSet> <http://environment.data.gov.uk/data/waterbody/classification/dataset> .", dataset.getBaseQuery());
+        assertEquals("?item  <http://purl.org/linked-data/cube#dataSet> <http://environment.data.gov.uk/data/waterbody/classification/dataset>", dataset.getBaseQuery());
         checkAspects(dataset);
         
         jds = asJson( dataset.asJson("en") ).getAsObject();

@@ -12,9 +12,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
@@ -55,15 +57,20 @@ public class DataQuery {
 	public Slice slice() {
 		return new Slice();
 	}
-	
-	public String toSparql(Problems p, Aspects a, List<Restriction> restrictions, PrefixMapping pm) {
-		try { return toSparqlString(p, a, restrictions, pm); }
-		catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
-	}
+    
+    public String toSparql(Problems p, API_Dataset api) {
+        try { return toSparqlString(p, api.getAspects(), api.getBaseQuery(), api.getPrefixes()); }
+        catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
+    }
+    
+    public String toSparql(Problems p, Aspects a, String baseQuery, PrefixMapping pm) {
+        try { return toSparqlString(p, a.getAspects(), baseQuery, pm); }
+        catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
+    }
 
 	static final Term item = Term.var("item");
 	
-	private String toSparqlString(Problems p, Aspects a, List<Restriction> restrictions, PrefixMapping pm) {
+	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
 		Map<String, String> prefixes = pm.getNsPrefixMap();
 	//
@@ -81,7 +88,7 @@ public class DataQuery {
 			.append( "\n" )
 			;
 	//
-		List<Aspect> ordered = new ArrayList<Aspect>(a.getAspects());
+		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
 	//
 		Map<String, Filter> sf = new HashMap<String, Filter>();
@@ -90,14 +97,14 @@ public class DataQuery {
 		sb.append( "\nSELECT ?item");
 		for (Aspect x: ordered) {
 			sb.append(" ?").append( x.asVar() );
-		}
+		} 
 	//	
 		sb.append("\nWHERE {");
 		String dot = "";
 	//
-		for (Restriction r: restrictions) {
-			sb.append(dot).append( r.asSparqlTriple(item));
-			dot = "\n. ";
+		if (baseQuery != null && !baseQuery.isEmpty()) {
+		    sb.append( baseQuery );
+		    dot = "\n. ";
 		}
 	//
 		for (Aspect x: ordered) {

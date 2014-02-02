@@ -40,7 +40,7 @@ public class TestTranslateQuerySolution {
 		QuerySolution qs = new LocalQuerySolution("pre_a", A, "pre_b", B);
 		List<Aspect> aspects = BunchLib.list(aspectA, aspectB);
 		
-		System.err.println( ">> aspects: " + aspects );
+//		System.err.println( ">> aspects: " + aspects );
 		
 		JsonObject js = Convert.toJson(aspects, qs);
 		JsonObject expected = Convert.objectWith("pre:a", Convert.toJson(A), "pre:b", Convert.toJson(B));

@@ -5,8 +5,7 @@
 */
 package com.epimorphics.data_api.conversions;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonBoolean;
@@ -78,7 +77,7 @@ public class Convert {
 	    toJson(vars, qs) returns the data API JSON representation of
 	    a ARQ query solution restricted to the named vars.
 	*/
-	public static JsonObject toJson(List<Aspect> aspects, QuerySolution qs) {
+	public static JsonObject toJson(Collection<Aspect> aspects, QuerySolution qs) {
 		
 //		System.err.println( ">> qs: " );
 //		Iterator<String> it = qs.varNames();
