@@ -9,11 +9,13 @@
   <h3>JSON Query</h3>
   <form method='POST' action='$root/$uri'>
     <textarea cols='80' rows='10' name='json' id="json">
-      {"wb-classification:classificationItem": {"eq": {"@id": "wb-classification:wbc_72"}}}
+     
     </textarea>
   </form>
 
-  <button id="query" type="button" class="btn btn-primary">Query</button>
+  <button id="query-json" type="button" class="btn btn-primary" data-target="$root/$uri">Query json</button>
+
+  <button id="query" type="button" class="btn btn-primary" data-target="$root/$uri">Query</button>
 
   <button id="explain" type="button" class="btn btn-info" data-target="$root/dataset/$dataset/explain">Explain</button>
     

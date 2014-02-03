@@ -21,20 +21,26 @@ $(function() {
     });
 
     // Query form - TODO move this to a separate file specific to the query page?
-    $("#query").click(function(){
-      $.ajax({
-        type: "POST",
-        contentType: "application/json",
-        data: $("#json").val(),
-        dataType: "json",
-        success: function(data){
-            $("#results").html("<h2>Results</h2><pre>" + JSON.stringify(data, null, '    ') + "</pre>");
-        },
-        error: function(request, status, error) {
-            $("#results").html("<h2>Failed</h2><p>" + error + "</p>");
+    
+    var formatTable = function(data) {
+        var html = "<table class='table table-condensed table-striped table-bordered'><tbody>";
+        for (var i = 0; i < data.length; i++) {
+            html += "<tr>";
+            jQuery.each(data[i], function(key, value){
+                var v = value["@id"];
+                if (v === undefined) {
+                    v = value["@value"];
+                }
+                if (v === undefined) {
+                    v = value;
+                }
+                html += "<td>" + v + "</td>"
+            });
+            html += "</tr>";
         }
-      });
-    });
+        html +="</tbody></table>";
+        return html;
+    };
     
     var formatExplanation = function(data) {
         var html = "<h3>Data set: " + data.datasetName + "</h3>";
@@ -49,25 +55,41 @@ $(function() {
         html += "<p>Processed in " + data.time + " ms</p>";
         return html;
     };
+
+    var send = function(formatter, url) {
+        return function() {  
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: "application/json",
+                data: $("#json").val(),
+                dataType: "json",
+                success: function(data) {
+                    $("#results").html("<h2>Results</h2>" + formatter(data));
+                },
+                error: function(request, status, error) {
+                    $("#results").html("<h2>Failed</h2><p>" + error + "</p>");
+                }
+            });
+        };
+    };
+    
+    $("#query-json").each(function() {
+        var elt = $(this);
+        var target = elt.attr('data-target');
+        elt.click( send(function(data){return "<pre>" + JSON.stringify(data, null, '    ') + "</pre>"; }, target) );
+    });
+    
+    $("#query").each(function() {
+        var elt = $(this);
+        var target = elt.attr('data-target');
+        elt.click( send(formatTable, target) );
+    });
     
     $("#explain").each(function() {
         var elt = $(this);
         var target = elt.attr('data-target');
-        elt.click(function(){
-          $.ajax({
-            url: target,
-            type: "POST",
-            contentType: "application/json",
-            data: $("#json").val(),
-            dataType: "json",
-            success: function(data){
-                $("#results").html("<h2>Explanation</h2>" + formatExplanation(data));
-            },
-            error: function(request, status, error) {
-                $("#results").html("<h2>Failed</h2><p>" + error + "</p>");
-            }
-          });
-        });
+        elt.click( send(formatExplanation, target) );
     });
     
 });
