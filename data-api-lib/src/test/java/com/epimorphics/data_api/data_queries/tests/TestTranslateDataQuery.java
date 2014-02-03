@@ -23,6 +23,7 @@ import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -30,13 +31,11 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 // TODO Apply DRY to the tests.
 public class TestTranslateDataQuery {
 
-	static PrefixMapping pm = PrefixMapping.Factory.create()
+    static PrefixMapping pm = PrefixMapping.Factory.create()
 		.setNsPrefix("pre", "eh:/mock-aspect/")
-//		.setNsPrefix("skos", SKOS)
+		.setNsPrefix("skos", SKOS.getURI())
 		.lock()
 		;
-	
-	static final String SKOS = "http://www.w3.org/2004/02/skos/core";
 	
 	static final Aspect X = new TestAspects.MockAspect("eh:/mock-aspect/X");
 	
@@ -224,11 +223,11 @@ public class TestTranslateDataQuery {
 		String prop = useAspect.getName().getCURIE();
 		
 		String prefix_p = "PREFIX pre: <eh:/mock-aspect/>\n";
-		String prefix_skos = (op.equals("below") ? "PREFIX skos: <" + SKOS + "> " : "");
+		String prefix_skos = (op.equals("below") ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
 		String select = "SELECT ?item _VAR WHERE { ?item _PROP _VAR . " + filter + " }";
 		
 		String expected = 
-			prefix_p + prefix_skos 
+			prefix_p + (select.contains("skos:") ? prefix_skos : "") 
 			+ select.replaceAll("_VAR", var).replaceAll("_PROP", prop )
 			;
 				

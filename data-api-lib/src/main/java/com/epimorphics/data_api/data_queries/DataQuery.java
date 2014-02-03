@@ -18,6 +18,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
@@ -72,21 +73,25 @@ public class DataQuery {
 	
 	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm) {
 		StringBuilder sb = new StringBuilder();
-		Map<String, String> prefixes = pm.getNsPrefixMap();
-	//
-		boolean needsSKOS = false;
 		
-		for (Filter f: filters) {
-			if (f.range.op.equals("below")) needsSKOS = true;
-		}
-		if (needsSKOS) prefixes.put("skos", "http://www.w3.org/2004/02/skos/core");
+		// Configuration processing ensures SKOS is included in the prefix mapping
+//		Map<String, String> prefixes = pm.getNsPrefixMap();
+//
+//		boolean needsSKOS = false;
+//		
+//		for (Filter f: filters) {
+//			if (f.range.op.equals("below")) needsSKOS = true;
+//		}
+//		if (needsSKOS) prefixes.put("skos", "http://www.w3.org/2004/02/skos/core");
+		
 	//
-		for (String key: prefixes.keySet()) 
-			sb.append( "PREFIX " )
-			.append( key ).append(": " )
-			.append( "<" ).append( prefixes.get(key)).append(">")
-			.append( "\n" )
-			;
+//		Replaced by selective prefix expansion
+//		for (String key: prefixes.keySet()) 
+//			sb.append( "PREFIX " )
+//			.append( key ).append(": " )
+//			.append( "<" ).append( prefixes.get(key)).append(">")
+//			.append( "\n" )
+//			;
 	//
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
@@ -156,7 +161,7 @@ public class DataQuery {
 			
 		}
 	//
-		return sb.toString();
+		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 
 	private String opForFilter(Filter f) {
