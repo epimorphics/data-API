@@ -12,7 +12,7 @@ import java.util.Set;
 /**
     An Aspects holds multiple Aspect's.
 */
-// TODO why is this class needed?
+// TODO is this class needed?
 public class Aspects {
 
 	Set<Aspect> aspects = new HashSet<Aspect>();

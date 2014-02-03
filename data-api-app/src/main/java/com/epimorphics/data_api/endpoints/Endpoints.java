@@ -82,12 +82,26 @@ public class Endpoints {
         return getManager().datasetStructureEndpoint(lang, dsid);
     }
     
+    @GET
+    @Path("/{dataset}/structure")
+    @Produces(MediaType.TEXT_HTML)
+    public StreamingOutput getDatasetStructureHtml(@PathParam("dataset") String dsid) {
+        return getVelocity().render("datasetStructure.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid);
+    }
+    
     @POST
     @Path("/{dataset}/data")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getData(@PathParam("dataset") String dsid, JsonObject query) {
         return getManager().datasetDataEndpoint(lang, dsid, query);
+    }
+    
+    @GET
+    @Path("/{dataset}/data")
+    @Produces(MediaType.TEXT_HTML)
+    public StreamingOutput getDataHtml(@PathParam("dataset") String dsid) {
+       return getVelocity().render("getData.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid);
     }
 
 }

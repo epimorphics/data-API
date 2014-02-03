@@ -1,0 +1,22 @@
+#parse("header.vm")
+#set($nav="dataset-structure")
+#parse("navbar.vm")
+<div class="container">
+  #set($structure = $lib.json.asJson($dsapi.datasetStructureEndpoint("en",$dataset)))
+  
+  <h2>Data for data set: $structure.label.value()</h2>
+
+  <h3>JSON Query</h3>
+  <form method='POST' action='$root/$uri'>
+    <textarea cols='80' rows='10' name='json' id="json">
+      {"wb-classification:classificationItem": {"eq": {"@id": "wb-classification:wbc_72"}}}
+    </textarea>
+  </form>
+
+  <button id="query" type="button" class="btn btn-primary">Query</button>
+    
+  <div id="results">
+  </div>
+  
+## outer container div is closed in footer.vm
+#parse("footer.vm")

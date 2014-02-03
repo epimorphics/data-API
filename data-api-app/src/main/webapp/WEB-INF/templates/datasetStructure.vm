@@ -1,0 +1,29 @@
+#parse("header.vm")
+#set($nav="dataset-structure")
+#parse("navbar.vm")
+<div class="container">
+  #set($structure = $lib.json.asJson($dsapi.datasetStructureEndpoint("en",$dataset)))
+  
+  <h2>Data set structure: $structure.label.value() <small> <strong>id = </strong>$structure.get("@id").value()</small></h2>
+  <p>
+    $structure.description.value()
+  </p>
+  
+  <h2>Aspects</h2>
+    #foreach($aspect in $structure.aspects)
+      <div class="row space-above">
+        <div class="col-md-offset-1 col-md-3 large">$aspect.label.value()</div>
+        <div class="col-md-5">id = </strong> $aspect.get("@id").value()</div>
+        <div class="col-md-2">
+              #if($aspect.isOptional.value())optional#end
+              #if($aspect.isMultiValued.value())multi-valued#end
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-offset-1 col-md-11">$aspect.description.value()</div>
+      </div>
+      
+    #end
+  
+## outer container div is closed in footer.vm
+#parse("footer.vm")

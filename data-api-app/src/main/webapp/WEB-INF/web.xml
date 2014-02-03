@@ -17,6 +17,24 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <filter-name>CORS</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
+  <filter>
+    <filter-name>extension-filter</filter-name>
+    <filter-class>com.epimorphics.appbase.webapi.ExtensionFilter</filter-class>
+    <init-param>
+      <param-name>html</param-name>
+      <param-value>text/html</param-value>
+    </init-param>
+    <init-param>
+      <param-name>json</param-name>
+      <param-value>application/json</param-value>
+    </init-param>
+  </filter>
+  
+  <filter-mapping>
+    <filter-name>extension-filter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
   
   <filter>
     <filter-name>VelocityFilter</filter-name>

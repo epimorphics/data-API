@@ -3,10 +3,21 @@
 #parse("navbar.vm")
 <div class="container">
   <h1>Available datasets</h1>
-  <ul>
-    #foreach($dataset in $dsapi.datasets)
-      <li><strong>$dataset.label</strong> $dataset.description </li>
-    #end
-  </ul>
+  #set($datasets = $lib.json.asJson($dsapi.datasetsEndpoint("en")))
+  <table class="table table-striped table-condensed">
+    <tbody>
+      #foreach($i in $datasets.iterator())
+        <tr><td>
+          <strong>$i.label.value()</strong>
+          [<a href=$i.structure-api>structure</a>] 
+          [<a href=$i.data-api>data</a>] 
+          [<a href=$i.dev-api>browse</a>] 
+          <br />
+          $i.description.value()
+        </td></tr>
+      #end
+    </tbody>
+  <table>
+
 ## outer container div is closed in footer.vm
 #parse("footer.vm")

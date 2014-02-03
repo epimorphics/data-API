@@ -1,0 +1,1012 @@
+2014-02-03 08:56:21,511 - ResourceManager : unable to find resource 'index.html.vm' in any resource loader.
+2014-02-03 08:56:21,651 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 08:56:21,734 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 08:56:21,734 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 08:56:21,734 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 08:56:21,734 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 08:56:21,735 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 08:56:21,741 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 08:56:21,742 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 08:56:21,742 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 08:56:31,450 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 08:56:32,825 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:14:58,645 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:14:58,662 - Parser Exception: listDatasets.vm
+org.apache.velocity.runtime.parser.ParseException: Encountered "$datasets" at line 7, column 3.
+Was expecting one of:
+    <RPAREN> ...
+    "-" ...
+    "+" ...
+    "*" ...
+    "/" ...
+    "%" ...
+    <LOGICAL_AND> ...
+    <LOGICAL_OR> ...
+    <LOGICAL_LT> ...
+    <LOGICAL_LE> ...
+    <LOGICAL_GT> ...
+    <LOGICAL_GE> ...
+    <LOGICAL_EQUALS> ...
+    <LOGICAL_NOT_EQUALS> ...
+    
+	at org.apache.velocity.runtime.parser.Parser.generateParseException(Parser.java:3679)
+	at org.apache.velocity.runtime.parser.Parser.jj_consume_token(Parser.java:3558)
+	at org.apache.velocity.runtime.parser.Parser.SetDirective(Parser.java:1972)
+	at org.apache.velocity.runtime.parser.Parser.Statement(Parser.java:369)
+	at org.apache.velocity.runtime.parser.Parser.process(Parser.java:317)
+	at org.apache.velocity.runtime.parser.Parser.parse(Parser.java:117)
+	at org.apache.velocity.runtime.RuntimeInstance.parse(RuntimeInstance.java:1226)
+	at org.apache.velocity.runtime.RuntimeInstance.parse(RuntimeInstance.java:1181)
+	at org.apache.velocity.Template.process(Template.java:134)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.loadResource(ResourceManagerImpl.java:437)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.getResource(ResourceManagerImpl.java:352)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1533)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1514)
+	at org.apache.velocity.app.VelocityEngine.getTemplate(VelocityEngine.java:373)
+	at com.epimorphics.appbase.templates.VelocityRender.render(VelocityRender.java:234)
+	at com.epimorphics.data_api.endpoints.Endpoints.listDatasetsHtml(Endpoints.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+	at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$TypeOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:185)
+	at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+	at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+	at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1483)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1414)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1363)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1353)
+	at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:414)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:895)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:843)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:804)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.VelocityFilter.doFilter(VelocityFilter.java:85)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.CorsFilter.handleNonCORS(CorsFilter.java:433)
+	at com.epimorphics.appbase.webapi.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:502)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1023)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:310)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-03 09:14:58,666 - ResourceManager.getResource() parse exception
+org.apache.velocity.exception.ParseErrorException: Encountered "$datasets" at listDatasets.vm[line 7, column 3]
+Was expecting one of:
+    <RPAREN> ...
+    "-" ...
+    "+" ...
+    "*" ...
+    "/" ...
+    "%" ...
+    <LOGICAL_AND> ...
+    <LOGICAL_OR> ...
+    <LOGICAL_LT> ...
+    <LOGICAL_LE> ...
+    <LOGICAL_GT> ...
+    <LOGICAL_GE> ...
+    <LOGICAL_EQUALS> ...
+    <LOGICAL_NOT_EQUALS> ...
+    
+	at org.apache.velocity.Template.process(Template.java:151)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.loadResource(ResourceManagerImpl.java:437)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.getResource(ResourceManagerImpl.java:352)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1533)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1514)
+	at org.apache.velocity.app.VelocityEngine.getTemplate(VelocityEngine.java:373)
+	at com.epimorphics.appbase.templates.VelocityRender.render(VelocityRender.java:234)
+	at com.epimorphics.data_api.endpoints.Endpoints.listDatasetsHtml(Endpoints.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+	at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$TypeOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:185)
+	at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+	at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+	at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1483)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1414)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1363)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1353)
+	at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:414)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:895)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:843)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:804)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.VelocityFilter.doFilter(VelocityFilter.java:85)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.CorsFilter.handleNonCORS(CorsFilter.java:433)
+	at com.epimorphics.appbase.webapi.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:502)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1023)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:310)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-03 09:15:49,685 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:16:43,004 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:17:37,105 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:17:37,205 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:17:37,209 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:17:37,209 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:17:37,209 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:17:37,209 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:17:37,210 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:17:37,215 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:17:37,215 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:23:35,883 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:23:35,958 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:23:35,958 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:23:35,958 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:23:35,958 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:23:35,959 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:23:35,959 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:23:35,962 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:23:35,962 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:23:46,619 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:23:46,672 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:23:46,672 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:23:46,672 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:23:46,672 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:23:46,672 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:23:46,674 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:23:46,675 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:23:46,676 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:23:57,523 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:23:57,577 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:23:57,577 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:23:57,577 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:23:57,577 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:23:57,577 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:23:57,577 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:23:57,580 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:23:57,580 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:24:23,156 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:24:23,229 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:24:23,229 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:24:23,229 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:24:23,230 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:24:23,229 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:24:23,229 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:24:23,232 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:24:23,233 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:24:39,372 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:24:39,416 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:24:39,416 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:24:39,416 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:24:39,416 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:24:39,417 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:24:39,418 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:24:39,420 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:24:39,420 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:24:50,914 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:24:50,965 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:24:50,965 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:24:50,966 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:24:50,965 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:24:50,965 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:24:50,966 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:24:50,969 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:24:50,969 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:33:10,706 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:33:10,781 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:33:10,781 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:33:10,781 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:33:10,781 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:33:10,781 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:33:10,781 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:33:10,784 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:33:10,784 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:34:17,054 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:34:17,118 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:34:17,118 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:34:17,118 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:34:17,118 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:34:17,120 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:34:17,120 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:34:17,121 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:34:17,122 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:35:08,230 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:35:08,298 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:35:08,298 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:35:08,298 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:35:08,298 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:35:08,298 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:35:08,298 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:35:08,300 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:35:08,301 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:35:23,418 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:35:23,472 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:35:23,472 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:35:23,472 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:35:23,472 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:35:23,472 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:35:23,472 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:35:23,475 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:35:23,476 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:35:32,418 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:35:32,470 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:35:32,470 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:35:32,470 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:35:32,470 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:35:32,470 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:35:32,470 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:35:32,472 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:35:32,472 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:35:36,715 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 09:35:42,128 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 09:35:46,082 - ResourceManager : unable to find resource 'dataset/wbclass/dev.vm' in any resource loader.
+2014-02-03 09:35:50,336 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 09:36:10,483 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 09:37:31,713 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 09:47:58,471 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:47:58,568 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 09:47:58,568 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 09:47:58,568 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 09:47:58,568 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 09:47:58,569 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 09:47:58,570 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 09:47:58,578 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 09:47:58,578 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 09:48:02,957 - ResourceManager : unable to find resource 'dataset.json.vm' in any resource loader.
+2014-02-03 09:48:09,956 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 09:50:10,063 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:03:43,692 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:03:51,090 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 10:03:51,163 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:03:51,163 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:03:51,163 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:03:51,163 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:03:51,164 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:03:51,164 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:03:51,169 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:03:51,170 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:03:52,808 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:05:24,990 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:16:47,694 - ResourceManager : unable to find resource 'dataset.json.vm' in any resource loader.
+2014-02-03 10:16:49,780 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:16:52,726 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 10:16:52,889 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:16:52,890 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:16:52,891 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:16:52,891 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:16:52,892 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:16:52,893 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:16:52,894 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:16:52,902 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:16:53,106 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:17:42,092 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 10:17:42,233 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:17:42,233 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:17:42,233 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:17:42,234 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:17:42,234 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:17:42,235 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:17:42,239 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:17:42,242 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:17:42,463 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:17:54,930 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:18:53,407 - ResourceManager : unable to find resource 'dataset/wbclass/structure.html.vm' in any resource loader.
+2014-02-03 10:18:53,503 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:18:53,503 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:18:53,503 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:18:53,503 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:18:53,504 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:18:53,504 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:18:53,509 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:18:53,509 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:18:53,740 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:19:07,397 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:20:15,664 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:20:15,775 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:20:15,775 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:20:15,775 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:20:15,775 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:20:15,776 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:20:15,776 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:20:15,783 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:20:15,783 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:20:16,003 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:22:19,367 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 10:22:19,500 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:22:19,500 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:22:19,499 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:22:19,499 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:22:19,499 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:22:19,499 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:22:19,512 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:22:19,512 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:22:19,703 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:22:20,934 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:22:21,027 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:22:21,027 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:22:21,027 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:22:21,028 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:22:21,028 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:22:21,028 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:22:21,032 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:22:21,033 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:22:21,235 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.map.vm' in any resource loader.
+2014-02-03 10:22:27,077 - ResourceManager : unable to find resource 'dataset/wbclass/structure.json.vm' in any resource loader.
+2014-02-03 10:26:38,044 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:26:38,094 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:26:38,094 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:26:38,095 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:26:38,095 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:26:38,095 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:26:38,095 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:26:38,098 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:26:38,098 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:26:52,795 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:26:52,859 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:26:52,859 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:26:52,859 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:26:52,859 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:26:52,861 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:26:52,861 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:26:52,861 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:26:52,863 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:27:09,723 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:27:09,770 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:27:09,770 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:27:09,771 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:27:09,770 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:27:09,770 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:27:09,770 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:27:09,774 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:27:09,774 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:27:34,769 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:27:34,813 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:27:34,813 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:27:34,813 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:27:34,813 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:27:34,813 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:27:34,813 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:27:34,816 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:27:34,817 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:28:33,130 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:28:33,211 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:28:33,211 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:28:33,211 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:28:33,211 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:28:33,212 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:28:33,213 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:28:33,213 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:28:33,214 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:28:43,389 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:28:43,438 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:28:43,438 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:28:43,438 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:28:43,439 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:28:43,438 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:28:43,439 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:28:43,442 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:28:43,442 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:29:10,530 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:29:10,585 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:29:10,585 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:29:10,585 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:29:10,585 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:29:10,585 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:29:10,585 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:29:10,589 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:29:10,589 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:29:16,569 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:29:16,607 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:29:16,607 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:29:16,607 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:29:16,609 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:29:16,609 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:29:16,610 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:29:16,609 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:29:16,610 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:29:38,545 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:29:38,585 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:29:38,585 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:29:38,585 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:29:38,585 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:29:38,585 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:29:38,587 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:29:38,589 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:29:38,589 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:30:12,121 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:30:12,124 - Parser Error: datasetStructure.vm
+org.apache.velocity.runtime.directive.MacroParseException: Invalid arg #2 in directive #foreach at datasetStructure.vm[line 16, column 11]
+
+	at org.apache.velocity.runtime.parser.Parser.Directive(Parser.java:831)
+	at org.apache.velocity.runtime.parser.Parser.Statement(Parser.java:379)
+	at org.apache.velocity.runtime.parser.Parser.process(Parser.java:317)
+	at org.apache.velocity.runtime.parser.Parser.parse(Parser.java:117)
+	at org.apache.velocity.runtime.RuntimeInstance.parse(RuntimeInstance.java:1226)
+	at org.apache.velocity.runtime.RuntimeInstance.parse(RuntimeInstance.java:1181)
+	at org.apache.velocity.Template.process(Template.java:134)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.loadResource(ResourceManagerImpl.java:437)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.getResource(ResourceManagerImpl.java:352)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1533)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1514)
+	at org.apache.velocity.app.VelocityEngine.getTemplate(VelocityEngine.java:373)
+	at com.epimorphics.appbase.templates.VelocityRender.render(VelocityRender.java:234)
+	at com.epimorphics.data_api.endpoints.Endpoints.getDatasetStructureHtml(Endpoints.java:89)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+	at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$TypeOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:185)
+	at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+	at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1483)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1414)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1363)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1353)
+	at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:414)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:895)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:843)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:804)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.VelocityFilter.doFilter(VelocityFilter.java:85)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.ExtensionFilter.doFilter(ExtensionFilter.java:54)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.CorsFilter.handleNonCORS(CorsFilter.java:433)
+	at com.epimorphics.appbase.webapi.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:502)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1023)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:312)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-03 10:30:12,126 - ResourceManager.getResource() parse exception
+org.apache.velocity.exception.ParseErrorException: Invalid arg #2 in directive #foreach at datasetStructure.vm[line 16, column 11]
+
+	at org.apache.velocity.Template.process(Template.java:151)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.loadResource(ResourceManagerImpl.java:437)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.getResource(ResourceManagerImpl.java:352)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1533)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1514)
+	at org.apache.velocity.app.VelocityEngine.getTemplate(VelocityEngine.java:373)
+	at com.epimorphics.appbase.templates.VelocityRender.render(VelocityRender.java:234)
+	at com.epimorphics.data_api.endpoints.Endpoints.getDatasetStructureHtml(Endpoints.java:89)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+	at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$TypeOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:185)
+	at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+	at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1483)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1414)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1363)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1353)
+	at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:414)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:895)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:843)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:804)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.VelocityFilter.doFilter(VelocityFilter.java:85)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.ExtensionFilter.doFilter(ExtensionFilter.java:54)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.CorsFilter.handleNonCORS(CorsFilter.java:433)
+	at com.epimorphics.appbase.webapi.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:502)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1023)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:312)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-03 10:30:21,473 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:30:21,521 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:30:21,521 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:30:21,521 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:30:21,521 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:30:21,521 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:30:21,521 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:30:21,524 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:30:21,524 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:36:37,009 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:36:37,075 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:36:37,075 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:36:37,075 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:36:37,075 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:36:37,075 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:36:37,075 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:36:37,081 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:36:37,081 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:36:42,753 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:36:42,800 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:36:42,800 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:36:42,800 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:36:42,800 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:36:42,800 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:36:42,801 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:36:42,803 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:36:42,804 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:40:13,667 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:40:13,746 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:40:13,746 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:40:13,746 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:40:13,746 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:40:13,746 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:40:13,746 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:40:13,749 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:40:13,749 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:45:44,825 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:45:44,828 - Parser Exception: datasetStructure.vm
+org.apache.velocity.runtime.parser.ParseException: Encountered "<EOF>" at line 36, column 20.
+Was expecting one of:
+    "(" ...
+    <RPAREN> ...
+    <ESCAPE_DIRECTIVE> ...
+    <SET_DIRECTIVE> ...
+    "##" ...
+    "\\\\" ...
+    "\\" ...
+    <TEXT> ...
+    "*#" ...
+    "*#" ...
+    "]]#" ...
+    <STRING_LITERAL> ...
+    <END> ...
+    <IF_DIRECTIVE> ...
+    <ELSEIF_DIRECTIVE> ...
+    <ELSE_DIRECTIVE> ...
+    <INTEGER_LITERAL> ...
+    <FLOATING_POINT_LITERAL> ...
+    <WORD> ...
+    <BRACKETED_WORD> ...
+    <IDENTIFIER> ...
+    <DOT> ...
+    "{" ...
+    "}" ...
+    <EMPTY_INDEX> ...
+    
+	at org.apache.velocity.runtime.parser.Parser.generateParseException(Parser.java:3679)
+	at org.apache.velocity.runtime.parser.Parser.jj_consume_token(Parser.java:3558)
+	at org.apache.velocity.runtime.parser.Parser.IfStatement(Parser.java:1740)
+	at org.apache.velocity.runtime.parser.Parser.Statement(Parser.java:352)
+	at org.apache.velocity.runtime.parser.Parser.Directive(Parser.java:918)
+	at org.apache.velocity.runtime.parser.Parser.Statement(Parser.java:379)
+	at org.apache.velocity.runtime.parser.Parser.process(Parser.java:317)
+	at org.apache.velocity.runtime.parser.Parser.parse(Parser.java:117)
+	at org.apache.velocity.runtime.RuntimeInstance.parse(RuntimeInstance.java:1226)
+	at org.apache.velocity.runtime.RuntimeInstance.parse(RuntimeInstance.java:1181)
+	at org.apache.velocity.Template.process(Template.java:134)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.loadResource(ResourceManagerImpl.java:437)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.getResource(ResourceManagerImpl.java:352)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1533)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1514)
+	at org.apache.velocity.app.VelocityEngine.getTemplate(VelocityEngine.java:373)
+	at com.epimorphics.appbase.templates.VelocityRender.render(VelocityRender.java:234)
+	at com.epimorphics.data_api.endpoints.Endpoints.getDatasetStructureHtml(Endpoints.java:89)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+	at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$TypeOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:185)
+	at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+	at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1483)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1414)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1363)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1353)
+	at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:414)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:895)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:843)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:804)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.VelocityFilter.doFilter(VelocityFilter.java:85)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.ExtensionFilter.doFilter(ExtensionFilter.java:54)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.CorsFilter.handleNonCORS(CorsFilter.java:433)
+	at com.epimorphics.appbase.webapi.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:502)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1023)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:310)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-03 10:45:44,829 - ResourceManager.getResource() parse exception
+org.apache.velocity.exception.ParseErrorException: Encountered "<EOF>" at datasetStructure.vm[line 36, column 20]
+Was expecting one of:
+    "(" ...
+    <RPAREN> ...
+    <ESCAPE_DIRECTIVE> ...
+    <SET_DIRECTIVE> ...
+    "##" ...
+    "\\\\" ...
+    "\\" ...
+    <TEXT> ...
+    "*#" ...
+    "*#" ...
+    "]]#" ...
+    <STRING_LITERAL> ...
+    <END> ...
+    <IF_DIRECTIVE> ...
+    <ELSEIF_DIRECTIVE> ...
+    <ELSE_DIRECTIVE> ...
+    <INTEGER_LITERAL> ...
+    <FLOATING_POINT_LITERAL> ...
+    <WORD> ...
+    <BRACKETED_WORD> ...
+    <IDENTIFIER> ...
+    <DOT> ...
+    "{" ...
+    "}" ...
+    <EMPTY_INDEX> ...
+    
+	at org.apache.velocity.Template.process(Template.java:151)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.loadResource(ResourceManagerImpl.java:437)
+	at org.apache.velocity.runtime.resource.ResourceManagerImpl.getResource(ResourceManagerImpl.java:352)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1533)
+	at org.apache.velocity.runtime.RuntimeInstance.getTemplate(RuntimeInstance.java:1514)
+	at org.apache.velocity.app.VelocityEngine.getTemplate(VelocityEngine.java:373)
+	at com.epimorphics.appbase.templates.VelocityRender.render(VelocityRender.java:234)
+	at com.epimorphics.data_api.endpoints.Endpoints.getDatasetStructureHtml(Endpoints.java:89)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at com.sun.jersey.spi.container.JavaMethodInvokerFactory$1.invoke(JavaMethodInvokerFactory.java:60)
+	at com.sun.jersey.server.impl.model.method.dispatch.AbstractResourceMethodDispatchProvider$TypeOutInvoker._dispatch(AbstractResourceMethodDispatchProvider.java:185)
+	at com.sun.jersey.server.impl.model.method.dispatch.ResourceJavaMethodDispatcher.dispatch(ResourceJavaMethodDispatcher.java:75)
+	at com.sun.jersey.server.impl.uri.rules.HttpMethodRule.accept(HttpMethodRule.java:288)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.ResourceClassRule.accept(ResourceClassRule.java:108)
+	at com.sun.jersey.server.impl.uri.rules.RightHandPathRule.accept(RightHandPathRule.java:147)
+	at com.sun.jersey.server.impl.uri.rules.RootResourceClassesRule.accept(RootResourceClassesRule.java:84)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1483)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl._handleRequest(WebApplicationImpl.java:1414)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1363)
+	at com.sun.jersey.server.impl.application.WebApplicationImpl.handleRequest(WebApplicationImpl.java:1353)
+	at com.sun.jersey.spi.container.servlet.WebComponent.service(WebComponent.java:414)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.service(ServletContainer.java:537)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:895)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:843)
+	at com.sun.jersey.spi.container.servlet.ServletContainer.doFilter(ServletContainer.java:804)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.VelocityFilter.doFilter(VelocityFilter.java:85)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.ExtensionFilter.doFilter(ExtensionFilter.java:54)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at com.epimorphics.appbase.webapi.CorsFilter.handleNonCORS(CorsFilter.java:433)
+	at com.epimorphics.appbase.webapi.CorsFilter.doFilter(CorsFilter.java:177)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:243)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:210)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:222)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:123)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:502)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:171)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:99)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:118)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:408)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1023)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:589)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:310)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:744)
+2014-02-03 10:46:08,553 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:46:08,608 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:46:08,608 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:46:08,609 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:46:08,609 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:46:08,609 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:46:08,609 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:46:08,612 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:46:08,612 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:49:23,666 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:49:23,736 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:49:23,736 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:49:23,736 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:49:23,736 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:49:23,736 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:49:23,736 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:49:23,739 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:49:23,739 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:50:06,033 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:50:06,097 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:50:06,097 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:50:06,097 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:50:06,097 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:50:06,097 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:50:06,097 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:50:06,099 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:50:06,101 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:51:44,097 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:51:44,163 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:51:44,163 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:51:44,163 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:51:44,163 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:51:44,164 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:51:44,164 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:51:44,165 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:51:44,166 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:52:12,617 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:52:12,666 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:52:12,666 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:52:12,666 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:52:12,666 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:52:12,666 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:52:12,666 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:52:12,667 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:52:12,668 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:55:45,176 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:55:45,246 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:55:45,246 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:55:45,246 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:55:45,246 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:55:45,247 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:55:45,246 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:55:45,249 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:55:45,249 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:58:39,578 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:58:39,653 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:58:39,653 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:58:39,653 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:58:39,653 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:58:39,653 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:58:39,653 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:58:39,656 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:58:39,657 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:58:56,067 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:58:56,142 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:58:56,142 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:58:56,142 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:58:56,142 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:58:56,144 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:58:56,144 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:58:56,144 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:58:56,144 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 10:59:25,819 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 10:59:25,891 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 10:59:25,891 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 10:59:25,891 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 10:59:25,891 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 10:59:25,891 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 10:59:25,891 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 10:59:25,894 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 10:59:25,894 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:00:13,996 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:00:14,074 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:00:14,074 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:00:14,074 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:00:14,074 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:00:14,075 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:00:14,076 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:00:14,077 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:00:14,077 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:00:49,337 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:00:49,405 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:00:49,405 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:00:49,405 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:00:49,405 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:00:49,405 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:00:49,407 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:00:49,408 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:00:49,408 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:00:58,890 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:00:58,943 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:00:58,943 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:00:58,943 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:00:58,943 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:00:58,944 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:00:58,944 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:00:58,948 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:00:58,948 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:02:37,353 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:02:37,419 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:02:37,419 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:02:37,419 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:02:37,419 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:02:37,420 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:02:37,419 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:02:37,421 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:02:37,422 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:03:40,963 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:03:41,034 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:03:42,908 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:03:45,361 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:03:50,160 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:03:53,664 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:03:56,393 - ResourceManager : unable to find resource 'dataset/wbclass/dev.vm' in any resource loader.
+2014-02-03 11:04:00,392 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:05:53,988 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:05:54,060 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:05:54,060 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:05:54,060 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:05:54,061 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:05:54,061 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:05:54,062 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:05:54,066 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:05:54,066 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:06:44,889 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:06:44,951 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:06:44,951 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:06:44,951 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:06:44,953 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:06:44,953 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:06:44,953 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:06:44,953 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:06:44,953 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:09:10,987 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:09:11,067 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:09:11,067 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:09:11,067 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:09:11,067 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:09:11,068 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:09:11,069 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:09:11,069 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:09:11,069 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:09:27,635 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:09:27,700 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:09:27,700 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:09:27,700 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:09:27,700 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:09:27,700 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:09:27,700 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:09:27,703 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:09:27,703 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:09:48,610 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:09:48,659 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:09:48,659 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:09:48,659 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:09:48,659 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:09:48,660 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:09:48,660 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:09:48,662 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:09:48,662 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:10:12,234 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:10:12,310 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:10:13,929 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:10:18,077 - ResourceManager : unable to find resource 'dataset/wbclass/structure.json.vm' in any resource loader.
+2014-02-03 11:10:25,468 - ResourceManager : unable to find resource 'dataset/wbclass/structure.json.vm' in any resource loader.
+2014-02-03 11:10:36,644 - ResourceManager : unable to find resource 'dataset.json.vm' in any resource loader.
+2014-02-03 11:21:31,517 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:21:31,638 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:21:31,641 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:21:32,890 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:21:34,688 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:21:36,584 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:21:38,456 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:21:39,952 - ResourceManager : unable to find resource 'dataset/wbclass/dev.vm' in any resource loader.
+2014-02-03 11:21:43,809 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:22:01,655 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:22:03,128 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:22:26,245 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:22:26,328 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:22:26,328 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:22:26,328 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:22:26,328 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:22:26,329 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:22:26,329 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:22:26,331 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:22:26,332 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:22:29,064 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:22:31,009 - ResourceManager : unable to find resource 'dataset/wbclass/structure.vm' in any resource loader.
+2014-02-03 11:22:33,463 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:22:35,277 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:22:37,071 - ResourceManager : unable to find resource 'dataset.vm' in any resource loader.
+2014-02-03 11:22:38,737 - ResourceManager : unable to find resource 'dataset/wbclass/dev.vm' in any resource loader.
+2014-02-03 11:22:41,785 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:31:28,267 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:31:28,337 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:31:28,337 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:31:28,337 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:31:28,337 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:31:28,337 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:31:28,338 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:31:28,343 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:31:28,343 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:31:45,865 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:31:45,915 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:31:45,915 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:31:45,915 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:31:45,915 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:31:45,915 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:31:45,917 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:31:45,918 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:31:45,918 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:31:55,460 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:31:55,504 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:31:55,504 - ResourceManager : unable to find resource 'css/ui.css.vm' in any resource loader.
+2014-02-03 11:31:55,504 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:31:55,504 - ResourceManager : unable to find resource 'css/jquery.dataTables.css.vm' in any resource loader.
+2014-02-03 11:31:55,504 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
+2014-02-03 11:31:55,505 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:31:55,507 - ResourceManager : unable to find resource 'js/ui.js.vm' in any resource loader.
+2014-02-03 11:31:55,507 - ResourceManager : unable to find resource 'js/jquery.dataTables.min.js.vm' in any resource loader.
+2014-02-03 11:33:04,523 - ResourceManager : unable to find resource 'dataset/wbclass/data.vm' in any resource loader.
+2014-02-03 11:33:04,587 - ResourceManager : unable to find resource 'css/bootstrap.min.css.vm' in any resource loader.
+2014-02-03 11:33:04,587 - ResourceManager : unable to find resource 'js/bootstrap.min.js.vm' in any resource loader.
+2014-02-03 11:33:04,587 - ResourceManager : unable to find resource 'js/jquery-1.10.2.min.js.vm' in any resource loader.
+2014-02-03 11:33:04,587 - ResourceManager : unable to find resource 'js/jquery.form.js.vm' in any resource loader.
