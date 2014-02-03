@@ -14,6 +14,8 @@
   </form>
 
   <button id="query" type="button" class="btn btn-primary">Query</button>
+
+  <button id="explain" type="button" class="btn btn-info" data-target="$root/dataset/$dataset/explain">Explain</button>
     
   <div id="results">
   </div>

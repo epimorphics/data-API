@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.ResultsToJson;
 import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
@@ -39,6 +40,7 @@ import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.NotFoundException;
 
 /**
@@ -185,6 +187,7 @@ public class DSAPIManager extends ComponentBase {
                 log.info("Issuing query: " + sq);
                 ResultSet rs = source.select(sq);
                 JSONConsumer toResult = JSONLib.consumeToArray(result);
+                // TODO replace by streaming version
                 ResultsToJson.convert(api.getAspects(), toResult, rs);
             }
 
@@ -202,12 +205,74 @@ public class DSAPIManager extends ComponentBase {
         }
                 
         if (p.isOK()) {
+            // TODO replace by streaming version
             return Response.ok(result.toString()).build();
 
         } else {
             String problemStrings = p.getProblemStrings();
             throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + BunchLib.join(problemStrings));
         }
+    }
+    
+    /**
+     * <pre>base/dataset/{dataset}/explain</pre>
+     * 
+     * Return a summary of the translation of a query as a json object (not streaming)
+     */
+    public Response datasetExplainEndpoint(String dataset, JsonObject query) {
+        API_Dataset api = getAPI(dataset);
+
+        Problems p = new Problems();
+        
+        JsonObject comments = new JsonObject();
+
+        comments.put("datasetName", api.getName());
+        comments.put("request", query.toString());
+
+        JsonArray aspects = new JsonArray();
+        for (Aspect a : api.getAspects()) {
+            Resource rt = a.getRangeType();
+            boolean optional = a.getIsOptional(), multiple = a
+                    .getIsMultiValued();
+            aspects.add("" + a + (rt == null ? "" : " [range: " + rt + "]")
+                    + (optional ? ", optional" : "")
+                    + (multiple ? ", multivalued" : ""));
+        }
+        comments.put("aspects", aspects);
+
+        try {
+            DataQuery q = null;
+            String sq = null;
+
+            if (p.isOK())
+                q = DataQueryParser.Do(p, api.getPrefixes(), query);
+
+            if (p.isOK())
+                sq = q.toSparql(p, api);
+
+            checkLegalSPARQL(p, sq);
+            
+            if (p.isOK()) comments.put("sparql", QueryFactory.create(sq).toString());
+
+            if (p.isOK()) {
+                long start = System.currentTimeMillis();
+                ResultSet rs = source.select(sq);
+                final JsonArray result = new JsonArray();
+                JSONConsumer toResult = JSONLib.consumeToArray(result);
+                ResultsToJson.convert(api.getAspects(), toResult, rs);
+                long finish = System.currentTimeMillis();
+                comments.put("time", finish-start);
+            }
+
+        } catch (Exception e) {
+            System.err.println("BROKEN: " + e);
+            e.printStackTrace(System.err);
+            p.add("BROKEN: " + e);
+        }
+        
+        comments.put("status", p.isOK());
+
+        return Response.ok(comments.toString()).build();
     }
 
     // TODO query explain call - but maybe on the fly rather than via historical store

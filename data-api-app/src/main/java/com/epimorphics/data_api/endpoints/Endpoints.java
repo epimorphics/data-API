@@ -103,5 +103,13 @@ public class Endpoints {
     public StreamingOutput getDataHtml(@PathParam("dataset") String dsid) {
        return getVelocity().render("getData.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid);
     }
-
+    
+    @POST
+    @Path("/{dataset}/explain")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response explainQuery(@PathParam("dataset") String dsid, JsonObject query) {
+        return getManager().datasetExplainEndpoint(dsid, query);
+    }
+    
 }
