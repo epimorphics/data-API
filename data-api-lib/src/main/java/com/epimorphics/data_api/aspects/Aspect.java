@@ -123,12 +123,18 @@ public class Aspect extends ResourceBasedConfig {
         out.startObject();
         out.pair(JSONConstants.ID, name.getCURIE());
         out.pair(URI, ID);
-        out.pair(LABEL, getLabel(lang));
-        out.pair(DESCRIPTION, getDescription(lang));
+        safeOut(out, LABEL, getLabel(lang));
+        safeOut(out, DESCRIPTION, getDescription(lang));
         out.pair(IS_OPTIONAL, isOptional);
         out.pair(IS_MULTIVALUED, isMultiValued);
-        out.pair(RANGE_TYPE, rangeType.getURI());
+        safeOut(out, RANGE_TYPE, rangeType == null ? null : rangeType.getURI());
         out.finishObject();
+    }
+    
+    private void safeOut(JSFullWriter out, String key, String value) {
+        if (value != null) {
+            out.pair(key, value);
+        }
     }
     
     class Writer implements JSONWritable {

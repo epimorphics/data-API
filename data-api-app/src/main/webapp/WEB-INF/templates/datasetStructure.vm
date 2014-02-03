@@ -20,7 +20,9 @@
         </div>
       </div>
       <div class="row">
+      #if($aspect.description)
         <div class="col-md-offset-1 col-md-11">$aspect.description.value()</div>
+      #end
       </div>
       
     #end
