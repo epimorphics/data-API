@@ -21,6 +21,26 @@ $(function() {
     });
 
     // Query form - TODO move this to a separate file specific to the query page?
+    var formatTableEntry = function(value) {
+        if ($.isArray(value)) {
+            if (value.length === 0) {
+                return "";
+            }
+            var acc = "[";
+            $.each(value, function(index, value){ acc += (index > 0 ? ", " : "") + formatTableEntry(value) });
+            acc += "]";
+            return acc;
+        } else {
+            var v = value["@id"];
+            if (v === undefined) {
+                v = value["@value"];
+            }
+            if (v === undefined) {
+                v = value;
+            }
+            return v;
+        }
+    };
     
     var formatTable = function(data) {
         if (data.length > 0) {
@@ -33,14 +53,7 @@ $(function() {
             for (var i = 0; i < data.length; i++) {
                 html += "<tr>";
                 jQuery.each(data[i], function(key, value){
-                    var v = value["@id"];
-                    if (v === undefined) {
-                        v = value["@value"];
-                    }
-                    if (v === undefined) {
-                        v = value;
-                    }
-                    html += "<td>" + v + "</td>"
+                    html += "<td>" + formatTableEntry(value) + "</td>"
                 });
                 html += "</tr>";
             }
