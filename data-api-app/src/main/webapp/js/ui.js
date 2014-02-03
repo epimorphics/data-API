@@ -23,23 +23,33 @@ $(function() {
     // Query form - TODO move this to a separate file specific to the query page?
     
     var formatTable = function(data) {
-        var html = "<table class='table table-condensed table-striped table-bordered'><tbody>";
-        for (var i = 0; i < data.length; i++) {
-            html += "<tr>";
-            jQuery.each(data[i], function(key, value){
-                var v = value["@id"];
-                if (v === undefined) {
-                    v = value["@value"];
-                }
-                if (v === undefined) {
-                    v = value;
-                }
-                html += "<td>" + v + "</td>"
+        if (data.length > 0) {
+            var html = "<table class='table table-condensed table-striped table-bordered'>";
+            html += "<thead><tr>";
+            jQuery.each(data[0], function(key, value){
+                html += "<th>" + key + "</th>";
             });
-            html += "</tr>";
+            html += "</tr></thead><tbody>";
+            for (var i = 0; i < data.length; i++) {
+                html += "<tr>";
+                jQuery.each(data[i], function(key, value){
+                    var v = value["@id"];
+                    if (v === undefined) {
+                        v = value["@value"];
+                    }
+                    if (v === undefined) {
+                        v = value;
+                    }
+                    html += "<td>" + v + "</td>"
+                });
+                html += "</tr>";
+            }
+            html +="</tbody></table>";
+            return html;
+        } else {
+            return "empty";
         }
-        html +="</tbody></table>";
-        return html;
+        
     };
     
     var formatExplanation = function(data) {
@@ -67,8 +77,8 @@ $(function() {
                 success: function(data) {
                     $("#results").html("<h2>Results</h2>" + formatter(data));
                 },
-                error: function(request, status, error) {
-                    $("#results").html("<h2>Failed</h2><p>" + error + "</p>");
+                error: function(xhr, status, error) {
+                    $("#results").html("<h2>Failed</h2><p>" + error + ":" + xhr.responseText + "</p>");
                 }
             });
         };
