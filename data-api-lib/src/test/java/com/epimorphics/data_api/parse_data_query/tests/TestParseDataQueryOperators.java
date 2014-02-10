@@ -50,7 +50,7 @@ public class TestParseDataQueryOperators {
 
 	@Test public void testSingleFilterQuery() {
 		Shortname sn = new Shortname(pm, "pre:local");
-		String incoming = "{'pre:local': {'eq': 17}}";
+		String incoming = "{'pre:local': {'@eq': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -90,7 +90,7 @@ public class TestParseDataQueryOperators {
 
 	private void testSingleFilterQueryWithNumericOp(String op) {
 		Shortname sn = new Shortname(pm, "pre:local");
-		String incoming = "{'pre:local': {'" + op + "': 17}}";
+		String incoming = "{'pre:local': {'@" + op + "': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -127,7 +127,7 @@ public class TestParseDataQueryOperators {
 		
 	void testSingleOperator(String op, String operand, Term...values) {
 		Shortname sn = new Shortname(pm, "pre:local");
-		String incoming = "{'pre:local': {'_OP': _ARGS}}"
+		String incoming = "{'pre:local': {'@_OP': _ARGS}}"
 			.replaceAll("_OP", op)
 			.replaceAll("_ARGS", operand)
 			;

@@ -29,29 +29,41 @@ public class DataQueryParser {
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
 	
-	public static DataQuery Do(Problems p, PrefixMapping pm, JsonObject jo) {
-		if (jo.isObject()) {
+	public static DataQuery Do(Problems p, PrefixMapping pm, JsonValue jv) {
+		if (jv.isObject()) {
+			Integer length = null, offset = null;
+			JsonObject jo = jv.getAsObject();
 			List<Filter> filters = new ArrayList<Filter>();
 			List<Sort> sortby = new ArrayList<Sort>();
 			
-			for (String key: jo.getAsObject().keys()) {
-				if (key.startsWith("_")) {
-					if (key.equals("_sort")) {
+			for (String key: jv.getAsObject().keys()) {
+				JsonValue value = jv.getAsObject().get(key);
+				if (key.startsWith("@")) {
+					if (key.equals("@sort")) {
 						extractSorts(pm, p, jo, sortby, key);
+					} else if (key.equals("@length")) {
+						length = extractNumber(p, key, value);
+					} else if (key.equals("@offset")) {
+						offset = extractNumber(p, key, value);
 					} else {
-						p.add("unknown directive '" + key + "' in data query " + jo + ".");
+						p.add("unknown directive '" + key + "' in data query " + jv + ".");
 					}
 				} else {
 					Shortname sn = new Shortname(pm, key);
 					JsonValue range = jo.get(key);			
 					if (range.isObject()) {
 						JsonObject rob = range.getAsObject();
-						for (String op: rob.keys()) {
-							List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(op));
-							if (isKnownOp(op)) {
-								filters.add( new Filter(sn, new Range(op, v) ) );
+						for (String opKey: rob.keys()) {
+							if (opKey.startsWith("@")) {
+								String op = opKey.substring(1);
+								List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(opKey));
+								if (isKnownOp(op)) {
+									filters.add( new Filter(sn, new Range(op, v) ) );
+								} else {
+									p.add("unknown operator '" + op + "' in data query.");
+								}
 							} else {
-								p.add("unknown operator '" + op + "' in data query.");
+								p.add("illegal member " + opKey);
 							}
 						}
 						
@@ -60,10 +72,19 @@ public class DataQueryParser {
 					}
 				}
 			}
-			return new DataQuery(filters, sortby);
+			return new DataQuery(filters, sortby, Slice.create(length, offset));
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
 		}
+	}
+
+	private static Integer extractNumber(Problems p, String key, JsonValue value) {
+		if (value.isNumber()) {
+			int n = value.getAsNumber().value().intValue();
+			if (n >= 0) return new Integer(n);
+		} 
+		p.add("value of " + key + " must be non-negative number: " + value);
+		return null;
 	}
 
 	private static void extractSorts(PrefixMapping pm, Problems p, JsonObject jo, List<Sort> sortby, String key) {
@@ -89,7 +110,7 @@ public class DataQueryParser {
 				}
 			}
 		} else {
-			p.add("value of _sort must be array, was given " + x + ".");
+			p.add("value of @sort must be array, was given " + x + ".");
 		}
 	}
 

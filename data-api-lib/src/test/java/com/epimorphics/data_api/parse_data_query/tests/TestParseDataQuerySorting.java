@@ -21,7 +21,6 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestParseDataQuerySorting {
 
-	
 	static final PrefixMapping pm = PrefixMapping.Factory.create()
 		.setNsPrefix("pre",  "eh:/prefixPart/" )
 		.lock()
@@ -41,7 +40,7 @@ public class TestParseDataQuerySorting {
 	}
 	
 	@Test public void testEmptySortList() {
-		String incoming = "{'_sort': []}";
+		String incoming = "{'@sort': []}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -55,7 +54,7 @@ public class TestParseDataQuerySorting {
 	}
 	
 	@Test public void testSingleSort() {
-		String incoming = "{'_sort': [{'@up': 'a:b'}]}";
+		String incoming = "{'@sort': [{'@up': 'a:b'}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);
@@ -71,7 +70,7 @@ public class TestParseDataQuerySorting {
 	}
 	
 	@Test public void testMultipleSorts() {
-		String incoming = "{'_sort': [{'@up': 'a:b'}, {'@down': 'x:y'}]}";
+		String incoming = "{'@sort': [{'@up': 'a:b'}, {'@down': 'x:y'}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, pm, jo);

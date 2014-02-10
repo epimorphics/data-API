@@ -33,10 +33,16 @@ public class DataQuery {
 	
 	final List<Filter> filters;
 	final List<Sort> sortby;
+	final Slice slice;
 
 	public DataQuery(List<Filter> filters, List<Sort> sortby) {
+		this(filters, sortby, Slice.all());
+	}
+	
+	public DataQuery(List<Filter> filters, List<Sort> sortby, Slice slice) {
 		this.filters = filters;
 		this.sortby = sortby;
+		this.slice = slice;
 	}
 	
 	public DataQuery(List<Filter> filters) {
@@ -56,7 +62,7 @@ public class DataQuery {
 	}
 	
 	public Slice slice() {
-		return new Slice();
+		return slice;
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
