@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-WAR=http://www.epimorphics.com/maven2/com/epimorphics/data-api-app/0.0.1-SNAPSHOT/data-api-app-0.0.1-20140207.163700-1.war
+WAR=http://epimorphics.com/maven2/com/epimorphics/data-api-app/0.0.1-SNAPSHOT/data-api-app-0.0.1-20140211.111111-3.war
 
 apt-get update -y
 apt-get install -y curl chkconfig
