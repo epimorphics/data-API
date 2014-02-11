@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -19,6 +20,7 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.data_queries.Slice;
 import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
@@ -261,6 +263,75 @@ public class TestTranslateDataQuery {
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
 	}		
+
+	@Test public void testLengthCopied() {
+		Problems p = new Problems();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		Shortname snA = new Shortname( pm, "pre:X" );
+		Shortname snB = new Shortname( pm, "pre:Y" );
+		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Filter> filters = BunchLib.list(fA, fB);
+		DataQuery q = new DataQuery(filters, new ArrayList<Sort>(), Slice.create(17));
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, null, pm);
+		assertNoProblems(p);
+		String expect = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X ?pre_Y"
+			, "WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}"
+			, "LIMIT 17"
+			);
+		assertSameSelect(expect, sq );
+	}
+	
+	@Test public void testOffsetCopied() {
+		Problems p = new Problems();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		Shortname snA = new Shortname( pm, "pre:X" );
+		Shortname snB = new Shortname( pm, "pre:Y" );
+		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Filter> filters = BunchLib.list(fA, fB);
+		DataQuery q = new DataQuery(filters, new ArrayList<Sort>(), Slice.create(null, 1066));
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, null, pm);
+		assertNoProblems(p);
+		String expect = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X ?pre_Y"
+			, "WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}"
+			, "OFFSET 1066"
+			);
+		assertSameSelect(expect, sq );
+	}
+	
+	@Test public void testLengthAndOffsetCopied() {
+		Problems p = new Problems();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		Shortname snA = new Shortname( pm, "pre:X" );
+		Shortname snB = new Shortname( pm, "pre:Y" );
+		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Filter> filters = BunchLib.list(fA, fB);
+		DataQuery q = new DataQuery(filters, new ArrayList<Sort>(), Slice.create(17, 1829));
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, null, pm);
+		assertNoProblems(p);
+		String expect = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X ?pre_Y"
+			, "WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}"
+			, "LIMIT 17 OFFSET 1829"
+			);
+		assertSameSelect(expect, sq );
+	}	
 	
 	@Test public void testDoubleEqualityFilter() {
 		Problems p = new Problems();

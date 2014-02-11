@@ -167,6 +167,9 @@ public class DataQuery {
 			
 		}
 	//
+		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
+		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
+	//
 		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 
