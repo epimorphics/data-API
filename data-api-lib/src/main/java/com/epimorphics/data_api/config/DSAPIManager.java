@@ -10,16 +10,21 @@
 package com.epimorphics.data_api.config;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +68,14 @@ public class DSAPIManager extends ComponentBase {
     protected SparqlSource source;
     protected DatasetMonitor monitoredDatasets;
     protected String apiBase;
+    protected boolean checkingSPARQL;
+    
+    public boolean getCheckingSPARQL() {
+    	return checkingSPARQL;
+    }
+    public void setCheckingSPARQL(boolean checkingSPARQL) {
+    	this.checkingSPARQL = checkingSPARQL;
+    }
 
     public SparqlSource getSource() {
         return source;
@@ -169,26 +182,43 @@ public class DSAPIManager extends ComponentBase {
      */
     public Response datasetDataEndpoint(String lang, String dataset, JsonObject query) {
         Problems p = new Problems();
-        final JsonArray result = new JsonArray();
-        
-        API_Dataset api = getAPI(dataset);
+        StreamingOutput so = StreamNothing;        
+        final API_Dataset api = getAPI(dataset);
         try {
             DataQuery q = DataQueryParser.Do(p, api.getPrefixes(), query);
             log.info("Request: " + query.toString());
             String sq = null;
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
+                if (checkingSPARQL) checkLegalSPARQL(p, sq);
             }
-
-            // TODO is this needed for every call?
-            checkLegalSPARQL(p, sq);
 
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
-                ResultSet rs = source.select(sq);
-                JSONConsumer toResult = JSONLib.consumeToArray(result);
-                // TODO replace by streaming version
-                ResultsToJson.convert(api.getAspects(), toResult, rs);
+                final ResultSet rs = source.select(sq);
+                
+                so = new StreamingOutput() {
+
+					@Override public void write(OutputStream output) throws IOException, WebApplicationException {
+						final PrintStream ps = new PrintStream( output );
+						final Bool comma = new Bool();
+						
+						ps.println( "[" );
+						JSONConsumer stream = new JSONConsumer() {
+							
+							@Override public void consume(JsonValue jv) {
+								if (comma.value) ps.print( ", " ); 
+								ps.println(jv.toString());
+								comma.value = true;
+							}
+						};
+						ResultsToJson.convert(api.getAspects(), stream, rs);
+						ps.println( "]" );
+						
+						ps.flush();
+					}
+                	
+                };
             }
 
         } catch (Exception e) {
@@ -206,13 +236,24 @@ public class DSAPIManager extends ComponentBase {
                 
         if (p.isOK()) {
             // TODO replace by streaming version
-            return Response.ok(result.toString()).build();
+            return Response.ok(so).build();
 
         } else {
             String problemStrings = p.getProblemStrings();
             throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + BunchLib.join(problemStrings));
         }
     }
+    
+    static final class Bool {
+    	boolean value;
+    }
+    
+    static final StreamingOutput StreamNothing = new StreamingOutput() {
+		
+		@Override public void write(OutputStream output) throws IOException, WebApplicationException {
+			// No bytes at all
+		}
+	};
     
     /**
      * <pre>base/dataset/{dataset}/explain</pre>
