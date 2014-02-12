@@ -24,7 +24,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,7 @@ import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.endpoints.support.StreamFromResults;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
@@ -195,30 +195,7 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
-                final ResultSet rs = source.select(sq);
-                
-                so = new StreamingOutput() {
-
-					@Override public void write(OutputStream output) throws IOException, WebApplicationException {
-						final PrintStream ps = new PrintStream( output );
-						final Bool comma = new Bool();
-						
-						ps.println( "[" );
-						JSONConsumer stream = new JSONConsumer() {
-							
-							@Override public void consume(JsonValue jv) {
-								if (comma.value) ps.print( ", " ); 
-								ps.println(jv.toString());
-								comma.value = true;
-							}
-						};
-						ResultsToJson.convert(api.getAspects(), stream, rs);
-						ps.println( "]" );
-						
-						ps.flush();
-					}
-                	
-                };
+                so = new StreamFromResults(api.getAspects(), source.select(sq));
             }
 
         } catch (Exception e) {
@@ -235,17 +212,12 @@ public class DSAPIManager extends ComponentBase {
         }
                 
         if (p.isOK()) {
-            // TODO replace by streaming version
             return Response.ok(so).build();
 
         } else {
             String problemStrings = p.getProblemStrings();
             throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + BunchLib.join(problemStrings));
         }
-    }
-    
-    static final class Bool {
-    	boolean value;
     }
     
     static final StreamingOutput StreamNothing = new StreamingOutput() {
@@ -273,11 +245,10 @@ public class DSAPIManager extends ComponentBase {
         JsonArray aspects = new JsonArray();
         for (Aspect a : api.getAspects()) {
             Resource rt = a.getRangeType();
-            boolean optional = a.getIsOptional(), multiple = a
-                    .getIsMultiValued();
+            boolean optional = a.getIsOptional(), multiple = a.getIsMultiValued();
             aspects.add("" + a + (rt == null ? "" : " [range: " + rt + "]")
-                    + (optional ? ", optional" : "")
-                    + (multiple ? ", multivalued" : ""));
+                + (optional ? ", optional" : "")
+                + (multiple ? ", multivalued" : ""));
         }
         comments.put("aspects", aspects);
 
@@ -288,10 +259,10 @@ public class DSAPIManager extends ComponentBase {
             if (p.isOK())
                 q = DataQueryParser.Do(p, api.getPrefixes(), query);
 
-            if (p.isOK())
+            if (p.isOK()) {
                 sq = q.toSparql(p, api);
-
-            checkLegalSPARQL(p, sq);
+                if (checkingSPARQL) checkLegalSPARQL(p, sq);
+            }
             
             if (p.isOK()) comments.put("sparql", QueryFactory.create(sq).toString());
 
