@@ -24,6 +24,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.appbase.templates.VelocityRender;
@@ -95,6 +96,14 @@ public class Endpoints {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getData(@PathParam("dataset") String dsid, JsonObject query) {
         return getManager().datasetDataEndpoint(lang, dsid, query);
+    }
+    
+    @POST
+    @Path("/{dataset}/describe")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getDescription(@PathParam("dataset") String dsid, JsonObject query) {
+        return getManager().datasetDescribeEndpoint(dsid, query);
     }
     
     @GET

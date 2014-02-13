@@ -24,6 +24,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +44,12 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
+import com.github.jsonldjava.core.JSONLDConsts;
+import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.sun.jersey.api.NotFoundException;
 
@@ -173,6 +178,44 @@ public class DSAPIManager extends ComponentBase {
      */
     public JSONWritable datasetStructureEndpoint(String lang, String dataset) {
         return  getAPI(dataset).asJson(lang); 
+    }
+
+    /**
+        <pre>POST query to base/dataset/{dataset}/describe</pre>
+     
+     	<p>
+     	Returns a JSON-LD serialisation of the description of the resource
+     	described by the posted query, a JSON string of the URI of the
+     	resource.
+     	</p>
+     	
+     	<p>
+     		TODO: alternative way of streaming from model, attaching into Jersey.
+     		TODO: decide what's to be done about the dataset.
+     		TODO: decide whethe the resource should be passed as a query
+     			parameter, or as a {@id: URI} object for consistency.
+     	</p>  
+     	
+     	<p>
+     	   	I provoked this from the command line to get some results:
+     	   	
+     	   	<pre>
+     	   	wget --header='Content-Type: application/json' --header='Accept-Type: application/json' --post-data='{"@id": "http://boardgamegeek.com/boardgamedesigner/34699/matthias-cramer"}' http://localhost:8080/dsapi/dataset/games/describe
+			</pre>
+     	   	
+     	</p>
+    */
+    public Response datasetDescribeEndpoint(String dataset, JsonObject query) {
+    	String resource = query.getAsObject().get("@id").getAsString().value();    	
+    	final Model m = ModelFactory.createModelForGraph(source.describe("DESCRIBE <" + resource + ">"));
+    	StreamingOutput description = new StreamingOutput() {
+
+			@Override public void write(OutputStream output) throws IOException, WebApplicationException {
+				m.write(output, "JSON-LD");
+				
+			}};
+    	
+    	return Response.ok(description).build();
     }
     
     /**
