@@ -16,6 +16,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -208,6 +209,24 @@ public class DSAPIManager extends ComponentBase {
     public Response datasetDescribeEndpoint(String dataset, JsonObject query) {
     	String resource = query.getAsObject().get("@id").getAsString().value();    	
     	final Model m = ModelFactory.createModelForGraph(source.describe("DESCRIBE <" + resource + ">"));
+    	StreamingOutput description = new StreamingOutput() {
+
+			@Override public void write(OutputStream output) throws IOException, WebApplicationException {
+				m.write(output, "JSON-LD");
+				
+			}};
+    	
+    	return Response.ok(description).build();
+    }
+    
+    public Response datasetDescribeEndpoint(String dataset, List<String> uris) {   	
+    	
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("DESCRIBE");
+    	for (String u: uris) sb.append("\n <").append(u).append(">");
+    	String query = sb.append("\n").toString();
+    	
+    	final Model m = ModelFactory.createModelForGraph(source.describe(query));
     	StreamingOutput description = new StreamingOutput() {
 
 			@Override public void write(OutputStream output) throws IOException, WebApplicationException {

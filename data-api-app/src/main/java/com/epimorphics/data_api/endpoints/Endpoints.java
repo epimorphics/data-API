@@ -9,6 +9,8 @@
 
 package com.epimorphics.data_api.endpoints;
 
+import java.util.List;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -17,8 +19,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
@@ -98,11 +102,18 @@ public class Endpoints {
         return getManager().datasetDataEndpoint(lang, dsid, query);
     }
     
+    @GET
+    @Path("/{dataset}/describe")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDescriptionByGET(@PathParam("dataset") String dsid, @QueryParam("uri") List<String> uris) {
+        return getManager().datasetDescribeEndpoint(dsid, uris);
+    }
+    
     @POST
     @Path("/{dataset}/describe")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getDescription(@PathParam("dataset") String dsid, JsonObject query) {
+    public Response getDescriptionByPOST(@PathParam("dataset") String dsid, JsonObject query) {
         return getManager().datasetDescribeEndpoint(dsid, query);
     }
     
