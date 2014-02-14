@@ -22,13 +22,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.appbase.templates.VelocityRender;
@@ -98,23 +96,8 @@ public class Endpoints {
     @Path("/{dataset}/data")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getData(@PathParam("dataset") String dsid, JsonObject query) {
+    public Response getDataJSON(@PathParam("dataset") String dsid, JsonObject query) {
         return getManager().datasetDataEndpoint(lang, dsid, query);
-    }
-    
-    @GET
-    @Path("/{dataset}/describe")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getDescriptionByGET(@PathParam("dataset") String dsid, @QueryParam("uri") List<String> uris) {
-        return getManager().datasetDescribeEndpoint(dsid, uris);
-    }
-    
-    @POST
-    @Path("/{dataset}/describe")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response getDescriptionByPOST(@PathParam("dataset") String dsid, JsonObject query) {
-        return getManager().datasetDescribeEndpoint(dsid, query);
     }
     
     @GET
@@ -130,6 +113,21 @@ public class Endpoints {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response explainQuery(@PathParam("dataset") String dsid, JsonObject query) {
         return getManager().datasetExplainEndpoint(dsid, query);
+    }
+    
+    @GET
+    @Path("/{dataset}/describe")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getDescriptionByGET(@PathParam("dataset") String dsid, @QueryParam("uri") List<String> uris) {
+        return getManager().datasetDescribeEndpoint(dsid, uris);
+    }
+    
+    @POST
+    @Path("/{dataset}/describe")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getDescriptionByPOST(@PathParam("dataset") String dsid, JsonObject query) {
+        return getManager().datasetDescribeEndpoint(dsid, query);
     }
     
 }
