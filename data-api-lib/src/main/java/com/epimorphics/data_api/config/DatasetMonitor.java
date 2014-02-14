@@ -74,12 +74,17 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
                     String componentQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
                             Cube.getURI(), dsd.getURI());
                     addClosure(dataset, manager.getSource().describe(componentQuery));
+                    String codelistQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) / qb:codeList ?x}",
+                            Cube.getURI(), dsd.getURI());
+                    addClosure(dataset, manager.getSource().describe(codelistQuery));
                 }
             }
         }
         
         // Also pull in property definitions for any aspect property declared inline
         List<Resource> aspectprops = QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:property");
+        aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:codeList") );
+        aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:codeList") );
         if ( ! aspectprops.isEmpty() ) {
             String[] uris = new String[ aspectprops.size() ];
             for (int i = 0; i < aspectprops.size(); i++) uris[i] = aspectprops.get(i).getURI();

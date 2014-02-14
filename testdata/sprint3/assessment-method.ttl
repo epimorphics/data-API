@@ -1,0 +1,293 @@
+@prefix ui:      <http://purl.org/linked-data/registry-ui#> .
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix ssd:     <http://www.w3.org/ns/sparql-service-description#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix dgu:     <http://reference.data.gov.uk/def/reference/> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+@prefix vs:      <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix qb:      <http://purl.org/linked-data/cube#> .
+@prefix version:  <http://purl.org/linked-data/version#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix time:    <http://www.w3.org/2006/time#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix reg:     <http://purl.org/linked-data/registry#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix api:     <http://purl.org/linked-data/api/vocab#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix cc:      <http://creativecommons.org/ns#> .
+@prefix ldp:     <http://www.w3.org/ns/ldp#> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/achievement>
+      a       skos:Concept ;
+      rdfs:label "Achievement"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Achievement"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/short-answer-plus>
+      a       skos:Concept ;
+      rdfs:label "Short Answer+"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7574" ;
+      skos:prefLabel "Short Answer+"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/task>
+      a       skos:Concept ;
+      rdfs:label "Task"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7586" ;
+      skos:prefLabel "Task"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/success>
+      a       skos:Concept ;
+      rdfs:label "Success"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Success"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance-indicators>
+      a       skos:Concept ;
+      rdfs:label "Performance indicators"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Performance indicators"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/economic-performance>
+      a       skos:Concept ;
+      rdfs:label "Economic performance"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Economic performance"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/underperformance>
+      a       skos:Concept ;
+      rdfs:label "Underperformance"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Underperformance"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/multiple-choice>
+      a       skos:Concept ;
+      rdfs:label "Multiple Choice"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7577" ;
+      skos:prefLabel "Multiple Choice"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/practical-plus>
+      a       skos:Concept ;
+      rdfs:label "Practical+"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7580" ;
+      skos:prefLabel "Practical+"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/speaking-oral>
+      a       skos:Concept ;
+      rdfs:label "Speaking/Oral"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7581" ;
+      skos:prefLabel "Speaking/Oral"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/practical>
+      a       skos:Concept ;
+      rdfs:label "Practical"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7579" ;
+      skos:prefLabel "Practical"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/teacher-standards-and-performance>
+      a       skos:Concept ;
+      rdfs:label "Teacher standards and performance"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Teacher standards and performance"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/long-answer>
+      a       skos:Concept ;
+      rdfs:label "Long Answer"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7575" ;
+      skos:prefLabel "Long Answer"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/efficiency>
+      a       skos:Concept ;
+      rdfs:label "Efficiency"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Efficiency"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/effectiveness>
+      a       skos:Concept ;
+      rdfs:label "Effectiveness"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Effectiveness"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/school-performance>
+      a       skos:Concept ;
+      rdfs:label "School performance"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "School performance"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance-management>
+      a       skos:Concept ;
+      rdfs:label "Performance management"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Performance management"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/improvement>
+      a       skos:Concept ;
+      rdfs:label "Improvement"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Improvement"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/short-answer>
+      a       skos:Concept ;
+      rdfs:label "Short Answer"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7573" ;
+      skos:prefLabel "Short Answer"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/foundation-stage-profile-assessment>
+      a       skos:Concept ;
+      rdfs:label "Foundation Stage Profile Assessment"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7587" ;
+      skos:prefLabel "Foundation Stage Profile Assessment"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/continuous-assessment>
+      a       skos:Concept ;
+      rdfs:label "Continuous assessment"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-739" ;
+      skos:prefLabel "Continuous assessment"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-(education)> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/coursework>
+      a       skos:Concept ;
+      rdfs:label "Coursework"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7584" ;
+      skos:prefLabel "Coursework"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance>
+      a       skos:Concept ;
+      rdfs:label "Performance"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:narrower <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/failure> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/success> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/errors> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/teacher-standards-and-performance> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/underperformance> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/school-performance> ;
+      skos:notation "TNR-217" ;
+      skos:prefLabel "Performance"@en ;
+      skos:related <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/achievement> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance-indicators> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/efficiency> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/economic-performance> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/effectiveness> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/legal-compliance> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance-management> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/improvement> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/capacity-building> ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> , <http://ukgovld-registry.dnsalias.net/def/education/isb/achievement-performance-and-evaluation> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/long-answer-plus>
+      a       skos:Concept ;
+      rdfs:label "Long Answer+"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7576" ;
+      skos:prefLabel "Long Answer+"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/legal-compliance>
+      a       skos:Concept ;
+      rdfs:label "Legal compliance"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Legal compliance"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/controlled-assessment>
+      a       skos:Concept ;
+      rdfs:label "Controlled Assessment"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7585" ;
+      skos:prefLabel "Controlled Assessment"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type>
+      a       reg:Register , ldp:Container , skos:ConceptScheme ;
+      rdfs:comment "Assessment-Method-Type ESCS ISB controlled list for assessment method type"@en ;
+      rdfs:label "Assessment Method Type"@en ;
+      dct:modified "2013-08-20T14:15:34.329Z"^^xsd:dateTime ;
+      reg:inverseMembershipPredicate
+              skos:inScheme ;
+      owl:versionInfo 2 ;
+      skos:hasTopConcept <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/task> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/short-answer-plus> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/short-answer> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/foundation-stage-profile-assessment> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/coursework> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/continuous-assessment> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/long-answer-plus> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/controlled-assessment> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/multiple-choice> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/practical-plus> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/portfolio> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/practical> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/speaking-oral> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/project> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/long-answer> , <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/multiple-choice-plus> ;
+      skos:notation "TNR-7572" ;
+      skos:prefLabel "Assessment Method Type"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/failure>
+      a       skos:Concept ;
+      rdfs:label "Failure"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Failure"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/errors>
+      a       skos:Concept ;
+      rdfs:label "Errors"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Errors"@en .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/portfolio>
+      a       skos:Concept ;
+      rdfs:label "Portfolio"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7582" ;
+      skos:prefLabel "Portfolio"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> , <http://ukgovld-registry.dnsalias.net/def/education/isb/qe-evidence-requirement-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/project>
+      a       skos:Concept ;
+      rdfs:label "Project"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7583" ;
+      skos:prefLabel "Project"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> , <http://ukgovld-registry.dnsalias.net/def/education/isb/qualification-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/multiple-choice-plus>
+      a       skos:Concept ;
+      rdfs:label "Multiple Choice+"@en ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:notation "TNR-7578" ;
+      skos:prefLabel "Multiple Choice+"@en ;
+      skos:scopeNote "Only for use in controlled lists; not for subject thesaurus. 2013-04-16"@en ;
+      skos:topConceptOf <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .
+
+<http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/capacity-building>
+      a       skos:Concept ;
+      rdfs:label "Capacity building"@en ;
+      skos:broader <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance> ;
+      skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> ;
+      skos:prefLabel "Capacity building"@en .
+      

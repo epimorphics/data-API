@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.epimorphics.appbase.monitor.ConfigInstance;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
+import com.epimorphics.data_api.config.Hierarchy;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
@@ -40,6 +41,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     String name;
 	String query;
 	DSAPIManager manager;
+	Hierarchy hierarchy;
 	
 	final Set<Aspect> aspects = new HashSet<Aspect>();
 	
@@ -52,9 +54,16 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	
 	public API_Dataset(Resource config, DSAPIManager manager) {
 	    super(config);
+	    configfureHierarchy();
 	    configureBaseQuery();
 	    configureName();
 	    this.manager = manager;
+	}
+	
+	private void configfureHierarchy() {
+	    if (root.hasProperty(Dsapi.codeList)) {
+	        hierarchy = new Hierarchy( getResourceValue(Dsapi.codeList) );
+	    }
 	}
 	
     private void configureBaseQuery() {
@@ -63,6 +72,8 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
             Resource dataset = getResourceValue(Dsapi.qb_dataset);
             if (dataset != null) {
                 query = "?item  <" + Cube.dataSet + "> <" + getResourceValue(Dsapi.qb_dataset).getURI() + ">";
+            } else if (isHierarchy()) {
+                query = hierarchy.getMemberQuery("item");
             } else {
                 query = "";
             }
@@ -87,6 +98,14 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 
 	public void add(Aspect a) {
 		aspects.add(a);
+	}
+	
+	public boolean isHierarchy() {
+	    return hierarchy != null;
+	}
+	
+	public Hierarchy getHierarchy() {
+	    return hierarchy;
 	}
 	
 	// From base class have:

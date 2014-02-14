@@ -25,7 +25,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +44,6 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
-import com.github.jsonldjava.core.JSONLDConsts;
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -247,7 +244,7 @@ public class DSAPIManager extends ComponentBase {
         StreamingOutput so = StreamNothing;        
         final API_Dataset api = getAPI(dataset);
         try {
-            DataQuery q = DataQueryParser.Do(p, api.getPrefixes(), query);
+            DataQuery q = DataQueryParser.Do(p, api, query);
             log.info("Request: " + query.toString());
             String sq = null;
             if (p.isOK()) {

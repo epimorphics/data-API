@@ -15,6 +15,8 @@ import java.util.Set;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
+import com.epimorphics.data_api.config.JSONConstants;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JsonUtil;
@@ -25,16 +27,25 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public class DataQueryParser {
 	
 	// these would be built up from the plugins. Probably use the appbase configure stuff.
-	static final String opNames = "eq ne le lt ge gt contains matches search below oneof";
+	static final String opNames = "eq ne le lt ge gt contains matches search below oneof childof in";
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
 	
-	public static DataQuery Do(Problems p, PrefixMapping pm, JsonValue jv) {
+    public static DataQuery Do(Problems p, PrefixMapping pm, JsonValue jv) {
+        return Do(p, pm, null, jv);
+    }
+    
+    public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {
+        return Do(p, dataset.getPrefixes(), dataset, jv);
+    }
+    
+	public static DataQuery Do(Problems p, PrefixMapping pm, API_Dataset dataset, JsonValue jv) {
 		if (jv.isObject()) {
 			Integer length = null, offset = null;
 			JsonObject jo = jv.getAsObject();
 			List<Filter> filters = new ArrayList<Filter>();
 			List<Sort> sortby = new ArrayList<Sort>();
+			List<Guard> guards = new ArrayList<Guard>();
 			
 			for (String key: jv.getAsObject().keys()) {
 				JsonValue value = jv.getAsObject().get(key);
@@ -45,6 +56,12 @@ public class DataQueryParser {
 						length = extractNumber(p, key, value);
 					} else if (key.equals("@offset")) {
 						offset = extractNumber(p, key, value);
+					} else if (key.equals(JSONConstants.CHILDOF)) {
+					    if (dataset == null || !dataset.isHierarchy()) {
+					        p.add("Tried to use @childof on a dataset that isn't a code list");
+					    } else {
+					        guards.add( new ChildofGuard(jsonResourceToTerm(p, pm, value), dataset.getHierarchy()) );
+					    }
 					} else {
 						p.add("unknown directive '" + key + "' in data query " + jv + ".");
 					}
@@ -72,7 +89,7 @@ public class DataQueryParser {
 					}
 				}
 			}
-			return new DataQuery(filters, sortby, Slice.create(length, offset));
+			return new DataQuery(filters, sortby, guards, Slice.create(length, offset));
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
 		}
@@ -116,6 +133,28 @@ public class DataQueryParser {
 
 	private static boolean isKnownOp(String op) {
 		return allowedOps.contains(op);
+	}
+	
+	public static Term jsonResourceToTerm(Problems p, PrefixMapping pm, JsonValue jv) {
+	    if (jv.isNull()) {
+	        return null;
+	    } else if (jv.isString()) {
+	        return Term.URI( pm.expandPrefix(jv.getAsString().value()) );
+	    } else if (jv.isObject()) {
+            JsonObject jo = jv.getAsObject();
+            JsonValue id = jo.get("@id");
+            if (id != null) {
+                if (id.isString()) {
+                    return Term.URI( pm.expandPrefix(id.getAsString().value()) );
+                } else {
+                    p.add("Cannot convert JSON value '" + jv + "' to Term: @id has a non-string value.");
+                    return Term.bad(jv);
+                }
+            }
+	    } 
+	    
+        p.add("Cannot convert JSON value '" + jv + "' to Term.");
+        return Term.bad(jv);
 	}
 
 	// TODO literals with a language
