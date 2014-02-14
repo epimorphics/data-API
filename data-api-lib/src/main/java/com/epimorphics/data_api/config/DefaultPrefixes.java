@@ -27,7 +27,7 @@ public class DefaultPrefixes {
             .setNsPrefix("xsd",   XSD.getURI())
             .setNsPrefix("dct",   DCTerms.getURI())
             .setNsPrefix("skos",  SKOS.getURI())
-            .setNsPrefix("qb",    Cube.getURI() + "#")
+            .setNsPrefix("qb",    Cube.getURI())
             .setNsPrefix("dsapi", Dsapi.getURI())
             ;
 

@@ -71,7 +71,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
                 addClosure(dsd);
                 if (dsd.isURIResource()) {
                     // Try to fetch the descriptions of the components
-                    String componentQuery = String.format("PREFIX qb: <%s#> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
+                    String componentQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
                             Cube.getURI(), dsd.getURI());
                     addClosure(dataset, manager.getSource().describe(componentQuery));
                 }
