@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -35,10 +36,14 @@ import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.ResultsToJson;
 import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
+import com.epimorphics.data_api.conversions.ResultsToJson.Row;
+import com.epimorphics.data_api.conversions.ResultsToJson.RowConsumer;
+import com.epimorphics.data_api.conversions.Value;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.endpoints.support.StreamFromResults;
+import com.epimorphics.data_api.endpoints.support.StreamFromResults.Bool;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
@@ -242,9 +247,9 @@ public class DSAPIManager extends ComponentBase {
      * 
      * The data query endpoint
      */
-    public Response datasetDataEndpoint(String lang, String dataset, JsonObject query) {
+    public JSONWritable datasetDataEndpoint(String lang, String dataset, JsonObject query) {
         Problems p = new Problems();
-        StreamingOutput so = StreamNothing;        
+        RowWriter so = null;        
         final API_Dataset api = getAPI(dataset);
         try {
             DataQuery q = DataQueryParser.Do(p, api.getPrefixes(), query);
@@ -257,7 +262,7 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
-                so = new StreamFromResults(api.getAspects(), source.select(sq));
+                so = new RowWriter(api.getAspects(), source.select(sq));
             }
 
         } catch (Exception e) {
@@ -274,12 +279,39 @@ public class DSAPIManager extends ComponentBase {
         }
                 
         if (p.isOK()) {
-            return Response.ok(so).build();
+            return so;
 
         } else {
             String problemStrings = p.getProblemStrings();
             throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + BunchLib.join(problemStrings));
         }
+    }
+    
+    public final class RowWriter implements JSONWritable {
+    	
+    	private final Set<Aspect> aspects;
+    	private final ResultSet rs;
+
+    	public RowWriter(Set<Aspect> aspects, ResultSet rs) {
+    		this.aspects = aspects;
+    		this.rs = rs;
+    	}
+
+    	@Override public void writeTo(final JSFullWriter jw) {
+    		final Bool comma = new Bool();
+    		jw.startArray();
+    		
+    		RowConsumer stream = new RowConsumer() {
+    			
+    			@Override public void consume(Row jv) {
+    				if (comma.value) jw.arraySep(); 
+    				jv.writeTo(jw);
+    				comma.value = true;
+    			}
+    		};
+    		ResultsToJson.convert(aspects, stream, rs);
+    		jw.finishArray();
+    	}
     }
     
     static final StreamingOutput StreamNothing = new StreamingOutput() {
@@ -331,9 +363,12 @@ public class DSAPIManager extends ComponentBase {
             if (p.isOK()) {
                 long start = System.currentTimeMillis();
                 ResultSet rs = source.select(sq);
-                final JsonArray result = new JsonArray();
-                JSONConsumer toResult = JSONLib.consumeToArray(result);
-                ResultsToJson.convert(api.getAspects(), toResult, rs);
+                RowConsumer discard = new RowConsumer() {
+					
+					@Override public void consume(Row jv) {						
+					}
+				};
+                ResultsToJson.convert(api.getAspects(), discard, rs);
                 long finish = System.currentTimeMillis();
                 comments.put("time", finish-start);
             }

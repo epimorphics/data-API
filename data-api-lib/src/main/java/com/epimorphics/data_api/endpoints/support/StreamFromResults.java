@@ -24,36 +24,36 @@ import com.hp.hpl.jena.query.ResultSet;
     A StreamFromResults is a StreamingOutput layer over the
     JSON results from a multi-valued handling ResultSet.
 */
-public final class StreamFromResults implements StreamingOutput {
+public final class StreamFromResults { // implements StreamingOutput {
 	
-	private final Set<Aspect> aspects;
-	private final ResultSet rs;
-
-	public StreamFromResults(Set<Aspect> aspects, ResultSet rs) {
-		this.aspects = aspects;
-		this.rs = rs;
-	}
-
-	@Override public void write(OutputStream output) throws IOException, WebApplicationException {
-		final PrintStream ps = new PrintStream( output );
-		final Bool comma = new Bool();
-		
-		ps.println( "[" );
-		JSONConsumer stream = new JSONConsumer() {
-			
-			@Override public void consume(JsonValue jv) {
-				if (comma.value) ps.print( ", " ); 
-				ps.println(jv.toString());
-				comma.value = true;
-			}
-		};
-		ResultsToJson.convert(aspects, stream, rs);
-		ps.println( "]" );
-		
-		ps.flush();
-	}
+//	private final Set<Aspect> aspects;
+//	private final ResultSet rs;
+//
+//	public StreamFromResults(Set<Aspect> aspects, ResultSet rs) {
+//		this.aspects = aspects;
+//		this.rs = rs;
+//	}
+//
+//	@Override public void write(OutputStream output) throws IOException, WebApplicationException {
+//		final PrintStream ps = new PrintStream( output );
+//		final Bool comma = new Bool();
+//		
+//		ps.println( "[" );
+//		JSONConsumer stream = new JSONConsumer() {
+//			
+//			@Override public void consume(JsonValue jv) {
+//				if (comma.value) ps.print( ", " ); 
+//				ps.println(jv.toString());
+//				comma.value = true;
+//			}
+//		};
+//		ResultsToJson.convert(aspects, stream, rs);
+//		ps.println( "]" );
+//		
+//		ps.flush();
+//	}
     
-    static final class Bool {
-    	boolean value;
+    public static final class Bool {
+    	public boolean value;
     }
 }

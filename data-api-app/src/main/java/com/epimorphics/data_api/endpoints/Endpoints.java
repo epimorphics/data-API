@@ -96,7 +96,7 @@ public class Endpoints {
     @Path("/{dataset}/data")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response getDataJSON(@PathParam("dataset") String dsid, JsonObject query) {
+    public JSONWritable getDataJSON(@PathParam("dataset") String dsid, JsonObject query) {
         return getManager().datasetDataEndpoint(lang, dsid, query);
     }
     

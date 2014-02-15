@@ -89,69 +89,71 @@ import com.hp.hpl.jena.util.FileManager;
 	@POST @Path("dataset/{name}/explain-query") @Produces("text/plain")	public Response placeholder_explain_POST(
 			@PathParam("name") String datasetName,
 			@FormParam("json") String posted) {
+		
+		return Response.serverError().build();
 
-		Example example = examples.get(datasetName);
-
-		Problems p = new Problems();
-		List<String> comments = new ArrayList<String>();
-
-		comments.add("datasetName: " + datasetName);
-		comments.add("posted JSON:\n" + posted + "\n");
-
-		comments.add("aspects:");
-		for (Aspect a : example.aspects.getAspects()) {
-			Resource rt = a.getRangeType();
-			boolean optional = a.getIsOptional(), multiple = a
-					.getIsMultiValued();
-			comments.add("  " + a + (rt == null ? "" : " [range: " + rt + "]")
-					+ (optional ? ", optional" : "")
-					+ (multiple ? ", multivalued" : ""));
-		}
-		comments.add("");
-
-		if (example == null)
-			p.add("dataset '" + datasetName + "' not found.");
-
-		try {
-			List<Aspect> aspects = new ArrayList<Aspect>();
-			for (Aspect a : example.aspects.getAspects())
-				aspects.add(a);
-
-			JsonObject jo = JSON.parse(posted);
-
-			DataQuery q = null;
-			String sq = null;
-
-			if (p.isOK())
-				q = DataQueryParser.Do(p, example.pm, jo);
-
-			if (p.isOK())
-				sq = q.toSparql(p, example.aspects, null, example.pm);
-
-			checkLegalSPARQL(p, sq);
-			
-			if (p.isOK()) comments.add("generated SPARQL:\n\n" + QueryFactory.create(sq));
-
-			if (p.isOK()) {
-				ResultSet rs = example.source.select(sq);
-				final JsonArray result = new JsonArray();
-				JSONConsumer toResult = JSONLib.consumeToArray(result);
-				ResultsToJson.convert(aspects, toResult, rs);
-				comments.add("resultset:\n\n" + result);
-			}
-
-		} catch (Exception e) {
-			System.err.println("BROKEN: " + e);
-			e.printStackTrace(System.err);
-			p.add("BROKEN: " + e);
-		}
-
-		if (p.isOK()) {
-			return Response.ok("OK\n" + BunchLib.join(comments)).build();
-		} else {
-			return Response.ok
-				( "FAILED:\n" + BunchLib.join(comments)	+ BunchLib.join(p.getProblemStrings())).build();
-		}
+//		Example example = examples.get(datasetName);
+//
+//		Problems p = new Problems();
+//		List<String> comments = new ArrayList<String>();
+//
+//		comments.add("datasetName: " + datasetName);
+//		comments.add("posted JSON:\n" + posted + "\n");
+//
+//		comments.add("aspects:");
+//		for (Aspect a : example.aspects.getAspects()) {
+//			Resource rt = a.getRangeType();
+//			boolean optional = a.getIsOptional(), multiple = a
+//					.getIsMultiValued();
+//			comments.add("  " + a + (rt == null ? "" : " [range: " + rt + "]")
+//					+ (optional ? ", optional" : "")
+//					+ (multiple ? ", multivalued" : ""));
+//		}
+//		comments.add("");
+//
+//		if (example == null)
+//			p.add("dataset '" + datasetName + "' not found.");
+//
+//		try {
+//			List<Aspect> aspects = new ArrayList<Aspect>();
+//			for (Aspect a : example.aspects.getAspects())
+//				aspects.add(a);
+//
+//			JsonObject jo = JSON.parse(posted);
+//
+//			DataQuery q = null;
+//			String sq = null;
+//
+//			if (p.isOK())
+//				q = DataQueryParser.Do(p, example.pm, jo);
+//
+//			if (p.isOK())
+//				sq = q.toSparql(p, example.aspects, null, example.pm);
+//
+//			checkLegalSPARQL(p, sq);
+//			
+//			if (p.isOK()) comments.add("generated SPARQL:\n\n" + QueryFactory.create(sq));
+//
+//			if (p.isOK()) {
+//				ResultSet rs = example.source.select(sq);
+//				final JsonArray result = new JsonArray();
+//				JSONConsumer toResult = JSONLib.consumeToArray(result);
+//				ResultsToJson.convert(aspects, toResult, rs);
+//				comments.add("resultset:\n\n" + result);
+//			}
+//
+//		} catch (Exception e) {
+//			System.err.println("BROKEN: " + e);
+//			e.printStackTrace(System.err);
+//			p.add("BROKEN: " + e);
+//		}
+//
+//		if (p.isOK()) {
+//			return Response.ok("OK\n" + BunchLib.join(comments)).build();
+//		} else {
+//			return Response.ok
+//				( "FAILED:\n" + BunchLib.join(comments)	+ BunchLib.join(p.getProblemStrings())).build();
+//		}
 	}
 	
 	static final Map<String, Lookback> lookbacks = new HashMap<String, Lookback>();
@@ -161,89 +163,91 @@ import com.hp.hpl.jena.util.FileManager;
 		, @PathParam("token") String token
 		) {
 		
-		Lookback l = lookbacks.get(token);
+		return Response.serverError().build();
 		
-//		String skel = BunchLib.join
-//			( "<html>"
-//			, "<head>"
-//			, "</head>"
-//			, "</body>"
-//			, "<h1>lookback:</h1>"
-//			, l.toText()
-//			, "</body>"
-//			, "</html>"
-//			);
-			
-		return Response.ok(l.toText()).build();
-	}
-
-	@POST @Path("dataset/{name}/data") @Produces("application/json") public Response placeholder_query_POST(
-			@PathParam("name") String datasetName
-			, @FormParam("json") String posted
-			, @Context HttpServletRequest req
-			, @QueryParam("token") String token
-			) throws UnsupportedEncodingException {
-	//
-		Lookback l = new Lookback();
-		if (token == null) token = UUID.randomUUID().toString();		
-		lookbacks.put(token, l);
-		l.addComment( "Dataset name", datasetName );
-		l.addComment( "JSON-coded query", posted );
-	//
-		Example example = examples.get(datasetName);
-		List<Restriction> restrictions = example.restrictions();
-		Problems p = new Problems();
-		final JsonArray result = new JsonArray();
-	//
-		if (example == null)
-			p.add("dataset '" + datasetName + "' not found.");
-
-		try {
-			List<Aspect> aspects = new ArrayList<Aspect>();
-			for (Aspect a : example.aspects.getAspects())
-				aspects.add(a);
-
-			addAspectComments(l, example.aspects );
-			
-			JsonObject jo = JSON.parse(posted);
-
-			DataQuery q = null;
-			String sq = null;
-
-			if (p.isOK())
-				q = DataQueryParser.Do(p, example.pm, jo);
-
-			if (p.isOK()) {
-				sq = q.toSparql(p, example.aspects, null, example.pm);
-			}
-			
-			l.addComment("Generated SPARQL", sq);
-
-			checkLegalSPARQL(p, sq);
-
-			if (p.isOK()) {
-				ResultSet rs = example.source.select(sq);
-				JSONConsumer toResult = JSONLib.consumeToArray(result);
-				ResultsToJson.convert(aspects, toResult, rs);
-			}
-
-		} catch (Exception e) {
-			System.err.println("BROKEN: " + e);
-			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			PrintStream ps = new PrintStream(os);
-			e.printStackTrace(ps);
-			ps.flush();
-			p.add("BROKEN: " + e + "\n" + os.toString("UTF-8"));
-		}
-				
-		if (p.isOK()) {
-			return Response.ok(result.toString()).header("x-epi-token", token).build();
-
-		} else {
-			String problemStrings = p.getProblemStrings();
-			l.addComment("Problems detected", problemStrings );
-			return Response.serverError().header("x-epi-token", token).entity("FAILED:\n" + BunchLib.join(problemStrings)).build();
-		}
+//		Lookback l = lookbacks.get(token);
+//		
+////		String skel = BunchLib.join
+////			( "<html>"
+////			, "<head>"
+////			, "</head>"
+////			, "</body>"
+////			, "<h1>lookback:</h1>"
+////			, l.toText()
+////			, "</body>"
+////			, "</html>"
+////			);
+//			
+//		return Response.ok(l.toText()).build();
+//	}
+//
+//	@POST @Path("dataset/{name}/data") @Produces("application/json") public Response placeholder_query_POST(
+//			@PathParam("name") String datasetName
+//			, @FormParam("json") String posted
+//			, @Context HttpServletRequest req
+//			, @QueryParam("token") String token
+//			) throws UnsupportedEncodingException {
+//	//
+//		Lookback l = new Lookback();
+//		if (token == null) token = UUID.randomUUID().toString();		
+//		lookbacks.put(token, l);
+//		l.addComment( "Dataset name", datasetName );
+//		l.addComment( "JSON-coded query", posted );
+//	//
+//		Example example = examples.get(datasetName);
+//		List<Restriction> restrictions = example.restrictions();
+//		Problems p = new Problems();
+//		final JsonArray result = new JsonArray();
+//	//
+//		if (example == null)
+//			p.add("dataset '" + datasetName + "' not found.");
+//
+//		try {
+//			List<Aspect> aspects = new ArrayList<Aspect>();
+//			for (Aspect a : example.aspects.getAspects())
+//				aspects.add(a);
+//
+//			addAspectComments(l, example.aspects );
+//			
+//			JsonObject jo = JSON.parse(posted);
+//
+//			DataQuery q = null;
+//			String sq = null;
+//
+//			if (p.isOK())
+//				q = DataQueryParser.Do(p, example.pm, jo);
+//
+//			if (p.isOK()) {
+//				sq = q.toSparql(p, example.aspects, null, example.pm);
+//			}
+//			
+//			l.addComment("Generated SPARQL", sq);
+//
+//			checkLegalSPARQL(p, sq);
+//
+//			if (p.isOK()) {
+//				ResultSet rs = example.source.select(sq);
+//				JSONConsumer toResult = JSONLib.consumeToArray(result);
+//				ResultsToJson.convert(aspects, toResult, rs);
+//			}
+//
+//		} catch (Exception e) {
+//			System.err.println("BROKEN: " + e);
+//			ByteArrayOutputStream os = new ByteArrayOutputStream();
+//			PrintStream ps = new PrintStream(os);
+//			e.printStackTrace(ps);
+//			ps.flush();
+//			p.add("BROKEN: " + e + "\n" + os.toString("UTF-8"));
+//		}
+//				
+//		if (p.isOK()) {
+//			return Response.ok(result.toString()).header("x-epi-token", token).build();
+//
+//		} else {
+//			String problemStrings = p.getProblemStrings();
+//			l.addComment("Problems detected", problemStrings );
+//			return Response.serverError().header("x-epi-token", token).entity("FAILED:\n" + BunchLib.join(problemStrings)).build();
+//		}
 	}
 
 	private void addAspectComments(Lookback l, Aspects aspects) {		

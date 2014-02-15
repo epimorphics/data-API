@@ -54,7 +54,7 @@ public class TestResultsToJSON {
 		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" ).setIsMultiValued(true);
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		JsonArray ja = ResultsToJson.convert(aspects, x);
+		List<ResultsToJson.Row> ja = ResultsToJson.convert(aspects, x);
 		
 		JsonArray expected = new JsonArray();
 		

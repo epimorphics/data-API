@@ -54,10 +54,10 @@ public class JSONLib {
 		return result;
 	}
 
-	public static JSONConsumer consumeToArray(final JsonArray ja) {
-		return new JSONConsumer() {
-			@Override public void consume(JsonValue jo) { ja.add(jo); }
-		};
-	}
+//	public static JSONConsumer consumeToArray(final JsonArray ja) {
+//		return new JSONConsumer() {
+//			@Override public void consume(JsonValue jo) { ja.add(jo); }
+//		};
+//	}
 
 }
