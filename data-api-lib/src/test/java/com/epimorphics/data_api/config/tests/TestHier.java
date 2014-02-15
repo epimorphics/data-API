@@ -43,7 +43,8 @@ public class TestHier {
     }
 
     @Test
-    public void testBasicConfig() {
+    public void testHierarchies() {
+        // Concept scheme tests
         API_Dataset dataset = man.getDataset("assessment-method");
         assertNotNull(dataset);
         assertEquals("?item skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .", dataset.getBaseQuery().trim());
@@ -59,6 +60,30 @@ public class TestHier {
         // Test child listing
         results = query(dataset, "{ '@childof' : 'amt:performance' }");
         assertEquals(15, results.size());
+        
+        // Collection tests
+        dataset = man.getDataset("categories");
+        assertNotNull(dataset);
+        assertEquals("<http://ukgovld-registry.dnsalias.net/def/dataset-categories> skos:member ?item .", dataset.getBaseQuery().trim());
+        results =  query(dataset, "{}");
+        assertEquals(12, results.size());
+        assertTrue(results.contains( ResourceFactory.createResource("http://ukgovld-registry.dnsalias.net/def/dataset-categories/defence") ));
+        results = query(dataset, "{ '@childof' : null }");
+        assertEquals(12, results.size());
+        results = query(dataset, "{ '@childof' : 'http://ukgovld-registry.dnsalias.net/def/dataset-categories/defence' }");
+        assertTrue( results.isEmpty() );
+        
+        // Hierarchy Code list tests
+        dataset = man.getDataset("areas");
+        assertNotNull(dataset);
+        results = query(dataset, "{ '@childof' : null }");
+        assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
+        assertEquals(6, results.size());
+        results = query(dataset, "{ '@childof' : 'http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1' }");
+        assertEquals(3, results.size());
+        results =  query(dataset, "{}");
+        assertEquals(22, results.size());
+        assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-36") ));
     }
 
     private List<Resource> query(API_Dataset dataset, String json) {

@@ -49,7 +49,7 @@ public class Hierarchy extends ResourceBasedConfig {
             type = SKOS.Collection;
             memberQueryTemplate = "<" + codelist.getURI() + "> skos:member ?%VAR% .\n";
             topRootsQueryTemplate = memberQueryTemplate;
-            childQueryFragment = null;
+            childQueryFragment = "<http://example.com/noSuchProperty>";
             
         } else if (codelist.hasProperty(RDF.type, Cube.HierarchicalCodeList)) {
             type = Cube.HierarchicalCodeList;
@@ -66,9 +66,9 @@ public class Hierarchy extends ResourceBasedConfig {
             
             String var = safeVarName();
             String pcf = parentChildFragment(codelist);
-            memberQueryTemplate = topRootsQueryTemplate.replace(VAR_TEMPLATE, var) + "?" + var + " " + pcf + "?%VAR .\n";
+            memberQueryTemplate = topRootsQueryTemplate.replace(VAR_TEMPLATE, var) + "?" + var + " " + pcf + "* ?%VAR% .\n";
             
-            childQueryFragment =  "?%ARG% " + pcf + " ?%VAR% .\n";
+            childQueryFragment =  pcf;
         } else {
             throw new EpiException("Type of code lists not recognized, only skos:ConceptScheme, skos:Collection and qb:HierarchicalCodeList supported. " + codelist);
         }
