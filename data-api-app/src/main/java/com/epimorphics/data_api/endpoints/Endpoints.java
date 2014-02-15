@@ -22,13 +22,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.appbase.templates.VelocityRender;
@@ -64,7 +62,7 @@ public class Endpoints {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable listDatasets() {
-        return getManager().datasetsEndpoint(lang);
+        return getManager().datasetsEndpoint(lang, uriInfo.getAbsolutePath().toString());
     }
     
     @GET
@@ -77,14 +75,14 @@ public class Endpoints {
     @Path("/{dataset}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable getDataset(@PathParam("dataset") String dsid) {
-        return getManager().datasetEndpoint(lang, dsid);
+        return getManager().datasetEndpoint(lang, dsid, uriInfo.getAbsolutePath().toString());
     }
     
     @GET
     @Path("/{dataset}/structure")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable getDatasetStructure(@PathParam("dataset") String dsid) {
-        return getManager().datasetStructureEndpoint(lang, dsid);
+        return getManager().datasetStructureEndpoint(lang, dsid, uriInfo.getAbsolutePath().toString());
     }
     
     @GET

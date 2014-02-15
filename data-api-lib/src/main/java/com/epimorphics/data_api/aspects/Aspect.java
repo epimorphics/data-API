@@ -121,8 +121,8 @@ public class Aspect extends ResourceBasedConfig {
 
     public void writeJson(JSFullWriter out, String lang) {
         out.startObject();
-        out.pair(JSONConstants.ID, name.getCURIE());
-        out.pair(URI, ID);
+        out.pair(NAME, name.getCURIE());
+        out.pair(JSONConstants.ID, ID);
         safeOut(out, LABEL, getLabel(lang));
         safeOut(out, DESCRIPTION, getDescription(lang));
         out.pair(IS_OPTIONAL, isOptional);

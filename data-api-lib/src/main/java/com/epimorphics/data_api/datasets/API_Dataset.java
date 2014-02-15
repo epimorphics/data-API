@@ -5,15 +5,7 @@
 */
 package com.epimorphics.data_api.datasets;
 
-import static com.epimorphics.data_api.config.JSONConstants.ASPECTS;
-import static com.epimorphics.data_api.config.JSONConstants.DATA_API;
-import static com.epimorphics.data_api.config.JSONConstants.DESCRIPTION;
-import static com.epimorphics.data_api.config.JSONConstants.DEV_API;
-import static com.epimorphics.data_api.config.JSONConstants.DSD;
-import static com.epimorphics.data_api.config.JSONConstants.ID;
-import static com.epimorphics.data_api.config.JSONConstants.LABEL;
-import static com.epimorphics.data_api.config.JSONConstants.STRUCTURE_API;
-import static com.epimorphics.data_api.config.JSONConstants.URI;
+import static com.epimorphics.data_api.config.JSONConstants.*;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -122,42 +114,41 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     /**
      * Full json serialization used to report the dataset structure, language specific
      */
-    public JSONWritable asJson(String lang) {
-        return new Writer(lang);
+    public JSONWritable asJson(String lang, String uribase) {
+        return new Writer(lang, uribase);
     }
     
     /**
      * Shortfurm summary json serialization
      */
-    public JSONWritable asJsonShort(String lang) {
-        return new ShortWriter(lang);
+    public JSONWritable asJsonShort(String lang, String uribase) {
+        return new ShortWriter(lang, uribase);
     }
 
     /**
      * Short form json serialization using the dataset list endpoint, language specific
      */
-    public void writeShortTo(JSFullWriter out, String lang) {
+    public void writeShortTo(JSFullWriter out, String lang, String uribase) {
         out.startObject();
-        writeSummary(out, lang);
+        writeSummary(out, lang, uribase);
         out.finishObject();
     }
     
-    private void writeSummary(JSFullWriter out, String lang) {
-        out.pair(ID, getName());
-        out.pair(URI, root.getURI());
+    private void writeSummary(JSFullWriter out, String lang, String uribase) {
+        out.pair(ID, root.getURI());
+        out.pair(NAME, getName());
         out.pair(LABEL, getLabel(lang));
         out.pair(DESCRIPTION, getDescription(lang));
         if (manager != null) {
-            String base = manager.getApiBase() + "/dataset/" + name;
+            String base = uribase + "/" + name;
             out.pair(DATA_API, base + "/data");
             out.pair(STRUCTURE_API, base + "/structure");
-            out.pair(DEV_API, base + "/dev");
         }
     }
 
-    public void writeJson(JSFullWriter out, String lang) {
+    public void writeJson(JSFullWriter out, String lang, String uribase) {
         out.startObject();
-        writeSummary(out, lang);
+        writeSummary(out, lang, uribase);
         Resource dsd = root.getPropertyResourceValue(Dsapi.qb_dsd);
         if (dsd != null) {
             out.pair(DSD, dsd.getURI());
@@ -176,21 +167,23 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     
     class Writer implements JSONWritable {
         String lang;
-        public Writer(String lang) {  this.lang = lang;  }
+        String uribase;
+        public Writer(String lang, String uribase) {  this.lang = lang; this.uribase = uribase; }
         
         @Override
         public void writeTo(JSFullWriter out) {
-            writeJson(out, lang);
+            writeJson(out, lang, uribase);
         }
     }
     
     class ShortWriter implements JSONWritable {
         String lang;
-        public ShortWriter(String lang) {  this.lang = lang;  }
+        String uribase;
+        public ShortWriter(String lang, String uribase) {  this.lang = lang; this.uribase = uribase; }
         
         @Override
         public void writeTo(JSFullWriter out) {
-            writeShortTo(out, lang);
+            writeShortTo(out, lang, uribase);
         }
     }
 

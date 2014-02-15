@@ -14,6 +14,7 @@ public class JSONConstants {
     public static final String ONEOF = "oneof";
     public static final String ID = "@id";
     public static final String URI = "uri";
+    public static final String NAME = "name";
     public static final String LABEL = "label";
     public static final String DESCRIPTION = "description";
     public static final String COMPONENTS = "components";
@@ -28,7 +29,6 @@ public class JSONConstants {
     public static final String DATA = "data";
     public static final String DATA_API = "data-api";
     public static final String STRUCTURE_API = "structure-api";
-    public static final String DEV_API = "dev-api";
     public static final String API = "api";
 
     public static final String ASPECTS = "aspects";

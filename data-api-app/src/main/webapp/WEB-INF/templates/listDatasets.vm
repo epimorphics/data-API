@@ -3,14 +3,13 @@
 #parse("navbar.vm")
 <div class="container">
   <h1>Available datasets</h1>
-  #set($datasets = $lib.json.asJson($dsapi.datasetsEndpoint("en")))
+  #set($datasets = $lib.json.asJson($dsapi.datasetsEndpoint("en", $uri)))
   #foreach($i in $datasets.iterator())
     <div class="row space-above">
       <div class="col-md-4"><strong>$i.label.value()</strong></div>
       <div class="col-md-4">
           [<a href=$i.structure-api>structure</a>] 
           [<a href=$i.data-api>data</a>] 
-          [<a href=$i.dev-api>browse</a>] 
       </div>
     </div>
     <div class="row">

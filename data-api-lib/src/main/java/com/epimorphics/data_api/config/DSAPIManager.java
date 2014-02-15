@@ -109,14 +109,14 @@ public class DSAPIManager extends ComponentBase {
         return monitoredDatasets.get(name);
     }
 
-    public JSONWritable asJson(String lang) {
-        return new Writer(lang);
+    public JSONWritable asJson(String lang, String uribase) {
+        return new Writer(lang, uribase);
     }
 
-    public void writeJson(JSFullWriter out, String lang) {
+    public void writeJson(JSFullWriter out, String lang, String uribase) {
         out.startArray();
         for (Iterator<API_Dataset> i = getDatasets().iterator(); i.hasNext();) {
-            i.next().writeShortTo(out, lang);
+            i.next().writeShortTo(out, lang, uribase);
             if (i.hasNext()) {
                 out.arraySep();
             }
@@ -126,11 +126,12 @@ public class DSAPIManager extends ComponentBase {
     
     class Writer implements JSONWritable {
         String lang;
-        public Writer(String lang) {  this.lang = lang;  }
+        String uribase;
+        public Writer(String lang, String uribase) {  this.lang = lang;  this.uribase = uribase; }
         
         @Override
         public void writeTo(JSFullWriter out) {
-            writeJson(out, lang);
+            writeJson(out, lang, uribase);
         }
     }
     
@@ -143,8 +144,8 @@ public class DSAPIManager extends ComponentBase {
      *  
      * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
      */
-    public JSONWritable datasetsEndpoint(String lang) {
-        return asJson(lang);
+    public JSONWritable datasetsEndpoint(String lang, String uribase) {
+        return asJson(lang, uribase);
     }
     
     /**
@@ -155,8 +156,8 @@ public class DSAPIManager extends ComponentBase {
      *  
      * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
      */
-    public JSONWritable datasetEndpoint(String lang, String dataset) {
-        return  getAPI(dataset).asJsonShort(lang); 
+    public JSONWritable datasetEndpoint(String lang, String dataset, String uribase) {
+        return  getAPI(dataset).asJsonShort(lang, uribase); 
     }
 
     private API_Dataset getAPI(String dataset) {
@@ -174,8 +175,8 @@ public class DSAPIManager extends ComponentBase {
      *  
      * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
      */
-    public JSONWritable datasetStructureEndpoint(String lang, String dataset) {
-        return  getAPI(dataset).asJson(lang); 
+    public JSONWritable datasetStructureEndpoint(String lang, String dataset, String uribase) {
+        return  getAPI(dataset).asJson(lang, uribase); 
     }
 
     /**
