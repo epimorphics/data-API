@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.epimorphics.appbase.core.App;
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
@@ -84,6 +85,22 @@ public class TestHier {
         results =  query(dataset, "{}");
         assertEquals(22, results.size());
         assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-36") ));
+        
+        // Aspect codelist tests
+        dataset = man.getDataset("ea-data");
+        assertNotNull(dataset);
+        assertEquals(3, dataset.getAspects().size());
+        for (Aspect a : dataset.getAspects()) {
+            if (a.getName().getCURIE().equals("data:area")) {
+                assertEquals("ea-areas-hcl", a.getRangeDataset());
+            }
+        }
+        dataset = man.getDataset("ea-areas-hcl");
+        assertNotNull(dataset);
+        results = query(dataset, "{ '@childof' : null }");
+        assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
+        assertEquals(6, results.size());
+        
     }
 
     private List<Resource> query(API_Dataset dataset, String json) {

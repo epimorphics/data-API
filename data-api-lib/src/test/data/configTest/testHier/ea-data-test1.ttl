@@ -1,0 +1,49 @@
+@prefix classification: <http://environment.data.gov.uk/def/classification/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix qb:    <http://purl.org/linked-data/cube#> .
+@prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix amt:  <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+
+@prefix data:  <http://www.epimorphics.com/test/dsapi/sprint3-data#> .
+@prefix :  <http://www.epimorphics.com/test/dsapi/sprint3#> .
+
+:ea-data a dsapi:Dataset;
+    rdfs:label "Areas";
+    dct:description "EA areas and regions";
+    dsapi:aspect 
+        [ dsapi:property data:count; ],
+        [ dsapi:property data:year; ],
+        [ dsapi:property data:area; dsapi:codeList :ea-areas-hcl; ];
+    .
+
+data:count a owl:DatatypeProperty;
+    rdfs:label "count";
+    rdfs:range xsd:integer;
+    .
+    
+data:year a owl:DatatypeProperty;
+    rdfs:label "year";
+    rdfs:range xsd:integer;
+    .
+    
+data:area a owl:ObjectProperty;
+    rdfs:label "area";
+    rdfs:range org:Organization;
+    .
+    
+:ea-areas-hcl a qb:HierarchicalCodeList;
+    qb:hierarchyRoot 
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6>;
+    qb:parentChildProperty org:hasSubOrganization ;        
+    .

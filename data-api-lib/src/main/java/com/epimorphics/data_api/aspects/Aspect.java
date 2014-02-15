@@ -5,7 +5,12 @@
 */
 package com.epimorphics.data_api.aspects;
 
-import static com.epimorphics.data_api.config.JSONConstants.*;
+import static com.epimorphics.data_api.config.JSONConstants.DESCRIPTION;
+import static com.epimorphics.data_api.config.JSONConstants.IS_MULTIVALUED;
+import static com.epimorphics.data_api.config.JSONConstants.IS_OPTIONAL;
+import static com.epimorphics.data_api.config.JSONConstants.LABEL;
+import static com.epimorphics.data_api.config.JSONConstants.NAME;
+import static com.epimorphics.data_api.config.JSONConstants.RANGE_TYPE;
 
 import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.epimorphics.data_api.config.JSONConstants;
@@ -22,6 +27,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class Aspect extends ResourceBasedConfig {
 	String ID;
 	final Shortname name;
+	String rangeDataset;
 	
 	boolean isMultiValued = false;
 	boolean isOptional = false;
@@ -112,6 +118,15 @@ public class Aspect extends ResourceBasedConfig {
 		return rangeType;
 	}
     
+	
+    public String getRangeDataset() {
+        return rangeDataset;
+    }
+
+    public void setRangeDataset(String codelist) {
+        this.rangeDataset = codelist;
+    }
+
     /**
      * Full json serialization used to report the dataset structure, language specific
      */

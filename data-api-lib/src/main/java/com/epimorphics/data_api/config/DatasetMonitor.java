@@ -10,6 +10,8 @@
 package com.epimorphics.data_api.config;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -32,7 +34,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * Monitor a directory of configuration files, each of which species
@@ -50,7 +54,8 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     }
 
     @Override
-    protected API_Dataset configure(File file) {
+    protected Collection<API_Dataset> configure(File file) {
+        List<API_Dataset> datasets = new ArrayList<>();
         Model config = FileManager.get().loadModel( file.getPath() );
         Resource configRoot = RDFUtil.findRoot(config);
         
@@ -93,14 +98,15 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
         
         API_Dataset dsapi = new API_Dataset(configRoot, manager); 
         if (dsd != null) {
-            parseDSD(dsapi, dsd);
+            parseDSD(dsapi, dsd, datasets);
         } else {
-            parseAspects(dsapi, configRoot);
+            parseAspects(dsapi, configRoot, datasets);
         }
-        return dsapi;
+        datasets.add(dsapi);
+        return datasets;
     }
     
-    private void parseDSD(API_Dataset dsapi, Resource dsd) {
+    private void parseDSD(API_Dataset dsapi, Resource dsd, List<API_Dataset> datasets) {
         for (Resource component : RDFUtil.allResourceValues(dsd, Cube.component)) {
             if (component.hasProperty(Cube.dimension)) {
                 addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.dimension), true);
@@ -123,7 +129,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     
     private static Property[] mergeProps = new Property[]{ RDFS.label, SKOS.prefLabel, RDFS.comment, RDFS.range, DCTerms.description};
     
-    private void parseAspects(API_Dataset dsapi, Resource root) {
+    private void parseAspects(API_Dataset dsapi, Resource root, List<API_Dataset> datasets) {
         for (Resource aspect : RDFUtil.allResourceValues(root, Dsapi.aspect)) {
             Resource decl = RDFUtil.getResourceValue(aspect, Dsapi.property);
             if (decl != null) {
@@ -134,10 +140,37 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             Aspect a = new Aspect(aspect);
             a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
             a.setIsOptional( RDFUtil.getBooleanValue(aspect, Dsapi.optional, false) );
+            if (aspect.hasProperty(Dsapi.codeList)) {
+                API_Dataset codelistDataset = parseCodelist( aspect.getPropertyResourceValue(Dsapi.codeList) );
+                a.setRangeDataset(codelistDataset.getName());
+                datasets.add( codelistDataset );
+            }
             // TODO parse property paths
             // TODO parse range constraints
             dsapi.add(a);
         }
+    }
+    
+    protected static final String CODELIST_DATASET_BASE = "http://localhost/codelist-dataset/";
+    
+    private API_Dataset parseCodelist( Resource codelist ) {
+        String name = RDFUtil.getLocalname(codelist);
+        Resource ds = codelist.getModel().createResource(CODELIST_DATASET_BASE + name)
+            .addProperty(RDF.type, Dsapi.Dataset)
+            .addProperty(RDFS.label, name + " dataset")
+            .addProperty(DCTerms.description, "Pseudo dataset wrapped code list " + name)
+            .addProperty(Dsapi.codeList, codelist);
+        
+        for (Property p : new Property[]{RDFS.label, DCTerms.description, RDFS.comment, SKOS.notation}) {
+            Resource aspeect = ds.getModel().createResource()
+                .addProperty(Dsapi.property, p)
+                .addProperty(RDFS.range, XSD.xstring)
+                .addLiteral(Dsapi.optional, true)
+                .addLiteral(Dsapi.multivalued, true);
+            ds.addProperty(Dsapi.aspect, aspeect);
+        }
+        
+        return new API_Dataset(ds, manager);
     }
     
     private boolean hasProperties(Resource r) {
