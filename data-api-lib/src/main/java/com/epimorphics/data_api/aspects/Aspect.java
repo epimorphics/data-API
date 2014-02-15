@@ -5,12 +5,7 @@
 */
 package com.epimorphics.data_api.aspects;
 
-import static com.epimorphics.data_api.config.JSONConstants.DESCRIPTION;
-import static com.epimorphics.data_api.config.JSONConstants.IS_MULTIVALUED;
-import static com.epimorphics.data_api.config.JSONConstants.IS_OPTIONAL;
-import static com.epimorphics.data_api.config.JSONConstants.LABEL;
-import static com.epimorphics.data_api.config.JSONConstants.NAME;
-import static com.epimorphics.data_api.config.JSONConstants.RANGE_TYPE;
+import static com.epimorphics.data_api.config.JSONConstants.*;
 
 import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.epimorphics.data_api.config.JSONConstants;
@@ -143,6 +138,7 @@ public class Aspect extends ResourceBasedConfig {
         out.pair(IS_OPTIONAL, isOptional);
         out.pair(IS_MULTIVALUED, isMultiValued);
         safeOut(out, RANGE_TYPE, rangeType == null ? null : rangeType.getURI());
+        safeOut(out, RANGE_DATASET, rangeDataset);
         out.finishObject();
     }
     

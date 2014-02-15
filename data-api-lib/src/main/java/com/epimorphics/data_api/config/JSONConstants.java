@@ -22,6 +22,7 @@ public class JSONConstants {
     public static final String RANGE_CONSTRAINT = "rangeConstraint";
     public static final String RANGE_URI = "rangeURI";
     public static final String RANGE_TYPE = "rangeType";
+    public static final String RANGE_DATASET = "rangeDataset";
     public static final String RANGE = "range";
     public static final String IS_OPTIONAL = "isOptional";
     public static final String IS_MULTIVALUED = "isMultiValued";

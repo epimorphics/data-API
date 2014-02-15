@@ -9,6 +9,7 @@
 
 package com.epimorphics.data_api.config.tests;
 
+import static com.epimorphics.data_api.config.tests.TestConfig.*;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -90,11 +91,11 @@ public class TestHier {
         dataset = man.getDataset("ea-data");
         assertNotNull(dataset);
         assertEquals(3, dataset.getAspects().size());
-        for (Aspect a : dataset.getAspects()) {
-            if (a.getName().getCURIE().equals("data:area")) {
-                assertEquals("ea-areas-hcl", a.getRangeDataset());
-            }
-        }
+        Aspect a = aspectLabeled(dataset, "area");
+        assertEquals("ea-areas-hcl", a.getRangeDataset());
+        JsonObject jo = asJson( a.asJson("en") ).getAsObject();
+        assertEquals("ea-areas-hcl", jo.get("rangeDataset").getAsString().value());
+        
         dataset = man.getDataset("ea-areas-hcl");
         assertNotNull(dataset);
         results = query(dataset, "{ '@childof' : null }");

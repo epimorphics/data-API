@@ -98,7 +98,7 @@ public class TestConfig {
         assertEquals(false, jo.get("isMultiValued").getAsBoolean().value());
     }
     
-    private Aspect aspectLabeled(API_Dataset dataset, String label) {
+    public static Aspect aspectLabeled(API_Dataset dataset, String label) {
         for (Aspect aspect : dataset.getAspects()) {
             if (label.equals( aspect.getLabel() )) {
                 return aspect;
@@ -107,7 +107,7 @@ public class TestConfig {
         return null;
     }
     
-    private String asString(JSONWritable js) {
+    public static String asString(JSONWritable js) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         JSFullWriter out = new JSFullWriter(bos);
         js.writeTo(out);
@@ -115,7 +115,7 @@ public class TestConfig {
         return bos.toString();
     }
     
-    private JsonValue asJson(JSONWritable js) {
+    public static JsonValue asJson(JSONWritable js) {
         return JSON.parseAny( asString(js) );
     }
     
