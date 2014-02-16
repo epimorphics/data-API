@@ -24,25 +24,25 @@
     rdfs:label "Dummy test data";
     .
     
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10;    :year  2014;    :count 10 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-36; :year  2014;    :count 1 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-37; :year  2014;    :count 2 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-38; :year  2014;    :count 3 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-39; :year  2014;    :count 4 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1;     :year  2014;    :count 6 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-1;   :year  2014;    :count 1 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-2;   :year  2014;    :count 2 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-3;   :year  2014;    :count 3 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2;     :year  2014;    :count 6 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-29;  :year  2014;    :count 1 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-30;  :year  2014;    :count 2 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-31;  :year  2014;    :count 3 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3;     :year  2014;    :count 3 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3-34;  :year  2014;    :count 1 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3-35;  :year  2014;    :count 2 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4;     :year  2014;    :count 3 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4-11;  :year  2014;    :count 1 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4-12;  :year  2014;    :count 2 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6;     :year  2014;    :count 3 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6-27;  :year  2014;    :count 1 .    
-:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6-28;  :year  2014;    :count 2 .    
+:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10;    :year  2014;    :count 100 .    
+:obs2 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-36; :year  2014;    :count 10 .    
+:obs3 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-37; :year  2014;    :count 20 .    
+:obs4 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-38; :year  2014;    :count 30 .    
+:obs5 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-39; :year  2014;    :count 40 .    
+:obs6 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1;     :year  2014;    :count 6 .    
+:obs7 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-1;   :year  2014;    :count 1 .    
+:obs8 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-2;   :year  2014;    :count 2 .    
+:obs9 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-3;   :year  2014;    :count 3 .    
+:obs10 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2;     :year  2014;    :count 6 .    
+:obs11 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-29;  :year  2014;    :count 1 .    
+:obs12 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-30;  :year  2014;    :count 2 .    
+:obs13 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-31;  :year  2014;    :count 3 .    
+:obs14 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3;     :year  2014;    :count 3 .    
+:obs15 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3-34;  :year  2014;    :count 1 .    
+:obs16 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3-35;  :year  2014;    :count 2 .    
+:obs17 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4;     :year  2014;    :count 3 .    
+:obs18 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4-11;  :year  2014;    :count 1 .    
+:obs19 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4-12;  :year  2014;    :count 2 .    
+:obs20 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6;     :year  2014;    :count 3 .    
+:obs21 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6-27;  :year  2014;    :count 1 .    
+:obs22 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6-28;  :year  2014;    :count 2 .    

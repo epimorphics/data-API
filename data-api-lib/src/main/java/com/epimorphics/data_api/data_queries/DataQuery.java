@@ -148,8 +148,8 @@ public class DataQuery {
 					}
 					sb.append(")");
 				} else if (rangeOp.equals("below")) {
-					Shortname below = x.getBelowPredicate();
-					sb.append(". ").append(fVar).append(" ").append(below.getCURIE()).append(" ").append(value);
+					String below = x.getBelowPredicate(api);
+					sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
 				} else if (rangeOp.equals("contains")) {
 					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
 				} else if (rangeOp.equals("matches")) {

@@ -129,6 +129,13 @@ public class TestHier {
         assertNotNull(dataset);
         results = query(dataset, "{ '@childof' : null }");
         assertEquals(6, results.size());
+        
+        // Below query applied to hierarchical code lists
+        dataset = man.getDataset("ea-data");
+        results = query(dataset, "{ 'data:area' : {'@below' : {'@id' : 'http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10'} } }");
+        assertEquals(5, results.size());
+        assertTrue(results.contains( ResourceFactory.createResource("http://www.epimorphics.com/test/dsapi/sprint3-data#obs1")));
+        assertTrue(results.contains( ResourceFactory.createResource("http://www.epimorphics.com/test/dsapi/sprint3-data#obs3")));
     }
 
     private List<Resource> query(API_Dataset dataset, String json) {

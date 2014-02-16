@@ -42,7 +42,7 @@ public class TestTranslateDataQuery {
 	static final Aspect X = new TestAspects.MockAspect("eh:/mock-aspect/X");
 	
 	static final Aspect Y = new TestAspects.MockAspect("eh:/mock-aspect/Y")
-		.setBelowPredicate(new Shortname(pm, "pre:isBelow"))
+		.setBelowPredicate("pre:child")
 		;
 	
 	static final Aspect Yopt = new TestAspects.MockAspect("eh:/mock-aspect/Y").setIsOptional(true);
@@ -169,7 +169,7 @@ public class TestTranslateDataQuery {
 			( X
 			, "below"
 			, Term.URI("eh:/prefixPart/stairs")
-			, "?pre_X skos:broader <eh:/prefixPart/stairs>"
+			, "<eh:/prefixPart/stairs> skos:narrower* ?pre_X"
 			);
 	}	
 	
@@ -178,7 +178,7 @@ public class TestTranslateDataQuery {
 			( Y
 			, "below"
 			, Term.URI("eh:/prefixPart/stairs")
-			, "?pre_Y pre:isBelow <eh:/prefixPart/stairs>"
+			, "<eh:/prefixPart/stairs> pre:child* ?pre_Y"
 			);
 	}
 	

@@ -100,6 +100,10 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    return hierarchy;
 	}
 	
+	public DSAPIManager getManager() {
+	    return manager;
+	}
+	
 	// From base class have:
 	// getLabel()       getLabel(lang)
 	// getDescription() getDescription(lang)

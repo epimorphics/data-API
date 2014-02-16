@@ -42,7 +42,7 @@ public class Hierarchy extends ResourceBasedConfig {
             type = SKOS.ConceptScheme;
             memberQueryTemplate = "?%VAR% skos:inScheme <" + codelist.getURI() + "> .";
             topRootsQueryTemplate = "<" + codelist.getURI() + "> skos:hasTopConcept|^skos:topConceptOf ?%VAR% .\n";
-            childQueryFragment = "skos:narrower|^skos:broader";
+            childQueryFragment = "(skos:narrower|^skos:broader)";
             needsDistinct = true;
             
         } else if (codelist.hasProperty(RDF.type, SKOS.Collection)) {
@@ -85,7 +85,7 @@ public class Hierarchy extends ResourceBasedConfig {
             // TODO better configuration error reporting
             throw new EpiException("qb:HierarchicalCodeList without a legal parent-child property: " + codelist);
         }
-        return (inverse ? "^" : "") + "<" + parentChildProp.getURI() + ">";
+        return (inverse ? "(^" : "(") + "<" + parentChildProp.getURI() + ">)";
     }
     
     private String safeVarName() {
