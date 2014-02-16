@@ -52,6 +52,10 @@ public class Endpoints {
         return man;
     }
     
+    public String getBaseURI() {
+        return uriInfo.getBaseUri() + "dataset/";
+    }
+    
     public VelocityRender getVelocity() {
         if (velocity == null) {
             velocity = AppConfig.getApp().getA(VelocityRender.class);
@@ -62,7 +66,7 @@ public class Endpoints {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable listDatasets() {
-        return getManager().datasetsEndpoint(lang, uriInfo.getAbsolutePath().toString());
+        return getManager().datasetsEndpoint(lang, getBaseURI());
     }
     
     @GET
@@ -75,14 +79,14 @@ public class Endpoints {
     @Path("/{dataset}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable getDataset(@PathParam("dataset") String dsid) {
-        return getManager().datasetEndpoint(lang, dsid, uriInfo.getAbsolutePath().toString());
+        return getManager().datasetEndpoint(lang, dsid, getBaseURI());
     }
     
     @GET
     @Path("/{dataset}/structure")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable getDatasetStructure(@PathParam("dataset") String dsid) {
-        return getManager().datasetStructureEndpoint(lang, dsid, uriInfo.getAbsolutePath().toString());
+        return getManager().datasetStructureEndpoint(lang, dsid, getBaseURI());
     }
     
     @GET

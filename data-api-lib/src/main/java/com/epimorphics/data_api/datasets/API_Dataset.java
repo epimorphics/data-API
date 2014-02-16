@@ -140,7 +140,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
         out.pair(LABEL, getLabel(lang));
         out.pair(DESCRIPTION, getDescription(lang));
         if (manager != null) {
-            String base = uribase + "/" + name;
+            String base = uribase + name;
             out.pair(DATA_API, base + "/data");
             out.pair(STRUCTURE_API, base + "/structure");
         }
