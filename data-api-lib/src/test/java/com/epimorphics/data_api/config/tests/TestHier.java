@@ -9,8 +9,11 @@
 
 package com.epimorphics.data_api.config.tests;
 
-import static com.epimorphics.data_api.config.tests.TestConfig.*;
-import static org.junit.Assert.*;
+import static com.epimorphics.data_api.config.tests.TestConfig.asJson;
+import static com.epimorphics.data_api.config.tests.TestConfig.aspectLabeled;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +31,6 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
-import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Cube;
@@ -47,6 +49,7 @@ public class TestHier {
     }
 
     @Test
+    // Could split this into separate tests but this way keeps the startup log noise down
     public void testHierarchies() {
         // Concept scheme tests
         API_Dataset dataset = man.getDataset("assessment-method");
@@ -97,6 +100,9 @@ public class TestHier {
         assertEquals("ea-areas-hcl", a.getRangeDataset());
         JsonObject jo = asJson( a.asJson("en") ).getAsObject();
         assertEquals("ea-areas-hcl", jo.get("rangeDataset").getAsString().value());
+
+        a = aspectLabeled(dataset, "year");
+        assertEquals("dummy-year-dataset", a.getRangeDataset());
         
         dataset = man.getDataset("ea-areas-hcl");
         assertNotNull(dataset);
@@ -104,12 +110,25 @@ public class TestHier {
         assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
         assertEquals(6, results.size());
         
+        // JSON serialization of dataset
         jo = asJson( dataset.asJsonShort("en", "http://localhost") ).getAsObject();
         assertNotNull(jo);
         jo = jo.get("hierarchy").getAsObject();
         assertNotNull(jo);
         assertEquals("http://www.epimorphics.com/test/dsapi/sprint3#ea-areas-hcl", jo.get("@id").getAsString().value());
         assertEquals(Cube.HierarchicalCodeList.getURI(), jo.get("type").getAsString().value());
+        
+        // Define via qb:codeList on the DSD
+        dataset = man.getDataset("ea-data2");
+        assertNotNull(dataset);
+        assertEquals(3, dataset.getAspects().size());
+        a = aspectLabeled(dataset, "area");
+        assertEquals("ea-areas-hcl2", a.getRangeDataset());
+
+        dataset = man.getDataset("ea-areas-hcl2");
+        assertNotNull(dataset);
+        results = query(dataset, "{ '@childof' : null }");
+        assertEquals(6, results.size());
     }
 
     private List<Resource> query(API_Dataset dataset, String json) {

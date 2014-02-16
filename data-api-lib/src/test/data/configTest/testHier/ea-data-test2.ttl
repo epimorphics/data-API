@@ -13,32 +13,39 @@
 @prefix data:  <http://www.epimorphics.com/test/dsapi/sprint3-data#> .
 @prefix :  <http://www.epimorphics.com/test/dsapi/sprint3#> .
 
-:ea-data a dsapi:Dataset;
+:ea-data2 a dsapi:Dataset;
     rdfs:label "Areas";
     dct:description "EA areas and regions";
-    dsapi:dataset data:ea-data;
-    dsapi:aspect 
-        [ dsapi:property data:count; ],
-        [ dsapi:property data:year; dsapi:rangeDataset "dummy-year-dataset"],
-        [ dsapi:property data:area; dsapi:codeList :ea-areas-hcl; ];
+    dsapi:qb_dataset data:ea-data;
+    dsapi:qb_dsd :ea-data-dsd;
     .
 
-data:count a owl:DatatypeProperty;
+:ea-data-dsd a qb:DataStructureDefinition ;
+    rdfs:label "EA data DSD";
+    rdfs:comment "DSD for dummy EA dataset";
+    qb:component
+        [ qb:dimension data:year2 ],
+        [ qb:dimension data:area2 ],
+        [ qb:measure data:count2 ];
+    .
+
+data:count2 a owl:DatatypeProperty;
     rdfs:label "count";
     rdfs:range xsd:integer;
     .
     
-data:year a owl:DatatypeProperty;
+data:year2 a owl:DatatypeProperty;
     rdfs:label "year";
     rdfs:range xsd:integer;
     .
     
-data:area a owl:ObjectProperty;
+data:area2 a owl:ObjectProperty;
     rdfs:label "area";
     rdfs:range org:Organization;
+    qb:codeList :ea-areas-hcl2;
     .
     
-:ea-areas-hcl a qb:HierarchicalCodeList;
+:ea-areas-hcl2 a qb:HierarchicalCodeList;
     qb:hierarchyRoot 
         <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1>,
         <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2>,

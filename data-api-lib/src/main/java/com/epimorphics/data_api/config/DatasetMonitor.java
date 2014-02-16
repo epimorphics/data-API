@@ -109,22 +109,35 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     private void parseDSD(API_Dataset dsapi, Resource dsd, List<API_Dataset> datasets) {
         for (Resource component : RDFUtil.allResourceValues(dsd, Cube.component)) {
             if (component.hasProperty(Cube.dimension)) {
-                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.dimension), true);
+                addAspect(dsapi, datasets, RDFUtil.getResourceValue(component, Cube.dimension), true);
             } else if (component.hasProperty(Cube.measure)) {
-                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.measure), true);
+                addAspect(dsapi, datasets, RDFUtil.getResourceValue(component, Cube.measure), true);
             } else if (component.hasProperty(Cube.attribute)) {
                 boolean required = RDFUtil.getBooleanValue(component, Cube.componentRequired, false);
-                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.attribute), required);
+                addAspect(dsapi, datasets, RDFUtil.getResourceValue(component, Cube.attribute), required);
             } else {
                 log.warn("Failed to parse on of the components of dsd " + dsd + ", component was " + component);
             }
         }
     }
     
-    private void addAspect(API_Dataset dsapi, Resource aspect, boolean required) {
+    static final Property[] CodelistProps = new Property[]{Cube.codeList, Dsapi.codeList};
+    
+    private Aspect addAspect(API_Dataset dsapi, List<API_Dataset> datasets, Resource aspect, boolean required) {
         Aspect a = new Aspect(aspect);
         a.setIsOptional(!required);
+        for (Property p : CodelistProps) {
+            if (aspect.hasProperty(p)) { 
+                API_Dataset codelistDataset = parseCodelist( aspect.getPropertyResourceValue(p) );
+                a.setRangeDataset(codelistDataset.getName());
+                datasets.add( codelistDataset );
+            }
+        }
+        if (aspect.hasProperty(Dsapi.rangeDataset)) {
+            a.setRangeDataset( RDFUtil.getStringValue(aspect, Dsapi.rangeDataset) );
+        }
         dsapi.add(a);
+        return a;
     }
     
     private static Property[] mergeProps = new Property[]{ RDFS.label, SKOS.prefLabel, RDFS.comment, RDFS.range, DCTerms.description};
@@ -137,17 +150,10 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
                     mergeProp(aspect, decl, p);
                 }
             }
-            Aspect a = new Aspect(aspect);
+            Aspect a = addAspect(dsapi, datasets, aspect, ! RDFUtil.getBooleanValue(aspect, Dsapi.optional, false));
             a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
-            a.setIsOptional( RDFUtil.getBooleanValue(aspect, Dsapi.optional, false) );
-            if (aspect.hasProperty(Dsapi.codeList)) {
-                API_Dataset codelistDataset = parseCodelist( aspect.getPropertyResourceValue(Dsapi.codeList) );
-                a.setRangeDataset(codelistDataset.getName());
-                datasets.add( codelistDataset );
-            }
             // TODO parse property paths
             // TODO parse range constraints
-            dsapi.add(a);
         }
     }
     
