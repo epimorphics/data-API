@@ -28,8 +28,10 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.util.EpiException;
+import com.epimorphics.vocabs.Cube;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
@@ -102,6 +104,12 @@ public class TestHier {
         assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
         assertEquals(6, results.size());
         
+        jo = asJson( dataset.asJsonShort("en", "http://localhost") ).getAsObject();
+        assertNotNull(jo);
+        jo = jo.get("hierarchy").getAsObject();
+        assertNotNull(jo);
+        assertEquals("http://www.epimorphics.com/test/dsapi/sprint3#ea-areas-hcl", jo.get("@id").getAsString().value());
+        assertEquals(Cube.HierarchicalCodeList.getURI(), jo.get("type").getAsString().value());
     }
 
     private List<Resource> query(API_Dataset dataset, String json) {

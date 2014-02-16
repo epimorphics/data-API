@@ -144,6 +144,21 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
             out.pair(DATA_API, base + "/data");
             out.pair(STRUCTURE_API, base + "/structure");
         }
+        if (isHierarchy()) {
+            out.key(HIERARCHY);
+            out.startObject();
+            out.pair(ID, hierarchy.getRoot().getURI());
+            safeOut(out, LABEL, hierarchy.getLabel(lang));
+            safeOut(out, DESCRIPTION, hierarchy.getDescription(lang));
+            out.pair(TYPE, hierarchy.getType().getURI());
+            out.finishObject();
+        }
+    }
+    
+    private void safeOut(JSFullWriter out, String key, String value) {
+        if (value != null) {
+            out.pair(key, value);
+        }
     }
 
     public void writeJson(JSFullWriter out, String lang, String uribase) {

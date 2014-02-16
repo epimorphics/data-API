@@ -17,7 +17,6 @@ public class JSONConstants {
     public static final String NAME = "name";
     public static final String LABEL = "label";
     public static final String DESCRIPTION = "description";
-    public static final String COMPONENTS = "components";
 
     public static final String RANGE_CONSTRAINT = "rangeConstraint";
     public static final String RANGE_URI = "rangeURI";
@@ -34,6 +33,8 @@ public class JSONConstants {
 
     public static final String ASPECTS = "aspects";
     public static final String DSD = "dsd";
+    public static final String HIERARCHY = "hierarchy";
+    public static final String TYPE = "type";
     
     public static final String CHILDOF = "@childof";
     public static final String IN = "@in";
