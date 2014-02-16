@@ -1,9 +1,10 @@
 #parse("header.vm")
 #set($nav="datasets")
 #parse("navbar.vm")
+#set($baseURI=$uri +"/")
 <div class="container">
   <h1>Available datasets</h1>
-  #set($datasets = $lib.json.asJson($dsapi.datasetsEndpoint("en", $uri)))
+  #set($datasets = $lib.json.asJson($dsapi.datasetsEndpoint("en", $baseURI)))
   #foreach($i in $datasets.iterator())
     <div class="row space-above">
       <div class="col-md-4"><strong>$i.label.value()</strong></div>
