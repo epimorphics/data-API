@@ -35,7 +35,7 @@ public class Array_Value extends ResultValue {
 
 	@Override public void writeTo(JSFullWriter out) {
 		out.startArray();
-		for (ResultValue v: values) v.writeTo(out);
+		for (ResultValue v: values) v.writeElement(out);
 		out.finishArray();
 	}
 }

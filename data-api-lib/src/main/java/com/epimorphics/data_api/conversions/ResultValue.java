@@ -76,7 +76,7 @@ public abstract class ResultValue implements JSONWritable {
 		}
 
 		@Override public void writeTo(JSFullWriter jw) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException(this.getClass().getSimpleName());
 		}
 
 		public abstract void writeMember(String key, JSFullWriter jw);
