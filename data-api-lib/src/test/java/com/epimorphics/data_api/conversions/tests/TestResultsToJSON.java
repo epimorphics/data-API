@@ -14,8 +14,8 @@ import org.junit.Test;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.conversions.ResultsToJson;
-import com.epimorphics.data_api.conversions.Value;
-import com.epimorphics.data_api.conversions.ResultsToJson.Row;
+import com.epimorphics.data_api.conversions.Row;
+import com.epimorphics.data_api.conversions.ResultValue;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.results.tests.TestTranslateQuerySolution;
 import com.hp.hpl.jena.graph.Node;
@@ -34,12 +34,12 @@ public class TestResultsToJSON {
 	static final Node value2 = m.createLiteral( "two" ).asNode();
 	static final Node value3 = m.createLiteral( "three" ).asNode();
 	
-	static final Value itemA_value = Value.URI("@id", itemA.getURI());
-	static final Value itemB_value = Value.URI("@id", itemB.getURI());
+	static final ResultValue itemA_value = ResultValue.URI(itemA.getURI());
+	static final ResultValue itemB_value = ResultValue.URI(itemB.getURI());
 	
-	static final Value value1_value = Value.string("A", "one");
-	static final Value value2_value = Value.string("B", "two");
-	static final Value value3_value = Value.string("C", "three");
+	static final ResultValue value1_value = ResultValue.string("one");
+	static final ResultValue value2_value = ResultValue.string("two");
+	static final ResultValue value3_value = ResultValue.string("three");
 	
 	@Test public void testMe() {
 		QuerySolution A = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_multiple", value1);
@@ -56,11 +56,11 @@ public class TestResultsToJSON {
 		
 		expected_1.put("item", itemA_value );
 				
-		expected_1.put("pre:multiple", Value.array(BunchLib.list(value1_value, value2_value)) );
+		expected_1.put("pre:multiple", ResultValue.array(BunchLib.list(value1_value, value2_value)) );
 				
 		Row expected_2 = new Row();
 		expected_2.put("item", itemB_value );
-		expected_2.put("pre:multiple", Value.array(BunchLib.list(value3_value)) );
+		expected_2.put("pre:multiple", ResultValue.array(BunchLib.list(value3_value)) );
 				
 		List<Row> expected = BunchLib.list(expected_1, expected_2);
 				

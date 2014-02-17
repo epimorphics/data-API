@@ -5,19 +5,9 @@
 */
 package com.epimorphics.data_api.conversions;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.jena.atlas.json.JsonArray;
-import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonValue;
+import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -29,43 +19,6 @@ public class ResultsToJson {
 		void consume(JSONWritable jv);
 	}
 	
-	public static class Row implements JSONWritable {
-
-		Map<String, Value> members = new HashMap<String, Value>();
-		
-		@Override public void writeTo(JSFullWriter jw) {
-			jw.startObject();
-			for (Map.Entry<String, Value> e: members.entrySet()) {
-				Value v = e.getValue();
-				if (v == null) {  } else { v.writeTo(jw); }
-			}
-			jw.finishObject();			
-		}
-		
-		public void put(String key, Value value) {
-			members.put(key, value);
-		}
-		
-		@Override public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append("[[");
-			for (Map.Entry<String, Value> e: members.entrySet()) {
-				sb.append( " " ).append(e.getKey()).append(": ").append(e.getValue());
-			}
-			sb.append(" ]]");
-			return sb.toString();			
-		}
-		
-		@Override public boolean equals(Object other) {
-			return other instanceof Row && same((Row) other);
-		}
-
-		private boolean same(Row other) {
-			return members.equals(other.members);
-		}
-		
-	}
-	
 	public interface RowConsumer {
 		public void consume(Row r);
 	}
@@ -75,12 +28,12 @@ public class ResultsToJson {
 		Node current = null;
 		Row pending = null;		
 		
-		Map<String, List<Value>> valuess = new HashMap<String, List<Value>>();
+		Map<String, List<ResultValue>> valuess = new HashMap<String, List<ResultValue>>();
 		Map<String, String> shorts = new HashMap<String, String>();
 		
 		for (Aspect a: aspects) 
 			if (a.getIsMultiValued()) {
-				valuess.put(a.asVar(), new ArrayList<Value>() );
+				valuess.put(a.asVar(), new ArrayList<ResultValue>() );
 				shorts.put(a.asVar(), a.getName().getCURIE() );
 			}
 		
@@ -98,14 +51,14 @@ public class ResultsToJson {
 					jc.consume( pending );
 				}
 				pending = toRow(aspects, row); 
-				pending.put("item", Value.fromNode("item", item) );
+				pending.put("item", ResultValue.fromNode(item) );
 								
 				current = item;
 				
-				for (Map.Entry<String, List<Value>> e: valuess.entrySet()) {
+				for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {
 					e.getValue().clear();
 					String key = e.getKey();
-					e.getValue().add( Value.fromNode(key, row.get(key).asNode()));
+					e.getValue().add( ResultValue.fromNode(row.get(key).asNode()));
 				}
 			}
 		}
@@ -127,7 +80,7 @@ public class ResultsToJson {
 				result.put(key, null);				
 			}
 			else {
-				Value v = Value.fromNode(key, value.asNode());
+				ResultValue v = ResultValue.fromNode(value.asNode());
 				boolean mv = a.getIsMultiValued();
 				// if (mv) System.err.println( ">> got multivalued " + v);
 				result.put(key, v); // (mv ? v : v));
@@ -138,8 +91,8 @@ public class ResultsToJson {
 
 	// load the appropriate fields of pending from the value sets accumulated
 	// in valuess.
-	private static void loadFromValueLists(Row pending,	Map<String, List<Value>> valuess, Map<String, String> shorts) {
-		for (Map.Entry<String, List<Value>> e: valuess.entrySet()) {	
+	private static void loadFromValueLists(Row pending,	Map<String, List<ResultValue>> valuess, Map<String, String> shorts) {
+		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {	
 			String curi = shorts.get(e.getKey());
 			pending.put(curi, valueArrayNoDuplicatesFrom(e.getValue()));
 		}
@@ -147,23 +100,17 @@ public class ResultsToJson {
 
 	// load the appropriate values sets with the JSON values converted from
 	// result-set format.
-	private static void multipleValueFetch(Map<String, List<Value>> valuess, QuerySolution row) {
-		for (Map.Entry<String, List<Value>> e: valuess.entrySet()) {
-			e.getValue().add( Value.fromNode(e.getKey(), row.get(e.getKey()).asNode()));
+	private static void multipleValueFetch(Map<String, List<ResultValue>> valuess, QuerySolution row) {
+		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {
+			e.getValue().add( ResultValue.fromNode(row.get(e.getKey()).asNode()));
 		}
 	}
 
-	private static Value valueArrayNoDuplicatesFrom(Collection<Value> values) {
-		List<Value> result = new ArrayList<Value>();
-		for (Value v: values)
+	private static ResultValue valueArrayNoDuplicatesFrom(Collection<ResultValue> values) {
+		List<ResultValue> result = new ArrayList<ResultValue>();
+		for (ResultValue v: values)
 			if (!result.contains(v)) result.add( v );
-		return Value.array(result);
-	}
-
-	private static JsonValue jsonArrayFrom(Collection<JsonValue> values) {
-		JsonArray result = new JsonArray();
-		for (JsonValue v: values) result.add( v );
-		return result;
+		return ResultValue.array(result);
 	}
 
 	public static List<Row> convert(List<Aspect> aspects, List<QuerySolution> rows) {
