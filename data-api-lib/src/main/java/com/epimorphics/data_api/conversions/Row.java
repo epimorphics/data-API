@@ -28,8 +28,9 @@ public class Row implements JSONWritable {
 		jw.finishObject();			
 	}
 	
-	public void put(String key, ResultValue value) {
+	public Row put(String key, ResultValue value) {
 		members.put(key, value);
+		return this;
 	}
 	
 	@Override public String toString() {

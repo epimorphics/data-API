@@ -15,7 +15,7 @@ public class Integer_Value extends Primitive_Value {
 	}
 	
 	@Override public boolean equals(Object other) {
-		return other instanceof Integer_Value && alike( (URI_Value) other );
+		return other instanceof Integer_Value && alike( (Integer_Value) other );
 	}
 
 	@Override public void writeMember(String key, JSFullWriter jw) {

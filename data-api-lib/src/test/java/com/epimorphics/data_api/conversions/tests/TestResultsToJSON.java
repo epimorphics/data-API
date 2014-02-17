@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
-import com.epimorphics.data_api.conversions.ResultsToJson;
+import com.epimorphics.data_api.conversions.ResultsToValues;
 import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.conversions.ResultValue;
 import com.epimorphics.data_api.libs.BunchLib;
@@ -50,7 +50,7 @@ public class TestResultsToJSON {
 		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" ).setIsMultiValued(true);
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> ja = ResultsToJson.convert(aspects, x);
+		List<Row> ja = ResultsToValues.convert(aspects, x);
 				
 		Row expected_1 = new Row();
 		

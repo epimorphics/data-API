@@ -13,11 +13,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
-public class ResultsToJson {
-	
-	public interface JSONConsumer {
-		void consume(JSONWritable jv);
-	}
+public class ResultsToValues {
 	
 	public interface RowConsumer {
 		public void consume(Row r);
@@ -81,7 +77,7 @@ public class ResultsToJson {
 			}
 			else {
 				ResultValue v = ResultValue.fromNode(value.asNode());
-				boolean mv = a.getIsMultiValued();
+				// boolean mv = a.getIsMultiValued();
 				// if (mv) System.err.println( ">> got multivalued " + v);
 				result.put(key, v); // (mv ? v : v));
 			}
