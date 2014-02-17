@@ -36,6 +36,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <url-pattern>/*</url-pattern>
   </filter-mapping>
   
+<!--   
   <filter>
     <filter-name>VelocityFilter</filter-name>
     <filter-class>com.epimorphics.appbase.webapi.VelocityFilter</filter-class>
@@ -45,6 +46,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <filter-name>VelocityFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+ -->
   
   <filter>
     <filter-name>Jersey Web Application</filter-name>

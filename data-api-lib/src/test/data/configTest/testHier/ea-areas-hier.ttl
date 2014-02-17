@@ -1,0 +1,33 @@
+@prefix classification: <http://environment.data.gov.uk/def/classification/> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix qb:    <http://purl.org/linked-data/cube#> .
+@prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix amt:  <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+
+@prefix :  <http://www.epimorphics.com/test/dsapi/sprint3#> .
+
+:areas a dsapi:Dataset;
+    rdfs:label "Areas";
+    dct:description "EA areas and regions";
+    dsapi:codeList :ea-areas-hcl;
+    dsapi:aspect 
+        [ dsapi:property skos:notation; dsapi:optional true ],
+        [ dsapi:property skos:prefLabel; ];
+    .
+    
+:ea-areas-hcl a qb:HierarchicalCodeList;
+    qb:hierarchyRoot 
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10>,
+        <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6>;
+    qb:parentChildProperty org:hasSubOrganization ;        
+    .

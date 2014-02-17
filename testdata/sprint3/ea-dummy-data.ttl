@@ -1,0 +1,48 @@
+@prefix dgu:     <http://reference.data.gov.uk/def/reference/> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+@prefix version:  <http://purl.org/linked-data/version#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix time:    <http://www.w3.org/2006/time#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix ui:      <http://purl.org/linked-data/registry-ui#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix qb:      <http://purl.org/linked-data/cube#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix reg:     <http://purl.org/linked-data/registry#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+
+@prefix eaa:     <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/> .
+
+@prefix :  <http://www.epimorphics.com/test/dsapi/sprint3-data#> .
+
+:ea-data a qb:DataSet;
+    rdfs:label "Dummy test data";
+    .
+    
+:obs1 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10;    :year  2014;    :count 100 .    
+:obs2 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-36; :year  2014;    :count 10 .    
+:obs3 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-37; :year  2014;    :count 20 .    
+:obs4 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-38; :year  2014;    :count 30 .    
+:obs5 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:10-39; :year  2014;    :count 40 .    
+:obs6 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1;     :year  2014;    :count 6 .    
+:obs7 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-1;   :year  2014;    :count 1 .    
+:obs8 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-2;   :year  2014;    :count 2 .    
+:obs9 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:1-3;   :year  2014;    :count 3 .    
+:obs10 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2;     :year  2014;    :count 6 .    
+:obs11 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-29;  :year  2014;    :count 1 .    
+:obs12 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-30;  :year  2014;    :count 2 .    
+:obs13 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:2-31;  :year  2014;    :count 3 .    
+:obs14 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3;     :year  2014;    :count 3 .    
+:obs15 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3-34;  :year  2014;    :count 1 .    
+:obs16 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:3-35;  :year  2014;    :count 2 .    
+:obs17 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4;     :year  2014;    :count 3 .    
+:obs18 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4-11;  :year  2014;    :count 1 .    
+:obs19 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:4-12;  :year  2014;    :count 2 .    
+:obs20 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6;     :year  2014;    :count 3 .    
+:obs21 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6-27;  :year  2014;    :count 1 .    
+:obs22 a qb:Observation;    qb:dataSet :ea-data;    :area  eaa:6-28;  :year  2014;    :count 2 .    

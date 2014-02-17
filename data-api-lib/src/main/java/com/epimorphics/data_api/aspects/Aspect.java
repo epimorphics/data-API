@@ -7,10 +7,10 @@ package com.epimorphics.data_api.aspects;
 
 import static com.epimorphics.data_api.config.JSONConstants.*;
 
-import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
@@ -22,12 +22,15 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 public class Aspect extends ResourceBasedConfig {
 	String ID;
 	final Shortname name;
+	String rangeDataset;
 	
 	boolean isMultiValued = false;
 	boolean isOptional = false;
 	
 	Resource rangeType = null;
-	Shortname belowPredicate = new Shortname(DefaultPrefixes.get(), "skos:broader" );
+	String belowPredicate = null;
+	
+	static final String DefaultBelowPredicate = "skos:narrower";
 	
 	public Aspect(String ID, Shortname name) {
 		this.ID = ID;
@@ -50,6 +53,7 @@ public class Aspect extends ResourceBasedConfig {
 	    name = new Shortname(pm, pm.shortForm(ID));
 	    
 	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
+	    
 	}
 	
 	@Override public String toString() {
@@ -76,11 +80,22 @@ public class Aspect extends ResourceBasedConfig {
 		return name.getCURIE();
 	}
 	
-	public Shortname getBelowPredicate() {
+	public String getBelowPredicate(API_Dataset dataset) {
+	    if (belowPredicate == null) {
+	        if (rangeDataset != null) {
+	            API_Dataset rangeDS = dataset.getManager().getDataset(rangeDataset);
+	            if (rangeDS.isHierarchy()) {
+	                belowPredicate = rangeDS.getHierarchy().getChildQueryFragment();
+	            }
+	        }
+	    }
+        if (belowPredicate == null) {
+            belowPredicate = DefaultBelowPredicate;
+        }
 		return belowPredicate;
 	}
 	
-	public Aspect setBelowPredicate(Shortname belowPredicate) {
+	public Aspect setBelowPredicate(String belowPredicate) {
 		this.belowPredicate = belowPredicate;
 		return this;
 	}
@@ -112,6 +127,15 @@ public class Aspect extends ResourceBasedConfig {
 		return rangeType;
 	}
     
+	
+    public String getRangeDataset() {
+        return rangeDataset;
+    }
+
+    public void setRangeDataset(String codelist) {
+        this.rangeDataset = codelist;
+    }
+
     /**
      * Full json serialization used to report the dataset structure, language specific
      */
@@ -121,13 +145,14 @@ public class Aspect extends ResourceBasedConfig {
 
     public void writeJson(JSFullWriter out, String lang) {
         out.startObject();
-        out.pair(JSONConstants.ID, name.getCURIE());
-        out.pair(URI, ID);
+        out.pair(NAME, name.getCURIE());
+        out.pair(JSONConstants.ID, ID);
         safeOut(out, LABEL, getLabel(lang));
         safeOut(out, DESCRIPTION, getDescription(lang));
         out.pair(IS_OPTIONAL, isOptional);
         out.pair(IS_MULTIVALUED, isMultiValued);
         safeOut(out, RANGE_TYPE, rangeType == null ? null : rangeType.getURI());
+        safeOut(out, RANGE_DATASET, rangeDataset);
         out.finishObject();
     }
     

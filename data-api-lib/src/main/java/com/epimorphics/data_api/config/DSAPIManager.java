@@ -26,7 +26,6 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +49,6 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
-import com.github.jsonldjava.core.JSONLDConsts;
-import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -117,14 +114,14 @@ public class DSAPIManager extends ComponentBase {
         return monitoredDatasets.get(name);
     }
 
-    public JSONWritable asJson(String lang) {
-        return new Writer(lang);
+    public JSONWritable asJson(String lang, String uribase) {
+        return new Writer(lang, uribase);
     }
 
-    public void writeJson(JSFullWriter out, String lang) {
+    public void writeJson(JSFullWriter out, String lang, String uribase) {
         out.startArray();
         for (Iterator<API_Dataset> i = getDatasets().iterator(); i.hasNext();) {
-            i.next().writeShortTo(out, lang);
+            i.next().writeShortTo(out, lang, uribase);
             if (i.hasNext()) {
                 out.arraySep();
             }
@@ -134,11 +131,12 @@ public class DSAPIManager extends ComponentBase {
     
     class Writer implements JSONWritable {
         String lang;
-        public Writer(String lang) {  this.lang = lang;  }
+        String uribase;
+        public Writer(String lang, String uribase) {  this.lang = lang;  this.uribase = uribase; }
         
         @Override
         public void writeTo(JSFullWriter out) {
-            writeJson(out, lang);
+            writeJson(out, lang, uribase);
         }
     }
     
@@ -151,8 +149,8 @@ public class DSAPIManager extends ComponentBase {
      *  
      * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
      */
-    public JSONWritable datasetsEndpoint(String lang) {
-        return asJson(lang);
+    public JSONWritable datasetsEndpoint(String lang, String uribase) {
+        return asJson(lang, uribase);
     }
     
     /**
@@ -163,8 +161,8 @@ public class DSAPIManager extends ComponentBase {
      *  
      * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
      */
-    public JSONWritable datasetEndpoint(String lang, String dataset) {
-        return  getAPI(dataset).asJsonShort(lang); 
+    public JSONWritable datasetEndpoint(String lang, String dataset, String uribase) {
+        return  getAPI(dataset).asJsonShort(lang, uribase); 
     }
 
     private API_Dataset getAPI(String dataset) {
@@ -182,8 +180,8 @@ public class DSAPIManager extends ComponentBase {
      *  
      * @param lang two-char language code giving preferred language for labels etc, null is allowed as a default
      */
-    public JSONWritable datasetStructureEndpoint(String lang, String dataset) {
-        return  getAPI(dataset).asJson(lang); 
+    public JSONWritable datasetStructureEndpoint(String lang, String dataset, String uribase) {
+        return  getAPI(dataset).asJson(lang, uribase); 
     }
 
     /**
@@ -252,7 +250,7 @@ public class DSAPIManager extends ComponentBase {
         RowWriter so = null;        
         final API_Dataset api = getAPI(dataset);
         try {
-            DataQuery q = DataQueryParser.Do(p, api.getPrefixes(), query);
+            DataQuery q = DataQueryParser.Do(p, api, query);
             log.info("Request: " + query.toString());
             String sq = null;
             if (p.isOK()) {

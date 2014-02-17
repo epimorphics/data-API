@@ -2,9 +2,12 @@
 #set($nav="dataset-structure")
 #parse("navbar.vm")
 <div class="container">
-  #set($structure = $lib.json.asJson($dsapi.datasetStructureEndpoint("en",$dataset)))
+  #set($structure = $lib.json.asJson($dsapi.datasetStructureEndpoint("en",$dataset,$uri)))
   
-  <h2>Data set structure: $structure.label.value() <small> <strong>id = </strong>$structure.get("@id").value()</small></h2>
+  <h2>Data set structure: $structure.label.value()</h2>
+  <p>
+     <strong>id = </strong>$structure.get("name").value()
+  </p>
   <p>
     $structure.description.value()
   </p>
@@ -13,7 +16,7 @@
     #foreach($aspect in $structure.aspects)
       <div class="row space-above">
         <div class="col-md-offset-1 col-md-3 large">$aspect.label.value()</div>
-        <div class="col-md-5">id = </strong> $aspect.get("@id").value()</div>
+        <div class="col-md-5">id = </strong> $aspect.get("name").value()</div>
         <div class="col-md-2">
               #if($aspect.isOptional.value())optional#end
               #if($aspect.isMultiValued.value())multi-valued#end

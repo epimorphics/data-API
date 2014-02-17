@@ -54,22 +54,22 @@ public class TestConfig {
         assertEquals("?item qb:dataset classification:dataset", dataset.getBaseQuery());
         checkAspects(dataset);
         
-        JsonValue jv = asJson( man.asJson("en") );
+        JsonValue jv = asJson( man.asJson("en", "") );
         assertTrue(jv.isArray());
         JsonArray ja = jv.getAsArray();
         assertEquals(2, ja.size());
         JsonObject jds = ja.get(0).getAsObject();
         assertEquals("Waterbody classifications", jds.get("label").getAsString().value());
         assertEquals("A data cube of waterbody classifications from EA catchment planning pilot", jds.get("description").getAsString().value());
-        assertTrue( jds.get("uri").getAsString().value().startsWith("http://www.epimorphics.com/test/dsapi/sprint2#wbclass") );
-        assertTrue( jds.get("@id").getAsString().value().startsWith("wbclass") );
+        assertTrue( jds.get("@id").getAsString().value().startsWith("http://www.epimorphics.com/test/dsapi/sprint2#wbclass") );
+        assertTrue( jds.get("name").getAsString().value().startsWith("wbclass") );
 
         // Using DSD from the source data
         dataset = man.getDataset("wbclass");
         assertEquals("?item  <http://purl.org/linked-data/cube#dataSet> <http://environment.data.gov.uk/data/waterbody/classification/dataset>", dataset.getBaseQuery());
         checkAspects(dataset);
         
-        jds = asJson( dataset.asJson("en") ).getAsObject();
+        jds = asJson( dataset.asJson("en", "") ).getAsObject();
         assertEquals("Waterbody classifications", jds.get("label").getAsString().value());
         ja = jds.get("aspects").getAsArray();
         assertEquals(5, ja.size());
@@ -89,8 +89,8 @@ public class TestConfig {
         assertTrue( aspect.getIsOptional() );
 
         JsonObject jo = asJson( aspect.asJson("en") ).getAsObject();
-        assertEquals("wb-classification:statusOrPotential", jo.get("@id").getAsString().value());
-        assertEquals("http://environment.data.gov.uk/def/waterbody-classification/statusOrPotential", jo.get("uri").getAsString().value());
+        assertEquals("wb-classification:statusOrPotential", jo.get("name").getAsString().value());
+        assertEquals("http://environment.data.gov.uk/def/waterbody-classification/statusOrPotential", jo.get("@id").getAsString().value());
         assertEquals("status or potential", jo.get("label").getAsString().value());
         assertEquals("The property statusOrPotential is an attribute component property indicating whether the measure of the observation it is attached to is a status or potential measure.", jo.get("description").getAsString().value());
         assertEquals("http://environment.data.gov.uk/def/waterbody-classification/StatusOrPotential", jo.get("rangeType").getAsString().value());
@@ -98,7 +98,7 @@ public class TestConfig {
         assertEquals(false, jo.get("isMultiValued").getAsBoolean().value());
     }
     
-    private Aspect aspectLabeled(API_Dataset dataset, String label) {
+    public static Aspect aspectLabeled(API_Dataset dataset, String label) {
         for (Aspect aspect : dataset.getAspects()) {
             if (label.equals( aspect.getLabel() )) {
                 return aspect;
@@ -107,7 +107,7 @@ public class TestConfig {
         return null;
     }
     
-    private String asString(JSONWritable js) {
+    public static String asString(JSONWritable js) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         JSFullWriter out = new JSFullWriter(bos);
         js.writeTo(out);
@@ -115,7 +115,7 @@ public class TestConfig {
         return bos.toString();
     }
     
-    private JsonValue asJson(JSONWritable js) {
+    public static JsonValue asJson(JSONWritable js) {
         return JSON.parseAny( asString(js) );
     }
     
