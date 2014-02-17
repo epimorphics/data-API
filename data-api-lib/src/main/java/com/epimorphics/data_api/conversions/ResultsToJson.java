@@ -42,16 +42,26 @@ public class ResultsToJson {
 			jw.finishObject();			
 		}
 		
-		void put(String key, Value value) {
+		public void put(String key, Value value) {
 			members.put(key, value);
 		}
 		
 		@Override public String toString() {
 			StringBuilder sb = new StringBuilder();
+			sb.append("[[");
 			for (Map.Entry<String, Value> e: members.entrySet()) {
-				sb.append( " " ).append(e.getKey());
+				sb.append( " " ).append(e.getKey()).append(": ").append(e.getValue());
 			}
+			sb.append(" ]]");
 			return sb.toString();			
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof Row && same((Row) other);
+		}
+
+		private boolean same(Row other) {
+			return members.equals(other.members);
 		}
 		
 	}
@@ -84,7 +94,7 @@ public class ResultsToJson {
 			} else {
 				// new item, flush any existing item & reset current
 				if (pending != null) {
-					// loadFromValueLists(pending, valuess, shorts);
+					loadFromValueLists(pending, valuess, shorts);
 					jc.consume( pending );
 				}
 				pending = toRow(aspects, row); 
@@ -101,17 +111,12 @@ public class ResultsToJson {
 		}
 		
 		if (pending != null) {
-			// loadFromValueLists(pending, valuess, shorts);
+			loadFromValueLists(pending, valuess, shorts);
 			jc.consume(pending);
 		}
 	}
 	
 	public static Row toRow(Collection<Aspect> aspects, QuerySolution qs) {
-		
-//		System.err.println( ">> qs: " );
-//		Iterator<String> it = qs.varNames();
-//		while (it.hasNext()) System.err.print( " " + it.next() );
-//		System.err.println();
 		
 		Row result = new Row();
 		for (Aspect a: aspects) {
@@ -124,8 +129,8 @@ public class ResultsToJson {
 			else {
 				Value v = Value.fromNode(key, value.asNode());
 				boolean mv = a.getIsMultiValued();
-				if (mv) System.err.println( ">> got multivalued " + v);
-				result.put(key, (mv ? v : v));
+				// if (mv) System.err.println( ">> got multivalued " + v);
+				result.put(key, v); // (mv ? v : v));
 			}
 		}
 		return result;
@@ -133,10 +138,10 @@ public class ResultsToJson {
 
 	// load the appropriate fields of pending from the value sets accumulated
 	// in valuess.
-	private static void loadFromValueLists(JsonObject pending,	Map<String, List<JsonValue>> valuess, Map<String, String> shorts) {
-		for (Map.Entry<String, List<JsonValue>> e: valuess.entrySet()) {	
+	private static void loadFromValueLists(Row pending,	Map<String, List<Value>> valuess, Map<String, String> shorts) {
+		for (Map.Entry<String, List<Value>> e: valuess.entrySet()) {	
 			String curi = shorts.get(e.getKey());
-			pending.put(curi, jsonArrayNoDuplicatesFrom(e.getValue()));
+			pending.put(curi, valueArrayNoDuplicatesFrom(e.getValue()));
 		}
 	}
 
@@ -148,11 +153,11 @@ public class ResultsToJson {
 		}
 	}
 
-	private static JsonValue jsonArrayNoDuplicatesFrom(Collection<JsonValue> values) {
-		JsonArray result = new JsonArray();
-		for (JsonValue v: values)
+	private static Value valueArrayNoDuplicatesFrom(Collection<Value> values) {
+		List<Value> result = new ArrayList<Value>();
+		for (Value v: values)
 			if (!result.contains(v)) result.add( v );
-		return result;
+		return Value.array(result);
 	}
 
 	private static JsonValue jsonArrayFrom(Collection<JsonValue> values) {

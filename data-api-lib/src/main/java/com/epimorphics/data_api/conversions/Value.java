@@ -7,6 +7,7 @@
 package com.epimorphics.data_api.conversions;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
@@ -46,40 +47,89 @@ public abstract class Value implements JSONWritable {
 		}
 		throw new RuntimeException("cannot handle this node: " + n);
 	}
-	
-	final String key;
-	final String spelling;
-	
-	public Value(String key, String spelling) {
-		this.key = key;
-		this.spelling = spelling;
-	}
-	
-	public boolean alike(Value other) {
-		return key.equals(other.key) && spelling.equals(other.spelling);
-	}
-	
-	@Override public abstract void writeTo(JSFullWriter jw);
 
+	public void writeMember(String key, JSFullWriter jw) {
+		jw.key(key);
+		writeTo(jw);
+	}
+	
+	public void writeElement(JSFullWriter jw) {
+		writeTo(jw);
+	}
+	
+	static abstract class BaseValue extends Value {
+		
+		final String spelling;
+		
+		public BaseValue(String key, String spelling) {
+			this.spelling = spelling;
+		}
+		
+		public boolean alike(BaseValue other) {
+			return spelling.equals(other.spelling);
+		}
+		
+		@Override public abstract void writeTo(JSFullWriter jw);
+		
+	}
+	
+	public static Value array(List<Value> values) {
+		return new Array_Value(values);
+	}
+	
+	static class Array_Value extends Value {
+		
+		final List<Value> values;
+		
+		public Array_Value(List<Value> values) {
+			this.values = values;
+		}
+		
+		@Override public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append( "[" );
+			for (Value v: values) sb.append(" ").append(v);
+			sb.append( " ]" );
+			return sb.toString();
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof Array_Value && same( (Array_Value) other);
+		}
+
+		private boolean same(Array_Value other) {
+			return values.equals(other.values);
+		}
+
+		@Override public void writeTo(JSFullWriter out) {
+			out.startArray();
+			for (Value v: values) v.writeTo(out);
+			out.finishArray();
+		}
+	}
+	
 	public static Value URI(String key, String uri) {
 		return new URI_Value(key, uri);
 	}
 	
-	static class URI_Value extends Value {
+	static class URI_Value extends BaseValue {
 		
 		public URI_Value(String key, String spelling) {
 			super(key, spelling);
 		}
+		
+		@Override public String toString() {
+			return "<" + spelling + ">";
+		}
 
 		@Override public void writeTo(JSFullWriter jw) {
-			jw.key(key);
 			jw.startObject();
 			jw.pair("@id", spelling);
 			jw.finishObject();
 		}
 		
 		@Override public boolean equals(Object other) {
-			return other instanceof URI_Value && alike( (Value) other );
+			return other instanceof URI_Value && alike( (URI_Value) other );
 		}
 	}
 	
@@ -87,18 +137,41 @@ public abstract class Value implements JSONWritable {
 		return new String_Value(key, spelling);
 	}
 	
-	static class String_Value extends Value {
-		
-		public String_Value(String key, String spelling) {
+	static abstract class Primitive_Value extends BaseValue {
+
+		public Primitive_Value(String key, String spelling) {
 			super(key, spelling);
 		}
 
 		@Override public void writeTo(JSFullWriter jw) {
-			jw.pair(key, spelling);
+			throw new UnsupportedOperationException();
+		}
+
+		public abstract void writeMember(String key, JSFullWriter jw);
+		
+		public abstract void writeElement(JSFullWriter jw);
+	}
+	
+	static class String_Value extends Primitive_Value {
+		
+		public String_Value(String key, String spelling) {
+			super(key, spelling);
 		}
 		
 		@Override public boolean equals(Object other) {
-			return other instanceof String_Value && alike( (Value) other );
+			return other instanceof String_Value && alike( (String_Value) other );
+		}
+		
+		@Override public String toString() {
+			return "'" + spelling + "'";
+		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, spelling);
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			jw.arrayElement(spelling);
 		}
 	}
 	
@@ -110,7 +183,7 @@ public abstract class Value implements JSONWritable {
 		return new Literal_Value(key, spelling, "@type", type);
 	}	
 	
-	static class Literal_Value extends Value {
+	static class Literal_Value extends BaseValue {
 		
 		final String subKey;
 		final String subValue;
@@ -122,7 +195,6 @@ public abstract class Value implements JSONWritable {
 		}
 
 		@Override public void writeTo(JSFullWriter jw) {
-			jw.key(key);
 			jw.startObject();
 			jw.pair("@value", spelling);
 			jw.pair(subKey, subValue);
@@ -145,7 +217,7 @@ public abstract class Value implements JSONWritable {
 		return new Boolean_Value(key, spelling.equals("true"));
 	}
 	
-	static class Boolean_Value extends Value {
+	static class Boolean_Value extends Primitive_Value {
 		
 		final boolean value;
 		
@@ -153,13 +225,17 @@ public abstract class Value implements JSONWritable {
 			super(key, null);
 			this.value = value;
 		}
-
-		@Override public void writeTo(JSFullWriter jw) {
-			jw.pair(key, value);
-		}
 		
 		@Override public boolean equals(Object other) {
 			return other instanceof Boolean_Value && alike( (Boolean_Value) other );
+		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, spelling.equals("true"));
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			jw.arrayElement(spelling.equals("true"));
 		}
 	}		
 
@@ -167,18 +243,22 @@ public abstract class Value implements JSONWritable {
 		return new Integer_Value(key, spelling);
 	}
 	
-	static class Integer_Value extends Value {
+	static class Integer_Value extends Primitive_Value {
 		
 		public Integer_Value(String key, String spelling) {
 			super(key, spelling);
 		}
-
-		@Override public void writeTo(JSFullWriter jw) {
-			jw.pair(key, Integer.parseInt(spelling));
-		}	
 		
 		@Override public boolean equals(Object other) {
-			return other instanceof URI_Value && alike( (URI_Value) other );
+			return other instanceof Integer_Value && alike( (URI_Value) other );
+		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, Integer.parseInt(spelling));
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			jw.arrayElement(Integer.parseInt(spelling));
 		}	
 	}		
 	
@@ -186,18 +266,23 @@ public abstract class Value implements JSONWritable {
 		return new Decimal_Value(key, spelling);
 	}
 	
-	static class Decimal_Value extends Value {
+	static class Decimal_Value extends Primitive_Value {
 		
 		public Decimal_Value(String key, String spelling) {
 			super(key, spelling);
 		}
-
-		@Override public void writeTo(JSFullWriter jw) {
-			jw.pair(key, new BigDecimal(spelling));
-		}
 		
 		@Override public boolean equals(Object other) {
-			return other instanceof URI_Value && alike( (Decimal_Value) other );
+			return other instanceof Decimal_Value && alike( (Decimal_Value) other );
+		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, new BigDecimal(spelling));
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			// TODO jw.arrayElement(new BigDecimal(spelling));
+			throw new UnsupportedOperationException();
 		}
 	}
 	
@@ -205,18 +290,23 @@ public abstract class Value implements JSONWritable {
 		return new Double_Value(key, spelling);
 	}
 	
-	static class Double_Value extends Value {
+	static class Double_Value extends Primitive_Value {
 		
 		public Double_Value(String key, String spelling) {
 			super(key, spelling);
 		}
-
-		@Override public void writeTo(JSFullWriter jw) {
-			jw.pair(key, Double.parseDouble(spelling));
-		}
 		
 		@Override public boolean equals(Object other) {
-			return other instanceof URI_Value && alike( (Double_Value) other );
+			return other instanceof Double_Value && alike( (Double_Value) other );
+		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, Double.parseDouble(spelling));
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			// TODO jw.arrayElement(Double.parseDouble(spelling));
+			throw new UnsupportedOperationException();
 		}
 	}	
 }
