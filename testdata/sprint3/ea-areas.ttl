@@ -1,0 +1,273 @@
+@prefix ssd:     <http://www.w3.org/ns/sparql-service-description#> .
+@prefix dgu:     <http://reference.data.gov.uk/def/reference/> .
+@prefix odrs:    <http://schema.theodi.org/odrs#> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+@prefix vs:      <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+@prefix version:  <http://purl.org/linked-data/version#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix time:    <http://www.w3.org/2006/time#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix api:     <http://purl.org/linked-data/api/vocab#> .
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix ui:      <http://purl.org/linked-data/registry-ui#> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix void:    <http://rdfs.org/ns/void#> .
+@prefix qb:      <http://purl.org/linked-data/cube#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix reg:     <http://purl.org/linked-data/registry#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix cc:      <http://creativecommons.org/ns#> .
+@prefix ldp:     <http://www.w3.org/ns/ldp#> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3>
+      a       org:Organization ;
+      rdfs:label "Yorkshire and North East" ;
+      dct:description "Stretching from the tip of Derbyshire to the Scottish border, a diverse mix of spectacular coastal scenery and heavily industrialised areas" ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "3" ;
+      skos:prefLabel "Yorkshire and North East" ;
+      skos:topConceptOf <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      org:hasSubOrganization
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3-35> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3-34> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1>
+      a       org:Organization ;
+      rdfs:label "Anglian" ;
+      dct:description "From the Humber to the Thames, from the Norfolk Coast to Northampton, an area of high quality agricultural land and unique wildlife sites." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "1" ;
+      skos:prefLabel "Anglian" ;
+      skos:topConceptOf <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      org:hasSubOrganization
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1-2> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1-3> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1-1> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas>
+      a       reg:Register , ldp:Container , skos:ConceptScheme ;
+      rdfs:label "EA Areas" ;
+      <http://environment.data.gov.uk/registry/structure/ui/entityType>
+              <http://environment.data.gov.uk/registry/structure/entity-type/Organizations_and_sectors> ;
+      dct:description " <p>Regions and Areas of the Environment Agency.</p><p>The Environment Agency is divided into six regions, each with their own offices, director, committees and contribution to the corporate strategy.</p><p>An Environment Agency Area is an Environment Agency defined area of the country, which fits within an Environment Agency Region, responsible for the day to day management of the local area</p>" ;
+      dct:license <http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/> ;
+      dct:modified "2013-12-17T16:38:08.16Z"^^xsd:dateTime ;
+      dct:publisher <http://environment.data.gov.uk/registry/structure/org/environment-agency> ;
+      dct:rights
+              [ odrs:attributionText
+                        "Contains public sector information licensed under the Open Government Licence v2.0."
+              ] ;
+      reg:inverseMembershipPredicate
+              skos:inScheme ;
+      reg:owner <http://environment.data.gov.uk/registry/structure/org/environment-agency> ;
+      ui:hierarchyChildProperty
+              "org:hasSubOrganization" ;
+      ui:hierarchyRootProperty
+              skos:topConceptOf ;
+      owl:versionInfo 2 .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6-28>
+      a       org:Organization ;
+      rdfs:label "Wessex" ;
+      dct:description "Wessex area of the South West region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "6-28" ;
+      skos:prefLabel "Wessex" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10>
+      a       org:Organization ;
+      rdfs:label "South East" ;
+      dct:description "Southern and Thames regions have merged to form South East region. South East region covers London and the south-east counties down to the coast, and includes the entire basin of the River Thames." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "10" ;
+      skos:prefLabel "South East" ;
+      skos:topConceptOf <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      org:hasSubOrganization
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-36> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-37> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-39> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-38> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1-2>
+      a       org:Organization ;
+      rdfs:label "Eastern" ;
+      dct:description "Eastern area of the Anglian region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "1-2" ;
+      skos:prefLabel "Eastern" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1-3>
+      a       org:Organization ;
+      rdfs:label "Northern" ;
+      dct:description "Northern area of the Anglian region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "1-3" ;
+      skos:prefLabel "Northern" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-36>
+      a       org:Organization ;
+      rdfs:label "North East Thames" ;
+      dct:description "North East Thames area of the South East region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "10-36" ;
+      skos:prefLabel "North East Thames" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2-31>
+      a       org:Organization ;
+      rdfs:label "West" ;
+      dct:description "West area of the Midlands region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "2-31" ;
+      skos:prefLabel "West" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3-34>
+      a       org:Organization ;
+      rdfs:label "Yorkshire" ;
+      dct:description "Yorkshire area of the Yorkshire and North East region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "3-34" ;
+      skos:prefLabel "Yorkshire" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2-29>
+      a       org:Organization ;
+      rdfs:label "Central" ;
+      dct:description "Central area of the Midlands region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "2-29" ;
+      skos:prefLabel "Central" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-38>
+      a       org:Organization ;
+      rdfs:label "Kent and South London" ;
+      dct:description "Kent and South London area of the South East region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "10-38" ;
+      skos:prefLabel "Kent and South London" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4-11>
+      a       org:Organization ;
+      rdfs:label "North" ;
+      dct:description "North area of the North West region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "4-11" ;
+      skos:prefLabel "North" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2>
+      a       org:Organization ;
+      rdfs:label "Midlands" ;
+      dct:description "Densely populated cities, the agricultural plains of Worcestershire and Warwickshire and the wild uplands of the Peak District." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "2" ;
+      skos:prefLabel "Midlands" ;
+      skos:topConceptOf <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      org:hasSubOrganization
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2-30> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2-31> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2-29> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4>
+      a       org:Organization ;
+      rdfs:label "North West" ;
+      dct:description "From the urban and industrial areas such as Manchester and Merseyside to the mountains and lakes of the Lake District." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "4" ;
+      skos:prefLabel "North West" ;
+      skos:topConceptOf <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      org:hasSubOrganization
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4-11> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4-12> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1-1>
+      a       org:Organization ;
+      rdfs:label "Central" ;
+      dct:description "Central area of the Anglian region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "1-1" ;
+      skos:prefLabel "Central" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6-27>
+      a       org:Organization ;
+      rdfs:label "Devon and Cornwall" ;
+      dct:description "Devon and Cornwall area of the South West region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "6-27" ;
+      skos:prefLabel "Devon and Cornwall" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2-30>
+      a       org:Organization ;
+      rdfs:label "East" ;
+      dct:description "East area of the Midlands region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "2-30" ;
+      skos:prefLabel "East" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/2> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-37>
+      a       org:Organization ;
+      rdfs:label "West Thames" ;
+      dct:description "West Thames area of the South East region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "10-37" ;
+      skos:prefLabel "West Thames" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3-35>
+      a       org:Organization ;
+      rdfs:label "North East" ;
+      dct:description "North East area of the Yorkshire and North East region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "3-35" ;
+      skos:prefLabel "North East" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/3> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-39>
+      a       org:Organization ;
+      rdfs:label "Solent and South Downs" ;
+      dct:description "Solent and South Downs area of the South East region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "10-39" ;
+      skos:prefLabel "Solent and South Downs" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6>
+      a       org:Organization ;
+      rdfs:label "South West" ;
+      dct:description "An environmentally rich region, with over one third of the country's Areas of Outstanding Beauty and half the UK's designated bathing waters." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "6" ;
+      skos:prefLabel "South West" ;
+      skos:topConceptOf <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      org:hasSubOrganization
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6-28> , <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/6-27> .
+
+<http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4-12>
+      a       org:Organization ;
+      rdfs:label "South" ;
+      dct:description "South area of the North West region." ;
+      skos:inScheme <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas> ;
+      skos:notation "4-12" ;
+      skos:prefLabel "South" ;
+      org:subOrganizationOf
+              <http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/4> .
+              

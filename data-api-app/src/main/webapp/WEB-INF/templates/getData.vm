@@ -2,7 +2,7 @@
 #set($nav="dataset-structure")
 #parse("navbar.vm")
 <div class="container">
-  #set($structure = $lib.json.asJson($dsapi.datasetStructureEndpoint("en",$dataset)))
+  #set($structure = $lib.json.asJson($dsapi.datasetStructureEndpoint("en",$dataset, $uri)))
   
   <h2>Data for data set: $structure.label.value()</h2>
 

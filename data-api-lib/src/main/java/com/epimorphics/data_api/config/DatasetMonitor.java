@@ -10,6 +10,8 @@
 package com.epimorphics.data_api.config;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -32,7 +34,9 @@ import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
 import com.hp.hpl.jena.vocabulary.DCTerms;
+import com.hp.hpl.jena.vocabulary.RDF;
 import com.hp.hpl.jena.vocabulary.RDFS;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 /**
  * Monitor a directory of configuration files, each of which species
@@ -50,7 +54,8 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     }
 
     @Override
-    protected API_Dataset configure(File file) {
+    protected Collection<API_Dataset> configure(File file) {
+        List<API_Dataset> datasets = new ArrayList<>();
         Model config = FileManager.get().loadModel( file.getPath() );
         Resource configRoot = RDFUtil.findRoot(config);
         
@@ -71,15 +76,20 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
                 addClosure(dsd);
                 if (dsd.isURIResource()) {
                     // Try to fetch the descriptions of the components
-                    String componentQuery = String.format("PREFIX qb: <%s#> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
+                    String componentQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
                             Cube.getURI(), dsd.getURI());
                     addClosure(dataset, manager.getSource().describe(componentQuery));
+                    String codelistQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) / qb:codeList ?x}",
+                            Cube.getURI(), dsd.getURI());
+                    addClosure(dataset, manager.getSource().describe(codelistQuery));
                 }
             }
         }
         
         // Also pull in property definitions for any aspect property declared inline
         List<Resource> aspectprops = QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:property");
+        aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:codeList") );
+        aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:codeList") );
         if ( ! aspectprops.isEmpty() ) {
             String[] uris = new String[ aspectprops.size() ];
             for (int i = 0; i < aspectprops.size(); i++) uris[i] = aspectprops.get(i).getURI();
@@ -88,37 +98,51 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
         
         API_Dataset dsapi = new API_Dataset(configRoot, manager); 
         if (dsd != null) {
-            parseDSD(dsapi, dsd);
+            parseDSD(dsapi, dsd, datasets);
         } else {
-            parseAspects(dsapi, configRoot);
+            parseAspects(dsapi, configRoot, datasets);
         }
-        return dsapi;
+        datasets.add(dsapi);
+        return datasets;
     }
     
-    private void parseDSD(API_Dataset dsapi, Resource dsd) {
+    private void parseDSD(API_Dataset dsapi, Resource dsd, List<API_Dataset> datasets) {
         for (Resource component : RDFUtil.allResourceValues(dsd, Cube.component)) {
             if (component.hasProperty(Cube.dimension)) {
-                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.dimension), true);
+                addAspect(dsapi, datasets, RDFUtil.getResourceValue(component, Cube.dimension), true);
             } else if (component.hasProperty(Cube.measure)) {
-                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.measure), true);
+                addAspect(dsapi, datasets, RDFUtil.getResourceValue(component, Cube.measure), true);
             } else if (component.hasProperty(Cube.attribute)) {
                 boolean required = RDFUtil.getBooleanValue(component, Cube.componentRequired, false);
-                addAspect(dsapi, RDFUtil.getResourceValue(component, Cube.attribute), required);
+                addAspect(dsapi, datasets, RDFUtil.getResourceValue(component, Cube.attribute), required);
             } else {
                 log.warn("Failed to parse on of the components of dsd " + dsd + ", component was " + component);
             }
         }
     }
     
-    private void addAspect(API_Dataset dsapi, Resource aspect, boolean required) {
+    static final Property[] CodelistProps = new Property[]{Cube.codeList, Dsapi.codeList};
+    
+    private Aspect addAspect(API_Dataset dsapi, List<API_Dataset> datasets, Resource aspect, boolean required) {
         Aspect a = new Aspect(aspect);
         a.setIsOptional(!required);
+        for (Property p : CodelistProps) {
+            if (aspect.hasProperty(p)) { 
+                API_Dataset codelistDataset = parseCodelist( aspect.getPropertyResourceValue(p) );
+                a.setRangeDataset(codelistDataset.getName());
+                datasets.add( codelistDataset );
+            }
+        }
+        if (aspect.hasProperty(Dsapi.rangeDataset)) {
+            a.setRangeDataset( RDFUtil.getStringValue(aspect, Dsapi.rangeDataset) );
+        }
         dsapi.add(a);
+        return a;
     }
     
     private static Property[] mergeProps = new Property[]{ RDFS.label, SKOS.prefLabel, RDFS.comment, RDFS.range, DCTerms.description};
     
-    private void parseAspects(API_Dataset dsapi, Resource root) {
+    private void parseAspects(API_Dataset dsapi, Resource root, List<API_Dataset> datasets) {
         for (Resource aspect : RDFUtil.allResourceValues(root, Dsapi.aspect)) {
             Resource decl = RDFUtil.getResourceValue(aspect, Dsapi.property);
             if (decl != null) {
@@ -126,13 +150,33 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
                     mergeProp(aspect, decl, p);
                 }
             }
-            Aspect a = new Aspect(aspect);
+            Aspect a = addAspect(dsapi, datasets, aspect, ! RDFUtil.getBooleanValue(aspect, Dsapi.optional, false));
             a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
-            a.setIsOptional( RDFUtil.getBooleanValue(aspect, Dsapi.optional, false) );
             // TODO parse property paths
             // TODO parse range constraints
-            dsapi.add(a);
         }
+    }
+    
+    protected static final String CODELIST_DATASET_BASE = "http://localhost/codelist-dataset/";
+    
+    private API_Dataset parseCodelist( Resource codelist ) {
+        String name = RDFUtil.getLocalname(codelist);
+        Resource ds = codelist.getModel().createResource(CODELIST_DATASET_BASE + name)
+            .addProperty(RDF.type, Dsapi.Dataset)
+            .addProperty(RDFS.label, name + " dataset")
+            .addProperty(DCTerms.description, "Pseudo dataset wrapped code list " + name)
+            .addProperty(Dsapi.codeList, codelist);
+        
+        for (Property p : new Property[]{RDFS.label, DCTerms.description, RDFS.comment, SKOS.notation}) {
+            Resource aspeect = ds.getModel().createResource()
+                .addProperty(Dsapi.property, p)
+                .addProperty(RDFS.range, XSD.xstring)
+                .addLiteral(Dsapi.optional, true)
+                .addLiteral(Dsapi.multivalued, true);
+            ds.addProperty(Dsapi.aspect, aspeect);
+        }
+        
+        return new API_Dataset(ds, manager);
     }
     
     private boolean hasProperties(Resource r) {

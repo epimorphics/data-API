@@ -34,15 +34,25 @@ public class DataQuery {
 	final List<Filter> filters;
 	final List<Sort> sortby;
 	final Slice slice;
+	final List<Guard> guards; 
 
-	public DataQuery(List<Filter> filters, List<Sort> sortby) {
-		this(filters, sortby, Slice.all());
-	}
-	
-	public DataQuery(List<Filter> filters, List<Sort> sortby, Slice slice) {
+    public DataQuery(List<Filter> filters, List<Sort> sortby ) {
+        this(filters, sortby, null, Slice.all());
+    }
+
+    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards ) {
+        this(filters, sortby, guards, Slice.all());
+    }
+    
+    public DataQuery(List<Filter> filters, List<Sort> sortby, Slice slice) {
+        this(filters, sortby, null, slice);
+    }
+        
+    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice) {
 		this.filters = filters;
 		this.sortby = sortby;
 		this.slice = slice;
+		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
 	}
 	
 	public DataQuery(List<Filter> filters) {
@@ -66,46 +76,38 @@ public class DataQuery {
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
-        try { return toSparqlString(p, api.getAspects(), api.getBaseQuery(), api.getPrefixes()); }
+        try { return toSparqlString(p, api.getAspects(), api.getBaseQuery(), api.getPrefixes(), api); }
         catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
     }
     
     public String toSparql(Problems p, Aspects a, String baseQuery, PrefixMapping pm) {
-        try { return toSparqlString(p, a.getAspects(), baseQuery, pm); }
+        try { return toSparqlString(p, a.getAspects(), baseQuery, pm, null); }
         catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
     }
 
 	static final Term item = Term.var("item");
 	
-	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm) {
+	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		StringBuilder sb = new StringBuilder();
-		
-		// Configuration processing ensures SKOS is included in the prefix mapping
-//		Map<String, String> prefixes = pm.getNsPrefixMap();
-//
-//		boolean needsSKOS = false;
-//		
-//		for (Filter f: filters) {
-//			if (f.range.op.equals("below")) needsSKOS = true;
-//		}
-//		if (needsSKOS) prefixes.put("skos", "http://www.w3.org/2004/02/skos/core");
-		
-	//
-//		Replaced by selective prefix expansion
-//		for (String key: prefixes.keySet()) 
-//			sb.append( "PREFIX " )
-//			.append( key ).append(": " )
-//			.append( "<" ).append( prefixes.get(key)).append(">")
-//			.append( "\n" )
-//			;
 	//
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
 	//
 		Map<String, Filter> sf = new HashMap<String, Filter>();
 		for (Filter f: filters) sf.put("?" + f.name.asVar(), f);
-	//
-		sb.append( "\nSELECT ?item");
+		
+        boolean baseQueryNeeded = true;
+        boolean needsDistinct = false;
+        for (Guard guard : guards) {
+            if (guard.supplantsBaseQuery()) {
+                baseQueryNeeded = false;
+            }
+            if (guard.needsDistinct()) {
+                needsDistinct = true;
+            }
+        }
+
+		sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT" : "") + "?item");
 		for (Aspect x: ordered) {
 			sb.append(" ?").append( x.asVar() );
 		} 
@@ -113,10 +115,17 @@ public class DataQuery {
 		sb.append("\nWHERE {");
 		String dot = "";
 	//
-		if (baseQuery != null && !baseQuery.isEmpty()) {
+		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 		    sb.append( baseQuery );
-		    dot = "\n. ";
+		    if (!baseQuery.trim().endsWith(".")) {
+		        dot = ".\n";
+		    }
 		}
+        for (Guard guard : guards) {
+            sb.append(dot);
+            dot = "\n";
+            sb.append(guard.queryFragment(api));
+        }
 	//
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
@@ -139,8 +148,8 @@ public class DataQuery {
 					}
 					sb.append(")");
 				} else if (rangeOp.equals("below")) {
-					Shortname below = x.getBelowPredicate();
-					sb.append(". ").append(fVar).append(" ").append(below.getCURIE()).append(" ").append(value);
+					String below = x.getBelowPredicate(api);
+					sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
 				} else if (rangeOp.equals("contains")) {
 					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
 				} else if (rangeOp.equals("matches")) {
@@ -152,7 +161,7 @@ public class DataQuery {
 					sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 				}
 			}
-			dot = "\n. ";
+			dot = ".\n ";
 		}
 		sb.append( " }");
 	//

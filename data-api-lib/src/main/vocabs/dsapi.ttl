@@ -25,9 +25,10 @@ dsapi: a owl:Ontology;
 Needs either a qb_dataset or a baseQuery to define the contents of the dataset.
 The structure is taken from either the :aspect definitions given here, from directly reference
 DSD or implicitly from the DSD associated with the QB dataset.  """@en;
-    rdfs:subClassOf [owl:onProperty skos:notation    ; owl:cardinality 1];
+    rdfs:subClassOf [owl:onProperty skos:notation    ; owl:minCardinality 0];
     rdfs:subClassOf [owl:onProperty rdfs:label       ; owl:minCardinality 1];
     rdfs:subClassOf [owl:onProperty dct:description  ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty :codeList        ; owl:minCardinality 0];
     .
     
 :qb_dataset a owl:ObjectProperty;
@@ -57,13 +58,21 @@ of the dataset to the ?item variable."""@en;
     rdfs:domain :Dataset;
     rdfs:range  :Aspect;
     .
+
+:codeList a owl:ObjectProperty;
+    rdfs:label "code list"@en;
+    rdfs:comment """Applied to a Dataset this indicates that the data set represents members of a code list (a skos:ConceptScheme, skos:Collection or qb:HierarchicalCodeList). It then supports @childOf filters.
+Applied to an Aspect it indicates that that there is a range dataset from the Aspect which represents the code list."""@en;
+    rdfs:domain [ owl:unionOf (:Dataset :Aspect) ];
+    rdfs:range  [ owl:unionOf (skos:ConceptScheme skos:Collection qb:HierarchicalCodeList)] ;
+    .
     
 # Configuration an aspect definition
 
 :Aspect a owl:Class;
     rdfs:label "Aspect";
     rdfs:comment "Specification of a single aspect of the data set"@en;
-    rdfs:subClassOf [owl:onProperty skos:notation    ; owl:cardinality 1];
+    rdfs:subClassOf [owl:onProperty skos:notation    ; owl:minCardinality 0];
     rdfs:subClassOf [owl:onProperty rdfs:label       ; owl:minCardinality 1];
     rdfs:subClassOf [owl:onProperty dct:description  ; owl:minCardinality 0];
     rdfs:subClassOf [owl:onProperty rdfs:range       ; owl:minCardinality 0];
@@ -71,6 +80,8 @@ of the dataset to the ?item variable."""@en;
     rdfs:subClassOf [owl:onProperty :multivalued     ; owl:minCardinality 0; owl:maxCardinality 1];
     rdfs:subClassOf [owl:onProperty :propertyPath    ; owl:minCardinality 0];
     rdfs:subClassOf [owl:onProperty :rangeConstraint ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty :codeList        ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty :rangeDataset    ; owl:minCardinality 0];
     .
     
 :optional a owl:DatatypeProperty;
@@ -107,6 +118,15 @@ of the dataset to the ?item variable."""@en;
     rdfs:domain :Aspect;
     rdfs:range  :RangeConstraint;
     .
+        
+:rangeDataset a owl:ObjectProperty;
+    rdfs:label "range dataset"@en;
+    rdfs:comment "Indicates a data set which contains allowed values for this aspect. Typically, not not necessarily, the range dataset is a codelist."@en;
+    rdfs:domain :Aspect;
+    rdfs:range  :Dataset;
+    .
+            
+# Configure a range declaration on an aspect
     
 :RangeConstraint  a owl:Class;
     rdfs:label "Range constraint";
