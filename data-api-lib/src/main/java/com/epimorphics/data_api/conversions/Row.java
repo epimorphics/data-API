@@ -23,7 +23,7 @@ public class Row implements JSONWritable {
 		jw.startObject();
 		for (Map.Entry<String, ResultValue> e: members.entrySet()) {
 			ResultValue v = e.getValue();
-			if (v == null) {  } else { v.writeMember(e.getKey(), jw); }
+			if (v == null) {  jw.key(e.getKey()); jw.startArray(); jw.finishArray(); } else { v.writeMember(e.getKey(), jw); }
 		}
 		jw.finishObject();			
 	}

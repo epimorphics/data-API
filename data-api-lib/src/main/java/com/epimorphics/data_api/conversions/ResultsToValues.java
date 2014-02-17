@@ -8,6 +8,7 @@ package com.epimorphics.data_api.conversions;
 import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.json.JSONWritable;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -65,6 +66,8 @@ public class ResultsToValues {
 		}
 	}
 	
+	static final ResultValue none = ResultValue.array(new ArrayList<ResultValue>());
+	
 	public static Row toRow(Collection<Aspect> aspects, QuerySolution qs) {
 		
 		Row result = new Row();
@@ -73,13 +76,17 @@ public class ResultsToValues {
 			RDFNode value = qs.get(a.asVar());
 		//			
 			if (value == null) {
-				result.put(key, null);				
+				result.put(key, none);				
 			}
 			else {
 				ResultValue v = ResultValue.fromNode(value.asNode());
-				// boolean mv = a.getIsMultiValued();
+				boolean ov = a.getIsOptional();
 				// if (mv) System.err.println( ">> got multivalued " + v);
-				result.put(key, v); // (mv ? v : v));
+				if (ov) {
+					result.put(key, ResultValue.array(BunchLib.list(v)));
+				} else {
+					result.put(key, v);					
+				}
 			}
 		}
 		return result;
@@ -90,6 +97,7 @@ public class ResultsToValues {
 	private static void loadFromValueLists(Row pending,	Map<String, List<ResultValue>> valuess, Map<String, String> shorts) {
 		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {	
 			String curi = shorts.get(e.getKey());
+			if (e.getValue() == null) System.err.println( "]] loading null for " + curi );
 			pending.put(curi, valueArrayNoDuplicatesFrom(e.getValue()));
 		}
 	}
