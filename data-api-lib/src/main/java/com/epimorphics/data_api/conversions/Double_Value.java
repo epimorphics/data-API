@@ -23,7 +23,6 @@ public class Double_Value extends Primitive_Value {
 	}
 
 	@Override public void writeElement(JSFullWriter jw) {
-		// TODO jw.arrayElement(Double.parseDouble(spelling));
-		throw new UnsupportedOperationException();
+		jw.arrayElement(Double.parseDouble(spelling));
 	}
 }

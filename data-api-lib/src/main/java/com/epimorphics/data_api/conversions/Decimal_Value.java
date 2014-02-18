@@ -25,7 +25,6 @@ public class Decimal_Value extends Primitive_Value {
 	}
 
 	@Override public void writeElement(JSFullWriter jw) {
-		// TODO jw.arrayElement(new BigDecimal(spelling));
-		throw new UnsupportedOperationException();
+		jw.arrayElement(new BigDecimal(spelling));
 	}
 }

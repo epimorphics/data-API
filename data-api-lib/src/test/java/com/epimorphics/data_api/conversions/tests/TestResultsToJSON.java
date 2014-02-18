@@ -41,7 +41,7 @@ public class TestResultsToJSON {
 	static final ResultValue value2_value = ResultValue.string("two");
 	static final ResultValue value3_value = ResultValue.string("three");
 	
-	@Test public void testMe() {
+	@Test public void testMultipleSolutions() {
 		QuerySolution A = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_multiple", value1);
 		QuerySolution B = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_multiple", value2);
 		QuerySolution C = new TestTranslateQuerySolution.LocalQuerySolution("item", itemB, "pre_multiple", value3);
@@ -50,21 +50,19 @@ public class TestResultsToJSON {
 		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" ).setIsMultiValued(true);
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> ja = ResultsToValues.convert(aspects, x);
+		List<Row> rows = ResultsToValues.convert(aspects, x);
 				
-		Row expected_1 = new Row();
-		
-		expected_1.put("item", itemA_value );
+		Row expected_1 = new Row()		
+			.put("item", itemA_value )				
+			.put("pre:multiple", ResultValue.array(BunchLib.list(value1_value, value2_value)) )
+			;
 				
-		expected_1.put("pre:multiple", ResultValue.array(BunchLib.list(value1_value, value2_value)) );
+		Row expected_2 = new Row()
+			.put("item", itemB_value )
+			.put("pre:multiple", ResultValue.array(BunchLib.list(value3_value)) )
+			;
 				
-		Row expected_2 = new Row();
-		expected_2.put("item", itemB_value );
-		expected_2.put("pre:multiple", ResultValue.array(BunchLib.list(value3_value)) );
-				
-		List<Row> expected = BunchLib.list(expected_1, expected_2);
-				
-		assertEquals(expected, ja);
+		assertEquals(BunchLib.list(expected_1, expected_2), rows);
 	}
 	
 	
