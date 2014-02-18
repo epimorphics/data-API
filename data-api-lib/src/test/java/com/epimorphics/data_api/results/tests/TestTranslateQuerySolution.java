@@ -43,7 +43,7 @@ public class TestTranslateQuerySolution {
 		
 //		System.err.println( ">> aspects: " + aspects );
 		
-		Row js = ResultsToValues.toRow(aspects, qs);
+		Row js = ResultsToValues.solutionToRow(aspects, qs);
 		
 		Row expected = new Row()
 			.put("pre:a", ResultValue.fromNode(A))

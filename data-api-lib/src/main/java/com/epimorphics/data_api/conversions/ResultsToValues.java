@@ -15,7 +15,7 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class ResultsToValues {
 	
-	public static void convert(Collection<Aspect> aspects, RowConsumer jc, Iterator<QuerySolution> rows) {
+	public static void convert(Collection<Aspect> aspects, RowConsumer rc, Iterator<QuerySolution> solutions) {
 				
 		Node current = null;
 		Row pending = null;		
@@ -29,21 +29,20 @@ public class ResultsToValues {
 				shorts.put(a.asVar(), a.getName().getCURIE() );
 			}
 		
-		while (rows.hasNext()) {
+		while (solutions.hasNext()) {
 
-			QuerySolution row = rows.next();
-						
-			Node item = row.get("item").asNode();
+			QuerySolution sol = solutions.next();
+			Node item = sol.get("item").asNode();
 			
 			if (item.equals(current)) {
-				multipleValueFetch(valuess, row);
+				multipleValueFetch(valuess, sol);
 			} else {
 				// new item, flush any existing item & reset current
 				if (pending != null) {
 					loadFromValueLists(pending, valuess, shorts);
-					jc.consume( pending );
+					rc.consume( pending );
 				}
-				pending = toRow(aspects, row); 
+				pending = solutionToRow(aspects, sol); 
 				pending.put("item", ResultValue.fromNode(item) );
 								
 				current = item;
@@ -51,21 +50,21 @@ public class ResultsToValues {
 				for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {
 					e.getValue().clear();
 					String key = e.getKey();
-					e.getValue().add( ResultValue.fromNode(row.get(key).asNode()));
+					RDFNode r = sol.get(key);
+					if (r != null) e.getValue().add( ResultValue.fromNode(r.asNode()));
 				}
 			}
 		}
 		
 		if (pending != null) {
 			loadFromValueLists(pending, valuess, shorts);
-			jc.consume(pending);
+			rc.consume(pending);
 		}
 	}
 	
 	static final ResultValue none = ResultValue.array(new ArrayList<ResultValue>());
 	
-	public static Row toRow(Collection<Aspect> aspects, QuerySolution qs) {
-		
+	public static Row solutionToRow(Collection<Aspect> aspects, QuerySolution qs) {
 		Row result = new Row();
 		for (Aspect a: aspects) {
 			String key = a.getName().getCURIE();		
@@ -77,7 +76,6 @@ public class ResultsToValues {
 			else {
 				ResultValue v = ResultValue.fromNode(value.asNode());
 				boolean ov = a.getIsOptional();
-				// if (mv) System.err.println( ">> got multivalued " + v);
 				if (ov) {
 					result.put(key, ResultValue.array(BunchLib.list(v)));
 				} else {
@@ -93,7 +91,6 @@ public class ResultsToValues {
 	private static void loadFromValueLists(Row pending,	Map<String, List<ResultValue>> valuess, Map<String, String> shorts) {
 		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {	
 			String curi = shorts.get(e.getKey());
-			if (e.getValue() == null) System.err.println( "]] loading null for " + curi );
 			pending.put(curi, valueArrayNoDuplicatesFrom(e.getValue()));
 		}
 	}
@@ -102,7 +99,8 @@ public class ResultsToValues {
 	// result-set format.
 	private static void multipleValueFetch(Map<String, List<ResultValue>> valuess, QuerySolution row) {
 		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {
-			e.getValue().add( ResultValue.fromNode(row.get(e.getKey()).asNode()));
+			RDFNode r = row.get(e.getKey());
+			if (r != null) e.getValue().add( ResultValue.fromNode(r.asNode()));
 		}
 	}
 

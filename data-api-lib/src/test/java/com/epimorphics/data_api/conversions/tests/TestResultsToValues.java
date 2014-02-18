@@ -8,6 +8,7 @@ package com.epimorphics.data_api.conversions.tests;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -114,7 +115,88 @@ public class TestResultsToValues {
 				
 		assertEquals(BunchLib.list(expected_1, expected_2), rows);
 	}
+
+	//
+	// tests for aspects that are both multiple and optional
+	//
 	
+	final QuerySolution A0 = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA);
+	final QuerySolution A1 = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_zom", value1);
+	final QuerySolution A2 = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_zom", value2);
+	final QuerySolution A3 = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_zom", value3);
+	
+	final Aspect zom = new TestAspects.MockAspect( "eh:/aspect/zom" )
+		.setIsMultiValued(true)
+		.setIsOptional(true)
+		;
+
+	final List<Aspect> zom_aspects = BunchLib.list( zom );
+	
+	final ResultValue noElements = ResultValue.array(new ArrayList<ResultValue>());
+
+	@Test public void testZomZeroSolutions() {
+		List<QuerySolution> x = BunchLib.list(A0);
+		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+				
+		Row expected_1 = new Row()		
+			.put("item", itemA_value )				
+			.put("pre:zom", noElements )
+			;
+				
+		assertEquals(BunchLib.list(expected_1), rows);
+	}
+	
+	@Test public void testZomOneSolution() {
+		List<QuerySolution> x = BunchLib.list(A1);
+		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+				
+		Row expected_1 = new Row()		
+			.put("item", itemA_value )				
+			.put("pre:zom", array(value1_value) )
+			;
+				
+		assertEquals(BunchLib.list(expected_1), rows);
+	}
+	
+	@Test public void testZomTwoGivenSolutions() {
+		List<QuerySolution> x = BunchLib.list(A1, A2);
+		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+				
+		Row expected_1 = new Row()		
+			.put("item", itemA_value )				
+			.put("pre:zom", array(value1_value, value2_value) )
+			;
+				
+		assertEquals(BunchLib.list(expected_1), rows);
+	}
+	
+	@Test public void testZomTwoSolutionsAndAnOmission() {
+		List<QuerySolution> x = BunchLib.list(A0, A1, A2);
+		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+				
+		Row expected_1 = new Row()		
+			.put("item", itemA_value )				
+			.put("pre:zom", array(value1_value, value2_value) )
+			;
+				
+		assertEquals(BunchLib.list(expected_1), rows);
+	}
+	
+	@Test public void testZomTwoSolutionsAndAnOmissionReordered() {
+		List<QuerySolution> x = BunchLib.list(A1, A0, A2);
+		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+				
+		Row expected_1 = new Row()		
+			.put("item", itemA_value )				
+			.put("pre:zom", array(value1_value, value2_value) )
+			;
+				
+		assertEquals(BunchLib.list(expected_1), rows);
+	}
+
+	private ResultValue array(ResultValue... values) {
+		return ResultValue.array(Arrays.asList(values));
+	}
 	
 
 }
