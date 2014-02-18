@@ -9,16 +9,11 @@ import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.epimorphics.json.JSONWritable;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class ResultsToValues {
-	
-	public interface RowConsumer {
-		public void consume(Row r);
-	}
 	
 	public static void convert(Collection<Aspect> aspects, RowConsumer jc, Iterator<QuerySolution> rows) {
 				
@@ -37,6 +32,7 @@ public class ResultsToValues {
 		while (rows.hasNext()) {
 
 			QuerySolution row = rows.next();
+						
 			Node item = row.get("item").asNode();
 			
 			if (item.equals(current)) {
