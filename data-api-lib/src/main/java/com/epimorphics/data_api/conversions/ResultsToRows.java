@@ -14,7 +14,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
-public class ResultsToValues {
+public class ResultsToRows {
 	
 	public static void convert(Collection<Aspect> aspects, RowConsumer rc, Iterator<QuerySolution> solutions) {
 				

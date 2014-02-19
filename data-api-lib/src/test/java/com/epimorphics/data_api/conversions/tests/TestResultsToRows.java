@@ -15,9 +15,8 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
-import com.epimorphics.data_api.conversions.ResultsToValues;
+import com.epimorphics.data_api.conversions.ResultsToRows;
 import com.epimorphics.data_api.conversions.Row;
-import com.epimorphics.data_api.conversions.ResultValue;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.results.tests.TestTranslateQuerySolution;
@@ -26,7 +25,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
-public class TestResultsToValues {
+public class TestResultsToRows {
 	
 	static final Model m = ModelFactory.createDefaultModel();
 	
@@ -55,7 +54,7 @@ public class TestResultsToValues {
 		
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> rows = ResultsToValues.convert(aspects, x);
+		List<Row> rows = ResultsToRows.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -81,7 +80,7 @@ public class TestResultsToValues {
 		
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> rows = ResultsToValues.convert(aspects, x);
+		List<Row> rows = ResultsToRows.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -102,7 +101,7 @@ public class TestResultsToValues {
 		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" ).setIsMultiValued(true);
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> rows = ResultsToValues.convert(aspects, x);
+		List<Row> rows = ResultsToRows.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -137,7 +136,7 @@ public class TestResultsToValues {
 
 	@Test public void testZomZeroSolutions() {
 		List<QuerySolution> x = BunchLib.list(A0);
-		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -149,7 +148,7 @@ public class TestResultsToValues {
 	
 	@Test public void testZomOneSolution() {
 		List<QuerySolution> x = BunchLib.list(A1);
-		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -161,7 +160,7 @@ public class TestResultsToValues {
 	
 	@Test public void testZomTwoGivenSolutions() {
 		List<QuerySolution> x = BunchLib.list(A1, A2);
-		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -173,7 +172,7 @@ public class TestResultsToValues {
 	
 	@Test public void testZomTwoSolutionsAndAnOmission() {
 		List<QuerySolution> x = BunchLib.list(A0, A1, A2);
-		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -185,7 +184,7 @@ public class TestResultsToValues {
 	
 	@Test public void testZomTwoSolutionsAndAnOmissionReordered() {
 		List<QuerySolution> x = BunchLib.list(A1, A0, A2);
-		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
+		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				

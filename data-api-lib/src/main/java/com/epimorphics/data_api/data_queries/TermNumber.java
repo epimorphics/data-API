@@ -3,22 +3,33 @@
     
     (c) Copyright 2014 Epimorphics Limited
 */
-package com.epimorphics.data_api.conversions;
+package com.epimorphics.data_api.data_queries;
 
-import com.epimorphics.data_api.conversions.ResultValue.Primitive_Value;
+import com.epimorphics.data_api.data_queries.Term.Primitive;
 import com.epimorphics.json.JSFullWriter;
 
-public class Boolean_Value extends Primitive_Value {
+public class TermNumber extends Primitive {
+
+	final Number value;
 	
-	final boolean value;
-	
-	public Boolean_Value(boolean value) {
-		super(value ? "true" : "false");
+	public TermNumber(Number value) {
 		this.value = value;
+	}
+
+	@Override public String toString() {
+		return value.toString();
+	}
+	
+	@Override public int hashCode() {
+		return value.hashCode();
 	}
 	
 	@Override public boolean equals(Object other) {
-		return other instanceof Boolean_Value && alike( (Boolean_Value) other );
+		return other instanceof TermNumber && value.equals(((TermNumber) other).value);
+	}
+	
+	@Override public String asSparqlTerm() {
+		return toString();
 	}
 
 	@Override public void writeMember(String key, JSFullWriter jw) {

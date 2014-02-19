@@ -16,8 +16,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
-import com.epimorphics.data_api.conversions.ResultValue;
-import com.epimorphics.data_api.conversions.ResultsToValues;
+import com.epimorphics.data_api.conversions.ResultsToRows;
 import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
@@ -44,7 +43,7 @@ public class TestTranslateQuerySolution {
 		
 //		System.err.println( ">> aspects: " + aspects );
 		
-		Row js = ResultsToValues.solutionToRow(aspects, qs);
+		Row js = ResultsToRows.solutionToRow(aspects, qs);
 		
 		Row expected = new Row()
 			.put("pre:a", Term.fromNode(A))

@@ -33,7 +33,7 @@ import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.conversions.ResultsToValues;
+import com.epimorphics.data_api.conversions.ResultsToRows;
 import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.conversions.RowConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
@@ -306,7 +306,7 @@ public class DSAPIManager extends ComponentBase {
     				comma.value = true;
     			}
     		};
-    		ResultsToValues.convert(aspects, stream, rs);
+    		ResultsToRows.convert(aspects, stream, rs);
     		jw.finishArray();
     	}
     }
@@ -358,7 +358,7 @@ public class DSAPIManager extends ComponentBase {
 					@Override public void consume(Row jv) {						
 					}
 				};
-                ResultsToValues.convert(api.getAspects(), discard, rs);
+                ResultsToRows.convert(api.getAspects(), discard, rs);
                 long finish = System.currentTimeMillis();
                 comments.put("time", finish-start);
             }
