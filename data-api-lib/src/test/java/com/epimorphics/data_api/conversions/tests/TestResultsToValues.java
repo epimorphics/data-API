@@ -18,6 +18,7 @@ import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.conversions.ResultsToValues;
 import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.conversions.ResultValue;
+import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.results.tests.TestTranslateQuerySolution;
 import com.hp.hpl.jena.graph.Node;
@@ -36,12 +37,12 @@ public class TestResultsToValues {
 	static final Node value2 = m.createLiteral( "two" ).asNode();
 	static final Node value3 = m.createLiteral( "three" ).asNode();
 	
-	static final ResultValue itemA_value = ResultValue.string(itemA.getURI());
-	static final ResultValue itemB_value = ResultValue.string(itemB.getURI());
+	static final Term itemA_value = Term.string(itemA.getURI());
+	static final Term itemB_value = Term.string(itemB.getURI());
 	
-	static final ResultValue value1_value = ResultValue.string("one");
-	static final ResultValue value2_value = ResultValue.string("two");
-	static final ResultValue value3_value = ResultValue.string("three");
+	static final Term value1_value = Term.string("one");
+	static final Term value2_value = Term.string("two");
+	static final Term value3_value = Term.string("three");
 	
 	QuerySolution A = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_multiple", value1);
 	QuerySolution B = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_multiple", value2);
@@ -84,12 +85,12 @@ public class TestResultsToValues {
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
-			.put("pre:optional", ResultValue.array(BunchLib.list(value1_value)))
+			.put("pre:optional", Term.array(BunchLib.list(value1_value)))
 			;
 				
 		Row expected_2 = new Row()
 			.put("@id", itemB_value )
-			.put("pre:optional", ResultValue.array(new ArrayList<ResultValue>()))
+			.put("pre:optional", Term.array(new ArrayList<Term>()))
 			;
 				
 		assertEquals(BunchLib.list(expected_1, expected_2), rows);
@@ -105,12 +106,12 @@ public class TestResultsToValues {
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
-			.put("pre:multiple", ResultValue.array(BunchLib.list(value1_value, value2_value)) )
+			.put("pre:multiple", Term.array(BunchLib.list(value1_value, value2_value)) )
 			;
 				
 		Row expected_2 = new Row()
 			.put("@id", itemB_value )
-			.put("pre:multiple", ResultValue.array(BunchLib.list(value3_value)) )
+			.put("pre:multiple", Term.array(BunchLib.list(value3_value)) )
 			;
 				
 		assertEquals(BunchLib.list(expected_1, expected_2), rows);
@@ -132,7 +133,7 @@ public class TestResultsToValues {
 
 	final List<Aspect> zom_aspects = BunchLib.list( zom );
 	
-	final ResultValue noElements = ResultValue.array(new ArrayList<ResultValue>());
+	final Term noElements = Term.array(new ArrayList<Term>());
 
 	@Test public void testZomZeroSolutions() {
 		List<QuerySolution> x = BunchLib.list(A0);
@@ -194,8 +195,8 @@ public class TestResultsToValues {
 		assertEquals(BunchLib.list(expected_1), rows);
 	}
 
-	private ResultValue array(ResultValue... values) {
-		return ResultValue.array(Arrays.asList(values));
+	private Term array(Term... values) {
+		return Term.array(Arrays.asList(values));
 	}
 	
 

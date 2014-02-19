@@ -19,6 +19,7 @@ import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.conversions.ResultValue;
 import com.epimorphics.data_api.conversions.ResultsToValues;
 import com.epimorphics.data_api.conversions.Row;
+import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -46,8 +47,8 @@ public class TestTranslateQuerySolution {
 		Row js = ResultsToValues.solutionToRow(aspects, qs);
 		
 		Row expected = new Row()
-			.put("pre:a", ResultValue.fromNode(A))
-			.put("pre:b", ResultValue.fromNode(B))
+			.put("pre:a", Term.fromNode(A))
+			.put("pre:b", Term.fromNode(B))
 			;
 		
 		assertEquals( expected, js );		

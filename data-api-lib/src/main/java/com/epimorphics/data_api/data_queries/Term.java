@@ -6,10 +6,18 @@
 
 package com.epimorphics.data_api.data_queries;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import com.epimorphics.json.JSFullWriter;
+import com.epimorphics.json.JSONWritable;
+import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
+import com.hp.hpl.jena.graph.Node;
+
 /**
     A Term encodes a SPARQL term.
 */
-public abstract class Term {
+public abstract class Term implements JSONWritable {
 	
 	public abstract String asSparqlTerm();
 	
@@ -18,7 +26,48 @@ public abstract class Term {
 	@Override public abstract int hashCode();
 	
 	@Override public abstract boolean equals(Object other);
+
+	public void writeMember(String key, JSFullWriter jw) {
+		jw.key(key);
+		writeTo(jw);
+	}
 	
+	public void writeElement(JSFullWriter jw) {
+		writeTo(jw);
+	}
+	
+	public static Term fromNode(Node n) {
+		if (n.isURI()) 
+			return Term.URI(n.getURI());
+		if (n.isLiteral()) {
+			String spelling = n.getLiteralLexicalForm();
+			String type = n.getLiteralDatatypeURI();
+			if (type == null) {
+				String language = n.getLiteralLanguage();
+				if (language.equals("")) {
+					return Term.string(spelling);
+				} else {
+					return Term.languaged(spelling, language);
+				}
+			} else if (type.equals(XSDDatatype.XSDboolean.getURI())) {
+				return Term.bool(spelling.equals("true"));
+			} else if (type.equals(XSDDatatype.XSDinteger.getURI())) {
+				return Term.integer(spelling);
+			} else if (type.equals(XSDDatatype.XSDdecimal.getURI())) {
+				return Term.decimal(spelling);				
+			} else if (type.equals(XSDDatatype.XSDfloat.getURI())) {
+				return Term.Double(spelling);				
+			} else if (type.equals(XSDDatatype.XSDdouble.getURI())) {
+				return Term.Double(spelling);
+			} else if (type.equals(XSDDatatype.XSDint.getURI())) {
+				return Term.integer(spelling);
+			} else {
+				return Term.typed(spelling, type);
+			}
+		}
+		throw new RuntimeException("cannot handle this node: " + n);
+	}
+
 	public static class TermBad extends Term {
 		
 		final Object problematic;
@@ -42,9 +91,21 @@ public abstract class Term {
 		@Override public String asSparqlTerm() {
 			return "BAD(" + problematic + ")";
 		}
+
+		@Override public void writeTo(JSFullWriter out) {
+			throw new UnsupportedOperationException("Cannot write bad Term");
+		}
 	}
 	
-	public static class TermBool extends Term {
+	protected abstract static class Primitive extends Term {
+
+		@Override public void writeTo(JSFullWriter jw) {
+			throw new UnsupportedOperationException(this.getClass().getSimpleName());
+		}
+
+	}
+	
+	public static class TermBool extends Primitive {
 		
 		final boolean value;
 		
@@ -67,9 +128,17 @@ public abstract class Term {
 		@Override public String asSparqlTerm() {
 			return toString();
 		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, value);
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			jw.arrayElement(value);
+		}
 	}
 	
-	public static class TermString extends Term {
+	public static class TermString extends Primitive {
 
 		final String value;
 		
@@ -93,9 +162,17 @@ public abstract class Term {
 			// TODO escaping
 			return "'" + value + "'";
 		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, value);
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			jw.arrayElement(value);
+		}
 	}
 	
-	public static class TermNumber extends Term {
+	public static class TermNumber extends Primitive {
 
 		final Number value;
 		
@@ -117,6 +194,14 @@ public abstract class Term {
 		
 		@Override public String asSparqlTerm() {
 			return toString();
+		}
+
+		@Override public void writeMember(String key, JSFullWriter jw) {
+			jw.pair(key, value);
+		}
+
+		@Override public void writeElement(JSFullWriter jw) {
+			jw.arrayElement(value);
 		}
 	}
 	
@@ -143,6 +228,10 @@ public abstract class Term {
 		@Override public String asSparqlTerm() {
 			return "?" + name;
 		}
+
+		@Override public void writeTo(JSFullWriter out) {
+			throw new UnsupportedOperationException("Cannot write variables to JSON.");
+		}
 	}
 	
 	public static class TermResource extends Term {
@@ -167,6 +256,12 @@ public abstract class Term {
 		
 		@Override public String asSparqlTerm() {
 			return "<" + value + ">";
+		}
+
+		@Override public void writeTo(JSFullWriter jw) {
+			jw.startObject();
+			jw.pair("@id", value);
+			jw.finishObject();			
 		}
 	}
 	
@@ -199,6 +294,13 @@ public abstract class Term {
 		@Override public String asSparqlTerm() {
 			// TODO handle prefixing
 			return "'" + value + "'^^" + "<" + type + ">";
+		}
+
+		@Override public void writeTo(JSFullWriter jw) {
+			jw.startObject();
+			jw.pair("@value", value);
+			jw.pair("@type", type);
+			jw.finishObject();
 		}
 	}
 
@@ -233,6 +335,48 @@ public abstract class Term {
 			// TODO handle prefixing
 			return "'" + value + "'@" + lang;
 		}
+
+		@Override public void writeTo(JSFullWriter jw) {
+			jw.startObject();
+			jw.pair("@value", value);
+			jw.pair("@language", lang);
+			jw.finishObject();
+		}
+	}	
+	
+	public static class TermArray extends Term {
+
+		final List<Term> terms;
+		
+		public TermArray(List<Term> terms) {
+			this.terms = terms;
+		}
+
+		@Override public String toString() {
+			return terms.toString();
+		}
+		
+		@Override public int hashCode() {
+			return terms.hashCode();
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof TermArray && same((TermArray) other);
+		}
+		
+		private boolean same(TermArray other) {
+			return terms.equals(other.terms);
+		}
+
+		@Override public String asSparqlTerm() {
+			throw new UnsupportedOperationException("Cannot represent an array as a SPARQL term.");
+		}
+
+		@Override public void writeTo(JSFullWriter jw) {
+			jw.startArray();
+			for (Term t: terms) t.writeElement(jw);
+			jw.finishArray();
+		}
 	}
 
 	public static Term bool(boolean value) {
@@ -243,8 +387,20 @@ public abstract class Term {
 		return new TermString(value);
 	}
 
+	public static Term integer(String spelling) {
+		return new TermNumber(Integer.parseInt(spelling));
+	}
+
 	public static Term number(Number value) {
 		return new TermNumber(value);
+	}
+
+	public static Term decimal(String spelling) {
+		return new TermNumber(new BigDecimal(spelling));
+	}
+
+	public static Term Double(String spelling) {
+		return new TermNumber(Double.parseDouble(spelling));
 	}
 	
 	public static Term bad(Object problematic) {
@@ -260,31 +416,14 @@ public abstract class Term {
 	}
 	
 	public static Term languaged(String spelling, String lang) {
-//		LiteralLabel ll = LiteralLabelFactory.create(spelling, "", new BaseDatatype(type));
-//		Node n = NodeFactory.createLiteral(ll);
 		return new TermLanguaged(spelling, lang);
 	}
 	
 	public static Term typed(String spelling, String type) {
-//		LiteralLabel ll = LiteralLabelFactory.create(spelling, "", new BaseDatatype(type));
-//		Node n = NodeFactory.createLiteral(ll);
 		return new TermTyped(spelling, type);
 	}
-
-//	public String old_asSparqlTerm() {
-//		Object w = wrapped;
-//		System.err.println( ">> TODO: asSparqlTerm needs proper definition." );
-//		System.err.println( ">> w = (" + w + "), " + w.getClass().getSimpleName() );
-//		if (w instanceof String) 
-//			return "'" + w + "'";
-//		if (w instanceof Node_Literal) {
-//			Node_Literal nl = (Node_Literal) w;
-//			String type = nl.getLiteralDatatypeURI();
-//			return "'" + nl.getLiteralLexicalForm() + "'^^<" + type + ">";
-//		}
-//		if (w instanceof Node_URI) {
-//			return "<" + ((Node_URI) w).getURI() + ">";
-//		}
-//		return w.toString();
-//	}
+	
+	public static Term array(List<Term> terms) {
+		return new TermArray(terms);
+	}
 }

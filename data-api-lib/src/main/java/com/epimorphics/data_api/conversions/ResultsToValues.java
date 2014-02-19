@@ -8,6 +8,7 @@ package com.epimorphics.data_api.conversions;
 import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;
@@ -20,12 +21,12 @@ public class ResultsToValues {
 		Node current = null;
 		Row pending = null;		
 		
-		Map<String, List<ResultValue>> valuess = new HashMap<String, List<ResultValue>>();
+		Map<String, List<Term>> valuess = new HashMap<String, List<Term>>();
 		Map<String, String> shorts = new HashMap<String, String>();
 		
 		for (Aspect a: aspects) 
 			if (a.getIsMultiValued()) {
-				valuess.put(a.asVar(), new ArrayList<ResultValue>() );
+				valuess.put(a.asVar(), new ArrayList<Term>() );
 				shorts.put(a.asVar(), a.getName().getCURIE() );
 			}
 		
@@ -43,15 +44,15 @@ public class ResultsToValues {
 					rc.consume( pending );
 				}
 				pending = solutionToRow(aspects, sol); 
-				pending.put("@id", ResultValue.string(item.getURI() ) );
+				pending.put("@id", Term.string(item.getURI() ) );
 								
 				current = item;
 				
-				for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {
+				for (Map.Entry<String, List<Term>> e: valuess.entrySet()) {
 					e.getValue().clear();
 					String key = e.getKey();
 					RDFNode r = sol.get(key);
-					if (r != null) e.getValue().add( ResultValue.fromNode(r.asNode()));
+					if (r != null) e.getValue().add( Term.fromNode(r.asNode()));
 				}
 			}
 		}
@@ -62,7 +63,7 @@ public class ResultsToValues {
 		}
 	}
 	
-	static final ResultValue none = ResultValue.array(new ArrayList<ResultValue>());
+	static final Term none = Term.array(new ArrayList<Term>());
 	
 	public static Row solutionToRow(Collection<Aspect> aspects, QuerySolution qs) {
 		Row result = new Row();
@@ -74,10 +75,10 @@ public class ResultsToValues {
 				result.put(key, none);				
 			}
 			else {
-				ResultValue v = ResultValue.fromNode(value.asNode());
+				Term v = Term.fromNode(value.asNode());
 				boolean ov = a.getIsOptional();
 				if (ov) {
-					result.put(key, ResultValue.array(BunchLib.list(v)));
+					result.put(key, Term.array(BunchLib.list(v)));
 				} else {
 					result.put(key, v);					
 				}
@@ -88,8 +89,8 @@ public class ResultsToValues {
 
 	// load the appropriate fields of pending from the value sets accumulated
 	// in valuess.
-	private static void loadFromValueLists(Row pending,	Map<String, List<ResultValue>> valuess, Map<String, String> shorts) {
-		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {	
+	private static void loadFromValueLists(Row pending,	Map<String, List<Term>> valuess, Map<String, String> shorts) {
+		for (Map.Entry<String, List<Term>> e: valuess.entrySet()) {	
 			String curi = shorts.get(e.getKey());
 			pending.put(curi, valueArrayNoDuplicatesFrom(e.getValue()));
 		}
@@ -97,18 +98,18 @@ public class ResultsToValues {
 
 	// load the appropriate values sets with the JSON values converted from
 	// result-set format.
-	private static void multipleValueFetch(Map<String, List<ResultValue>> valuess, QuerySolution row) {
-		for (Map.Entry<String, List<ResultValue>> e: valuess.entrySet()) {
+	private static void multipleValueFetch(Map<String, List<Term>> valuess, QuerySolution row) {
+		for (Map.Entry<String, List<Term>> e: valuess.entrySet()) {
 			RDFNode r = row.get(e.getKey());
-			if (r != null) e.getValue().add( ResultValue.fromNode(r.asNode()));
+			if (r != null) e.getValue().add( Term.fromNode(r.asNode()));
 		}
 	}
 
-	private static ResultValue valueArrayNoDuplicatesFrom(Collection<ResultValue> values) {
-		List<ResultValue> result = new ArrayList<ResultValue>();
-		for (ResultValue v: values)
+	private static Term valueArrayNoDuplicatesFrom(Collection<Term> values) {
+		List<Term> result = new ArrayList<Term>();
+		for (Term v: values)
 			if (!result.contains(v)) result.add( v );
-		return ResultValue.array(result);
+		return Term.array(result);
 	}
 
 	public static List<Row> convert(List<Aspect> aspects, List<QuerySolution> rows) {
