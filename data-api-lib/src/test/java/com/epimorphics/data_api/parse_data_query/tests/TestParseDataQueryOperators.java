@@ -22,17 +22,23 @@ import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestParseDataQueryOperators {
 	
+	static final API_Dataset ds = 
+		new API_Dataset(Setup.pseudoRoot(), null)
+			.add(Setup.localAspect)
+			;
+	
 	@Test public void testEmptyQuery() {
 		String incoming = "{}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -51,7 +57,7 @@ public class TestParseDataQueryOperators {
 		String incoming = "{'pre:local': {'@eq': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -91,7 +97,7 @@ public class TestParseDataQueryOperators {
 		String incoming = "{'pre:local': {'@" + op + "': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 //
 		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
 		assertTrue(q.slice().isAll());
@@ -131,7 +137,7 @@ public class TestParseDataQueryOperators {
 			;
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 //
 		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
 		assertTrue(q.slice().isAll());

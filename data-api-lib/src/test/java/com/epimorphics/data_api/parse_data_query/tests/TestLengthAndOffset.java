@@ -14,21 +14,18 @@ import org.junit.Test;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Slice;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestLengthAndOffset {
-
-	static final PrefixMapping pm = PrefixMapping.Factory.create()
-		.setNsPrefix("pre",  "eh:/prefixPart/" )
-		.lock()
-		;
+	
+	static final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null);
 
 	@Test public void testLengthSetting() {
-		String incoming = "{'@length': 17}";
+		String incoming = "{'@limit': 17}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		System.err.println(p.getProblemStrings());
 		
@@ -45,7 +42,7 @@ public class TestLengthAndOffset {
 		String incoming = "{'@offset': 42}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		System.err.println(p.getProblemStrings());
 		
@@ -59,10 +56,10 @@ public class TestLengthAndOffset {
 	}
 	
 	@Test public void testLengthAlsoOffsetSetting() {
-		String incoming = "{'@offset': 42, '@length': 60}";
+		String incoming = "{'@offset': 42, '@limit': 60}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		System.err.println(p.getProblemStrings());
 		

@@ -15,22 +15,20 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Sort;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestParseDataQuerySorting {
 
-	static final PrefixMapping pm = PrefixMapping.Factory.create()
-		.setNsPrefix("pre",  "eh:/prefixPart/" )
-		.lock()
-		;
+	static final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null);
 	
 	@Test public void testEmptyQuery() {
 		String incoming = "{}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -43,7 +41,7 @@ public class TestParseDataQuerySorting {
 		String incoming = "{'@sort': []}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -57,7 +55,8 @@ public class TestParseDataQuerySorting {
 		String incoming = "{'@sort': [{'@up': 'a:b'}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
+		PrefixMapping pm = ds.getPrefixes();
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());
@@ -73,7 +72,8 @@ public class TestParseDataQuerySorting {
 		String incoming = "{'@sort': [{'@up': 'a:b'}, {'@down': 'x:y'}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery q = DataQueryParser.Do(p, pm, jo);
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
+		PrefixMapping pm = ds.getPrefixes();
 	//
 		assertEquals(0, p.size());
 		assertTrue(q.slice().isAll());

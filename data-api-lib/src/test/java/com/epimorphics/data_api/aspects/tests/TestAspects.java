@@ -7,16 +7,12 @@ package com.epimorphics.data_api.aspects.tests;
 
 import static org.junit.Assert.*;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -104,11 +100,6 @@ public class TestAspects {
 		assertEquals(false, a.getIsMultiValued());
 		assertSame(a, a.setIsMultiValued(true));
 		assertEquals(true, a.getIsMultiValued());
-	}
-	
-	@Test public void testAspectRange() {
-		Aspect a = new MockAspect("eh:/mock/aspect/A");
-		System.err.println( ">> testAspectRange TBD" );
 	}
 	
 	public static class MockAspect extends Aspect {

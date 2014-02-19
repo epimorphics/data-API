@@ -46,13 +46,13 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	
 	public API_Dataset(Resource config, DSAPIManager manager) {
 	    super(config);
-	    configfureHierarchy();
+	    configureHierarchy();
 	    configureBaseQuery();
 	    configureName();
 	    this.manager = manager;
 	}
 	
-	private void configfureHierarchy() {
+	private void configureHierarchy() {
 	    if (root.hasProperty(Dsapi.codeList)) {
 	        hierarchy = new Hierarchy( getResourceValue(Dsapi.codeList) );
 	    }
@@ -88,8 +88,13 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 		return aspects;
 	}
 
-	public void add(Aspect a) {
+	/**
+	    Add an aspect 'a' to this dataset. Return this
+	    dataset for chaining.
+	*/
+	public API_Dataset add(Aspect a) {
 		aspects.add(a);
+		return this;
 	}
 	
 	public boolean isHierarchy() {

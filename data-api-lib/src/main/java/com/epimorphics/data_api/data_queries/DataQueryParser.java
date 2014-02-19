@@ -15,6 +15,7 @@ import java.util.Set;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
@@ -30,16 +31,16 @@ public class DataQueryParser {
 	static final String opNames = "eq ne le lt ge gt contains matches search below oneof childof in";
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
-	
-    public static DataQuery Do(Problems p, PrefixMapping pm, JsonValue jv) {
-        return Do(p, pm, null, jv);
-    }
     
     public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {
         return Do(p, dataset.getPrefixes(), dataset, jv);
     }
     
 	public static DataQuery Do(Problems p, PrefixMapping pm, API_Dataset dataset, JsonValue jv) {
+		
+		Set<String> aspectURIs = new HashSet<String>();
+		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
+		
 		if (jv.isObject()) {
 			Integer length = null, offset = null;
 			JsonObject jo = jv.getAsObject();
@@ -52,7 +53,7 @@ public class DataQueryParser {
 				if (key.startsWith("@")) {
 					if (key.equals("@sort")) {
 						extractSorts(pm, p, jo, sortby, key);
-					} else if (key.equals("@length")) {
+					} else if (key.equals("@limit")) {
 						length = extractNumber(p, key, value);
 					} else if (key.equals("@offset")) {
 						offset = extractNumber(p, key, value);
@@ -67,25 +68,29 @@ public class DataQueryParser {
 					}
 				} else {
 					Shortname sn = new Shortname(pm, key);
-					JsonValue range = jo.get(key);			
-					if (range.isObject()) {
-						JsonObject rob = range.getAsObject();
-						for (String opKey: rob.keys()) {
-							if (opKey.startsWith("@")) {
-								String op = opKey.substring(1);
-								List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(opKey));
-								if (isKnownOp(op)) {
-									filters.add( new Filter(sn, new Range(op, v) ) );
-								} else {
-									p.add("unknown operator '" + op + "' in data query.");
-								}
-							} else {
-								p.add("illegal member " + opKey);
-							}
-						}
-						
+					if (!aspectURIs.contains(sn.URI)) {
+						p.add("Unknown shortname '" + key + "' in " + jv );
 					} else {
-						throw new RuntimeException("Error handling to be done here.");
+						JsonValue range = jo.get(key);			
+						if (range.isObject()) {
+							JsonObject rob = range.getAsObject();
+							for (String opKey: rob.keys()) {
+								if (opKey.startsWith("@")) {
+									String op = opKey.substring(1);
+									List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(opKey));
+									if (isKnownOp(op)) {
+										filters.add( new Filter(sn, new Range(op, v) ) );
+									} else {
+										p.add("unknown operator '" + op + "' in data query.");
+									}
+								} else {
+									p.add("illegal member " + opKey);
+								}
+							}
+							
+						} else {
+							p.add("Value of shortname '" + key + "' should be Object, given " + range);
+						}
 					}
 				}
 			}

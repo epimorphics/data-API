@@ -341,7 +341,7 @@ public class DSAPIManager extends ComponentBase {
             String sq = null;
 
             if (p.isOK())
-                q = DataQueryParser.Do(p, api.getPrefixes(), query);
+                q = DataQueryParser.Do(p, api, query);
 
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
