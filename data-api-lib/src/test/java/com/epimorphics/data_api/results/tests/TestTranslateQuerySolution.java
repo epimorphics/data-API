@@ -12,12 +12,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
-import com.epimorphics.data_api.conversions.Convert;
+import com.epimorphics.data_api.conversions.ResultValue;
+import com.epimorphics.data_api.conversions.ResultsToValues;
+import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.NodeFactory;
@@ -42,8 +43,13 @@ public class TestTranslateQuerySolution {
 		
 //		System.err.println( ">> aspects: " + aspects );
 		
-		JsonObject js = Convert.toJson(aspects, qs);
-		JsonObject expected = Convert.objectWith("pre:a", Convert.toJson(A), "pre:b", Convert.toJson(B));
+		Row js = ResultsToValues.solutionToRow(aspects, qs);
+		
+		Row expected = new Row()
+			.put("pre:a", ResultValue.fromNode(A))
+			.put("pre:b", ResultValue.fromNode(B))
+			;
+		
 		assertEquals( expected, js );		
 	}
 	

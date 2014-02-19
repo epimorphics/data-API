@@ -12,7 +12,6 @@ import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
-import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
 import com.epimorphics.data_api.reporting.Problems;
 
 // TODO Error handling not written yet.
@@ -53,11 +52,5 @@ public class JSONLib {
 		for (JsonValue v: elements) result.add(v);
 		return result;
 	}
-
-//	public static JSONConsumer consumeToArray(final JsonArray ja) {
-//		return new JSONConsumer() {
-//			@Override public void consume(JsonValue jo) { ja.add(jo); }
-//		};
-//	}
 
 }

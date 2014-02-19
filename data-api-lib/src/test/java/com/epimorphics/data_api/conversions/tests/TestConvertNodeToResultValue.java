@@ -5,18 +5,10 @@
 */
 package com.epimorphics.data_api.conversions.tests;
 
-import static org.junit.Assert.assertEquals;
-
 import java.math.BigDecimal;
-
-import org.apache.jena.atlas.json.JsonBoolean;
-import org.apache.jena.atlas.json.JsonNumber;
-import org.apache.jena.atlas.json.JsonObject;
-import org.apache.jena.atlas.json.JsonString;
-import org.apache.jena.atlas.json.JsonValue;
 import org.junit.Test;
 
-import com.epimorphics.data_api.conversions.Convert;
+import com.epimorphics.data_api.conversions.ResultValue;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;
@@ -24,24 +16,23 @@ import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.graph.impl.LiteralLabel;
 import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
 
-public class TestConversionsToJson {
+import static org.junit.Assert.assertEquals;
+
+public class TestConvertNodeToResultValue {
 
 	@Test public void testTranslateResource() {
 		Node resource = NodeFactory.createURI("eh:/example");
-		JsonObject expected = Convert.objectWith("@id", "eh:/example");
-		assertEquals(expected, Convert.toJson(resource));
+		assertEquals(ResultValue.URI("eh:/example"), ResultValue.fromNode(resource));
 	}
 	
 	@Test public void testTranslatePlainString() {
 		Node string = NodeFactory.createLiteral("spelling", "", null);
-		JsonValue expected = new JsonString("spelling");
-		assertEquals(expected, Convert.toJson(string));
+		assertEquals(ResultValue.string("spelling"), ResultValue.fromNode(string));
 	}
 	
 	@Test public void testTranslateLanguagedString() {
 		Node languaged = NodeFactory.createLiteral("spelling", "en-uk", null);
-		JsonObject expected = Convert.objectWith("@value", "spelling", "@language", "en-uk");
-		assertEquals(expected, Convert.toJson(languaged));
+		assertEquals(ResultValue.languaged("spelling", "en-uk"), ResultValue.fromNode(languaged));
 	}
 	
 	@Test public void testTranslateBooleanLiteral() {
@@ -52,26 +43,25 @@ public class TestConversionsToJson {
 	private void testTranslateBooleanLiteral(boolean value) {
 		LiteralLabel ll = LiteralLabelFactory.create(value);
 		Node resource = NodeFactory.createLiteral(ll);
-		JsonValue expected = new JsonBoolean(value);
-		assertEquals(expected, Convert.toJson(resource));
+		assertEquals(ResultValue.bool(value ? "true" : "false"), ResultValue.fromNode(resource));
 	}
 	
 	@Test public void testTranslateInteger() {
 		LiteralLabel ll = LiteralLabelFactory.create(17);
 		Node integer = NodeFactory.createLiteral(ll);
-		assertEquals(JsonNumber.valueInteger("17"), Convert.toJson(integer));		
+		assertEquals(ResultValue.integer("17"), ResultValue.fromNode(integer));		
 	}
 	
 	@Test public void testTranslateDecimal() {
 		LiteralLabel ll = LiteralLabelFactory.create(new BigDecimal("1.7"));
 		Node integer = NodeFactory.createLiteral(ll);
-		assertEquals(JsonNumber.valueInteger("1.7"), Convert.toJson(integer));		
+		assertEquals(ResultValue.decimal("1.7"), ResultValue.fromNode(integer));		
 	}
 	
 	@Test public void testTranslateDouble() {
 		LiteralLabel ll = LiteralLabelFactory.create(17.0);
 		Node integer = NodeFactory.createLiteral(ll);
-		assertEquals(JsonNumber.valueInteger("17.0"), Convert.toJson(integer));		
+		assertEquals(ResultValue.Double("17.0"), ResultValue.fromNode(integer));		
 	}
 	
 	@Test public void testTypedLiteral() {
@@ -79,6 +69,6 @@ public class TestConversionsToJson {
 		RDFDatatype dt = new BaseDatatype(URI);
 		LiteralLabel ll = LiteralLabelFactory.create("lex", "", dt);
 		Node x = NodeFactory.createLiteral(ll);
-		assertEquals(Convert.objectWith("@value", "lex", "@type", URI), Convert.toJson(x));		
+		assertEquals(ResultValue.typed("lex", URI), ResultValue.fromNode(x));		
 	}
 }

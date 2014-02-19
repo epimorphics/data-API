@@ -33,18 +33,13 @@ import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.conversions.ResultsToJson;
-import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
-import com.epimorphics.data_api.conversions.ResultsToJson.Row;
-import com.epimorphics.data_api.conversions.ResultsToJson.RowConsumer;
-import com.epimorphics.data_api.conversions.Value;
+import com.epimorphics.data_api.conversions.ResultsToValues;
+import com.epimorphics.data_api.conversions.Row;
+import com.epimorphics.data_api.conversions.RowConsumer;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.endpoints.support.StreamFromResults;
-import com.epimorphics.data_api.endpoints.support.StreamFromResults.Bool;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
@@ -284,6 +279,10 @@ public class DSAPIManager extends ComponentBase {
             throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + BunchLib.join(problemStrings));
         }
     }
+
+    public static final class MutableBool {
+    	public boolean value;
+    }
     
     public final class RowWriter implements JSONWritable {
     	
@@ -296,7 +295,7 @@ public class DSAPIManager extends ComponentBase {
     	}
 
     	@Override public void writeTo(final JSFullWriter jw) {
-    		final Bool comma = new Bool();
+    		final MutableBool comma = new MutableBool();
     		jw.startArray();
     		
     		RowConsumer stream = new RowConsumer() {
@@ -307,17 +306,10 @@ public class DSAPIManager extends ComponentBase {
     				comma.value = true;
     			}
     		};
-    		ResultsToJson.convert(aspects, stream, rs);
+    		ResultsToValues.convert(aspects, stream, rs);
     		jw.finishArray();
     	}
     }
-    
-    static final StreamingOutput StreamNothing = new StreamingOutput() {
-		
-		@Override public void write(OutputStream output) throws IOException, WebApplicationException {
-			// No bytes at all
-		}
-	};
     
     /**
      * <pre>base/dataset/{dataset}/explain</pre>
@@ -366,7 +358,7 @@ public class DSAPIManager extends ComponentBase {
 					@Override public void consume(Row jv) {						
 					}
 				};
-                ResultsToJson.convert(api.getAspects(), discard, rs);
+                ResultsToValues.convert(api.getAspects(), discard, rs);
                 long finish = System.currentTimeMillis();
                 comments.put("time", finish-start);
             }

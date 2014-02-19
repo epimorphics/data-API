@@ -6,10 +6,6 @@
 
 package com.epimorphics.data_api.endpoints;
 
-import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
-
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,17 +20,10 @@ import com.epimorphics.appbase.core.AppConfig;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
-import com.epimorphics.data_api.conversions.ResultsToJson;
-import com.epimorphics.data_api.conversions.ResultsToJson.JSONConsumer;
-import com.epimorphics.data_api.data_queries.DataQuery;
-import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.data_queries.Restriction;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.epimorphics.data_api.libs.JSONLib;
 import com.epimorphics.data_api.reporting.Problems;
 
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.util.FileManager;
