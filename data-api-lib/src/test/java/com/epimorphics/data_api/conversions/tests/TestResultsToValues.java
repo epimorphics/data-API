@@ -36,8 +36,8 @@ public class TestResultsToValues {
 	static final Node value2 = m.createLiteral( "two" ).asNode();
 	static final Node value3 = m.createLiteral( "three" ).asNode();
 	
-	static final ResultValue itemA_value = ResultValue.URI(itemA.getURI());
-	static final ResultValue itemB_value = ResultValue.URI(itemB.getURI());
+	static final ResultValue itemA_value = ResultValue.string(itemA.getURI());
+	static final ResultValue itemB_value = ResultValue.string(itemB.getURI());
 	
 	static final ResultValue value1_value = ResultValue.string("one");
 	static final ResultValue value2_value = ResultValue.string("two");
@@ -57,15 +57,15 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:multiple", value1_value)
 			;
 				
 		Row expected_2 = new Row()
-			.put("item", itemB_value )
+			.put("@id", itemB_value )
 			.put("pre:multiple", value3_value)
 			;
-				
+		
 		assertEquals(BunchLib.list(expected_1, expected_2), rows);
 	}
 	
@@ -83,12 +83,12 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:optional", ResultValue.array(BunchLib.list(value1_value)))
 			;
 				
 		Row expected_2 = new Row()
-			.put("item", itemB_value )
+			.put("@id", itemB_value )
 			.put("pre:optional", ResultValue.array(new ArrayList<ResultValue>()))
 			;
 				
@@ -104,12 +104,12 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:multiple", ResultValue.array(BunchLib.list(value1_value, value2_value)) )
 			;
 				
 		Row expected_2 = new Row()
-			.put("item", itemB_value )
+			.put("@id", itemB_value )
 			.put("pre:multiple", ResultValue.array(BunchLib.list(value3_value)) )
 			;
 				
@@ -139,7 +139,7 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:zom", noElements )
 			;
 				
@@ -151,7 +151,7 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:zom", array(value1_value) )
 			;
 				
@@ -163,7 +163,7 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:zom", array(value1_value, value2_value) )
 			;
 				
@@ -175,7 +175,7 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:zom", array(value1_value, value2_value) )
 			;
 				
@@ -187,7 +187,7 @@ public class TestResultsToValues {
 		List<Row> rows = ResultsToValues.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
-			.put("item", itemA_value )				
+			.put("@id", itemA_value )				
 			.put("pre:zom", array(value1_value, value2_value) )
 			;
 				

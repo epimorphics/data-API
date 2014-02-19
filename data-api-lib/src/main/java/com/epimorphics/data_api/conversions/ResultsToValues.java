@@ -43,7 +43,7 @@ public class ResultsToValues {
 					rc.consume( pending );
 				}
 				pending = solutionToRow(aspects, sol); 
-				pending.put("item", ResultValue.fromNode(item) );
+				pending.put("@id", ResultValue.string(item.getURI() ) );
 								
 				current = item;
 				
