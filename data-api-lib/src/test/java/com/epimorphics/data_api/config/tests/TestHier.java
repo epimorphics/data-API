@@ -11,6 +11,7 @@ package com.epimorphics.data_api.config.tests;
 
 import static com.epimorphics.data_api.config.tests.TestConfig.asJson;
 import static com.epimorphics.data_api.config.tests.TestConfig.aspectLabeled;
+import static com.epimorphics.data_api.config.tests.TestUtil.query;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,14 +27,8 @@ import org.junit.Test;
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
-import com.epimorphics.data_api.data_queries.DataQuery;
-import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.reporting.Problems;
-import com.epimorphics.rdfutil.QueryUtil;
-import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Cube;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
@@ -138,21 +132,4 @@ public class TestHier {
         assertTrue(results.contains( ResourceFactory.createResource("http://www.epimorphics.com/test/dsapi/sprint3-data#obs3")));
     }
 
-    private List<Resource> query(API_Dataset dataset, String json) {
-        JsonObject query = JSON.parse(json);
-        Problems p = new Problems();
-        DataQuery q = DataQueryParser.Do(p, dataset, query);
-        String sq = null;
-        if (p.isOK()) {
-            sq = q.toSparql(p, dataset);
-//            System.out.println(sq);
-        }
-        if (p.isOK()) {
-            ResultSet results = man.getSource().select(sq);
-            return QueryUtil.resultsFor(results, "item");
-        } else {
-            throw new EpiException("Failed to parse query: " + p.getProblemStrings());
-        }
-        
-    }
 }
