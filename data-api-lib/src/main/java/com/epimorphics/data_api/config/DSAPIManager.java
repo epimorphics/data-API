@@ -350,6 +350,8 @@ public class DSAPIManager extends ComponentBase {
             
             if (p.isOK()) comments.put("sparql", QueryFactory.create(sq).toString());
 
+            /*
+            // This needs to be configurable but suppress for now
             if (p.isOK()) {
                 long start = System.currentTimeMillis();
                 ResultSet rs = source.select(sq);
@@ -362,6 +364,7 @@ public class DSAPIManager extends ComponentBase {
                 long finish = System.currentTimeMillis();
                 comments.put("time", finish-start);
             }
+            */
 
         } catch (Exception e) {
             System.err.println("BROKEN: " + e);

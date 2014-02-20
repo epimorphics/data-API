@@ -124,9 +124,14 @@ public class DataQuery {
 	//	
 		sb.append("\nWHERE {");
 		String dot = "";
+	    //
+        if (globalSearchPattern != null) {
+            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
+            dot = " . ";
+        }
 	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-		    sb.append( baseQuery );
+		    sb.append(dot).append( baseQuery );
 		    if (!baseQuery.trim().endsWith(".")) {
 		        dot = ".\n";
 		    }
@@ -135,11 +140,6 @@ public class DataQuery {
             sb.append(dot);
             dot = "\n";
             sb.append(guard.queryFragment(api));
-        }
-    //
-        if (globalSearchPattern != null) {
-			sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
-			dot = " . ";
         }
 	//
 		for (Aspect x: ordered) {
