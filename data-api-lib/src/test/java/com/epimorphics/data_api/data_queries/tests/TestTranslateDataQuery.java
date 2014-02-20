@@ -248,6 +248,34 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). ?item pre:Y ?pre_Y}", sq );
+	}			
+	
+	@Test public void testGlobalSearch() {		
+		Problems p = new Problems();
+		DataQuery q = new DataQuery
+			( new ArrayList<Filter>()
+			, new ArrayList<Sort>()
+			, null // new ArrayList<Guard>()
+			, Slice.all()
+			, "look for me"
+			);
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, null, pm);
+		assertNoProblems(p);
+		
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X ?pre_Y"
+			, "WHERE {"
+			, "?item <http://jena.apache.org/text#query> 'look for me'."
+			, "?item pre:X ?pre_X."
+			, "?item pre:Y ?pre_Y"
+			, "}"
+			);
+		
+		assertSameSelect( expected, sq );
 	}		
 	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
@@ -371,8 +399,6 @@ public class TestTranslateDataQuery {
 		assertNoProblems(p);
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { ?item pre:has pre:value . ?item pre:Y ?pre_Y }", sq );
 		}
-	
-	
 	
 	private void assertNoProblems(Problems p) {
 		if (p.size() > 0) fail("translation failed: " + p.getProblemStrings());

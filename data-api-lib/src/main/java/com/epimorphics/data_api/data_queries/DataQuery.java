@@ -36,8 +36,12 @@ public class DataQuery {
 	final Slice slice;
 	final List<Guard> guards; 
 	final String globalSearchPattern;
+	
+	public DataQuery(List<Filter> filters) {
+		this(filters, new ArrayList<Sort>() );
+	}
 
-    public DataQuery(List<Filter> filters, List<Sort> sortby ) {
+	public DataQuery(List<Filter> filters, List<Sort> sortby ) {
         this(filters, sortby, null, Slice.all());
     }
 
@@ -59,10 +63,6 @@ public class DataQuery {
 		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
 		this.globalSearchPattern = globalSearchPattern;
-	}
-	
-	public DataQuery(List<Filter> filters) {
-		this(filters, new ArrayList<Sort>() );
 	}
 	
 	public List<Sort> sorts() {
@@ -136,6 +136,11 @@ public class DataQuery {
             dot = "\n";
             sb.append(guard.queryFragment(api));
         }
+    //
+        if (globalSearchPattern != null) {
+			sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
+			dot = " . ";
+        }
 	//
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
@@ -190,6 +195,14 @@ public class DataQuery {
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
 	//
 		return PrefixUtils.expandQuery(sb.toString(), pm);
+	}
+
+	private String quote(String s) {
+		return 
+			"\"" 
+			+ s 
+			+ "\""
+			;
 	}
 
 	private String opForFilter(Filter f) {
