@@ -46,6 +46,16 @@ public class TestParseDataQueryErrors {
 		assertContains( "pre:property", messages );
 		assertContains( "should be Object", messages );
 	}
+	
+	@Test public void testSearchStringValue() {
+		String incoming = "{'@search': 17}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);		
+		assertEquals(1, p.size());
+		assertContains("must be string", p.getProblemStrings());
+		assertContains("@search", p.getProblemStrings());
+	}
 
 	private void assertContains(String expected, String s) {
 		if (!s.toLowerCase().contains(expected.toLowerCase()))

@@ -44,12 +44,15 @@ public class DataQueryParser {
 			List<Filter> filters = new ArrayList<Filter>();
 			List<Sort> sortby = new ArrayList<Sort>();
 			List<Guard> guards = new ArrayList<Guard>();
+			String globalSearchPattern = null;
 			
 			for (String key: jv.getAsObject().keys()) {
 				JsonValue value = jv.getAsObject().get(key);
 				if (key.startsWith("@")) {
 					if (key.equals("@sort")) {
 						extractSorts(pm, p, jo, sortby, key);
+					} else if (key.equals("@search")) {
+						globalSearchPattern = extractString(p, key, value);
 					} else if (key.equals("@limit")) {
 						length = extractNumber(p, key, value);
 					} else if (key.equals("@offset")) {
@@ -91,7 +94,7 @@ public class DataQueryParser {
 					}
 				}
 			}
-			return new DataQuery(filters, sortby, guards, Slice.create(length, offset));
+			return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
 		} else {
 			throw new RuntimeException("Error handling to be done here." );
 		}
@@ -103,6 +106,12 @@ public class DataQueryParser {
 			if (n >= 0) return new Integer(n);
 		} 
 		p.add("value of " + key + " must be non-negative number: " + value);
+		return null;
+	}
+
+	private static String extractString(Problems p, String key, JsonValue value) {
+		if (value.isString()) return value.getAsString().value();
+		p.add("value of " + key + " must be string, given: " + value);
 		return null;
 	}
 

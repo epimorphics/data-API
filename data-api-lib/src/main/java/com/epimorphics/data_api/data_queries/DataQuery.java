@@ -35,6 +35,7 @@ public class DataQuery {
 	final List<Sort> sortby;
 	final Slice slice;
 	final List<Guard> guards; 
+	final String globalSearchPattern;
 
     public DataQuery(List<Filter> filters, List<Sort> sortby ) {
         this(filters, sortby, null, Slice.all());
@@ -46,13 +47,18 @@ public class DataQuery {
     
     public DataQuery(List<Filter> filters, List<Sort> sortby, Slice slice) {
         this(filters, sortby, null, slice);
-    }
-        
+    }    
+    
     public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice) {
+    	this(filters, sortby, guards, slice, null);
+    }
+
+    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice, String globalSearchPattern) {
 		this.filters = filters;
 		this.sortby = sortby;
 		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
+		this.globalSearchPattern = globalSearchPattern;
 	}
 	
 	public DataQuery(List<Filter> filters) {
@@ -73,6 +79,10 @@ public class DataQuery {
 	
 	public Slice slice() {
 		return slice;
+	}
+
+	public String getGlobalSearchPattern() {
+		return globalSearchPattern;
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
