@@ -32,12 +32,9 @@ public class DataQueryParser {
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
     
-    public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {
-        return Do(p, dataset.getPrefixes(), dataset, jv);
-    }
-    
-	public static DataQuery Do(Problems p, PrefixMapping pm, API_Dataset dataset, JsonValue jv) {
+	public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {
 		
+		PrefixMapping pm = dataset.getPrefixes();
 		Set<String> aspectURIs = new HashSet<String>();
 		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
 		
