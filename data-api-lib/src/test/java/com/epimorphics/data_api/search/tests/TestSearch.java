@@ -47,8 +47,8 @@ public class TestSearch {
         assertEquals(4, results.size());
         
         // Global search for dataset items which are labeled by some indexed property
-//        results =  query(dataset, "{'@search' : 'Thornbury'}");
-//        assertEquals(4, results.size());
+        results =  query(dataset, "{'@search' : 'Thornbury'}");
+        assertEquals(4, results.size());
         
         // Search on aspect whose values are strings, where aspect property has been included in the text index
 //        results =  query(dataset, "{'eg:label' : {'@search' : 'Thornbury'}}");
