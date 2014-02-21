@@ -20,6 +20,7 @@ import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 public class DataQuery {
 	
@@ -197,12 +198,11 @@ public class DataQuery {
 		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 
+	/**
+	    Quote a string to turn in into a SPARQL term.
+	*/
 	private String quote(String s) {
-		return 
-			"\"" 
-			+ s 
-			+ "\""
-			;
+		return "\"" + FmtUtils.stringEsc(s, true) + "\"";
 	}
 
 	private String opForFilter(Filter f) {
