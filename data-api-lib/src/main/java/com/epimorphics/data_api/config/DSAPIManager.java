@@ -17,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -33,9 +32,7 @@ import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.conversions.ResultsToRows;
-import com.epimorphics.data_api.conversions.Row;
-import com.epimorphics.data_api.conversions.RowConsumer;
+import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -45,7 +42,6 @@ import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -280,37 +276,6 @@ public class DSAPIManager extends ComponentBase {
         }
     }
 
-    public static final class MutableBool {
-    	public boolean value;
-    }
-    
-    public final class RowWriter implements JSONWritable {
-    	
-    	private final Set<Aspect> aspects;
-    	private final ResultSet rs;
-
-    	public RowWriter(Set<Aspect> aspects, ResultSet rs) {
-    		this.aspects = aspects;
-    		this.rs = rs;
-    	}
-
-    	@Override public void writeTo(final JSFullWriter jw) {
-    		final MutableBool comma = new MutableBool();
-    		jw.startArray();
-    		
-    		RowConsumer stream = new RowConsumer() {
-    			
-    			@Override public void consume(Row jv) {
-    				if (comma.value) jw.arraySep(); 
-    				jv.writeTo(jw);
-    				comma.value = true;
-    			}
-    		};
-    		ResultsToRows.convert(aspects, stream, rs);
-    		jw.finishArray();
-    	}
-    }
-    
     /**
      * <pre>base/dataset/{dataset}/explain</pre>
      * 
@@ -345,10 +310,12 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
-                if (checkingSPARQL) checkLegalSPARQL(p, sq);
+                boolean legal = isLegalSPARQL(p, sq);
+				comments.put(
+                	"sparql" 
+                	, (legal ? QueryFactory.create(sq).toString() : "Bad SPARQL:\n" + sq + "\n" )
+                	);
             }
-            
-            if (p.isOK()) comments.put("sparql", QueryFactory.create(sq).toString());
 
             /*
             // This needs to be configurable but suppress for now
@@ -373,7 +340,6 @@ public class DSAPIManager extends ComponentBase {
         }
         
         comments.put("status", p.isOK());
-
         return Response.ok(comments.toString()).build();
     }
 
@@ -388,5 +354,15 @@ public class DSAPIManager extends ComponentBase {
             }
         }
     }
+    
+    private boolean isLegalSPARQL(Problems p, String sq) {
+        try { 
+        	QueryFactory.create(sq); 
+        	return true; 
+        } catch (Exception e) { 
+            p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
+            return false;
+        }
+}
 
 }
