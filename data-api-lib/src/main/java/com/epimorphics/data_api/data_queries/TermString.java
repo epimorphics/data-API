@@ -7,6 +7,7 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.data_queries.Term.Primitive;
 import com.epimorphics.json.JSFullWriter;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TermString extends Primitive {
 
@@ -28,9 +29,8 @@ public class TermString extends Primitive {
 		return other instanceof TermString && value.equals(((TermString) other).value);
 	}
 	
-	@Override public String asSparqlTerm() {
-		// TODO escaping
-		return "'" + value + "'";
+	@Override public String asSparqlTerm(PrefixMapping pm) {
+		return quote(value);
 	}
 
 	@Override public void writeMember(String key, JSFullWriter jw) {

@@ -21,10 +21,4 @@ public class Restriction {
 		this.predicate = Term.URI(pm.expandPrefix(predicate));
 		this.object = Term.URI(pm.expandPrefix(object));
 	}
-	
-	public String asSparqlTriple(Term subject) {
-		return subject.asSparqlTerm() + " " + predicate.asSparqlTerm() + " " + object.asSparqlTerm();
-	}
-
-
 }

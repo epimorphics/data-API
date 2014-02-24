@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.json.JSFullWriter;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TermLanguaged extends Term {
 
@@ -33,9 +34,8 @@ public class TermLanguaged extends Term {
 		return value.equals(other.value) && lang.equals(other.lang);
 	}
 
-	@Override public String asSparqlTerm() {
-		// TODO handle prefixing
-		return "'" + value + "'@" + lang;
+	@Override public String asSparqlTerm(PrefixMapping pm) {
+		return quote(value) + "@" + lang;
 	}
 
 	@Override public void writeTo(JSFullWriter jw) {

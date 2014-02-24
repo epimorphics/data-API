@@ -13,6 +13,8 @@ import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 /**
     A Term encodes a Node or an array of Terms.
@@ -21,7 +23,7 @@ import com.hp.hpl.jena.graph.Node;
 */
 public abstract class Term implements JSONWritable {
 	
-	public abstract String asSparqlTerm();
+	public abstract String asSparqlTerm(PrefixMapping pm);
 	
 	@Override public abstract String toString();
 	
@@ -75,7 +77,10 @@ public abstract class Term implements JSONWritable {
 		@Override public void writeTo(JSFullWriter jw) {
 			throw new UnsupportedOperationException(this.getClass().getSimpleName());
 		}
-
+	}
+	
+	public static String quote(String content) {
+		return "\"" + FmtUtils.stringEsc(content, true) + "\"";
 	}
 	
 	public static Term bool(boolean value) {

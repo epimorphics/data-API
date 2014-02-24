@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries;
 import java.util.List;
 
 import com.epimorphics.json.JSFullWriter;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TermArray extends Term {
 
@@ -33,7 +34,7 @@ public class TermArray extends Term {
 		return terms.equals(other.terms);
 	}
 
-	@Override public String asSparqlTerm() {
+	@Override public String asSparqlTerm(PrefixMapping pm) {
 		throw new UnsupportedOperationException("Cannot represent an array as a SPARQL term.");
 	}
 

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,14 +158,14 @@ public class DataQuery {
 			List<Filter> theseFilters = sf.get(fVar);
 			if (theseFilters != null) {
 				for (Filter f: theseFilters) {
-					String value = f.range.operands.get(0).asSparqlTerm();
+					String value = f.range.operands.get(0).asSparqlTerm(pm);
 					String rangeOp = f.getRangeOp();	
 					if (rangeOp.equals("oneof")) {
 						String orOp = "";
 						List<Term> operands = f.range.operands;
 						sb.append(" FILTER(" );
 						for (Term v: operands) {
-							sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm());
+							sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
 							orOp = " || ";
 						}
 						sb.append(")");

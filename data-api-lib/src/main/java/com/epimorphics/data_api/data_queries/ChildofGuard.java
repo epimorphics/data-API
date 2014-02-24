@@ -13,31 +13,28 @@ import com.epimorphics.data_api.config.Hierarchy;
 import com.epimorphics.data_api.datasets.API_Dataset;
 
 public class ChildofGuard implements Guard {
-    String queryFragment;
-    boolean needsDistinct;
+	    
+    final Term parent;
+    final Hierarchy h;
     
     public ChildofGuard(Term parent, Hierarchy h) {
-        if (parent == null){
-            queryFragment = h.getTopRootsQuery("item");
-        } else {
-            queryFragment = parent.asSparqlTerm() + " " + h.getChildQueryFragment() + " ?item .";
-        }
-        needsDistinct = h.getNeedsDistinct();
+    	this.parent = parent;
+    	this.h = h;
     }
 
-    @Override
-    public boolean supplantsBaseQuery() {
+    @Override public boolean supplantsBaseQuery() {
         return true;
     }
 
-    @Override
-    public String queryFragment(API_Dataset dataset) {
-        return queryFragment;
-    }
+    @Override public String queryFragment(API_Dataset dataset) {
+        if (parent == null){
+            return h.getTopRootsQuery("item");
+        } else {
+            return parent.asSparqlTerm(dataset.getPrefixes()) + " " + h.getChildQueryFragment() + " ?item .";
+        }}
 
-    @Override
-    public boolean needsDistinct() {
-        return needsDistinct;
+    @Override public boolean needsDistinct() {
+        return h.getNeedsDistinct();
     }
 
 }

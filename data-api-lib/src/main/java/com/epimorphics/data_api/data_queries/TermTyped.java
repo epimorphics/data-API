@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.json.JSFullWriter;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TermTyped extends Term {
 
@@ -33,9 +34,19 @@ public class TermTyped extends Term {
 		return value.equals(other.value) && type.equals(other.type);
 	}
 
-	@Override public String asSparqlTerm() {
-		// TODO handle prefixing
-		return "'" + value + "'^^" + "<" + type + ">";
+	/**
+	    asSparqlTerm returns a SPARQL literal term with the lexical
+	    form taken from <code>value</code> and the type from <code>type</code>.
+	    The type is represented as a URI reference unless it can be treated
+	    as a prefix form, in which case that's what's used.
+	*/
+	@Override public String asSparqlTerm(PrefixMapping pm) {
+		String expanded = pm.expandPrefix(type);
+		String contracted = pm.qnameFor(expanded);
+		return 
+			quote(value) + "^^" 
+			+ (contracted.equals(expanded) ? "<" + expanded + ">" : contracted)
+			;
 	}
 
 	@Override public void writeTo(JSFullWriter jw) {

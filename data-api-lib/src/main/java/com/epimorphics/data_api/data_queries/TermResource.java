@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.json.JSFullWriter;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TermResource extends Term {
 
@@ -27,7 +28,7 @@ public class TermResource extends Term {
 		return other instanceof TermResource && value.equals(((TermResource) other).value);
 	}
 	
-	@Override public String asSparqlTerm() {
+	@Override public String asSparqlTerm(PrefixMapping pm) {
 		return "<" + value + ">";
 	}
 

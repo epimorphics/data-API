@@ -7,6 +7,7 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.data_queries.Term.Primitive;
 import com.epimorphics.json.JSFullWriter;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TermBool extends Primitive {
 	
@@ -28,7 +29,7 @@ public class TermBool extends Primitive {
 		return other instanceof TermBool && value == ((TermBool) other).value;
 	}
 	
-	@Override public String asSparqlTerm() {
+	@Override public String asSparqlTerm(PrefixMapping pm) {
 		return toString();
 	}
 
