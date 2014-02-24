@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,8 +105,13 @@ public class DataQuery {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
 	//
-		Map<String, Filter> sf = new HashMap<String, Filter>();
-		for (Filter f: filters) sf.put("?" + f.name.asVar(), f);
+		Map<String, List<Filter>> sf = new HashMap<String, List<Filter>>();
+		for (Filter f: filters) {
+			String key = "?" + f.name.asVar();
+			List<Filter> x = sf.get(key);
+			if (x == null) sf.put(key,  x = new ArrayList<Filter>() );
+			x.add(f);
+		}
 		
         boolean baseQueryNeeded = true;
         boolean needsDistinct = false;
@@ -150,34 +156,37 @@ public class DataQuery {
 			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);
 			if (x.getIsOptional()) sb.append( " }" );
 		//
-			Filter f = sf.get(fVar);
-			if (f != null) {		
-				String value = f.range.operands.get(0).asSparqlTerm();
-				String rangeOp = f.getRangeOp();	
-				if (rangeOp.equals("oneof")) {
-					String orOp = "";
-					List<Term> operands = f.range.operands;
-					sb.append(" FILTER(" );
-					for (Term v: operands) {
-						sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm());
-						orOp = " || ";
+			List<Filter> theseFilters = sf.get(fVar);
+			if (theseFilters != null) {
+				for (Filter f: theseFilters) {
+					String value = f.range.operands.get(0).asSparqlTerm();
+					String rangeOp = f.getRangeOp();	
+					if (rangeOp.equals("oneof")) {
+						String orOp = "";
+						List<Term> operands = f.range.operands;
+						sb.append(" FILTER(" );
+						for (Term v: operands) {
+							sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm());
+							orOp = " || ";
+						}
+						sb.append(")");
+					} else if (rangeOp.equals("below")) {
+						String below = x.getBelowPredicate(api);
+						sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+					} else if (rangeOp.equals("contains")) {
+						sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+					} else if (rangeOp.equals("matches")) {
+						sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+					} else if (rangeOp.equals("search")) {
+						sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+					} else {
+						String op = opForFilter(f);
+						sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 					}
-					sb.append(")");
-				} else if (rangeOp.equals("below")) {
-					String below = x.getBelowPredicate(api);
-					sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
-				} else if (rangeOp.equals("contains")) {
-					sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
-				} else if (rangeOp.equals("matches")) {
-					sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
-				} else if (rangeOp.equals("search")) {
-					sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
-				} else {
-					String op = opForFilter(f);
-					sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
+					dot = ".\n ";
 				}
 			}
-			dot = ".\n ";
+			dot = " .\n";
 		}
 		sb.append( " }");
 	//

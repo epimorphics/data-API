@@ -28,7 +28,9 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.sun.jersey.api.ParamException.QueryParamException;
 
 // TODO Apply DRY to the tests.
 public class TestTranslateDataQuery {
@@ -86,6 +88,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems(p);
+		
 		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
 	}
 		
@@ -406,8 +409,18 @@ public class TestTranslateDataQuery {
 
 	private void assertSameSelect(String expected, String toTest) {
 //		System.err.println( ">> " + toTest );
-		Query t = QueryFactory.create(toTest);
-		Query e = QueryFactory.create(expected);
-		assertEquals(e, t);
+		Query t = null, e = null;
+		try {
+			e = QueryFactory.create(expected);
+			t = QueryFactory.create(toTest);
+			assertEquals(e, t);
+		} catch (QueryParseException q) {
+			if (e == null) {
+				fail( "parse failure: " + q.getMessage() + "\n" + expected );
+			}
+			if (t == null) {
+				fail( "parse failure: " + q.getMessage() + "\n" + toTest );
+			}
+		}
 	}
 }
