@@ -17,6 +17,7 @@ import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.test_support.Asserts;
 
 public class TestParseDataQueryErrors {
 
@@ -29,8 +30,35 @@ public class TestParseDataQueryErrors {
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertFalse(p.isOK());
 		String messages = p.getProblemStrings();
-		assertContains( "aaa:bbb", messages );
-		assertContains( "unknown shortname", messages );
+		Asserts.assertContains( "aaa:bbb", messages );
+		Asserts.assertContains( "unknown shortname", messages );
+	}
+	
+	@Test public void testArrayRequiredForBooleans() {
+		for (String key: "and/or/not".split("/"))
+			for (String value: "{}/17/'hello'".split("/"))			
+				testArrayRequiredForBoolean("@" + key, value);
+		}
+		
+	private void testArrayRequiredForBoolean(String key, String value) {
+		String incoming = "{'" + key + "': " + value + "}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
+		assertFalse(p.isOK());
+		String messages = p.getProblemStrings();
+		Asserts.assertContains( key, messages );
+		Asserts.assertContains( "must be an array", messages );
+	}
+	
+	@Test public void testNestedBooleanChecking() {
+		String incoming = "{'@and': [{'@or': 17}, {'@and': {}}]}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
+		assertFalse(p.isOK());
+		String messages = p.getProblemStrings();
+		Asserts.assertContains( "must be an array", messages );
 	}
 	
 	@Test public void testIllegalAspectOperand() {
@@ -43,8 +71,8 @@ public class TestParseDataQueryErrors {
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertFalse(p.isOK());
 		String messages = p.getProblemStrings();
-		assertContains( "pre:property", messages );
-		assertContains( "should be Object", messages );
+		Asserts.assertContains( "pre:property", messages );
+		Asserts.assertContains( "should be Object", messages );
 	}
 	
 	@Test public void testSearchStringValue() {
@@ -53,12 +81,7 @@ public class TestParseDataQueryErrors {
 		Problems p = new Problems();
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(1, p.size());
-		assertContains("must be string", p.getProblemStrings());
-		assertContains("@search", p.getProblemStrings());
-	}
-
-	private void assertContains(String expected, String s) {
-		if (!s.toLowerCase().contains(expected.toLowerCase()))
-			fail("'" + expected + "' was not present in '" + s + "'");		
+		Asserts.assertContains("must be string", p.getProblemStrings());
+		Asserts.assertContains("@search", p.getProblemStrings());
 	}
 }

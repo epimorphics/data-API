@@ -5,8 +5,8 @@
 */
 package com.epimorphics.data_api.data_queries.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import static com.epimorphics.data_api.test_support.Asserts.assertNoProblems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +25,9 @@ import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.test_support.Asserts;
 import com.epimorphics.vocabs.SKOS;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.sun.jersey.api.ParamException.QueryParamException;
 
 // TODO Apply DRY to the tests.
 public class TestTranslateDataQuery {
@@ -58,8 +55,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X }", sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X }", sq );
 	}		
 	
 	@Test public void testSingleSort() {
@@ -71,8 +68,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
 	}	
 	
 	@Test public void testMultipleSorts() {
@@ -87,9 +84,9 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("translation failed", p);
 		
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
 	}
 		
 	@Test public void testSingleEqualityFilter() {
@@ -102,8 +99,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);		
-		assertSameSelect
+		Asserts.assertNoProblems("translation failed", p);		
+		Asserts.assertSameSelect
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17)}"
 			, sq 
 			);
@@ -143,8 +140,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);		
-		assertSameSelect
+		Asserts.assertNoProblems("translation failed", p);		
+		Asserts.assertSameSelect
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)}"
 			, sq 
 			);
@@ -160,8 +157,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);		
-		assertSameSelect
+		Asserts.assertNoProblems("translation failed", p);		
+		Asserts.assertSameSelect
 			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17 || ?pre_X = 99)}"
 			, sq 
 			);
@@ -222,7 +219,7 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(useAspect);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("translation failed", p);
 		
 		String var = "?" + useAspect.asVar();
 		String prop = useAspect.getName().getCURIE();
@@ -236,7 +233,7 @@ public class TestTranslateDataQuery {
 			+ select.replaceAll("_VAR", var).replaceAll("_PROP", prop )
 			;
 				
-		assertSameSelect( expected, sq	);
+		Asserts.assertSameSelect( expected, sq	);
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
@@ -249,8 +246,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). ?item pre:Y ?pre_Y}", sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). ?item pre:Y ?pre_Y}", sq );
 	}			
 	
 	@Test public void testGlobalSearch() {		
@@ -266,7 +263,7 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
@@ -278,7 +275,7 @@ public class TestTranslateDataQuery {
 			, "}"
 			);
 		
-		assertSameSelect( expected, sq );
+		Asserts.assertSameSelect( expected, sq );
 	}		
 	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
@@ -291,8 +288,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Yopt);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
 	}		
 
 	@Test public void testLengthCopied() {
@@ -308,14 +305,14 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}"
 			, "LIMIT 17"
 			);
-		assertSameSelect(expect, sq );
+		Asserts.assertSameSelect(expect, sq );
 	}
 	
 	@Test public void testOffsetCopied() {
@@ -331,14 +328,14 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}"
 			, "OFFSET 1066"
 			);
-		assertSameSelect(expect, sq );
+		Asserts.assertSameSelect(expect, sq );
 	}
 	
 	@Test public void testLengthAndOffsetCopied() {
@@ -354,14 +351,14 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}"
 			, "LIMIT 17 OFFSET 1829"
 			);
-		assertSameSelect(expect, sq );
+		Asserts.assertSameSelect(expect, sq );
 	}	
 	
 	@Test public void testDoubleEqualityFilter() {
@@ -377,8 +374,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}", sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 8). ?item pre:Y ?pre_Y FILTER(?pre_Y = 9)}", sq );
 	}
 	
 	@Test public void testDatasetRestriction() {
@@ -388,8 +385,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects();
 	//
 		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item WHERE { ?item pre:has pre:value }", sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item WHERE { ?item pre:has pre:value }", sq );
 		}
 	
 	@Test public void testDatasetRestrictionWithAspects() {
@@ -399,28 +396,7 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(Y);
 	//
 		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
-		assertNoProblems(p);
-		assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { ?item pre:has pre:value . ?item pre:Y ?pre_Y }", sq );
+		assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { ?item pre:has pre:value . ?item pre:Y ?pre_Y }", sq );
 		}
-	
-	private void assertNoProblems(Problems p) {
-		if (p.size() > 0) fail("translation failed: " + p.getProblemStrings());
-	}
-
-	private void assertSameSelect(String expected, String toTest) {
-//		System.err.println( ">> " + toTest );
-		Query t = null, e = null;
-		try {
-			e = QueryFactory.create(expected);
-			t = QueryFactory.create(toTest);
-			assertEquals(e, t);
-		} catch (QueryParseException q) {
-			if (e == null) {
-				fail( "parse failure: " + q.getMessage() + "\n" + expected );
-			}
-			if (t == null) {
-				fail( "parse failure: " + q.getMessage() + "\n" + toTest );
-			}
-		}
-	}
 }

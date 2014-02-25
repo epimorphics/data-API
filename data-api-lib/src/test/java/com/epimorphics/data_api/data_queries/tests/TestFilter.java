@@ -13,6 +13,7 @@ import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.test_support.Asserts;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestFilter {
@@ -21,8 +22,8 @@ public class TestFilter {
 		Range r = Range.EQ(Term.number(0));
 		Filter f = new Filter( sn("name"), r );
 		assertEquals( f, new Filter( sn("name"), r ) );
-		assertDiffer( f, new Filter( sn("name"), Range.EQ(Term.number(1))));
-		assertDiffer( f, new Filter( sn("anon"), Range.EQ(Term.number(0))));
+		Asserts.assertDiffer( f, new Filter( sn("name"), Range.EQ(Term.number(1))));
+		Asserts.assertDiffer( f, new Filter( sn("anon"), Range.EQ(Term.number(0))));
 	}
 	
 	@Test public void testFilterHashcode() {
@@ -32,10 +33,6 @@ public class TestFilter {
 		assertEquals(sn("name").hashCode() ^ r0.hashCode(), new Filter(sn("name"), r0).hashCode());
 		assertEquals(sn("anon").hashCode() ^ r0.hashCode(), new Filter(sn("anon"), r0).hashCode());
 		assertEquals(sn("name").hashCode() ^ r1.hashCode(), new Filter(sn("name"), r1).hashCode());
-	}
-	
-	static void assertDiffer(Object expect, Object o) {
-		if (expect.equals(o)) fail("expected something different from " + expect);
 	}
 	
 	static PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart").lock();

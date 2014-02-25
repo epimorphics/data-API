@@ -8,8 +8,10 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.jena.atlas.json.JsonObject;
@@ -32,71 +34,122 @@ public class DataQueryParser {
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
     
-	public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {
-		
-		PrefixMapping pm = dataset.getPrefixes();
-		Set<String> aspectURIs = new HashSet<String>();
-		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
-		
+	public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {		
 		if (jv.isObject()) {
-			Integer length = null, offset = null;
-			JsonObject jo = jv.getAsObject();
-			List<Filter> filters = new ArrayList<Filter>();
-			List<Sort> sortby = new ArrayList<Sort>();
-			List<Guard> guards = new ArrayList<Guard>();
-			String globalSearchPattern = null;
-			
-			for (String key: jv.getAsObject().keys()) {
-				JsonValue value = jv.getAsObject().get(key);
-				if (key.startsWith("@")) {
-					if (key.equals("@sort")) {
-						extractSorts(pm, p, jo, sortby, key);
-					} else if (key.equals("@search")) {
-						globalSearchPattern = extractString(p, key, value);
-					} else if (key.equals("@limit")) {
-						length = extractNumber(p, key, value);
-					} else if (key.equals("@offset")) {
-						offset = extractNumber(p, key, value);
-					} else if (key.equals(JSONConstants.CHILDOF)) {
-					    if (dataset == null || !dataset.isHierarchy()) {
-					        p.add("Tried to use @childof on a dataset that isn't a code list");
-					    } else {
-					        guards.add( new ChildofGuard(jsonResourceToTerm(p, pm, value), dataset.getHierarchy()) );
-					    }
-					} else {
-						p.add("unknown directive '" + key + "' in data query " + jv + ".");
-					}
-				} else {
-					Shortname sn = new Shortname(pm, key);
-					if (!aspectURIs.contains(sn.URI)) {
-						p.add("Unknown shortname '" + key + "' in " + jv );
-					} else {
-						JsonValue range = jo.get(key);			
-						if (range.isObject()) {
-							JsonObject rob = range.getAsObject();
-							for (String opKey: rob.keys()) {
-								if (opKey.startsWith("@")) {
-									String op = opKey.substring(1);
-									List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(opKey));
-									if (isKnownOp(op)) {
-										filters.add( new Filter(sn, new Range(op, v) ) );
-									} else {
-										p.add("unknown operator '" + op + "' in data query.");
-									}
-								} else {
-									p.add("illegal member " + opKey);
-								}
-							}
-							
+			DataQueryParser qp = new DataQueryParser(p, dataset);
+			DataQuery q = qp.parseDataQuery(jv.getAsObject());
+			// showBooleans(qp.booleans, 0);
+			return q;
+		} else {
+			p.add("DataQuery should be a JSON object, but given: " + jv);
+			return null;
+		}
+	}
+
+	static void showBooleans(Map<String, Set<List<Filter>>> booleans, int depth) {
+		for (String key: "@and/@or/@not".split("/")) {
+			for (int i = 0; i < depth * 2; i += 1) System.err.print( " |");
+			System.err.print(key);
+			for (List<Filter> s: booleans.get(key)) {
+				System.err.print(s);
+			}
+			System.err.println();
+		}
+	}
+	
+	final Set<String> aspectURIs = new HashSet<String>();
+	final List<Filter> filters = new ArrayList<Filter>();
+	final List<Sort> sortby = new ArrayList<Sort>();
+	final List<Guard> guards = new ArrayList<Guard>();
+	
+	final Map<String, Set<List<Filter>>> booleans = new HashMap<String, Set<List<Filter>>>();
+
+	String globalSearchPattern = null;
+	Integer length = null, offset = null;
+	
+	final Problems p;
+	final API_Dataset dataset;
+	final PrefixMapping pm;
+	
+	DataQueryParser(Problems p, API_Dataset dataset) {
+		this.p = p;
+		this.dataset = dataset;
+		this.pm = dataset.getPrefixes();
+	//
+		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
+		booleans.put("@or", new HashSet<List<Filter>>() );
+		booleans.put("@and", new HashSet<List<Filter>>() );
+		booleans.put("@not", new HashSet<List<Filter>>() );
+	}
+
+	private DataQuery parseDataQuery(JsonObject jo) {		
+		for (String key: jo.keys()) {
+			JsonValue value = jo.get(key);
+			if (key.startsWith("@")) {
+				parseAtMembers(jo, key, value);
+			} else {
+				parseAspectMembers(jo, key, value);
+			}
+		}
+		booleans.get("@and").add(filters);
+		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
+	}
+
+	private void parseAspectMembers(JsonObject jo, String key, JsonValue range) {
+		Shortname sn = new Shortname(pm, key);
+		if (!aspectURIs.contains(sn.URI)) {
+			p.add("Unknown shortname '" + key + "' in " + jo );
+		} else {			
+			if (range.isObject()) {
+				JsonObject rob = range.getAsObject();
+				for (String opKey: rob.keys()) {
+					if (opKey.startsWith("@")) {
+						String op = opKey.substring(1);
+						List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(opKey));
+						if (isKnownOp(op)) {
+							filters.add( new Filter(sn, new Range(op, v) ) );
 						} else {
-							p.add("Value of shortname '" + key + "' should be Object, given " + range);
+							p.add("unknown operator '" + op + "' in data query.");
 						}
+					} else {
+						p.add("illegal member " + opKey);
 					}
 				}
+				
+			} else {
+				p.add("Value of shortname '" + key + "' should be Object, given " + range);
 			}
-			return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
+		}
+	}
+
+	private void parseAtMembers(JsonObject jo, String key, JsonValue value) {
+		if (key.equals("@sort")) {
+			extractSorts(pm, p, jo, sortby, key);
+		} else if (key.equals("@search")) {
+			globalSearchPattern = extractString(p, key, value);
+		} else if (key.equals("@limit")) {
+			length = extractNumber(p, key, value);
+		} else if (key.equals("@offset")) {
+			offset = extractNumber(p, key, value);
+		} else if (key.equals(JSONConstants.CHILDOF)) {
+		    if (dataset == null || !dataset.isHierarchy()) {
+		        p.add("Tried to use @childof on a dataset that isn't a code list");
+		    } else {
+		        guards.add( new ChildofGuard(jsonResourceToTerm(p, pm, value), dataset.getHierarchy()) );
+		    }
+		} else if (key.equals("@and") || key.equals("@or") || key.equals("@not")) {
+			Set<List<Filter>> these = booleans.get(key);
+			if (value.isArray()) {
+				for (JsonValue element: value.getAsArray()) {
+										
+					DataQuery subQuery = Do(p, dataset, element);
+										
+					these.add(subQuery.filters());
+				}			} else {
+				p.add("operand of " + key + " must be an array: " + value );
+			}
 		} else {
-			throw new RuntimeException("Error handling to be done here." );
+			p.add("unknown directive '" + key + "' in data query " + jo + ".");
 		}
 	}
 

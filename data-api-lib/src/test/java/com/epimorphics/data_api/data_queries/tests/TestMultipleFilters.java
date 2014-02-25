@@ -5,8 +5,6 @@
 */
 package com.epimorphics.data_api.data_queries.tests;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
 
 import org.junit.Test;
@@ -21,8 +19,7 @@ import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.query.QueryFactory;
+import com.epimorphics.data_api.test_support.Asserts;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestMultipleFilters {
@@ -47,7 +44,7 @@ public class TestMultipleFilters {
 		Aspects a = new Aspects().include(Setup.localAspect);
 		
 		String sq = dq.toSparql(p, a, null, pm);
-		assertNoProblems(p);
+		Asserts.assertNoProblems("filter translation failed", p);
 		
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -59,18 +56,7 @@ public class TestMultipleFilters {
 			, "}"
 			);
 		
-		assertSameSelect(expected, sq);			
-		}
-		
-		private void assertNoProblems(Problems p) {
-			if (p.size() > 0) fail("translation failed: " + p.getProblemStrings());
-		}
-
-		private void assertSameSelect(String expected, String toTest) {
-//			System.err.println( ">> " + toTest );
-			Query t = QueryFactory.create(toTest);
-			Query e = QueryFactory.create(expected);
-			assertEquals(e, t);
+		Asserts.assertSameSelect(expected, sq);			
 		}
 }
 
