@@ -100,12 +100,13 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems("translation failed", p);		
-		assertSameSelect
-			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17)}"
-			, sq 
+		String sq = q.toSparql(p, a, null, pm);	
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X WHERE {"
+			, "?item pre:X 17 BIND(17 AS?pre_X)}"
 			);
+		Asserts.assertSameSelect( expected, sq );
 	}		
 	
 	@Test public void testSingleEqFilter() {
@@ -142,11 +143,15 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems("translation failed", p);		
-		assertSameSelect
-			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)}"
-			, sq 
+		Asserts.assertNoProblems("translation failed", p);	
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X WHERE"
+			, "{"
+			, (opName.equals("eq") ? "?item pre:X 17 BIND(17 AS ?pre_X)" : ("?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)"))
+			, "}"
 			);
+		Asserts.assertSameSelect( expected, sq );
 	}
 	
 	@Test public void testSingleOneofFilter() {	
@@ -248,18 +253,14 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems("translation failed", p);
+		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
-			, "SELECT ?item ?pre_X ?pre_Y"
-			, "WHERE {"
-			, "?item pre:X ?pre_X"
-			, ". ?item pre:Y ?pre_Y"
-			, ". FILTER(?pre_X = 17)"
-			, "}"
+			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
+			, "?item pre:X 17 BIND(17 AS ?pre_X)"
+			, ". ?item pre:Y ?pre_Y}"
 			);
-		
-		assertSameSelect( expected, sq );
+		Asserts.assertSameSelect( expected, sq );
 	}			
 	
 	@Test public void testGlobalSearch() {		
@@ -300,17 +301,8 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Yopt);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems("translation failed", p);
-		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
-			, "SELECT ?item ?pre_X ?pre_Y"
-			, "WHERE {"
-			, "?item pre:X ?pre_X"
-			, ". OPTIONAL {?item pre:Y ?pre_Y}"
-			, "FILTER(?pre_X = 17)"
-			, "}"
-			);
-		assertSameSelect( expected, sq );
+		Asserts.assertNoProblems("translation failed", p);
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X 17 BIND(17 AS ?pre_X). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
 	}		
 
 	@Test public void testLengthCopied() {
@@ -330,12 +322,7 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
-			, "WHERE {"
-			, "?item pre:X ?pre_X"
-			, ". ?item pre:Y ?pre_Y"
-			, "FILTER(?pre_X = 8)"
-			, "FILTER(?pre_Y = 9)"
-			, "}"
+			, "WHERE { ?item pre:X 8 BIND(8 AS ?pre_X). ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			, "LIMIT 17"
 			);
 		assertSameSelect(expect, sq );
@@ -358,12 +345,7 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
-			, "WHERE {"
-			, "?item pre:X ?pre_X"
-			, ". ?item pre:Y ?pre_Y"
-			, "FILTER(?pre_X = 8)"
-			, "FILTER(?pre_Y = 9)"
-			, "}"
+			, "WHERE { ?item pre:X 8 BIND(8 AS ?pre_X). ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			, "OFFSET 1066"
 			);
 		assertSameSelect(expect, sq );
@@ -386,12 +368,7 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
-			, "WHERE {"
-			, "?item pre:X ?pre_X"
-			, ". ?item pre:Y ?pre_Y"
-			, "FILTER(?pre_X = 8)"
-			, "FILTER(?pre_Y = 9)"
-			, "}"
+			, "WHERE { ?item pre:X 8 BIND(8 AS ?pre_X). ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			, "LIMIT 17 OFFSET 1829"
 			);
 		assertSameSelect(expect, sq );
@@ -410,18 +387,14 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
-		assertNoProblems("translation failed", p);
+		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/mock-aspect/>"
-			, "SELECT ?item ?pre_X ?pre_Y"
-			, "WHERE {"
-			, "?item pre:X ?pre_X"
-			, ". ?item pre:Y ?pre_Y"
-			, "FILTER(?pre_X = 8)"
-			, "FILTER(?pre_Y = 9)"
-			, "}"
+			, "SELECT ?item ?pre_X ?pre_Y WHERE { "
+			, "?item pre:X 8 BIND(8 AS ?pre_X)"
+			, ". ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			);
-		assertSameSelect( expected, sq );
+		Asserts.assertSameSelect( expected, sq );
 	}
 	
 	@Test public void testDatasetRestriction() {

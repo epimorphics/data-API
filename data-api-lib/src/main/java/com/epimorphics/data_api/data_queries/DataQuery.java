@@ -151,9 +151,9 @@ public class DataQuery {
             dot = "\n";
             sb.append(guard.queryFragment(api));
         }
-	//
+	//	
 		translateFilters(pm, api, sb, ordered, dot);
-		sb.append( " }");
+		sb.append("}\n");
 	//
 		if (sortby.size() > 0) {
 			sb.append(" ORDER BY");
@@ -174,19 +174,49 @@ public class DataQuery {
 	private void translateFilters(PrefixMapping pm, API_Dataset api, StringBuilder sb, List<Aspect> ordered, String dot) {
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
-			sb.append(dot);
+			sb.append(dot);	dot = "\n.";
+		//
+			String eqValue = findEqualityValue(pm, x.getName(), c);
+			boolean isEquality = eqValue != null; // theseFilters != null && theseFilters.get(0).range.op.equals("eq");
+			// String eqValue = isEquality ? theseFilters.get(0).range.operands.get(0).asSparqlTerm(pm) : null;
+			
+			System.err.println( ">> equality value for " + x + ": " + eqValue);
+			
+		//		
 			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
-			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);
-			if (x.getIsOptional()) sb.append( " }" );
-			dot = " .\n";
+			sb
+				.append(" ")
+				.append("?item")
+				.append(" ").append(x.asProperty())
+				.append(" ").append(isEquality ? eqValue : fVar)
+				;
+			if (isEquality) {
+				sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
+			}
 		}
-	//
 		translateComposition( sb, pm, api, ordered, c );
-//		for (Filter f: filters) {
-//			translateFilter(pm, api, sb, ordered, f);
-//		}
 	}
-
+	
+	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
+		if (c instanceof Filters) {
+			for (Filter f: ((Filters) c).filters) {
+//				System.err.println( ">> name: " + name + " fName: " + f.name + (f.name.equals(name) ? " - same" : " - different") );
+//				String A = f.name.prefixed, B = name.prefixed;
+//				System.err.println( ">> A: " + A );
+//				System.err.println( ">> B: " + B );
+//				System.err.println( ">> Op: " + f.range.op );
+				if (f.name.prefixed.equals(name.prefixed))
+					if (f.range.op.equals("eq")) 
+						return f.range.operands.get(0).asSparqlTerm(pm);
+			}
+		}
+		for (Composition x: c.operands) {
+			String eq = findEqualityValue(pm, name, x);
+			if (eq != null) return eq;
+		}
+		return null;
+	}
+		
 	private void translateComposition
 		( StringBuilder sb
 		, PrefixMapping pm
@@ -239,6 +269,8 @@ public class DataQuery {
 			sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
 		} else if (rangeOp.equals("search")) {
 			sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+		} else if (rangeOp.equals("eq")) {
+			// sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
 		} else {
 			String op = opForFilter(f);
 			sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
