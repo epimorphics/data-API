@@ -149,13 +149,22 @@ public class DataQuery {
         }
 	//
 		for (Aspect x: ordered) {
-			String fVar = "?" + x.asVar();
 			sb.append(dot);
+		//
+			String fVar = "?" + x.asVar();
+			List<Filter> theseFilters = sf.get(fVar);
+		//
+			boolean isEquality = theseFilters != null && theseFilters.get(0).range.op.equals("eq");
+			String eqValue = isEquality ? theseFilters.get(0).range.operands.get(0).asSparqlTerm(pm) : null;
+			
 			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
-			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);
+			sb.append(" ")
+				.append("?item")
+				.append(" ").append(x.asProperty())
+				.append(" ").append(isEquality ? eqValue : fVar)
+				;
 			if (x.getIsOptional()) sb.append( " }" );
 		//
-			List<Filter> theseFilters = sf.get(fVar);
 			if (theseFilters != null) {
 				for (Filter f: theseFilters) {
 					String value = f.range.operands.get(0).asSparqlTerm(pm);
@@ -180,7 +189,11 @@ public class DataQuery {
 						sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
 					} else {
 						String op = opForFilter(f);
-						sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
+						if (isEquality) {
+							sb.append(" BIND(").append(eqValue).append( "AS ").append(fVar).append(")");
+						} else {
+							sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");							
+						}
 					}
 					dot = ".\n ";
 				}
