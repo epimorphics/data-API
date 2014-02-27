@@ -35,6 +35,12 @@ public class DataQueryParser {
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
     
 	public static DataQuery Do(Problems p, API_Dataset dataset, JsonValue jv) {		
+		DataQuery result = DoQuietly(p, dataset, jv);
+		// System.err.println( ">> " + jv + "\n]] " + Composition.allToSparql(result.c));
+		return result;
+	}
+
+	private static DataQuery DoQuietly(Problems p, API_Dataset dataset, JsonValue jv) {
 		if (jv.isObject()) {
 			DataQueryParser qp = new DataQueryParser(p, dataset);
 			DataQuery q = qp.parseDataQuery(jv.getAsObject());
@@ -62,7 +68,7 @@ public class DataQueryParser {
 	final List<Sort> sortby = new ArrayList<Sort>();
 	final List<Guard> guards = new ArrayList<Guard>();
 	
-	final Map<String, Set<List<Filter>>> booleans = new HashMap<String, Set<List<Filter>>>();
+	final Map<String, List<Composition>> compositions = new HashMap<String, List<Composition>>();
 
 	String globalSearchPattern = null;
 	Integer length = null, offset = null;
@@ -77,9 +83,9 @@ public class DataQueryParser {
 		this.pm = dataset.getPrefixes();
 	//
 		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
-		booleans.put("@or", new HashSet<List<Filter>>() );
-		booleans.put("@and", new HashSet<List<Filter>>() );
-		booleans.put("@not", new HashSet<List<Filter>>() );
+		compositions.put("@or", new ArrayList<Composition>() );
+		compositions.put("@and", new ArrayList<Composition>() );
+		compositions.put("@not", new ArrayList<Composition>() );
 	}
 
 	private DataQuery parseDataQuery(JsonObject jo) {		
@@ -91,8 +97,9 @@ public class DataQueryParser {
 				parseAspectMembers(jo, key, value);
 			}
 		}
-		booleans.get("@and").add(filters);
-		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
+//		compositions.get("@and").add(filters);
+		Composition c = Composition.build(filters, compositions);
+		return new DataQuery(c, sortby, guards, Slice.create(length, offset), globalSearchPattern);
 	}
 
 	private void parseAspectMembers(JsonObject jo, String key, JsonValue range) {
@@ -138,16 +145,18 @@ public class DataQueryParser {
 		        guards.add( new ChildofGuard(jsonResourceToTerm(p, pm, value), dataset.getHierarchy()) );
 		    }
 		} else if (key.equals("@and") || key.equals("@or") || key.equals("@not")) {
-			Set<List<Filter>> these = booleans.get(key);
+			
+			List<Composition> these = compositions.get(key);
+			
 			if (value.isArray()) {
 				for (JsonValue element: value.getAsArray()) {
-										
-					DataQuery subQuery = Do(p, dataset, element);
-										
-					these.add(subQuery.filters());
-				}			} else {
+					DataQuery subQuery = DoQuietly(p, dataset, element);
+					these.add(subQuery.c);
+				}			
+			} else {
 				p.add("operand of " + key + " must be an array: " + value );
 			}
+			
 		} else {
 			p.add("unknown directive '" + key + "' in data query " + jo + ".");
 		}

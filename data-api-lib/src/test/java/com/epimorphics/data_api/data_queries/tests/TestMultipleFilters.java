@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
@@ -39,7 +40,7 @@ public class TestMultipleFilters {
 	//
 		List<Filter> filters = BunchLib.list(lt, gt);
 		
-		DataQuery dq = new DataQuery(filters);
+		DataQuery dq = new DataQuery(Composition.filters(filters));
 		
 		Aspects a = new Aspects().include(Setup.localAspect);
 		

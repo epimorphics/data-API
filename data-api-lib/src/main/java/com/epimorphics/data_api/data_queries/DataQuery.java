@@ -16,9 +16,12 @@ import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.data_queries.Composition.Filters;
+import com.epimorphics.data_api.data_queries.Composition.Or;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 
@@ -32,46 +35,42 @@ public class DataQuery {
 		}
 	};
 	
-	final List<Filter> filters;
 	final List<Sort> sortby;
 	final Slice slice;
 	final List<Guard> guards; 
 	final String globalSearchPattern;
+	final Composition c;
 	
-	public DataQuery(List<Filter> filters) {
-		this(filters, new ArrayList<Sort>() );
+	public DataQuery(Composition c) {
+		this(c, new ArrayList<Sort>() );
 	}
 
-	public DataQuery(List<Filter> filters, List<Sort> sortby ) {
-        this(filters, sortby, null, Slice.all());
+	public DataQuery(Composition c, List<Sort> sortby ) {
+        this(c, sortby, null, Slice.all());
     }
 
-    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards ) {
-        this(filters, sortby, guards, Slice.all());
+    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards ) {
+        this(c, sortby, guards, Slice.all());
     }
     
-    public DataQuery(List<Filter> filters, List<Sort> sortby, Slice slice) {
-        this(filters, sortby, null, slice);
+    public DataQuery(Composition c, List<Sort> sortby, Slice slice) {
+        this(c, sortby, null, slice);
     }    
     
-    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice) {
-    	this(filters, sortby, guards, slice, null);
+    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice) {
+    	this(c, sortby, guards, slice, null);
     }
 
-    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice, String globalSearchPattern) {
-		this.filters = filters;
+    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice, String globalSearchPattern) {
+		this.c = c;
 		this.sortby = sortby;
 		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
 		this.globalSearchPattern = globalSearchPattern;
 	}
-	
+
 	public List<Sort> sorts() {
 		return sortby;
-	}
-	
-	public List<Filter> filters() {
-		return filters;
 	}
 	
 	public String lang() {
@@ -84,6 +83,11 @@ public class DataQuery {
 
 	public String getGlobalSearchPattern() {
 		return globalSearchPattern;
+	}
+	
+	public List<Filter> filters() {
+		if (c instanceof Filters) return ((Filters) c).filters;
+		return new ArrayList<Filter>();
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
@@ -104,13 +108,13 @@ public class DataQuery {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
 	//
-		Map<String, List<Filter>> sf = new HashMap<String, List<Filter>>();
-		for (Filter f: filters) {
-			String key = "?" + f.name.asVar();
-			List<Filter> x = sf.get(key);
-			if (x == null) sf.put(key,  x = new ArrayList<Filter>() );
-			x.add(f);
-		}
+//		Map<String, List<Filter>> sf = new HashMap<String, List<Filter>>();
+//		for (Filter f: filters) {
+//			String key = "?" + f.name.asVar();
+//			List<Filter> x = sf.get(key);
+//			if (x == null) sf.put(key,  x = new ArrayList<Filter>() );
+//			x.add(f);
+//		}
 		
         boolean baseQueryNeeded = true;
         boolean needsDistinct = false;
@@ -148,45 +152,7 @@ public class DataQuery {
             sb.append(guard.queryFragment(api));
         }
 	//
-		for (Aspect x: ordered) {
-			String fVar = "?" + x.asVar();
-			sb.append(dot);
-			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
-			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);
-			if (x.getIsOptional()) sb.append( " }" );
-		//
-			List<Filter> theseFilters = sf.get(fVar);
-			if (theseFilters != null) {
-				for (Filter f: theseFilters) {
-					String value = f.range.operands.get(0).asSparqlTerm(pm);
-					String rangeOp = f.getRangeOp();	
-					if (rangeOp.equals("oneof")) {
-						String orOp = "";
-						List<Term> operands = f.range.operands;
-						sb.append(" FILTER(" );
-						for (Term v: operands) {
-							sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
-							orOp = " || ";
-						}
-						sb.append(")");
-					} else if (rangeOp.equals("below")) {
-						String below = x.getBelowPredicate(api);
-						sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
-					} else if (rangeOp.equals("contains")) {
-						sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
-					} else if (rangeOp.equals("matches")) {
-						sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
-					} else if (rangeOp.equals("search")) {
-						sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
-					} else {
-						String op = opForFilter(f);
-						sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
-					}
-					dot = ".\n ";
-				}
-			}
-			dot = " .\n";
-		}
+		translateFilters(pm, api, sb, ordered, dot);
 		sb.append( " }");
 	//
 		if (sortby.size() > 0) {
@@ -197,13 +163,91 @@ public class DataQuery {
 				sb.append( "?" ).append(s.by.asVar());
 				if (!s.upwards)sb.append(")"); 
 			}
-			
 		}
 	//
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
 	//
 		return PrefixUtils.expandQuery(sb.toString(), pm);
+	}
+
+	private void translateFilters(PrefixMapping pm, API_Dataset api, StringBuilder sb, List<Aspect> ordered, String dot) {
+		for (Aspect x: ordered) {
+			String fVar = "?" + x.asVar();
+			sb.append(dot);
+			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
+			sb.append(" ").append("?item").append(" ").append(x.asProperty()).append(" ").append(fVar);
+			if (x.getIsOptional()) sb.append( " }" );
+			dot = " .\n";
+		}
+	//
+		translateComposition( sb, pm, api, ordered, c );
+//		for (Filter f: filters) {
+//			translateFilter(pm, api, sb, ordered, f);
+//		}
+	}
+
+	private void translateComposition
+		( StringBuilder sb
+		, PrefixMapping pm
+		, API_Dataset api
+		, List<Aspect> ordered
+		, Composition c
+		) {
+		if (c instanceof Filters) {
+			for (Filter f: ((Filters) c).filters)
+				translateFilter(pm, api, sb, ordered, f);
+		} else if (c.op.equals("none")) {
+			// no constraints
+		} else if (c instanceof Or) {
+			sb.append("{\n");
+			String union = "";
+			for (Composition x: c.operands) {
+				sb.append(union); union = " UNION ";
+				sb.append("{"); 
+				translateComposition(sb, pm, api, ordered, x); 
+				sb.append("}\n" );
+			}
+			sb.append("}\n");
+		} else {
+			throw new UnsupportedOperationException(c.toString());
+		}
+		
+	}
+
+	private void translateFilter(PrefixMapping pm, API_Dataset api,	StringBuilder sb, List<Aspect> ordered, Filter f) {
+		String key = "?" + f.name.asVar();
+		String fVar = key;
+		String value = f.range.operands.get(0).asSparqlTerm(pm);
+		String rangeOp = f.getRangeOp();	
+		if (rangeOp.equals("oneof")) {
+			String orOp = "";
+			List<Term> operands = f.range.operands;
+			sb.append(" FILTER(" );
+			for (Term v: operands) {
+				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
+				orOp = " || ";
+			}
+			sb.append(")");
+		} else if (rangeOp.equals("below")) {
+			Aspect x = aspectFor(ordered, f.name);
+			String below = x.getBelowPredicate(api);
+			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+		} else if (rangeOp.equals("contains")) {
+			sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+		} else if (rangeOp.equals("matches")) {
+			sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+		} else if (rangeOp.equals("search")) {
+			sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+		} else {
+			String op = opForFilter(f);
+			sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
+		}
+	}
+
+	private Aspect aspectFor(List<Aspect> ordered, Shortname name) {
+		for (Aspect a: ordered) if (a.getName().equals(name)) return a;
+		throw new BrokenException("Could not find aspect " + name + " in " + ordered);
 	}
 
 	/**
