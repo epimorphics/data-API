@@ -177,11 +177,7 @@ public class DataQuery {
 			sb.append(dot);	dot = "\n.";
 		//
 			String eqValue = findEqualityValue(pm, x.getName(), c);
-			boolean isEquality = eqValue != null; // theseFilters != null && theseFilters.get(0).range.op.equals("eq");
-			// String eqValue = isEquality ? theseFilters.get(0).range.operands.get(0).asSparqlTerm(pm) : null;
-			
-			System.err.println( ">> equality value for " + x + ": " + eqValue);
-			
+			boolean isEquality = eqValue != null; // theseFilters != null && theseFilters.get(0).range.op.equals("eq");						
 		//		
 			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
 			sb
@@ -190,6 +186,7 @@ public class DataQuery {
 				.append(" ").append(x.asProperty())
 				.append(" ").append(isEquality ? eqValue : fVar)
 				;
+			if (x.getIsOptional()) sb.append( " }" );
 			if (isEquality) {
 				sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
 			}
