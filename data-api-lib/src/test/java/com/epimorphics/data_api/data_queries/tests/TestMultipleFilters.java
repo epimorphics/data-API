@@ -52,8 +52,7 @@ public class TestMultipleFilters {
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
 			, "?item pre:local ?pre_local."
-			, "FILTER(?pre_local < 17)"
-			, "FILTER(?pre_local > 42)"
+			, "FILTER((?pre_local < 17) && (?pre_local > 42))"
 			, "}"
 			);
 		

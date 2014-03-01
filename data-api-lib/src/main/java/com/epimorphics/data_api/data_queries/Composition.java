@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.hp.hpl.jena.shared.BrokenException;
+
 public class Composition {
 	
 	public static final Composition NONE = new Composition
@@ -30,6 +32,30 @@ public class Composition {
 	public Composition(String op, List<Composition> operands) {
 		this.op = op;
 		this.operands = operands;
+	}
+
+	public boolean isEasy() {
+		return isEasy(true);
+	}
+
+	public boolean nonTrivial() {
+		for (Composition c: operands) if (c.nonTrivial()) return true;
+		if (this instanceof Filters) return nonTrivialFilter((Filters) this);
+		return false;
+	}
+
+	private boolean nonTrivialFilter(Filters fs) {
+		for (Filter f: fs.filters) if (nonTrivial(f)) return true;
+		return false;
+	}
+
+	private boolean nonTrivial(Filter f) {
+		return !(f.range.op.matches("^(eq|below|search)$"));
+	}
+
+	public boolean isEasy(boolean topLevel) {
+		if (op.equals("none")) return true;
+		throw new BrokenException("isEasy not implemented for " + this.getClass().getSimpleName());
 	}
 	
 	public static Composition and(List<Composition> operands) {
@@ -66,12 +92,23 @@ public class Composition {
 			sb.append(")");
 			return sb.toString();
 		}
+		
+		public boolean isEasy(boolean topLevel) {
+			for (Filter f: filters) 
+				return true; // if (f.range.op.matches("^(below|search$)")) return false;
+			return true;
+		}
 	}
 	
 	public static class And extends Composition {
 
 		public And(List<Composition> operands) {
 			super("and", operands);
+		}
+
+		public boolean isEasy(boolean topLevel) {
+			for (Composition c: operands) if (!c.isEasy(topLevel)) return false;
+			return true;
 		}
 	}
 	
@@ -80,12 +117,21 @@ public class Composition {
 		public Or(List<Composition> operands) {
 			super("or", operands);
 		}
+
+		public boolean isEasy(boolean topLevel) {
+			for (Composition c: operands) if (!c.isEasy(false)) return false;
+			return true;
+		}
 	}
 	
 	public static class Not extends Composition {
 		
 		public Not(List<Composition> operands) {
 			super("not", operands);
+		}
+
+		public boolean isEasy(boolean topLevel) {
+			return false;
 		}
 	}
 

@@ -237,7 +237,7 @@ public class DSAPIManager extends ComponentBase {
      * The data query endpoint
      */
     public JSONWritable datasetDataEndpoint(String lang, String dataset, JsonObject query) {
-        Problems p = new Problems();
+    	Problems p = new Problems();
         RowWriter so = null;        
         final API_Dataset api = getAPI(dataset);
         try {

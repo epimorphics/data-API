@@ -40,7 +40,7 @@ public class DataQueryParser {
 		return result;
 	}
 
-	private static DataQuery DoQuietly(Problems p, API_Dataset dataset, JsonValue jv) {
+	private static DataQuery DoQuietly(Problems p, API_Dataset dataset, JsonValue jv) {		
 		if (jv.isObject()) {
 			DataQueryParser qp = new DataQueryParser(p, dataset);
 			DataQuery q = qp.parseDataQuery(jv.getAsObject());
@@ -144,15 +144,14 @@ public class DataQueryParser {
 		    } else {
 		        guards.add( new ChildofGuard(jsonResourceToTerm(p, pm, value), dataset.getHierarchy()) );
 		    }
-		} else if (key.equals("@and") || key.equals("@or") || key.equals("@not")) {
-			
+		} else if (key.equals("@and") || key.equals("@or") || key.equals("@not")) {			
 			List<Composition> these = compositions.get(key);
 			
 			if (value.isArray()) {
 				for (JsonValue element: value.getAsArray()) {
 					DataQuery subQuery = DoQuietly(p, dataset, element);
 					these.add(subQuery.c);
-				}			
+				}
 			} else {
 				p.add("operand of " + key + " must be an array: " + value );
 			}

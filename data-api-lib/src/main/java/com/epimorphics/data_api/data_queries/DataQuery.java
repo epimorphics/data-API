@@ -16,6 +16,7 @@ import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.Filters;
 import com.epimorphics.data_api.data_queries.Composition.Or;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -191,17 +192,52 @@ public class DataQuery {
 				sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
 			}
 		}
-		translateComposition( sb, pm, api, ordered, c );
+	//
+		topLevelTripleFilters(sb, pm, ordered, api, c);
+	//
+		if (c.isEasy()) {
+			if (c.nonTrivial()) {
+				System.err.println( ">> nonTrivial: " + c );
+				sb.append(" FILTER(").append("\n");
+				translateComposition( sb, pm, api, ordered, c );
+				sb.append( ")");
+			}
+		} else {
+			throw new UnsupportedOperationException("Cannot tyranslate difficult composition " + c );
+		}
 	}
 	
+	private void topLevelTripleFilters
+		( StringBuilder sb
+		, PrefixMapping pm
+		, List<Aspect> ordered
+		, API_Dataset api
+		, Composition c
+		) {
+
+		if (c instanceof And) {
+			for (Composition e: c.operands) topLevelTripleFilters(sb, pm, ordered, api, e);
+		} else if (c instanceof Filters) {
+			for (Filter f: ((Filters) c).filters) {
+				String fVar = "?" + f.name.asVar();
+				String value = f.range.operands.get(0).asSparqlTerm(pm);
+				if (f.range.op.equals("search")) {
+					sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+				} else if (f.range.op.equals("below")) {
+					Aspect x = aspectFor(ordered, f.name);
+					String below = x.getBelowPredicate(api);
+					sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+				}
+			}
+		} else {
+			// ignore. Say so for the moment.
+			System.err.println( ">> ignoring non-top-level filter: " + c);
+		}
+	}
+
 	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
 		if (c instanceof Filters) {
 			for (Filter f: ((Filters) c).filters) {
-//				System.err.println( ">> name: " + name + " fName: " + f.name + (f.name.equals(name) ? " - same" : " - different") );
-//				String A = f.name.prefixed, B = name.prefixed;
-//				System.err.println( ">> A: " + A );
-//				System.err.println( ">> B: " + B );
-//				System.err.println( ">> Op: " + f.range.op );
 				if (f.name.prefixed.equals(name.prefixed))
 					if (f.range.op.equals("eq")) 
 						return f.range.operands.get(0).asSparqlTerm(pm);
@@ -222,20 +258,24 @@ public class DataQuery {
 		, Composition c
 		) {
 		if (c instanceof Filters) {
-			for (Filter f: ((Filters) c).filters)
-				translateFilter(pm, api, sb, ordered, f);
-		} else if (c.op.equals("none")) {
-			// no constraints
-		} else if (c instanceof Or) {
-			sb.append("{\n");
-			String union = "";
-			for (Composition x: c.operands) {
-				sb.append(union); union = " UNION ";
-				sb.append("{"); 
-				translateComposition(sb, pm, api, ordered, x); 
-				sb.append("}\n" );
+			List<Filter> filters = ((Filters) c).filters;
+			if (filters.size() > 0) {
+				String and = "";
+				for (Filter f: filters) {
+					sb.append(and); and = " && ";
+					translateFilter(pm, api, sb, ordered, f);
+				}
 			}
-			sb.append("}\n");
+		} else if (c.op.equals("none")) {
+			sb.append( " TRUE " );
+		} else if (c instanceof Or) {
+			sb.append("(");
+			String or = "";
+			for (Composition x: c.operands) {
+				sb.append(or); or = " || ";
+				translateComposition(sb, pm, api, ordered, x); 
+			}
+			sb.append(")");
 		} else {
 			throw new UnsupportedOperationException(c.toString());
 		}
@@ -246,31 +286,45 @@ public class DataQuery {
 		String key = "?" + f.name.asVar();
 		String fVar = key;
 		String value = f.range.operands.get(0).asSparqlTerm(pm);
-		String rangeOp = f.getRangeOp();	
+		String rangeOp = f.getRangeOp();
+		
 		if (rangeOp.equals("oneof")) {
 			String orOp = "";
 			List<Term> operands = f.range.operands;
-			sb.append(" FILTER(" );
+			sb.append(" (" );
 			for (Term v: operands) {
 				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
 				orOp = " || ";
 			}
 			sb.append(")");
+		
 		} else if (rangeOp.equals("below")) {
-			Aspect x = aspectFor(ordered, f.name);
-			String below = x.getBelowPredicate(api);
-			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+			
+			System.err.println( ">> 'below' suppressed." );
+			
+			// sb.append( " TRUE " );
+			
+//			Aspect x = aspectFor(ordered, f.name);
+//			String below = x.getBelowPredicate(api);
+//			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+		
 		} else if (rangeOp.equals("contains")) {
-			sb.append(". ").append("FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+			sb.append("(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+		
 		} else if (rangeOp.equals("matches")) {
-			sb.append(". ").append("FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+			sb.append("(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+		
 		} else if (rangeOp.equals("search")) {
-			sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+			System.err.println( ">> 'search' suppressed" );
+			// sb.append(" TRUE ");
+			// sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+		
 		} else if (rangeOp.equals("eq")) {
 			// sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
+		
 		} else {
 			String op = opForFilter(f);
-			sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
+			sb.append(" (" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 		}
 	}
 
