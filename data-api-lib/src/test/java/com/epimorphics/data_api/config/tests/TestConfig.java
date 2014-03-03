@@ -51,7 +51,7 @@ public class TestConfig {
         assertEquals("Waterbody classifications", dataset.getLabel()); 
         assertEquals("Waterbody classifications", dataset.getLabel("en")); 
         assertEquals("A data cube of waterbody classifications from EA catchment planning pilot", dataset.getDescription()); 
-        assertEquals("?item qb:dataset classification:dataset", dataset.getBaseQuery());
+        assertEquals("{?item qb:dataset classification:dataset.}", dataset.getBaseQuery());
         checkAspects(dataset);
         
         JsonValue jv = asJson( man.asJson("en", "") );

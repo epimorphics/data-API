@@ -13,7 +13,7 @@
 eg:search-dataset a dsapi:Dataset;
     rdfs:label "Search data";
     dct:description "Search test dataset";
-    dsapi:baseQuery "?item rdf:type eg:Obs";
+    dsapi:baseQuery "{?item rdf:type eg:Obs.}";
     dsapi:aspect 
         [ dsapi:property eg:label],
         [ dsapi:property eg:resource],

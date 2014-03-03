@@ -138,9 +138,7 @@ public class DataQuery {
 	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 		    sb.append(dot).append( baseQuery );
-		    if (!baseQuery.trim().endsWith(".")) {
-		        dot = ".\n";
-		    }
+		    dot = "\n";
 		}
         for (Guard guard : guards) {
             sb.append(dot);
