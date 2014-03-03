@@ -104,70 +104,11 @@ public class DataQuery {
 	static final boolean properly = true;
 
 	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
-
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
-		
-		if (properly) return newToSparqlString(ordered, p, a, baseQuery, pm, api);
-		
-		StringBuilder sb = new StringBuilder();
-	//
-	//
-//		Map<String, List<Filter>> sf = new HashMap<String, List<Filter>>();
-//		for (Filter f: filters) {
-//			String key = "?" + f.name.asVar();
-//			List<Filter> x = sf.get(key);
-//			if (x == null) sf.put(key,  x = new ArrayList<Filter>() );
-//			x.add(f);
-//		}
-		
-        boolean baseQueryNeeded = true;
-        boolean needsDistinct = false;
-        for (Guard guard : guards) {
-            if (guard.supplantsBaseQuery()) {
-                baseQueryNeeded = false;
-            }
-            if (guard.needsDistinct()) {
-                needsDistinct = true;
-            }
-        }
-
-		sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT" : "") + "?item");
-		for (Aspect x: ordered) {
-			sb.append(" ?").append( x.asVar() );
-		} 
-	//	
-		sb.append("\nWHERE {");
-		String dot = "";
-	    //
-        if (globalSearchPattern != null) {
-            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
-            dot = " . ";
-        }
-	//
-		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-		    sb.append(dot).append( baseQuery );
-		    if (!baseQuery.trim().endsWith(".")) {
-		        dot = ".\n";
-		    }
-		}
-        for (Guard guard : guards) {
-            sb.append(dot);
-            dot = "\n";
-            sb.append(guard.queryFragment(api));
-        }
-	//	
-		translateFilters(pm, api, sb, ordered, dot);
-		sb.append("}\n");
-	//
-		querySort(sb);
-	//
-		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
-		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
-	//
-		return PrefixUtils.expandQuery(sb.toString(), pm);
+		return newToSparqlString(ordered, p, a, baseQuery, pm, api);
 	}
-
+	
 	private void querySort(StringBuilder sb) {
 		if (sortby.size() > 0) {
 			sb.append(" ORDER BY");
@@ -184,10 +125,7 @@ public class DataQuery {
 		StringBuilder sb = new StringBuilder();
 		String core = queryCore(p, a, baseQuery, pm, api);
 		String head = queryHead(p, a, baseQuery, pm, api);
-		
-		System.err.println( ">> OUTER: HEAD = " + head );
-		System.err.println( ">> OUTER: CORE = " + core );
-		
+				
 		recursiveTranslate(true, ordered, c, head, core, sb, p, a, baseQuery, pm, api);
 		querySort(sb);
 		
@@ -201,7 +139,6 @@ public class DataQuery {
 		( boolean needsHead, List<Aspect> ordered, Composition c, String head, String core, StringBuilder sb, Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		
 		if (c instanceof Or) {
-			System.err.println( ">> OR" );
 			sb.append(head);
 			String union = "";
 			for (Composition o: c.operands) {
@@ -213,7 +150,6 @@ public class DataQuery {
 			}
 			sb.append( "\n}}");
 		} else if (c instanceof And) {
-			System.err.println( ">> AND" );
 			if (needsHead) {
 				headAndCore(head, core, sb);
 			}
@@ -221,12 +157,7 @@ public class DataQuery {
 				recursiveTranslate(false, ordered, o, head, core, sb, p, a, baseQuery, pm, api);
 			}
 			if (needsHead) sb.append(" } ");
-		} else if (c instanceof Filters) {
-			System.err.println( ">> NEEDSHEAD " + needsHead + " FILTERS " + c );
-			
-			System.err.println( ">> HEAD: " + head );
-			System.err.println( ">> CORE: " + core );
-			
+		} else if (c instanceof Filters) {			
 			if (needsHead) {
 				headAndCore(head, core, sb);
 			}
@@ -241,7 +172,6 @@ public class DataQuery {
 		} else if (c.op.equals("none")) {
 			if (needsHead) { headAndCore(head, core, sb); sb.append("}"); }
 		} else {
-			System.err.println( ">> UNHANDLED " + c );
 			throw new UnsupportedOperationException("Cannot recursively translate: " + c);
 		}
 		
@@ -263,15 +193,10 @@ public class DataQuery {
 			}
 			sb.append(")");
 		
-		} else if (rangeOp.equals("below")) {
-			
-			System.err.println( ">> 'below' suppressed." );
-			
-			// sb.append( " TRUE " );
-			
-				Aspect x = aspectFor(ordered, f.name);
-				String below = x.getBelowPredicate(api);
-				sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+		} else if (rangeOp.equals("below")) {		
+			Aspect x = aspectFor(ordered, f.name);
+			String below = x.getBelowPredicate(api);
+			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
 		
 		} else if (rangeOp.equals("contains")) {
 			sb.append(" FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
@@ -297,7 +222,6 @@ public class DataQuery {
 	private void headAndCore(String head, String core, StringBuilder sb) {
 		sb.append(head);  
 		sb.append( " WHERE \n{ "); 
-		
 		sb.append(core);
 	}
 	
@@ -349,23 +273,6 @@ public class DataQuery {
 	    return sb.toString();
 	}
 
-	private void translateFilters(PrefixMapping pm, API_Dataset api, StringBuilder sb, List<Aspect> ordered, String dot) {
-		dot = establishAspectVars(dot, pm, sb, ordered);
-	//
-		topLevelTripleFilters(sb, pm, ordered, api, c);
-	//
-		if (c.isEasy()) {
-			if (c.nonTrivial()) {
-				System.err.println( ">> nonTrivial: " + c );
-				sb.append(" FILTER(").append("\n");
-				translateComposition( sb, pm, api, ordered, c );
-				sb.append( ")");
-			}
-		} else {
-			throw new UnsupportedOperationException("Cannot tyranslate difficult composition " + c );
-		}
-	}
-
 	private String establishAspectVars(String dot, PrefixMapping pm, StringBuilder sb, List<Aspect> ordered) {
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
@@ -388,34 +295,6 @@ public class DataQuery {
 		}
 		return dot;
 	}
-	
-	private void topLevelTripleFilters
-		( StringBuilder sb
-		, PrefixMapping pm
-		, List<Aspect> ordered
-		, API_Dataset api
-		, Composition c
-		) {
-
-		if (c instanceof And) {
-			for (Composition e: c.operands) topLevelTripleFilters(sb, pm, ordered, api, e);
-		} else if (c instanceof Filters) {
-			for (Filter f: ((Filters) c).filters) {
-				String fVar = "?" + f.name.asVar();
-				String value = f.range.operands.get(0).asSparqlTerm(pm);
-				if (f.range.op.equals("search")) {
-					sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
-				} else if (f.range.op.equals("below")) {
-					Aspect x = aspectFor(ordered, f.name);
-					String below = x.getBelowPredicate(api);
-					sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
-				}
-			}
-		} else {
-			// ignore. Say so for the moment.
-			System.err.println( ">> ignoring non-top-level filter: " + c);
-		}
-	}
 
 	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
 		if (c instanceof Filters) {
@@ -430,84 +309,6 @@ public class DataQuery {
 			if (eq != null) return eq;
 		}
 		return null;
-	}
-		
-	private void translateComposition
-		( StringBuilder sb
-		, PrefixMapping pm
-		, API_Dataset api
-		, List<Aspect> ordered
-		, Composition c
-		) {
-		if (c instanceof Filters) {
-			List<Filter> filters = ((Filters) c).filters;
-			if (filters.size() > 0) {
-				String and = "";
-				for (Filter f: filters) {
-					sb.append(and); and = " && ";
-					translateFilter(pm, api, sb, ordered, f);
-				}
-			}
-		} else if (c.op.equals("none")) {
-			sb.append( " TRUE " );
-		} else if (c instanceof Or) {
-			sb.append("(");
-			String or = "";
-			for (Composition x: c.operands) {
-				sb.append(or); or = " || ";
-				translateComposition(sb, pm, api, ordered, x); 
-			}
-			sb.append(")");
-		} else {
-			throw new UnsupportedOperationException(c.toString());
-		}
-		
-	}
-
-	private void translateFilter(PrefixMapping pm, API_Dataset api,	StringBuilder sb, List<Aspect> ordered, Filter f) {
-		String key = "?" + f.name.asVar();
-		String fVar = key;
-		String value = f.range.operands.get(0).asSparqlTerm(pm);
-		String rangeOp = f.getRangeOp();
-		
-		if (rangeOp.equals("oneof")) {
-			String orOp = "";
-			List<Term> operands = f.range.operands;
-			sb.append(" (" );
-			for (Term v: operands) {
-				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
-				orOp = " || ";
-			}
-			sb.append(")");
-		
-		} else if (rangeOp.equals("below")) {
-			
-			System.err.println( ">> 'below' suppressed." );
-			
-			// sb.append( " TRUE " );
-			
-//			Aspect x = aspectFor(ordered, f.name);
-//			String below = x.getBelowPredicate(api);
-//			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
-		
-		} else if (rangeOp.equals("contains")) {
-			sb.append("(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
-		
-		} else if (rangeOp.equals("matches")) {
-			sb.append("(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
-		
-		} else if (rangeOp.equals("search")) {
-			System.err.println( ">> 'search' suppressed" );
-			// sb.append(" TRUE ");
-			// sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
-		
-		} else if (rangeOp.equals("eq")) {
-			// sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
-		
-		} else {
-			String op = opForFilter(f);
-			sb.append(" (" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
-		}
 	}
 
 	private Aspect aspectFor(List<Aspect> ordered, Shortname name) {

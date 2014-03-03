@@ -138,7 +138,7 @@ public class Composition {
 	// TODO not
 	public static Composition build(List<Filter> filters, Map<String, List<Composition>> compositions) {
 		
-		System.err.println( ">> build: filters " + filters );		
+		// System.err.println( ">> build: filters " + filters );		
 		
 		List<Composition> ands = compositions.get("@and");
 		List<Composition> ors = compositions.get("@or");
@@ -153,7 +153,7 @@ public class Composition {
 		Composition result = Composition.or(expanded_ors);
 		
 		if (result.operands.size() == 0 && result.op.equals("or")) result = NONE;
-		System.err.println( ">> built: " + result );
+		// System.err.println( ">> built: " + result );
 		
 		return result;		
 	}

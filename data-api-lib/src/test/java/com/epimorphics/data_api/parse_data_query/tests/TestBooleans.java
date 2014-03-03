@@ -37,7 +37,7 @@ public class TestBooleans {
 			, "WHERE {"
 			, "}"
 			);
-		System.err.println(">> " + generated );
+		// System.err.println(">> !" + generated );
 		
 		// Asserts.assertSameSelect(expected, generated);
 	//
