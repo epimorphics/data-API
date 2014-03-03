@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.hp.hpl.jena.shared.BrokenException;
-
 public class Composition {
 	
 	public static final Composition NONE = new Composition
@@ -32,30 +30,6 @@ public class Composition {
 	public Composition(String op, List<Composition> operands) {
 		this.op = op;
 		this.operands = operands;
-	}
-
-	public boolean isEasy() {
-		return isEasy(true);
-	}
-
-	public boolean nonTrivial() {
-		for (Composition c: operands) if (c.nonTrivial()) return true;
-		if (this instanceof Filters) return nonTrivialFilter((Filters) this);
-		return false;
-	}
-
-	private boolean nonTrivialFilter(Filters fs) {
-		for (Filter f: fs.filters) if (nonTrivial(f)) return true;
-		return false;
-	}
-
-	private boolean nonTrivial(Filter f) {
-		return !(f.range.op.matches("^(eq|below|search)$"));
-	}
-
-	public boolean isEasy(boolean topLevel) {
-		if (op.equals("none")) return true;
-		throw new BrokenException("isEasy not implemented for " + this.getClass().getSimpleName());
 	}
 	
 	public static Composition and(List<Composition> operands) {
@@ -92,23 +66,12 @@ public class Composition {
 			sb.append(")");
 			return sb.toString();
 		}
-		
-		public boolean isEasy(boolean topLevel) {
-			for (Filter f: filters) 
-				return true; // if (f.range.op.matches("^(below|search$)")) return false;
-			return true;
-		}
 	}
 	
 	public static class And extends Composition {
 
 		public And(List<Composition> operands) {
 			super("and", operands);
-		}
-
-		public boolean isEasy(boolean topLevel) {
-			for (Composition c: operands) if (!c.isEasy(topLevel)) return false;
-			return true;
 		}
 	}
 	
@@ -117,21 +80,12 @@ public class Composition {
 		public Or(List<Composition> operands) {
 			super("or", operands);
 		}
-
-		public boolean isEasy(boolean topLevel) {
-			for (Composition c: operands) if (!c.isEasy(false)) return false;
-			return true;
-		}
 	}
 	
 	public static class Not extends Composition {
 		
 		public Not(List<Composition> operands) {
 			super("not", operands);
-		}
-
-		public boolean isEasy(boolean topLevel) {
-			return false;
 		}
 	}
 
@@ -156,43 +110,6 @@ public class Composition {
 		// System.err.println( ">> built: " + result );
 		
 		return result;		
-	}
-
-	public static String allToSparql(Composition c) {
-		StringBuilder sb = new StringBuilder();	
-		sb.append("\n\n");
-		
-		sb.append("COMPOSITION\n    ").append(c).append("\n");
-		allToSparql(sb, c);
-		return sb.toString();
-	}
-	
-	public static void allToSparql(StringBuilder sb, Composition c) {
-		sb.append("GLOBAL STUFF\n");
-		toSparql(sb, c);
-	}
-	
-	public static void toSparql(StringBuilder sb, Composition c) {
-		if (c instanceof And) {
-			for (Composition x: c.operands) toSparql(sb, x);
-		} else if (c instanceof Or) {
-			sb.append("NESTED SELECT for " + c + "\n");
-			sb.append("  {\n");
-			String u = "";
-			for (Composition x: c.operands) {
-				sb.append(u); u = " UNION ";
-				sb.append("{"); toSparql(sb, x); sb.append("}\n" );
-			}
-			sb.append("  }\n");
-			sb.append("END NESTED SELECT\n" );
-		} else if (c instanceof Filters) {
-			Filters f = (Filters) c;
-			sb.append("FILTERS ").append(f.filters).append("\n");
-		} else {
-			throw new RuntimeException("NOT IMPLEMENTED: " + c );
-		}
-			
-	}
-	
+	}	
 
 }
