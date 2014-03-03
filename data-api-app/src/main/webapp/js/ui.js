@@ -42,9 +42,11 @@ $(function() {
         }
     };
     
-    var formatTable = function(data) {
+    var formatTable = function(data, start) {
+        var duration = now() - start;
         if (data.length > 0) {
-            var html = "<table class='table table-condensed table-striped table-bordered'>";
+            var html = "<p><em>Query time:</em> " + duration + " ms</p>";
+            html += "<table class='table table-condensed table-striped table-bordered'>";
             html += "<thead><tr>";
             jQuery.each(data[0], function(key, value){
                 html += "<th>" + key + "</th>";
@@ -65,6 +67,11 @@ $(function() {
         
     };
     
+    var now = function() {
+        return new Date().getTime();
+    };
+    
+    
     var formatExplanation = function(data) {
         var html = "<h3>Data set: " + data.datasetName + "</h3>";
         html += "<ul>";
@@ -81,6 +88,7 @@ $(function() {
 
     var send = function(formatter, url) {
         return function() {  
+            var start = now();
             $.ajax({
                 type: "POST",
                 url: url,
@@ -88,7 +96,7 @@ $(function() {
                 data: $("#json").val(),
                 dataType: "json",
                 success: function(data) {
-                    $("#results").html("<h2>Results</h2>" + formatter(data));
+                    $("#results").html("<h2>Results</h2>" + formatter(data, start));
                 },
                 error: function(xhr, status, error) {
                     $("#results").html("<h2>Failed</h2><p>" + error + ":" + xhr.responseText + "</p>");
