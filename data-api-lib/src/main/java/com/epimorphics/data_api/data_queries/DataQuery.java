@@ -126,7 +126,7 @@ public class DataQuery {
 		String core = queryCore(p, a, baseQuery, pm, api);
 		String head = queryHead(p, a, baseQuery, pm, api);
 				
-		recursiveTranslate(true, ordered, c, head, core, sb, p, a, baseQuery, pm, api);
+		recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
 		querySort(sb);
 		
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
@@ -136,7 +136,7 @@ public class DataQuery {
 	}
 
 	private void recursiveTranslate
-		( boolean needsHead, List<Aspect> ordered, Composition c, String head, String core, StringBuilder sb, Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
+		( boolean needsHead, List<Aspect> ordered, Composition c, String head, String core, StringBuilder sb, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		
 		if (c instanceof Or) {
 			sb.append(head);
@@ -145,7 +145,7 @@ public class DataQuery {
 				sb.append(union); union = " UNION ";
 				sb.append( " {\n" );
 				sb.append( "{" ); headAndCore(head, core, sb);
-				recursiveTranslate(false, ordered, o, head, core, sb, p, a, baseQuery, pm, api);
+				recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
 				sb.append( " \n}}" );
 			}
 			sb.append( "\n}}");
@@ -154,7 +154,7 @@ public class DataQuery {
 				headAndCore(head, core, sb);
 			}
 			for (Composition o: c.operands) {
-				recursiveTranslate(false, ordered, o, head, core, sb, p, a, baseQuery, pm, api);
+				recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
 			}
 			if (needsHead) sb.append(" } ");
 		} else if (c instanceof Filters) {			
