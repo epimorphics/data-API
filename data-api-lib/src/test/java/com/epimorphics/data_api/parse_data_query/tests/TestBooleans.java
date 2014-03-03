@@ -25,7 +25,7 @@ public class TestBooleans {
 		;
 	
 	@Test public void testA() {
-		String incoming = "{'@or': [{'pre:local': {'@eq': 1}}, {'pre:local': {'@eq': 2}}]}";
+		String incoming = "{'@or': [{'pre:local': {'@lt': 1}}, {'pre:local': {'@gt': 2}}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
@@ -33,13 +33,22 @@ public class TestBooleans {
 		String generated = q.toSparql(p, ds);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
-			, "SELECT ?item ?pre_local"
-			, "WHERE {"
-			, "}"
+			, "SELECT ?item ?pre_local {"
+			, "    {"
+			, "    SELECT ?item ?pre_local WHERE"
+			, "    { ?item pre:local ?pre_local FILTER(?pre_local < 1) }"
+			, "    }"
+			, "UNION"
+			, "    {"
+			, "    {"
+			, "    SELECT ?item ?pre_local WHERE" 
+			, "    { ?item pre:local ?pre_local FILTER(?pre_local > 2)" 
+			, "   }}"
+			, "}}"
 			);
 		// System.err.println(">> !" + generated );
 		
-		// Asserts.assertSameSelect(expected, generated);
+		Asserts.assertSameSelect(expected, generated);
 	//
 	}
 	
