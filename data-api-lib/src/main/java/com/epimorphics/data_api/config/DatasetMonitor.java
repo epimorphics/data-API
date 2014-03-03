@@ -22,6 +22,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.rdfutil.RDFUtil;
+import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
@@ -56,54 +57,58 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     @Override
     protected Collection<API_Dataset> configure(File file) {
         List<API_Dataset> datasets = new ArrayList<>();
-        Model config = FileManager.get().loadModel( file.getPath() );
-        Resource configRoot = RDFUtil.findRoot(config);
-        
-        // Set the default global prefixes
-        // stops applications rebinding them in a way with might break internal assumptions
-        config.setNsPrefixes(DefaultPrefixes.get());
-        
-        // The config may reference dataset or DSD information in the source
-        // If so pull in a local copy
-        Resource dataset = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dataset);
-        Resource dsd = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dsd);
-        if (dataset != null && !hasProperties(dataset)) {
-            addClosure(dataset);
-            if (dsd == null) {
-                dsd = RDFUtil.getResourceValue(dataset, Cube.structure);
-            }
-            if (dsd != null && !hasProperties(dsd)) {
-                addClosure(dsd);
-                if (dsd.isURIResource()) {
-                    // Try to fetch the descriptions of the components
-                    String componentQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
-                            Cube.getURI(), dsd.getURI());
-                    addClosure(dataset, manager.getSource().describe(componentQuery));
-                    String codelistQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) / qb:codeList ?x}",
-                            Cube.getURI(), dsd.getURI());
-                    addClosure(dataset, manager.getSource().describe(codelistQuery));
+        try {
+            Model config = FileManager.get().loadModel( file.getPath() );
+            Resource configRoot = RDFUtil.findRoot(config);
+            
+            // Set the default global prefixes
+            // stops applications rebinding them in a way with might break internal assumptions
+            config.setNsPrefixes(DefaultPrefixes.get());
+            
+            // The config may reference dataset or DSD information in the source
+            // If so pull in a local copy
+            Resource dataset = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dataset);
+            Resource dsd = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dsd);
+            if (dataset != null && !hasProperties(dataset)) {
+                addClosure(dataset);
+                if (dsd == null) {
+                    dsd = RDFUtil.getResourceValue(dataset, Cube.structure);
+                }
+                if (dsd != null && !hasProperties(dsd)) {
+                    addClosure(dsd);
+                    if (dsd.isURIResource()) {
+                        // Try to fetch the descriptions of the components
+                        String componentQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
+                                Cube.getURI(), dsd.getURI());
+                        addClosure(dataset, manager.getSource().describe(componentQuery));
+                        String codelistQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) / qb:codeList ?x}",
+                                Cube.getURI(), dsd.getURI());
+                        addClosure(dataset, manager.getSource().describe(codelistQuery));
+                    }
                 }
             }
+            
+            // Also pull in property definitions for any aspect property declared inline
+            List<Resource> aspectprops = QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:property");
+            aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:codeList") );
+            aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:codeList") );
+            if ( ! aspectprops.isEmpty() ) {
+                String[] uris = new String[ aspectprops.size() ];
+                for (int i = 0; i < aspectprops.size(); i++) uris[i] = aspectprops.get(i).getURI();
+                config.add( ModelFactory.createModelForGraph( manager.getSource().describeAll(uris)) );
+            }
+            
+            API_Dataset dsapi = new API_Dataset(configRoot, manager); 
+            if (dsd != null) {
+                parseDSD(dsapi, dsd, datasets);
+            } else {
+                parseAspects(dsapi, configRoot, datasets);
+            }
+            datasets.add(dsapi);
+            return datasets;
+        } catch (Exception e) {
+            throw new EpiException("Failed to load config file: " + file.getPath() + " - " + e, e);
         }
-        
-        // Also pull in property definitions for any aspect property declared inline
-        List<Resource> aspectprops = QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:property");
-        aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:aspect / dsapi:codeList") );
-        aspectprops.addAll( QueryUtil.connectedResources(configRoot, "dsapi:codeList") );
-        if ( ! aspectprops.isEmpty() ) {
-            String[] uris = new String[ aspectprops.size() ];
-            for (int i = 0; i < aspectprops.size(); i++) uris[i] = aspectprops.get(i).getURI();
-            config.add( ModelFactory.createModelForGraph( manager.getSource().describeAll(uris)) );
-        }
-        
-        API_Dataset dsapi = new API_Dataset(configRoot, manager); 
-        if (dsd != null) {
-            parseDSD(dsapi, dsd, datasets);
-        } else {
-            parseAspects(dsapi, configRoot, datasets);
-        }
-        datasets.add(dsapi);
-        return datasets;
     }
     
     private void parseDSD(API_Dataset dsapi, Resource dsd, List<API_Dataset> datasets) {
