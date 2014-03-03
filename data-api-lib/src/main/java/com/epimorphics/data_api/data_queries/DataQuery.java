@@ -126,6 +126,7 @@ public class DataQuery {
 		String core = queryCore(p, a, baseQuery, pm, api);
 		String head = queryHead(p, a, baseQuery, pm, api);
 				
+		sb.append(head).append("\n");
 		recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
 		querySort(sb);
 		
@@ -139,40 +140,38 @@ public class DataQuery {
 		( boolean needsHead, List<Aspect> ordered, Composition c, String head, String core, StringBuilder sb, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		
 		if (c instanceof Or) {
-			sb.append(head);
+			// sb.append(head);
 			String union = "";
 			for (Composition o: c.operands) {
 				sb.append(union); union = " UNION ";
+				
 				sb.append( " {\n" );
 				sb.append( "{" ); headAndCore(head, core, sb);
 				recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
 				sb.append( " \n}}" );
+				
 			}
 			sb.append( "\n}}");
-		} else if (c instanceof And) {
-			if (needsHead) {
-				headAndCore(head, core, sb);
-			}
-			for (Composition o: c.operands) {
-				recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
+		} else  {
+			if (needsHead) headAndCore("", core, sb);
+			if (c instanceof And) {
+				for (Composition o: c.operands) {
+					recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
+				}
+			} else if (c instanceof Filters) {	
+			//
+				String dot = "";
+				for (Filter f: ((Filters) c).filters) {
+					sb.append(dot);
+					doFilter(dot, sb, f, api, ordered, pm);
+					dot = " . ";
+				}
+			} else if (c.op.equals("none")) {
+				//
+			} else {
+				throw new UnsupportedOperationException("Cannot recursively translate: " + c);
 			}
 			if (needsHead) sb.append(" } ");
-		} else if (c instanceof Filters) {			
-			if (needsHead) {
-				headAndCore(head, core, sb);
-			}
-		//
-			String dot = "";
-			for (Filter f: ((Filters) c).filters) {
-				sb.append(dot);
-				doFilter(dot, sb, f, api, ordered, pm);
-				dot = " . ";
-			}
-			if (needsHead) sb.append(" } ");
-		} else if (c.op.equals("none")) {
-			if (needsHead) { headAndCore(head, core, sb); sb.append("}"); }
-		} else {
-			throw new UnsupportedOperationException("Cannot recursively translate: " + c);
 		}
 		
 	}
@@ -228,12 +227,11 @@ public class DataQuery {
 	private String queryHead(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
-		
-		StringBuilder sb = new StringBuilder();
-        boolean needsDistinct = false;
-        
+	//	
+		boolean needsDistinct = false;
         for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
     //
+        StringBuilder sb = new StringBuilder();
 		sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT" : "") + "?item");
 		for (Aspect x: ordered) sb.append(" ?").append( x.asVar() );		
 		return sb.toString();
