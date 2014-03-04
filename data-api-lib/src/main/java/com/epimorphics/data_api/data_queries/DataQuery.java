@@ -133,20 +133,23 @@ public class DataQuery {
 	    //
         if (globalSearchPattern != null) {
             sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
-            dot = " . ";
+            dot = " .\n ";
         }
 	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+		    // sb.append("# BASE QUERY\n");
 		    sb.append(dot).append( baseQuery );
-		    dot = "\n";
+		    dot = " .\n";
 		}
         for (Guard guard : guards) {
+        	// sb.append("# GUARD\n");
             sb.append(dot);
-            dot = "\n";
+            dot = " .\n";
             sb.append(guard.queryFragment(api));
         }
 	//
 		for (Aspect x: ordered) {
+			// sb.append( "# ASPECT\n" );
 			sb.append(dot);
 		//
 			String fVar = "?" + x.asVar();
