@@ -138,13 +138,15 @@ public class DataQuery {
 	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 		    // sb.append("# BASE QUERY\n");
-		    sb.append(dot).append( baseQuery );
-		    dot = " .\n";
+		    sb.append(dot).append("{ ").append( baseQuery ).append(" }");
+//            dot = " .\n";
+            dot = "\n";
 		}
         for (Guard guard : guards) {
         	// sb.append("# GUARD\n");
             sb.append(dot);
-            dot = " .\n";
+//            dot = " .\n";
+            dot = " \n";
             sb.append(guard.queryFragment(api));
         }
 	//

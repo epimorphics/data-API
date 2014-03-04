@@ -404,7 +404,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
 		Asserts.assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item WHERE { ?item pre:has pre:value }", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item WHERE { { ?item pre:has pre:value } }", sq );
 		}
 	
 	@Test public void testDatasetRestrictionWithAspects() {
@@ -415,6 +415,6 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, "?item pre:has pre:value .", pm);
 		assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { ?item pre:has pre:value . ?item pre:Y ?pre_Y }", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { { ?item pre:has pre:value . } ?item pre:Y ?pre_Y }", sq );
 		}
 }
