@@ -16,7 +16,7 @@
     rdfs:label "Waterbody classifications";
     dct:description "A data cube of waterbody classifications from EA catchment planning pilot";
     dsapi:qb_dataset <http://environment.data.gov.uk/data/waterbody/classification/dataset>;
-    dsapi:baseQuery "?item qb:dataset classification:dataset" ;
+    dsapi:baseQuery "{?item qb:dataset classification:dataset.}" ;
     
     dsapi:aspect 
         [ dsapi:property wb-classification:classificationValue; ],

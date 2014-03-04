@@ -413,7 +413,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(Y);
 	//
-		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
+		String sq = q.toSparql(p, a, "?item pre:has pre:value .", pm);
 		assertNoProblems("translation failed", p);
 		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { ?item pre:has pre:value . ?item pre:Y ?pre_Y }", sq );
 		}
