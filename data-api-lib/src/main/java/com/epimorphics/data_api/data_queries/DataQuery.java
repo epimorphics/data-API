@@ -106,9 +106,64 @@ public class DataQuery {
 	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
-		return newToSparqlString(ordered, p, a, baseQuery, pm, api);
+		
+		StringBuilder sb = new StringBuilder();
+		String core = queryCore(p, a, baseQuery, pm, api);
+		String head = queryHead(p, a, baseQuery, pm, api);
+				
+		sb.append(head).append("\n");
+		if (c.isPure()) {
+			sb.append( "{" );
+			sb.append(core);
+			if (!c.isTrivial()) {
+				sb.append(" FILTER(" );
+				booleanExpression(true, ordered, c, head, core, sb, baseQuery, pm, api);
+				sb.append(")");
+			} else {
+				// nothing
+			}
+			sb.append( "}" );
+		} else {
+			recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
+		}
+		querySort(sb);
+		
+		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
+		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
+		
+		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 	
+	private void booleanExpression(boolean b, List<Aspect> ordered,
+			Composition c, String head, String core, StringBuilder sb,
+			String baseQuery, PrefixMapping pm, API_Dataset api) {
+		if (c instanceof Or) {
+			sb.append("(");
+			String or = "";
+			for (Composition o: c.operands) {
+				sb.append(or); or = " || ";
+				booleanExpression(b, ordered, o, head, core, sb, baseQuery, pm, api);
+			}
+			sb.append(")");
+		} else if (c instanceof And) {
+			String and = "";
+			for (Composition o: c.operands) {
+				sb.append(and); and = " && ";
+				booleanExpression(b, ordered, o, head, core, sb, baseQuery, pm, api); 
+			}
+		} else if (c instanceof Filters) {
+			String and = "";
+			for (Filter f: ((Filters) c).filters) {
+				sb.append(and); and = " && ";
+				doFilter("", "", sb, f, api, ordered, pm);
+			}
+		} else if (c.op == "none") {
+			sb.append(" TRUE ");
+		} else {
+			throw new UnsupportedOperationException("unknown boolean expression: " + c);
+		}
+	}
+
 	private void querySort(StringBuilder sb) {
 		if (sortby.size() > 0) {
 			sb.append(" ORDER BY");
@@ -121,26 +176,10 @@ public class DataQuery {
 		}
 	}
 
-	private String newToSparqlString(List<Aspect> ordered, Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
-		StringBuilder sb = new StringBuilder();
-		String core = queryCore(p, a, baseQuery, pm, api);
-		String head = queryHead(p, a, baseQuery, pm, api);
-				
-		sb.append(head).append("\n");
-		recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
-		querySort(sb);
-		
-		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
-		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
-		
-		return PrefixUtils.expandQuery(sb.toString(), pm);
-	}
-
 	private void recursiveTranslate
 		( boolean needsHead, List<Aspect> ordered, Composition c, String head, String core, StringBuilder sb, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		
 		if (c instanceof Or) {
-			// sb.append(head);
 			String union = "";
 			for (Composition o: c.operands) {
 				sb.append(union); union = " UNION ";
@@ -165,7 +204,7 @@ public class DataQuery {
 				String dot = "";
 				for (Filter f: ((Filters) c).filters) {
 					sb.append(dot);
-					doFilter(dot, sb, f, api, ordered, pm);
+					doFilter("FILTER", dot, sb, f, api, ordered, pm);
 					dot = " . ";
 				}
 			} else if (c.op.equals("none")) {
@@ -183,7 +222,7 @@ public class DataQuery {
 //		sb.append(core);
 //	}
 
-	private void doFilter(String dot, StringBuilder sb, Filter f, API_Dataset api, List<Aspect> ordered, PrefixMapping pm) {
+	private void doFilter(String FILTER, String dot, StringBuilder sb, Filter f, API_Dataset api, List<Aspect> ordered, PrefixMapping pm) {
 		String key = "?" + f.name.asVar();
 		String fVar = key;
 		String value = f.range.operands.get(0).asSparqlTerm(pm);
@@ -192,7 +231,7 @@ public class DataQuery {
 		if (rangeOp.equals("oneof")) {
 			String orOp = "";
 			List<Term> operands = f.range.operands;
-			sb.append(" FILTER(" );
+			sb.append(" ").append(FILTER).append("(");
 			for (Term v: operands) {
 				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
 				orOp = " || ";
@@ -205,10 +244,10 @@ public class DataQuery {
 			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
 		
 		} else if (rangeOp.equals("contains")) {
-			sb.append(" FILTER(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
+			sb.append(" ").append(FILTER).append( "(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
 		
 		} else if (rangeOp.equals("matches")) {
-			sb.append(" FILTER(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+			sb.append(" ").append(FILTER).append("(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
 		
 		} else if (rangeOp.equals("search")) {
 			// System.err.println( ">> 'search' suppressed" );
@@ -221,7 +260,7 @@ public class DataQuery {
 		
 		} else {
 			String op = opForFilter(f);
-			sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
+			sb.append(" ").append(FILTER).append("(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 		}
 	}
 	

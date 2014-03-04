@@ -33,6 +33,16 @@ public class Filter {
 
 	public String getRangeOp() {
 		return range.op;
+
+	}
+
+	/**
+	    A Filter is pure if it isn't some kind of triple pattern
+	    match. For now we test for the two known impure operators
+	*/
+	public boolean isPure() {
+		if (range.op.equals("search") || range.op.equals("below")) return false;
+		return true;
 	}
 
 }

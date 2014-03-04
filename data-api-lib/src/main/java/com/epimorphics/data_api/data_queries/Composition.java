@@ -31,7 +31,27 @@ public class Composition {
 		this.op = op;
 		this.operands = operands;
 	}
+
+	/**
+	    A Composition is pure if all its filters are non-triple-filters.
+	*/
+	public boolean isPure() {
+		for (Composition c: operands) if (!c.isPure()) return false;
+		return true;
+	}
+
+	public boolean isTrivial() {
+		return 
+			op.equals("none") 
+			|| (op.equals("filter") && isTrivial(((Filters) this).filters))
+			;
+	}
 	
+	private boolean isTrivial(List<Filter> filters) {
+		for (Filter f: filters) if (!f.range.op.equals("eq")) return false;
+		return true;
+	}
+
 	public static Composition and(List<Composition> operands) {
 		if (operands.size() == 1) return operands.get(0);
 		return new And(operands);
@@ -65,6 +85,14 @@ public class Composition {
 			sb.append(" ").append(filters);
 			sb.append(")");
 			return sb.toString();
+		}
+		
+		/**
+		    A Filters is pure if all of its sub-filters are pure.
+		*/
+		public boolean isPure() {
+			for (Filter f: filters) if (!f.isPure()) return false;
+			return true;
 		}
 	}
 	
