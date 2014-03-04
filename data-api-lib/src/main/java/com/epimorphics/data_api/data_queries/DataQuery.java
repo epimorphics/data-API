@@ -252,16 +252,16 @@ public class DataQuery {
         }
 		String dot = "";
 	//
-	    if (globalSearchPattern != null) {
-	        sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
-	        dot = " . ";
-	    }
+        if (globalSearchPattern != null) {
+            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
+            dot = " .\n ";
+        }
 	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-		    sb.append(dot).append( baseQuery );
-		    if (!baseQuery.trim().endsWith(".")) {
-		        dot = ".\n";
-		    }
+		    // sb.append("# BASE QUERY\n");
+		    sb.append(dot).append("{ ").append( baseQuery ).append(" }");
+//            dot = " .\n";
+            dot = "\n";
 		}
 	    for (Guard guard : guards) {
 	        sb.append(dot);
