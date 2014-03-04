@@ -22,7 +22,6 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.rdfutil.RDFUtil;
-import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
@@ -107,7 +106,9 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             datasets.add(dsapi);
             return datasets;
         } catch (Exception e) {
-            throw new EpiException("Failed to load config file: " + file.getPath() + " - " + e, e);
+//            throw new EpiException("Failed to load config file: " + file.getPath() + " - " + e, e);
+            log.error("Failed to load config file: " + file.getPath() + " - " + e);
+            return new ArrayList<>();
         }
     }
     
