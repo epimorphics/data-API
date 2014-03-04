@@ -242,11 +242,21 @@ public class DataQueryParser {
 			
 			JsonValue value = jo.get("@value");
 			JsonValue type = jo.get("@type");
+			JsonValue lang = jo.get("@lang");
 			
-			String typeString = type.getAsString().value();
-			String valueString = value.getAsString().value();
-		//
-			return Term.typed(valueString, typeString);
+			if (value != null) {
+				String valueString = value.getAsString().value();				
+				if (type != null && lang != null) {
+					p.add( "JSON value has both @type and @lang: " + jv );
+					return null;
+				} else if (type != null) {
+					String typeString = type.getAsString().value();
+					return Term.typed(valueString, typeString);				
+				} else if (lang != null) {
+					String langString = lang.getAsString().value();
+					return Term.languaged(valueString, langString);
+				}
+			}			
 		}
 		p.add("Cannot convert JSON value '" + jv + "' to Term.");
 		return Term.bad(jv);

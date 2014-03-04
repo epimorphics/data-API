@@ -190,7 +190,7 @@ public class DataQuery {
 					} else {
 						String op = opForFilter(f);
 						if (isEquality) {
-							sb.append(" BIND(").append(eqValue).append( "AS ").append(fVar).append(")");
+							sb.append(" BIND(").append(eqValue).append( " AS ").append(fVar).append(")");
 						} else {
 							sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");							
 						}
