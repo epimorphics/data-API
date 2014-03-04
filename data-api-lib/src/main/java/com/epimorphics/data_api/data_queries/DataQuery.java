@@ -146,14 +146,16 @@ public class DataQuery {
 				sb.append(union); union = " UNION ";
 				
 				sb.append( " {\n" );
-				sb.append( "{" ); headAndCore(head, core, sb);
+				sb.append( "{" ); sb.append(head);  
+				sb.append( " WHERE \n{ "); 
+				sb.append(core);
 				recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
 				sb.append( " \n}}" );
 				
 			}
 			sb.append( "\n}}");
 		} else  {
-			if (needsHead) headAndCore("", core, sb);
+			if (needsHead) sb.append( " WHERE \n{ ").append(core);
 			if (c instanceof And) {
 				for (Composition o: c.operands) {
 					recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
@@ -173,8 +175,13 @@ public class DataQuery {
 			}
 			if (needsHead) sb.append(" } ");
 		}
-		
 	}
+
+//	private void headAndCore(String head, String core, StringBuilder sb) {
+//		sb.append(head);  
+//		sb.append( " WHERE \n{ "); 
+//		sb.append(core);
+//	}
 
 	private void doFilter(String dot, StringBuilder sb, Filter f, API_Dataset api, List<Aspect> ordered, PrefixMapping pm) {
 		String key = "?" + f.name.asVar();
@@ -216,12 +223,6 @@ public class DataQuery {
 			String op = opForFilter(f);
 			sb.append(" FILTER(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
 		}
-	}
-
-	private void headAndCore(String head, String core, StringBuilder sb) {
-		sb.append(head);  
-		sb.append( " WHERE \n{ "); 
-		sb.append(core);
 	}
 	
 	private String queryHead(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
