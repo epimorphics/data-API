@@ -43,23 +43,10 @@ public class DataQueryParser {
 	private static DataQuery DoQuietly(Problems p, API_Dataset dataset, JsonValue jv) {		
 		if (jv.isObject()) {
 			DataQueryParser qp = new DataQueryParser(p, dataset);
-			DataQuery q = qp.parseDataQuery(jv.getAsObject());
-			// showBooleans(qp.booleans, 0);
-			return q;
+			return qp.parseDataQuery(jv.getAsObject());
 		} else {
 			p.add("DataQuery should be a JSON object, but given: " + jv);
 			return null;
-		}
-	}
-
-	static void showBooleans(Map<String, Set<List<Filter>>> booleans, int depth) {
-		for (String key: "@and/@or/@not".split("/")) {
-			for (int i = 0; i < depth * 2; i += 1) System.err.print( " |");
-			System.err.print(key);
-			for (List<Filter> s: booleans.get(key)) {
-				System.err.print(s);
-			}
-			System.err.println();
 		}
 	}
 	

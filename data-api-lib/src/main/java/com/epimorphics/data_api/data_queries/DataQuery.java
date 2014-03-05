@@ -216,12 +216,6 @@ public class DataQuery {
 		}
 	}
 
-//	private void headAndCore(String head, String core, StringBuilder sb) {
-//		sb.append(head);  
-//		sb.append( " WHERE \n{ "); 
-//		sb.append(core);
-//	}
-
 	private void doFilter(String FILTER, String dot, StringBuilder sb, Filter f, API_Dataset api, List<Aspect> ordered, PrefixMapping pm) {
 		String key = "?" + f.name.asVar();
 		String fVar = key;
@@ -257,6 +251,7 @@ public class DataQuery {
 		} else if (rangeOp.equals("eq")) {
 //			sb.append("?item ").append(f.name.prefixed).append( " ").append(value);
 //			sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
+			sb.append(" ").append(FILTER).append("(" ).append(fVar).append(" ").append("=").append(" ").append(value).append(")");
 		
 		} else {
 			String op = opForFilter(f);
@@ -317,7 +312,7 @@ public class DataQuery {
 			sb.append(dot);	dot = "\n.";
 		//
 			String eqValue = findEqualityValue(pm, x.getName(), c);
-			boolean isEquality = eqValue != null; // theseFilters != null && theseFilters.get(0).range.op.equals("eq");						
+			boolean isEquality = eqValue != null;				
 		//		
 			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
 			sb
@@ -341,12 +336,22 @@ public class DataQuery {
 					if (f.range.op.equals("eq")) 
 						return f.range.operands.get(0).asSparqlTerm(pm);
 			}
+			return null;
+		} else {
+			// All operands should have the same value, which is the result.
+			String eqValue = null;
+			for (Composition x: c.operands) {
+				String eq = findEqualityValue(pm, name, x);
+				if (eq == null) return null;
+			//
+				if (eqValue == null) {
+					eqValue = eq;
+				} else if (!eqValue.equals(eq)) {
+					return null;
+				}
+			}
+			return eqValue;
 		}
-		for (Composition x: c.operands) {
-			String eq = findEqualityValue(pm, name, x);
-			if (eq != null) return eq;
-		}
-		return null;
 	}
 
 	private Aspect aspectFor(List<Aspect> ordered, Shortname name) {

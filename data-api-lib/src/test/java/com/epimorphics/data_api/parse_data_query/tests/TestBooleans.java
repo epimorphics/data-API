@@ -11,17 +11,28 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
+import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
+import com.hp.hpl.jena.shared.PrefixMapping;
+
 import static com.epimorphics.data_api.test_support.Asserts.assertSameSelect;
 
 public class TestBooleans {
 
-	static final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
+	static final PrefixMapping pm = PrefixMapping.Factory.create()
+		.setNsPrefix("pre", "eh:/prefixPart/" )
+		.lock()
+		;
+
+	static final Aspect otherAspect = new Aspect(pm.expandPrefix("pre:other"), new Shortname(pm, "pre:other"));
+	
+	final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 		.add(Setup.localAspect)
 		;
 	
@@ -40,7 +51,25 @@ public class TestBooleans {
 			, "}"
 			);	
 		assertSameSelect(expected, generated);
-	//
+	}
+	
+	@Test public void testTrivialORWithEQ() {
+		ds.add(otherAspect);
+		String incoming = "{'@or': [{'pre:local': {'@eq': 1}}, {'pre:other': {'@eq': 2}}]}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);		
+		assertTrue(p.isOK());
+		String generated = q.toSparql(p, ds);
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/prefixPart/>"
+			, "SELECT ?item ?pre_local ?pre_other {"		
+			, "    ?item pre:local ?pre_local"
+			, "  . ?item pre:other ?pre_other"
+			, "    FILTER(?pre_local = 1 || ?pre_other = 2)"
+			, "}"
+			);	
+		assertSameSelect(expected, generated);
 	}
 	
 	@Test public void testNonTrivialOR() {
@@ -66,10 +95,7 @@ public class TestBooleans {
 			, "   }}"
 			, "}}"
 			);
-		// System.err.println(">> !" + generated );
-		
 		Asserts.assertSameSelect(expected, generated);
-	//		
 	}
 	
 	@Test public void testB() {
