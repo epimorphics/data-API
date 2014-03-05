@@ -67,6 +67,17 @@ $(function() {
         
     };
     
+    var formatJSON = function(data, start) {
+        var duration = now() - start;
+        if (data.length > 0) {
+            var html = "<p><em>Query time:</em> " + duration + " ms</p>";
+            html += "<pre>" + JSON.stringify(data, null, '    ') + "</pre>";
+            return html; 
+        } else {
+            return "empty";
+        }
+    };
+    
     var now = function() {
         return new Date().getTime();
     };
@@ -108,7 +119,7 @@ $(function() {
     $("#query-json").each(function() {
         var elt = $(this);
         var target = elt.attr('data-target');
-        elt.click( send(function(data){return "<pre>" + JSON.stringify(data, null, '    ') + "</pre>"; }, target) );
+        elt.click( send(formatJSON, target) );
     });
     
     $("#query").each(function() {
