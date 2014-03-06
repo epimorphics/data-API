@@ -8,13 +8,12 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.json.JSFullWriter;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TermTyped extends Term {
+public class TermTyped extends TermComposite {
 
-	final String value;
 	final String type;
 	
 	public TermTyped(String value, String type) {
-		this.value = value;
+		super(value);
 		this.type = type;
 	}
 

@@ -40,7 +40,9 @@ public class TermArray extends Term {
 
 	@Override public void writeTo(JSFullWriter jw) {
 		jw.startArray();
-		for (Term t: terms) t.writeElement(jw);
+		for (Term t: terms) {
+			t.writeElement(jw); 
+		}
 		jw.finishArray();
 	}
 }
