@@ -14,9 +14,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -25,6 +29,7 @@ import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.atlas.json.JsonValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +46,13 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
+import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.NotFoundException;
 
 /**
@@ -231,7 +239,97 @@ public class DSAPIManager extends ComponentBase {
     	return Response.ok(description).build();
     }
     
-    /**
+    public List<String> getItems(JsonValue query) {
+    	List<String> items = new ArrayList<String>();
+    	if (query.isArray())
+    		for (JsonValue x: query.getAsArray())
+    			items.add(asItem(x));
+    	return items;
+    }
+    
+	private String asItem(JsonValue x) {
+		if (x.isString()) return x.getAsString().value();
+		if (x.isObject()) return x.getAsObject().get("@id").getAsString().value();
+		// TODO fix this problem report to cause a 400.
+		throw new RuntimeException("Expected URI string or @id object: " + x);
+	}
+	
+	// If no labels properies are requested, use these.
+	static final List<String> defaultLabelProperties =
+		Arrays.asList(new String[] {
+			RDFS.label.getURI()
+			, SKOS.prefLabel.getURI()
+		} );
+    
+    private List<String> getLabelProperties(JsonValue jv) {
+    	List<String> items = new ArrayList<String>();
+    	if (jv == null) {
+    		items.addAll(defaultLabelProperties);
+    	} else if (jv.isArray()) {
+    		for (JsonValue p: jv.getAsArray())
+    			items.add(asItem(p));
+    	}
+		return items;
+	}
+	
+	public Response datasetGetLabels(String dsid, JsonObject query) {   	
+    	
+		List<String> items = getItems(query.get("@items"));
+		List<String> labelProperties = getLabelProperties(query.get("@properties"));
+		
+		int varCount = 0, predicateCount = 0;
+		Map<String, String> vars = new HashMap<String, String>();
+		for (String item: items) vars.put(item, "S_" + varCount++ );
+		for (String lp: labelProperties) vars.put(lp, "P_" + predicateCount++);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("CONSTRUCT {").append("\n");
+		String dot = "";
+		for (String r: items)
+			for (String p: labelProperties) {			
+				sb
+					.append(dot)
+					.append( " ?" ).append(vars.get(r))
+					.append(" ?").append(vars.get(p))
+					.append(" ?").append(vars.get(r)).append("_").append(vars.get(p))
+					.append("\n")
+					;
+				dot = " . ";
+			}			
+	//
+		sb.append("} WHERE {").append("\n");
+		String union = "";
+		for (String r: items) 
+			for (String p: labelProperties) {
+				sb
+				.append( union )
+				.append( " {" )
+				.append(" BIND(<").append(r).append("> AS ?").append(vars.get(r)).append(")").append("\n")
+				.append("  BIND(<").append(p).append("> AS ?").append(vars.get(p)).append(")").append("\n")
+				.append( " ?" ).append(vars.get(r))
+				.append(" ?").append(vars.get(p)).append(" ")
+				.append(" ?").append(vars.get(r)).append("_").append(vars.get(p))
+				.append( "}")
+				.append("\n")
+				;
+				union = "UNION";
+			}
+		sb.append("}").append("\n");
+		
+		String sq = sb.toString();
+    	
+    	final Model m = ModelFactory.createModelForGraph(source.construct(sq));
+    	StreamingOutput description = new StreamingOutput() {
+
+			@Override public void write(OutputStream output) throws IOException, WebApplicationException {
+				m.write(output, "JSON-LD");
+				
+			}};
+    	
+    	return Response.ok(description).build();
+	}
+	
+	/**
      * <pre>base/dataset/{dataset}/data</pre>
      * 
      * The data query endpoint
@@ -363,6 +461,6 @@ public class DSAPIManager extends ComponentBase {
             p.add("Bad generated SPARQL:\n" + sq + "\n" + e.getMessage());
             return false;
         }
-}
+    }
 
 }

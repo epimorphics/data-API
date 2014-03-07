@@ -127,6 +127,14 @@ public class Endpoints {
     }
     
     @POST
+    @Path("/{dataset}/labels")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getLabelsByPOST(@PathParam("dataset") String dsid, JsonObject query) {
+        return getManager().datasetGetLabels(dsid, query);
+    }
+    
+    @POST
     @Path("/{dataset}/describe")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
