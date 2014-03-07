@@ -152,6 +152,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
             String base = uribase + name;
             out.pair(DATA_API, base + "/data");
             out.pair(STRUCTURE_API, base + "/structure");
+            out.pair(DESCRIBE_API, base + "/describe");
         }
         if (isHierarchy()) {
             out.key(HIERARCHY);

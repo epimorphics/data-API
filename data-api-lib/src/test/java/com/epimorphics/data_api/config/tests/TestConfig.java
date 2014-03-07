@@ -69,10 +69,14 @@ public class TestConfig {
         assertEquals("?item  <http://purl.org/linked-data/cube#dataSet> <http://environment.data.gov.uk/data/waterbody/classification/dataset>", dataset.getBaseQuery());
         checkAspects(dataset);
         
+        // JSON description of dataset
         jds = asJson( dataset.asJson("en", "") ).getAsObject();
         assertEquals("Waterbody classifications", jds.get("label").getAsString().value());
         ja = jds.get("aspects").getAsArray();
         assertEquals(5, ja.size());
+        assertNotNull(jds.get("describe-api"));
+        assertNotNull(jds.get("data-api"));
+        assertNotNull(jds.get("structure-api"));
     }
     
     private void checkAspects(API_Dataset dataset) {
