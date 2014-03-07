@@ -8,12 +8,10 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.json.JSFullWriter;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TermResource extends Term {
-
-	final String value;
+public class TermResource extends TermComposite {
 	
 	public TermResource(String value) {
-		this.value = value;
+		super(value);
 	}
 
 	@Override public String toString() {
@@ -35,6 +33,6 @@ public class TermResource extends Term {
 	@Override public void writeTo(JSFullWriter jw) {
 		jw.startObject();
 		jw.pair("@id", value);
-		jw.finishObject();			
+		jw.finishObject();					
 	}
 }
