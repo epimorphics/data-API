@@ -98,10 +98,12 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             }
             
             API_Dataset dsapi = new API_Dataset(configRoot, manager); 
-            if (dsd != null) {
+            if (configRoot.hasProperty(Dsapi.aspect)) {
+                parseAspects(dsapi, configRoot, datasets);
+            } else if (dsd != null) {
                 parseDSD(dsapi, dsd, datasets);
             } else {
-                parseAspects(dsapi, configRoot, datasets);
+                log.error("No inline aspects or DSD found in: " + file.getPath());
             }
             datasets.add(dsapi);
             return datasets;

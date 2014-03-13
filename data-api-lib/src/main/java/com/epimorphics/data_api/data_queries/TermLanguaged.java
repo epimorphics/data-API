@@ -8,13 +8,12 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.json.JSFullWriter;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TermLanguaged extends Term {
+public class TermLanguaged extends TermComposite {
 
-	final String value;
 	final String lang;
 	
 	public TermLanguaged(String value, String type) {
-		this.value = value;
+		super(value);
 		this.lang = type;
 	}
 
@@ -41,7 +40,7 @@ public class TermLanguaged extends Term {
 	@Override public void writeTo(JSFullWriter jw) {
 		jw.startObject();
 		jw.pair("@value", value);
-		jw.pair("@language", lang);
+		jw.pair("@lang", lang);
 		jw.finishObject();
 	}
 }
