@@ -19,6 +19,7 @@ import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
+import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Slice;
 import com.epimorphics.data_api.data_queries.Sort;
@@ -269,7 +270,7 @@ public class TestTranslateDataQuery {
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, "look for me"
+			, new SearchSpec("look for me")
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);

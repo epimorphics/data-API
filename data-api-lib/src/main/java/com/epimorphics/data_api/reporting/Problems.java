@@ -25,6 +25,7 @@ public class Problems {
 	}
 
 	public Problems add(String message) {
+		if (false) throw new RuntimeException(message);
 		problems.add(new Problem(message));
 		return this;
 	}

@@ -36,7 +36,7 @@ public class DataQuery {
 	final List<Sort> sortby;
 	final Slice slice;
 	final List<Guard> guards; 
-	final String globalSearchPattern;
+	final SearchSpec globalSearchPattern;
 	
 	public DataQuery(List<Filter> filters) {
 		this(filters, new ArrayList<Sort>() );
@@ -55,10 +55,10 @@ public class DataQuery {
     }    
     
     public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice) {
-    	this(filters, sortby, guards, slice, null);
+    	this(filters, sortby, guards, slice, SearchSpec.absent());
     }
 
-    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice, String globalSearchPattern) {
+    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice, SearchSpec globalSearchPattern) {
 		this.filters = filters;
 		this.sortby = sortby;
 		this.slice = slice;
@@ -82,7 +82,7 @@ public class DataQuery {
 		return slice;
 	}
 
-	public String getGlobalSearchPattern() {
+	public SearchSpec getGlobalSearchPattern() {
 		return globalSearchPattern;
 	}
     
@@ -131,8 +131,8 @@ public class DataQuery {
 		sb.append("\nWHERE {");
 		String dot = "";
 	    //
-        if (globalSearchPattern != null) {
-            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
+        if (globalSearchPattern.isPresent()) {
+            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(globalSearchPattern.asSparqlTerm());
             dot = " .\n ";
         }
 	//
@@ -220,13 +220,6 @@ public class DataQuery {
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
 	//
 		return PrefixUtils.expandQuery(sb.toString(), pm);
-	}
-
-	/**
-	    Quote a string to turn in into a SPARQL term.
-	*/
-	private String quote(String s) {
-		return "\"" + FmtUtils.stringEsc(s, true) + "\"";
 	}
 
 	private String opForFilter(Filter f) {

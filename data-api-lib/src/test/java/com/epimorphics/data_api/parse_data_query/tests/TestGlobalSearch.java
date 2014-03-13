@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
+import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 
@@ -30,7 +31,7 @@ public class TestGlobalSearch {
 	//	System.err.println(p.getProblemStrings());
 		
 		assertEquals(0, p.size());
-		assertEquals("pattern", q.getGlobalSearchPattern() );
+		assertEquals(new SearchSpec("pattern"), q.getGlobalSearchPattern() );
 	}
 
 }

@@ -92,7 +92,7 @@ public class DataQueryParser {
 			}
 		}
 		booleans.get("@and").add(filters);
-		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
+		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), new SearchSpec(globalSearchPattern));
 	}
 
 	private void parseAspectMembers(JsonObject jo, String key, JsonValue range) {
