@@ -64,7 +64,7 @@ public class DataQueryParser {
 	
 	final Map<String, Set<List<Filter>>> booleans = new HashMap<String, Set<List<Filter>>>();
 
-	String globalSearchPattern = null;
+	SearchSpec globalSearchPattern = SearchSpec.absent();
 	Integer length = null, offset = null;
 	
 	final Problems p;
@@ -92,7 +92,7 @@ public class DataQueryParser {
 			}
 		}
 		booleans.get("@and").add(filters);
-		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), new SearchSpec(globalSearchPattern));
+		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
 	}
 
 	private void parseAspectMembers(JsonObject jo, String key, JsonValue range) {
@@ -126,7 +126,7 @@ public class DataQueryParser {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
-			globalSearchPattern = extractString(p, key, value);
+			globalSearchPattern = extractSearchSpec(key, value);
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {
@@ -141,15 +141,28 @@ public class DataQueryParser {
 			Set<List<Filter>> these = booleans.get(key);
 			if (value.isArray()) {
 				for (JsonValue element: value.getAsArray()) {
-										
 					DataQuery subQuery = Do(p, dataset, element);
-										
 					these.add(subQuery.filters());
-				}			} else {
+				}			
+			} else {
 				p.add("operand of " + key + " must be an array: " + value );
 			}
 		} else {
 			p.add("unknown directive '" + key + "' in data query " + jo + ".");
+		}
+	}
+
+	private SearchSpec extractSearchSpec(String key, JsonValue value) {
+		if (value.isString()) {
+			return new SearchSpec(value.getAsString().value());
+		} else if (value.isObject()) {
+			JsonObject ob = value.getAsObject();
+			String pattern = ob.get("@value").getAsString().value();
+			String property = ob.get("@property").getAsString().value();
+			return new SearchSpec(pattern, property);
+		} else {
+			p.add("Operand of @search must be string or object, given: " + value);
+			return SearchSpec.absent();
 		}
 	}
 
