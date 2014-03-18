@@ -132,7 +132,7 @@ public class DataQuery {
 		String dot = "";
 	    //
         if (globalSearchPattern.isPresent()) {
-            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(globalSearchPattern.asSparqlTerm());
+            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(globalSearchPattern.asSparqlTerm(pm));
             dot = " .\n ";
         }
 	//

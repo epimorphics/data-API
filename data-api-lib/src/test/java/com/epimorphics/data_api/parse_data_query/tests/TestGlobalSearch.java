@@ -33,5 +33,18 @@ public class TestGlobalSearch {
 		assertEquals(0, p.size());
 		assertEquals(new SearchSpec("pattern"), q.getGlobalSearchPattern() );
 	}
+	
+	@Test public void testSearchSettingWithProperty() {
+		
+		String incoming = "{'@search': {'@value': 'lookfor', '@property': 'eh:/some.uri/'}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
+		
+	//	System.err.println(p.getProblemStrings());
+		
+		assertEquals(0, p.size());
+		assertEquals(new SearchSpec("lookfor", "eh:/some.uri/"), q.getGlobalSearchPattern() );
+	}
 
 }

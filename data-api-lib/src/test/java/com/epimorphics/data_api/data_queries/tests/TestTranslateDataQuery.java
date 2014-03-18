@@ -291,6 +291,34 @@ public class TestTranslateDataQuery {
 		Asserts.assertSameSelect( expected, sq );
 	}		
 	
+	@Test public void testGlobalSearchWithProperty() {		
+		Problems p = new Problems();
+		DataQuery q = new DataQuery
+			( new ArrayList<Filter>()
+			, new ArrayList<Sort>()
+			, null // new ArrayList<Guard>()
+			, Slice.all()
+			, new SearchSpec("look for me", "eh:/some-property")
+			);
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, null, pm);
+		Asserts.assertNoProblems("translation failed", p);
+		
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X ?pre_Y"
+			, "WHERE {"
+			, "?item <http://jena.apache.org/text#query> (<eh:/some-property> 'look for me')."
+			, "?item pre:X ?pre_X."
+			, "?item pre:Y ?pre_Y"
+			, "}"
+			);
+		
+		Asserts.assertSameSelect( expected, sq );
+	}		
+	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );

@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import com.hp.hpl.jena.shared.PrefixMapping;
+
 public class SearchSpec {
 
 	private final String pattern;
@@ -19,8 +21,16 @@ public class SearchSpec {
 		this.property = property;
 	}
 
-	public String asSparqlTerm() {
-		return Term.quote(pattern);
+	public String asSparqlTerm(PrefixMapping pm) {
+		String quoted = Term.quote(pattern);
+		if (property == null) {
+			return quoted;			
+		} else {
+			String expanded = pm.expandPrefix(property);
+			String contracted = pm.qnameFor(expanded);
+			String use = contracted == null ? "<" + property + ">" : contracted;
+			return "(" + use + " " + quoted + ")";		
+		}
 	}
 	
 	@Override public String toString() {
