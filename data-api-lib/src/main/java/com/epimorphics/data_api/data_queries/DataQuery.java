@@ -131,7 +131,7 @@ public class DataQuery {
 		String dot = "";
 	//
 		for (SearchSpec s: searchPatterns) {
-            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(s.asSparqlTerm(pm));
+            sb.append(dot).append(s.toSearchTriple(pm));
             dot = " .\n ";
         }
 	//

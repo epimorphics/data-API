@@ -18,7 +18,6 @@ import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestTextSearch {
 

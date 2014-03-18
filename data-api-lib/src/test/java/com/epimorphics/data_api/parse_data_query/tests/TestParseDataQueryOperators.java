@@ -125,7 +125,6 @@ public class TestParseDataQueryOperators {
 	// @search no longer generates filters; search objects are
 	// handled separately.
 	@Test public void testSingleSearch() {
-		Term[] values = { Term.string("texty bits") };
 		Shortname sn = new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'@search': 'texty bits'}}";
 		JsonObject jo = JSON.parse(incoming);		

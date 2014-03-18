@@ -43,7 +43,7 @@ public class TestSearch {
         assertEquals(10, results.size());
 
         // Search on aspect whose values are labeled resources
-        results =  query(dataset, "{'eg:label' : {'@search' : 'Thornbury'}}");	
+        results =  query(dataset, "{'eg:resource' : {'@search' : 'Thornbury'}}");	
         assertEquals(4, results.size());
         
         // Global search for dataset items which are labeled by some indexed property

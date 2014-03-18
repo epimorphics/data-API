@@ -18,6 +18,7 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Guard;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -293,13 +294,14 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testGlobalSearchWithProperty() {		
 		Problems p = new Problems();
-		Shortname someProperty = new Shortname(pm, "eh:/some-property");
+		Shortname someProperty = new Shortname(pm, "pre:someProperty");
+		Shortname otherProperty = new Shortname(pm, "pre:otherProperty");
 		DataQuery q = new DataQuery
 			( new ArrayList<Filter>()
 			, new ArrayList<Sort>()
-			, null // new ArrayList<Guard>()
+			, new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( new SearchSpec("look for me", someProperty) )
+			, BunchLib.list( new SearchSpec("look for me", someProperty, otherProperty) )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -311,7 +313,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, "?item <http://jena.apache.org/text#query> (<eh:/some-property> 'look for me')."
+			, "?pre_someProperty <http://jena.apache.org/text#query> (pre:otherProperty 'look for me')."
 			, "?item pre:X ?pre_X."
 			, "?item pre:Y ?pre_Y"
 			, "}"

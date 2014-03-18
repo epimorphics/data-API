@@ -13,15 +13,21 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public class SearchSpec {
 
 	private final String pattern;
+	private final Shortname aspectName;
 	private final Shortname property;
 	
 	public SearchSpec(String pattern) {
 		this(pattern, null);
 	}
 
-	public SearchSpec(String pattern, Shortname property) {
+	public SearchSpec(String pattern, Shortname aspectName) {
+		this(pattern, aspectName, null);
+	}
+
+	public SearchSpec(String pattern, Shortname aspectName, Shortname property) {
 		this.pattern = pattern;
 		this.property = property;
+		this.aspectName = aspectName;
 	}
 
 	public String asSparqlTerm(PrefixMapping pm) {
@@ -31,21 +37,30 @@ public class SearchSpec {
 		} else {
 			String expanded = pm.expandPrefix(property.URI);
 			String contracted = pm.qnameFor(expanded);
-			String use = contracted == null ? "<" + property + ">" : contracted;
+			String use = contracted == null ? "<" + property.URI + ">" : contracted;
 			return "(" + use + " " + quoted + ")";		
 		}
 	}
-	
+
+	public String toSearchTriple(PrefixMapping pm) {
+		return
+			(aspectName == null ? "?item" : "?" + aspectName.asVar())
+			+ " <http://jena.apache.org/text#query> "
+			+ asSparqlTerm(pm)
+			;
+	}
+
 	@Override public String toString() {
 		if (pattern == null) return "absent @search";
-		if (property == null) return "@search(" + Term.quote(pattern) + ")";
-		return "@search(" + Term.quote(pattern) + ", " + property + ")";
+		String match = Term.quote(pattern) + (property == null ? "" : property);
+		return "@search" + (aspectName == null ? "[global]" : "[" + aspectName + "]") + "(" + match + ")";
 	}
 	
 	@Override public int hashCode() {
 		return
 			(pattern == null ? 0 : pattern.hashCode())
 			^ (property == null ? 0 : property.hashCode())
+			^ (aspectName == null ? 0 : aspectName.hashCode())
 			;
 	}
 	
@@ -55,7 +70,8 @@ public class SearchSpec {
 
 	private boolean same(SearchSpec other) {
 		return
-			(pattern == null ? other.pattern == null : pattern.equals(other.pattern))
+			(aspectName == null ? other.aspectName == null : aspectName.equals(other.aspectName))
+			&& (pattern == null ? other.pattern == null : pattern.equals(other.pattern))
 			&& (property == null ? other.property == null : property.equals(other.property))
 			;
 	}

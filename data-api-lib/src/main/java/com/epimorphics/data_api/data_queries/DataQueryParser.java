@@ -155,14 +155,10 @@ public class DataQueryParser {
 		}
 	}
 
-	private SearchSpec extractSearchSpec(String key, Shortname givenProperty, JsonValue value) {
+	private SearchSpec extractSearchSpec(String key, Shortname aspectName, JsonValue value) {
 		if (value.isString()) {
 			String pattern = value.getAsString().value();
-			if (givenProperty == null) {
-				return new SearchSpec(pattern);
-			} else {
-				return new SearchSpec(pattern, givenProperty);
-			}
+			return new SearchSpec(pattern, aspectName);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
 			String pattern = ob.get("@value").getAsString().value();
@@ -184,11 +180,11 @@ public class DataQueryParser {
 		return null;
 	}
 
-	private static String extractString(Problems p, String key, JsonValue value) {
-		if (value.isString()) return value.getAsString().value();
-		p.add("value of " + key + " must be string, given: " + value);
-		return null;
-	}
+//	private static String extractString(Problems p, String key, JsonValue value) {
+//		if (value.isString()) return value.getAsString().value();
+//		p.add("value of " + key + " must be string, given: " + value);
+//		return null;
+//	}
 
 	private static void extractSorts(PrefixMapping pm, Problems p, JsonObject jo, List<Sort> sortby, String key) {
 		JsonValue x = jo.get(key);
