@@ -270,7 +270,7 @@ public class TestTranslateDataQuery {
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, new SearchSpec("look for me")
+			, BunchLib.list( new SearchSpec("look for me") )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -298,7 +298,7 @@ public class TestTranslateDataQuery {
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, new SearchSpec("look for me", "eh:/some-property")
+			, BunchLib.list( new SearchSpec("look for me", "eh:/some-property") )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);

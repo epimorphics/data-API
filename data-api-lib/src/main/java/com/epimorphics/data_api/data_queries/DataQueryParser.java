@@ -64,7 +64,7 @@ public class DataQueryParser {
 	
 	final Map<String, Set<List<Filter>>> booleans = new HashMap<String, Set<List<Filter>>>();
 
-	SearchSpec globalSearchPattern = SearchSpec.absent();
+	List<SearchSpec> searchPatterns = SearchSpec.none();
 	Integer length = null, offset = null;
 	
 	final Problems p;
@@ -92,7 +92,7 @@ public class DataQueryParser {
 			}
 		}
 		booleans.get("@and").add(filters);
-		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
+		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), searchPatterns);
 	}
 
 	private void parseAspectMembers(JsonObject jo, String key, JsonValue range) {
@@ -126,7 +126,7 @@ public class DataQueryParser {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
-			globalSearchPattern = extractSearchSpec(key, value);
+			searchPatterns.add( extractSearchSpec(key, value) );
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {

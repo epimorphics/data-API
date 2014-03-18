@@ -5,6 +5,9 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class SearchSpec {
@@ -63,5 +66,9 @@ public class SearchSpec {
 
 	public static SearchSpec absent() {
 		return new SearchSpec(null, null);
+	}
+
+	public static List<SearchSpec> none() {
+		return new ArrayList<SearchSpec>();
 	}
 }

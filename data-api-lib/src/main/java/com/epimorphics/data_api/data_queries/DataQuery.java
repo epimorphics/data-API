@@ -20,7 +20,6 @@ import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 public class DataQuery {
 	
@@ -36,7 +35,7 @@ public class DataQuery {
 	final List<Sort> sortby;
 	final Slice slice;
 	final List<Guard> guards; 
-	final SearchSpec globalSearchPattern;
+	final List<SearchSpec> searchPatterns = new ArrayList<SearchSpec>();
 	
 	public DataQuery(List<Filter> filters) {
 		this(filters, new ArrayList<Sort>() );
@@ -55,15 +54,15 @@ public class DataQuery {
     }    
     
     public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice) {
-    	this(filters, sortby, guards, slice, SearchSpec.absent());
+    	this(filters, sortby, guards, slice, SearchSpec.none());
     }
 
-    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice, SearchSpec globalSearchPattern) {
+    public DataQuery(List<Filter> filters, List<Sort> sortby, List<Guard> guards, Slice slice, List<SearchSpec> searchPatterns) {
 		this.filters = filters;
 		this.sortby = sortby;
 		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
-		this.globalSearchPattern = globalSearchPattern;
+		this.searchPatterns.addAll(searchPatterns);
 	}
 	
 	public List<Sort> sorts() {
@@ -82,8 +81,8 @@ public class DataQuery {
 		return slice;
 	}
 
-	public SearchSpec getGlobalSearchPattern() {
-		return globalSearchPattern;
+	public List<SearchSpec> getSearchPatterns() {
+		return searchPatterns;
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
@@ -130,9 +129,9 @@ public class DataQuery {
 	//	
 		sb.append("\nWHERE {");
 		String dot = "";
-	    //
-        if (globalSearchPattern.isPresent()) {
-            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(globalSearchPattern.asSparqlTerm(pm));
+	//
+		for (SearchSpec s: searchPatterns) {
+            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(s.asSparqlTerm(pm));
             dot = " .\n ";
         }
 	//
