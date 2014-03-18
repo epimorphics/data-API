@@ -293,12 +293,13 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testGlobalSearchWithProperty() {		
 		Problems p = new Problems();
+		Shortname someProperty = new Shortname(pm, "eh:/some-property");
 		DataQuery q = new DataQuery
 			( new ArrayList<Filter>()
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( new SearchSpec("look for me", "eh:/some-property") )
+			, BunchLib.list( new SearchSpec("look for me", someProperty) )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);

@@ -20,6 +20,7 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
+import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -121,8 +122,23 @@ public class TestParseDataQueryOperators {
 		testSingleOperator("contains", "'substring'", Term.string("substring") );
 	}
 	
+	// @search no longer generates filters; search objects are
+	// handled separately.
 	@Test public void testSingleSearch() {
-		testSingleOperator("search", "'texty bits'", Term.string("texty bits") );
+		Term[] values = { Term.string("texty bits") };
+		Shortname sn = new Shortname(pm, "pre:local");
+		String incoming = "{'pre:local': {'@search': 'texty bits'}}";
+		JsonObject jo = JSON.parse(incoming);		
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
+//
+		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
+		assertTrue(q.slice().isAll());
+		assertNull(q.lang());
+		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
+//
+		assertEquals(BunchLib.list(), q.filters());
+		assertEquals(BunchLib.list(new SearchSpec("texty bits", sn)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSingleBelow() {

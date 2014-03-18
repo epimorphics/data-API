@@ -13,13 +13,13 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public class SearchSpec {
 
 	private final String pattern;
-	private final String property;
+	private final Shortname property;
 	
 	public SearchSpec(String pattern) {
 		this(pattern, null);
 	}
 
-	public SearchSpec(String pattern, String property) {
+	public SearchSpec(String pattern, Shortname property) {
 		this.pattern = pattern;
 		this.property = property;
 	}
@@ -29,7 +29,7 @@ public class SearchSpec {
 		if (property == null) {
 			return quoted;			
 		} else {
-			String expanded = pm.expandPrefix(property);
+			String expanded = pm.expandPrefix(property.URI);
 			String contracted = pm.qnameFor(expanded);
 			String use = contracted == null ? "<" + property + ">" : contracted;
 			return "(" + use + " " + quoted + ")";		
