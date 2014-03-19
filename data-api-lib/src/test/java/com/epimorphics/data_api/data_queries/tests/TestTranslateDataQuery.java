@@ -294,14 +294,13 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testGlobalSearchWithProperty() {		
 		Problems p = new Problems();
-		Shortname someProperty = new Shortname(pm, "pre:someProperty");
-		Shortname otherProperty = new Shortname(pm, "pre:otherProperty");
+		Shortname someProperty = X.getName();
 		DataQuery q = new DataQuery
 			( new ArrayList<Filter>()
 			, new ArrayList<Sort>()
 			, new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( new SearchSpec("look for me", someProperty, otherProperty) )
+			, BunchLib.list( new SearchSpec("look for me", null, someProperty ) )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -313,7 +312,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/mock-aspect/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, "?pre_someProperty <http://jena.apache.org/text#query> (pre:otherProperty 'look for me')."
+			, "?item <http://jena.apache.org/text#query> (pre:X 'look for me')."
 			, "?item pre:X ?pre_X."
 			, "?item pre:Y ?pre_Y"
 			, "}"

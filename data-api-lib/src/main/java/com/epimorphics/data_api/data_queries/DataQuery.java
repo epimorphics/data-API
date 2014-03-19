@@ -97,11 +97,14 @@ public class DataQuery {
 
 	static final Term item = Term.var("item");
 	
-	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
+	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		StringBuilder sb = new StringBuilder();
 	//
-		List<Aspect> ordered = new ArrayList<Aspect>(a);
+		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
 		Collections.sort(ordered, compareAspects);
+	//
+		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
+		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	//
 		Map<String, List<Filter>> sf = new HashMap<String, List<Filter>>();
 		for (Filter f: filters) {
@@ -131,7 +134,7 @@ public class DataQuery {
 		String dot = "";
 	//
 		for (SearchSpec s: searchPatterns) {
-            sb.append(dot).append(s.toSearchTriple(pm));
+            sb.append(dot).append(s.toSearchTriple(namesToAspects, pm));
             dot = " .\n ";
         }
 	//

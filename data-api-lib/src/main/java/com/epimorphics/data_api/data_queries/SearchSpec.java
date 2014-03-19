@@ -7,8 +7,12 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.epimorphics.data_api.aspects.Aspect;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SearchSpec {
 
@@ -42,12 +46,66 @@ public class SearchSpec {
 		}
 	}
 
-	public String toSearchTriple(PrefixMapping pm) {
-		return
-			(aspectName == null ? "?item" : "?" + aspectName.asVar())
-			+ " <http://jena.apache.org/text#query> "
-			+ asSparqlTerm(pm)
-			;
+	public String toSearchTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		if (aspectName == null) {
+			return
+				"?item"
+				+ " <http://jena.apache.org/text#query> "
+				+ asSparqlTerm(pm)
+				;			
+		} else {
+			return toSearchAspectTriple(aspects, pm);
+		}
+	}
+
+	private String toSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		Aspect a = aspects.get(aspectName);
+		boolean hasLiteralRange = hasLiteralRange(a);
+		if (property == null) {
+			
+			if (hasLiteralRange) {
+
+				return
+					("?item")
+					+ " <http://jena.apache.org/text#query> "
+					+ asSparqlTerm(pm)
+					;
+				
+			} else {
+				
+				return
+					("?" + aspectName.asVar())
+					+ " <http://jena.apache.org/text#query> "
+					+ Term.quote(pattern)
+					;
+				
+			}
+			
+		} else {
+			
+			if (hasLiteralRange) {
+
+				throw new UnsupportedOperationException
+				("@search on aspect " + a + " has @property " + property + " -- should have been detected earlier" );
+				
+			} else {
+				
+				return
+					("?" + aspectName.asVar())
+					+ " <http://jena.apache.org/text#query> "
+					+ asSparqlTerm(pm)
+					;
+			}
+			
+		}
+	}
+
+	private boolean hasLiteralRange(Aspect a) {
+		return isLiteralType(a.getRangeType());
+	}
+
+	private boolean isLiteralType(Resource type) {
+		return type == null || type.getURI().startsWith(XSD.getURI());
 	}
 
 	@Override public String toString() {
