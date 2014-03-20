@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;

@@ -42,13 +42,7 @@ public class Aspect extends ResourceBasedConfig {
 	PrefixMapping explictPrefixes = null;
 	
 	public Aspect(PrefixMapping pm, String shortName) {
-		String fullName = pm.expandPrefix(shortName);
-		
-//		System.err.println( ">> Aspect(pm, sn)" );
-//		System.err.println( ">>   sn = " + shortName );
-//		System.err.println( ">>   fn = " + fullName );
-//		System.err.println( ">>   pm = " + pm );
-		
+		String fullName = pm.expandPrefix(shortName);		
 		this.ID = fullName;
 		this.name = new Shortname(pm, shortName);
 		this.explictPrefixes = pm;
@@ -169,13 +163,14 @@ public class Aspect extends ResourceBasedConfig {
     	return asProperty();
     }
     
-    public void setPropertyPath(String path) {
+    public Aspect setPropertyPath(String path) {
     	PrefixMapping pm = getPrefixes();
     	String [] elements = path.split(" */ *");
     	propertyPath.clear();
     	for (String e: elements) {
     		propertyPath.add(new Shortname(pm, e));
     	}
+    	return this;
     }
 
     /**
