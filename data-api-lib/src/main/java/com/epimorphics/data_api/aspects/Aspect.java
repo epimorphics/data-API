@@ -7,10 +7,14 @@ package com.epimorphics.data_api.aspects;
 
 import static com.epimorphics.data_api.config.JSONConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.EpiException;
@@ -20,6 +24,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
+	
 	String ID;
 	final Shortname name;
 	String rangeDataset;
@@ -30,13 +35,29 @@ public class Aspect extends ResourceBasedConfig {
 	Resource rangeType = null;
 	String belowPredicate = null;
 	
+	List<Shortname> propertyPath = new ArrayList<Shortname>();
+	
 	static final String DefaultBelowPredicate = "skos:narrower";
 	
-	public Aspect(String ID, Shortname name) {
-		this.ID = ID;
-		this.name = name;
+	PrefixMapping explictPrefixes = null;
+	
+	public Aspect(PrefixMapping pm, String shortName) {
+		String fullName = pm.expandPrefix(shortName);
+		
+//		System.err.println( ">> Aspect(pm, sn)" );
+//		System.err.println( ">>   sn = " + shortName );
+//		System.err.println( ">>   fn = " + fullName );
+//		System.err.println( ">>   pm = " + pm );
+		
+		this.ID = fullName;
+		this.name = new Shortname(pm, shortName);
+		this.explictPrefixes = pm;
 	}
 	
+	@Override public PrefixMapping getPrefixes() {
+		return explictPrefixes == null ? super.getPrefixes() : explictPrefixes;
+	}
+
 	public Aspect(Resource aspect) {
 	    super(aspect);
 	    ID = aspect.getURI();
@@ -51,9 +72,7 @@ public class Aspect extends ResourceBasedConfig {
 	    }
 	    PrefixMapping pm = getPrefixes();
 	    name = new Shortname(pm, pm.shortForm(ID));
-	    
 	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
-	    
 	}
 	
 	@Override public String toString() {
@@ -77,7 +96,14 @@ public class Aspect extends ResourceBasedConfig {
 	}
 
 	public String asProperty() {
-		return name.getCURIE();
+		if (propertyPath.isEmpty())	return name.getCURIE();
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		for (Shortname property: propertyPath) {
+			sb.append(sep).append(property.getCURIE());
+			sep = "/";
+		}
+		return sb.toString();		
 	}
 	
 	public String getBelowPredicate(API_Dataset dataset) {
@@ -127,13 +153,29 @@ public class Aspect extends ResourceBasedConfig {
 		return rangeType;
 	}
     
-	
     public String getRangeDataset() {
         return rangeDataset;
     }
 
     public void setRangeDataset(String codelist) {
         this.rangeDataset = codelist;
+    }
+    
+    public List<Shortname> getPropertyPathList() {
+    	return propertyPath.isEmpty() ? BunchLib.list(name) : propertyPath;
+    }
+    
+    public String getPropertyPath() {
+    	return asProperty();
+    }
+    
+    public void setPropertyPath(String path) {
+    	PrefixMapping pm = getPrefixes();
+    	String [] elements = path.split(" */ *");
+    	propertyPath.clear();
+    	for (String e: elements) {
+    		propertyPath.add(new Shortname(pm, e));
+    	}
     }
 
     /**
