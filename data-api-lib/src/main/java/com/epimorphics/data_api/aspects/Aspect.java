@@ -164,11 +164,13 @@ public class Aspect extends ResourceBasedConfig {
     }
     
     public Aspect setPropertyPath(String path) {
-    	PrefixMapping pm = getPrefixes();
-    	String [] elements = path.split(" */ *");
     	propertyPath.clear();
-    	for (String e: elements) {
-    		propertyPath.add(new Shortname(pm, e));
+    	if (path != null) {
+	    	PrefixMapping pm = getPrefixes();
+	    	String [] elements = path.split(" */ *");
+	    	for (String e: elements) {
+	    		propertyPath.add(new Shortname(pm, e));
+	    	}
     	}
     	return this;
     }
