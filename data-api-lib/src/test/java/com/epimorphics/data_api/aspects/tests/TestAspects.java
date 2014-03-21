@@ -94,7 +94,7 @@ public class TestAspects {
 		Aspect a = new MockAspect("eh:/mock/aspect/X" );
 		assertEquals( "pre:X", a.getName().getCURIE());
 		assertEquals( "pre:X", a.getPropertyPath());
-		assertEquals( BunchLib.list(a.getName()), a.getPropertyPathList());
+		assertNull(a.getPropertyPathRaw());
 	}
 	
 	@Test public void testAspectDefinedPropertyPaths() {
@@ -107,7 +107,7 @@ public class TestAspects {
 		
 		assertEquals( "pre:X", a.getName().getCURIE());
 		assertEquals( "pre:A/pre:B", a.getPropertyPath());
-		assertEquals( BunchLib.list(A, B), a.getPropertyPathList());
+		assertEquals( "pre:A/pre:B", a.getPropertyPathRaw());
 	}
 	
 	public static class MockAspect extends Aspect {

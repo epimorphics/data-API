@@ -35,7 +35,7 @@ public class Aspect extends ResourceBasedConfig {
 	Resource rangeType = null;
 	String belowPredicate = null;
 	
-	List<Shortname> propertyPath = new ArrayList<Shortname>();
+	String propertyPath = null;
 	
 	static final String DefaultBelowPredicate = "skos:narrower";
 	
@@ -90,14 +90,7 @@ public class Aspect extends ResourceBasedConfig {
 	}
 
 	public String asProperty() {
-		if (propertyPath.isEmpty())	return name.getCURIE();
-		StringBuilder sb = new StringBuilder();
-		String sep = "";
-		for (Shortname property: propertyPath) {
-			sb.append(sep).append(property.getCURIE());
-			sep = "/";
-		}
-		return sb.toString();		
+		return propertyPath == null ? name.getCURIE() : propertyPath;	
 	}
 	
 	public String getBelowPredicate(API_Dataset dataset) {
@@ -155,8 +148,8 @@ public class Aspect extends ResourceBasedConfig {
         this.rangeDataset = codelist;
     }
     
-    public List<Shortname> getPropertyPathList() {
-    	return propertyPath.isEmpty() ? BunchLib.list(name) : propertyPath;
+    public String getPropertyPathRaw() {
+    	return propertyPath;
     }
     
     public String getPropertyPath() {
@@ -164,18 +157,21 @@ public class Aspect extends ResourceBasedConfig {
     }
     
     public Aspect setPropertyPath(String path) {
-    	propertyPath.clear();
-    	if (path != null) {
-	    	PrefixMapping pm = getPrefixes();
-	    	String [] elements = path.split(" */ *");
-	    	for (String e: elements) {
-	    		propertyPath.add(new Shortname(pm, e));
-	    	}
-    	}
+    	checkLegalPropertyPath(path);
+    	propertyPath = path;
     	return this;
     }
 
-    /**
+    private void checkLegalPropertyPath(String path) {
+    	/*
+    	 	TODO.
+    		Place-holder for checking that a property path is
+    		legal, ie has SPARQL syntax. We may throw it away
+    		instead.
+    	*/
+	}
+
+	/**
      * Full json serialization used to report the dataset structure, language specific
      */
     public JSONWritable asJson(String lang) {
