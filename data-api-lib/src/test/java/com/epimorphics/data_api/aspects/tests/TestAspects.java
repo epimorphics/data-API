@@ -100,9 +100,6 @@ public class TestAspects {
 	@Test public void testAspectDefinedPropertyPaths() {
 		Aspect a = new MockAspect("eh:/mock/aspect/X" );
 		
-		Shortname A = new Shortname(pm, "pre:A");
-		Shortname B = new Shortname(pm, "pre:B");
-		
 		a.setPropertyPath("pre:A/pre:B");
 		
 		assertEquals( "pre:X", a.getName().getCURIE());

@@ -26,6 +26,7 @@ import com.epimorphics.data_api.data_queries.Slice;
 import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Term;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
 import com.epimorphics.vocabs.SKOS;
@@ -35,18 +36,18 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public class TestTranslateDataQuery {
 
     static PrefixMapping pm = PrefixMapping.Factory.create()
-		.setNsPrefix("pre", "eh:/mock-aspect/")
+		.setNsPrefix("pre", Setup.pm.getNsPrefixURI("pre"))
 		.setNsPrefix("skos", SKOS.getURI())
 		.lock()
 		;
 	
-	static final Aspect X = new TestAspects.MockAspect("eh:/mock-aspect/X");
+	static final Aspect X = new TestAspects.MockAspect("eh:/prefixPart/X");
 	
-	static final Aspect Y = new TestAspects.MockAspect("eh:/mock-aspect/Y")
+	static final Aspect Y = new TestAspects.MockAspect("eh:/prefixPart/Y")
 		.setBelowPredicate("pre:child")
 		;
 	
-	static final Aspect Yopt = new TestAspects.MockAspect("eh:/mock-aspect/Y").setIsOptional(true);
+	static final Aspect Yopt = new TestAspects.MockAspect("eh:/prefixPart/Y").setIsOptional(true);
 
 	
 	@Test public void testUnfilteredSingleAspect() {
@@ -58,7 +59,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X }", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X }", sq );
 	}		
 	
 	@Test public void testSingleSort() {
@@ -71,7 +72,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X } ORDER BY ?pre_X", sq );
 	}	
 	
 	@Test public void testMultipleSorts() {
@@ -88,7 +89,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
 		
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X ?pre_X . ?item pre:Y ?pre_Y } ORDER BY ?pre_X DESC(?pre_Y)", sq );
 	}
 		
 	@Test public void testSingleEqualityFilter() {
@@ -103,7 +104,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);		
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
 			, "?item pre:X 17 BIND(17 AS?pre_X)}"
 			);
@@ -146,7 +147,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);	
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
 			, (opName.equals("eq") ? "?item pre:X 17 BIND(17 AS ?pre_X)" : ("?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)"))
@@ -167,7 +168,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);		
 		Asserts.assertSameSelect
-			( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17 || ?pre_X = 99)}"
+			( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_X WHERE { ?item pre:X ?pre_X FILTER(?pre_X = 17 || ?pre_X = 99)}"
 			, sq 
 			);
 	}	
@@ -232,7 +233,7 @@ public class TestTranslateDataQuery {
 		String var = "?" + useAspect.asVar();
 		String prop = useAspect.getName().getCURIE();
 		
-		String prefix_p = "PREFIX pre: <eh:/mock-aspect/>\n";
+		String prefix_p = "PREFIX pre: <eh:/prefixPart/>\n";
 		String prefix_skos = (op.equals("below") ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
 		String select = "SELECT ?item _VAR WHERE { ?item _PROP _VAR . " + filter + " }";
 		
@@ -256,7 +257,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, "?item pre:X 17 BIND(17 AS ?pre_X)"
 			, ". ?item pre:Y ?pre_Y}"
@@ -280,7 +281,7 @@ public class TestTranslateDataQuery {
 		Asserts.assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
 			, "?item <http://jena.apache.org/text#query> 'look for me'."
@@ -306,10 +307,11 @@ public class TestTranslateDataQuery {
 		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, a, null, pm);
+		
 		Asserts.assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
 			, "?item <http://jena.apache.org/text#query> (pre:X 'look for me')."
@@ -332,12 +334,12 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X 17 BIND(17 AS ?pre_X). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_X ?pre_Y WHERE { ?item pre:X 17 BIND(17 AS ?pre_X). OPTIONAL {?item pre:Y ?pre_Y}}", sq );
 	}		
 
 	@Test public void testLengthCopied() {
 		Problems p = new Problems();
-		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Shortname snA = new Shortname( pm, "pre:X" );
 		Shortname snB = new Shortname( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
@@ -350,7 +352,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE { ?item pre:X 8 BIND(8 AS ?pre_X). ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			, "LIMIT 17"
@@ -360,7 +362,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testOffsetCopied() {
 		Problems p = new Problems();
-		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Shortname snA = new Shortname( pm, "pre:X" );
 		Shortname snB = new Shortname( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
@@ -373,7 +375,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE { ?item pre:X 8 BIND(8 AS ?pre_X). ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			, "OFFSET 1066"
@@ -383,7 +385,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testLengthAndOffsetCopied() {
 		Problems p = new Problems();
-		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Shortname snA = new Shortname( pm, "pre:X" );
 		Shortname snB = new Shortname( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
@@ -396,7 +398,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE { ?item pre:X 8 BIND(8 AS ?pre_X). ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
 			, "LIMIT 17 OFFSET 1829"
@@ -406,7 +408,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testDoubleEqualityFilter() {
 		Problems p = new Problems();
-		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/mock-aspect/").lock();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Shortname snA = new Shortname( pm, "pre:X" );
 		Shortname snB = new Shortname( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
@@ -419,7 +421,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/mock-aspect/>"
+			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE { "
 			, "?item pre:X 8 BIND(8 AS ?pre_X)"
 			, ". ?item pre:Y 9 BIND(9 AS ?pre_Y)}"
@@ -435,7 +437,7 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
 		Asserts.assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item WHERE { { ?item pre:has pre:value } }", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item WHERE { { ?item pre:has pre:value } }", sq );
 		}
 	
 	@Test public void testDatasetRestrictionWithAspects() {
@@ -446,6 +448,6 @@ public class TestTranslateDataQuery {
 	//
 		String sq = q.toSparql(p, a, "?item pre:has pre:value .", pm);
 		assertNoProblems("translation failed", p);
-		Asserts.assertSameSelect( "PREFIX pre: <eh:/mock-aspect/> SELECT ?item ?pre_Y WHERE { { ?item pre:has pre:value . } ?item pre:Y ?pre_Y }", sq );
+		Asserts.assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item ?pre_Y WHERE { { ?item pre:has pre:value . } ?item pre:Y ?pre_Y }", sq );
 		}
 }
