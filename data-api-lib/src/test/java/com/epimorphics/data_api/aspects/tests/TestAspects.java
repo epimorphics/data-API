@@ -13,33 +13,21 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class TestAspects {
 	
-	static final PrefixMapping pm = PrefixMapping.Extended;
+	static final PrefixMapping pm = Setup.pm;
 		
 	@Test public void testAspectMembers() {
 		Shortname sn = new Shortname(pm, "pre:local");
-		Aspect a = new Aspect
-			( "http://full-uri.org/local" 
-			, sn
-			);
+		Aspect a = new Aspect(pm, "pre:local" );
 	//
-		assertEquals("http://full-uri.org/local", a.getID());
+		assertEquals("eh:/prefixPart/local", a.getID());
 		assertEquals(sn, a.getName());
-		
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
-		assertEquals("http://full-uri.org/local", a.getID());
 	}
 	
 	@Test public void testAspectBunch() {
@@ -102,10 +90,30 @@ public class TestAspects {
 		assertEquals(true, a.getIsMultiValued());
 	}
 	
+	@Test public void testAspectDefaultPropertyPaths() {
+		Aspect a = new MockAspect("eh:/mock/aspect/X" );
+		assertEquals( "pre:X", a.getName().getCURIE());
+		assertEquals( "pre:X", a.getPropertyPath());
+		assertNull(a.getPropertyPathRaw());
+	}
+	
+	@Test public void testAspectDefinedPropertyPaths() {
+		Aspect a = new MockAspect("eh:/mock/aspect/X" );
+		
+		Shortname A = new Shortname(pm, "pre:A");
+		Shortname B = new Shortname(pm, "pre:B");
+		
+		a.setPropertyPath("pre:A/pre:B");
+		
+		assertEquals( "pre:X", a.getName().getCURIE());
+		assertEquals( "pre:A/pre:B", a.getPropertyPath());
+		assertEquals( "pre:A/pre:B", a.getPropertyPathRaw());
+	}
+	
 	public static class MockAspect extends Aspect {
 	
 		public MockAspect(String ID) {
-			super(ID, new Shortname(pm, "pre:" + tail(ID)));
+			super(pm, "pre:" + tail(ID));
 		}
 
 		private static String tail(String uri) {

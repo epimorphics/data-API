@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
@@ -63,7 +62,7 @@ public class TestParseDataQueryErrors {
 	
 	@Test public void testIllegalAspectOperand() {
 		final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null);
-		ds.add(new Aspect("eh:/prefixPart/property", new Shortname(ds.getPrefixes(), "pre:property")));
+		ds.add(new Aspect(ds.getPrefixes(), "pre:property"));
 	//
 		String incoming = "{'pre:property': 'value'}";
 		JsonObject jo = JSON.parse(incoming);

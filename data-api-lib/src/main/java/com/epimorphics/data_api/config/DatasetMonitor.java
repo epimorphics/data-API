@@ -168,7 +168,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             }
             Aspect a = addAspect(dsapi, datasets, aspect, ! RDFUtil.getBooleanValue(aspect, Dsapi.optional, false));
             a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
-            // TODO parse property paths
+            a.setPropertyPath( RDFUtil.getStringValue(aspect, Dsapi.propertyPath));
             // TODO parse range constraints
         }
     }
