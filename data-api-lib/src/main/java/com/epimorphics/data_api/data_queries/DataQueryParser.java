@@ -64,7 +64,7 @@ public class DataQueryParser {
 	
 	final Map<String, Set<List<Filter>>> booleans = new HashMap<String, Set<List<Filter>>>();
 
-	String globalSearchPattern = null;
+	List<SearchSpec> searchPatterns = SearchSpec.none();
 	Integer length = null, offset = null;
 	
 	final Problems p;
@@ -86,16 +86,16 @@ public class DataQueryParser {
 		for (String key: jo.keys()) {
 			JsonValue value = jo.get(key);
 			if (key.startsWith("@")) {
-				parseAtMembers(jo, key, value);
+				parseAtMember(jo, key, value);
 			} else {
-				parseAspectMembers(jo, key, value);
+				parseAspectMember(jo, key, value);
 			}
 		}
 		booleans.get("@and").add(filters);
-		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), globalSearchPattern);
+		return new DataQuery(filters, sortby, guards, Slice.create(length, offset), searchPatterns);
 	}
 
-	private void parseAspectMembers(JsonObject jo, String key, JsonValue range) {
+	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
 		Shortname sn = new Shortname(pm, key);
 		if (!aspectURIs.contains(sn.URI)) {
 			p.add("Unknown shortname '" + key + "' in " + jo );
@@ -103,9 +103,12 @@ public class DataQueryParser {
 			if (range.isObject()) {
 				JsonObject rob = range.getAsObject();
 				for (String opKey: rob.keys()) {
-					if (opKey.startsWith("@")) {
+					JsonValue operand = rob.get(opKey);
+					if (opKey.equals("@search")) {
+						searchPatterns.add( extractSearchSpec(key, sn, operand) );
+					} else if (opKey.startsWith("@")) {
 						String op = opKey.substring(1);
-						List<Term> v = DataQueryParser.jsonToTerms(p, pm, rob.get(opKey));
+						List<Term> v = DataQueryParser.jsonToTerms(p, pm, operand);
 						if (isKnownOp(op)) {
 							filters.add( new Filter(sn, new Range(op, v) ) );
 						} else {
@@ -122,11 +125,11 @@ public class DataQueryParser {
 		}
 	}
 
-	private void parseAtMembers(JsonObject jo, String key, JsonValue value) {
+	private void parseAtMember(JsonObject jo, String key, JsonValue value) {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
-			globalSearchPattern = extractString(p, key, value);
+			searchPatterns.add( extractSearchSpec(key, null, value) );
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {
@@ -141,15 +144,30 @@ public class DataQueryParser {
 			Set<List<Filter>> these = booleans.get(key);
 			if (value.isArray()) {
 				for (JsonValue element: value.getAsArray()) {
-										
 					DataQuery subQuery = Do(p, dataset, element);
-										
 					these.add(subQuery.filters());
-				}			} else {
+				}			
+			} else {
 				p.add("operand of " + key + " must be an array: " + value );
 			}
 		} else {
 			p.add("unknown directive '" + key + "' in data query " + jo + ".");
+		}
+	}
+
+	private SearchSpec extractSearchSpec(String key, Shortname aspectName, JsonValue value) {
+		if (value.isString()) {
+			String pattern = value.getAsString().value();
+			return new SearchSpec(pattern, aspectName);
+		} else if (value.isObject()) {
+			JsonObject ob = value.getAsObject();
+			String pattern = ob.get("@value").getAsString().value();
+			String property = ob.get("@property").getAsString().value();
+			Shortname shortProperty = new Shortname(pm, property);
+			return new SearchSpec(pattern, aspectName, shortProperty);
+		} else {
+			p.add("Operand of @search must be string or object, given: " + value);
+			return SearchSpec.absent();
 		}
 	}
 
@@ -162,11 +180,11 @@ public class DataQueryParser {
 		return null;
 	}
 
-	private static String extractString(Problems p, String key, JsonValue value) {
-		if (value.isString()) return value.getAsString().value();
-		p.add("value of " + key + " must be string, given: " + value);
-		return null;
-	}
+//	private static String extractString(Problems p, String key, JsonValue value) {
+//		if (value.isString()) return value.getAsString().value();
+//		p.add("value of " + key + " must be string, given: " + value);
+//		return null;
+//	}
 
 	private static void extractSorts(PrefixMapping pm, Problems p, JsonObject jo, List<Sort> sortby, String key) {
 		JsonValue x = jo.get(key);

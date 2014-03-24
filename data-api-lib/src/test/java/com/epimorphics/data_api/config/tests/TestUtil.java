@@ -32,7 +32,7 @@ public class TestUtil {
         String sq = null;
         if (p.isOK()) {
             sq = q.toSparql(p, dataset);
-//            System.out.println(sq);
+            // System.out.println(">> " + sq);
         }
         if (p.isOK()) {
             ResultSet results = dataset.getSource().select(sq);

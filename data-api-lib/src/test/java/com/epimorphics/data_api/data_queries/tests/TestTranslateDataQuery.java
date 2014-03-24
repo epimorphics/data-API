@@ -18,7 +18,9 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Guard;
 import com.epimorphics.data_api.data_queries.Range;
+import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Slice;
 import com.epimorphics.data_api.data_queries.Sort;
@@ -269,7 +271,7 @@ public class TestTranslateDataQuery {
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, "look for me"
+			, BunchLib.list( new SearchSpec("look for me") )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -282,6 +284,35 @@ public class TestTranslateDataQuery {
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
 			, "?item <http://jena.apache.org/text#query> 'look for me'."
+			, "?item pre:X ?pre_X."
+			, "?item pre:Y ?pre_Y"
+			, "}"
+			);
+		
+		Asserts.assertSameSelect( expected, sq );
+	}		
+	
+	@Test public void testGlobalSearchWithProperty() {		
+		Problems p = new Problems();
+		Shortname someProperty = X.getName();
+		DataQuery q = new DataQuery
+			( new ArrayList<Filter>()
+			, new ArrayList<Sort>()
+			, new ArrayList<Guard>()
+			, Slice.all()
+			, BunchLib.list( new SearchSpec("look for me", null, someProperty ) )
+			);
+	//
+		Aspects a = new Aspects().include(X).include(Y);
+	//
+		String sq = q.toSparql(p, a, null, pm);
+		Asserts.assertNoProblems("translation failed", p);
+		
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/mock-aspect/>"
+			, "SELECT ?item ?pre_X ?pre_Y"
+			, "WHERE {"
+			, "?item <http://jena.apache.org/text#query> (pre:X 'look for me')."
 			, "?item pre:X ?pre_X."
 			, "?item pre:Y ?pre_Y"
 			, "}"
