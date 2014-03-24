@@ -30,6 +30,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
+import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,8 @@ import com.sun.jersey.api.NotFoundException;
  */
 public class DSAPIManager extends ComponentBase {
     static Logger log = LoggerFactory.getLogger(DSAPIManager.class);
+
+    static final String JSON_LD = RDFLanguages.strLangJSONLD;    
 
     protected SparqlSource defaultSource;
     protected Map<String, SparqlSource> sources = new HashMap<String, SparqlSource>();
@@ -232,7 +235,7 @@ public class DSAPIManager extends ComponentBase {
     	StreamingOutput description = new StreamingOutput() {
 
 			@Override public void write(OutputStream output) throws IOException, WebApplicationException {
-				m.write(output, "JSON-LD");
+				m.write(output, JSON_LD);
 				
 			}};
     	
@@ -251,7 +254,7 @@ public class DSAPIManager extends ComponentBase {
     	StreamingOutput description = new StreamingOutput() {
 
 			@Override public void write(OutputStream output) throws IOException, WebApplicationException {
-				m.write(output, "JSON-LD");
+				m.write(output, JSON_LD);
 				
 			}};
     	
