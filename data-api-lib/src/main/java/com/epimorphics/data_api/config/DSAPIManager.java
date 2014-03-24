@@ -15,8 +15,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -64,7 +66,8 @@ import com.sun.jersey.api.NotFoundException;
 public class DSAPIManager extends ComponentBase {
     static Logger log = LoggerFactory.getLogger(DSAPIManager.class);
 
-    protected SparqlSource source;
+    protected SparqlSource defaultSource;
+    protected Map<String, SparqlSource> sources = new HashMap<String, SparqlSource>();
     protected DatasetMonitor monitoredDatasets;
     protected String apiBase;
     protected boolean checkingSPARQL;
@@ -77,11 +80,27 @@ public class DSAPIManager extends ComponentBase {
     }
 
     public SparqlSource getSource() {
-        return source;
+        return defaultSource;
+    }
+
+    public SparqlSource getSource(String sourceName) {
+        if (sourceName == null) {
+            return defaultSource;
+        }
+        return sources.get(sourceName);
     }
 
     public void setSource(SparqlSource source) {
-        this.source = source;
+        this.defaultSource = source;
+    }
+    
+    public void setSources(List<SparqlSource> srcs) {
+        if (srcs.size() > 0) {
+            defaultSource = srcs.get(0);
+            for (SparqlSource s : srcs) {
+                sources.put(s.getName(), s);
+            }
+        }
     }
 
     public String getApiBase() {
@@ -201,7 +220,8 @@ public class DSAPIManager extends ComponentBase {
      	</p>
     */
     public Response datasetDescribeEndpoint(String dataset, JsonObject query) {
-    	String resource = query.getAsObject().get("@id").getAsString().value();    	
+    	String resource = query.getAsObject().get("@id").getAsString().value();   
+    	SparqlSource source = getAPI(dataset).getSource();
     	final Model m = ModelFactory.createModelForGraph(source.describe("DESCRIBE <" + resource + ">"));
     	StreamingOutput description = new StreamingOutput() {
 
@@ -220,6 +240,7 @@ public class DSAPIManager extends ComponentBase {
     	for (String u: uris) sb.append("\n <").append(u).append(">");
     	String query = sb.append("\n").toString();
     	
+        SparqlSource source = getAPI(dataset).getSource();
     	final Model m = ModelFactory.createModelForGraph(source.describe(query));
     	StreamingOutput description = new StreamingOutput() {
 
@@ -251,7 +272,7 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
-                so = new RowWriter(api.getAspects(), source.select(sq));
+                so = new RowWriter(api.getAspects(), api.getSource().select(sq));
             }
 
         } catch (Exception e) {

@@ -17,6 +17,8 @@ public class JSONConstants {
     public static final String NAME = "name";
     public static final String LABEL = "label";
     public static final String DESCRIPTION = "description";
+    
+    public static final String SOURCE = "source";
 
     public static final String RANGE_CONSTRAINT = "rangeConstraint";
     public static final String RANGE_URI = "rangeURI";

@@ -14,6 +14,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.monitor.ConfigInstance;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
@@ -33,6 +34,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     String name;
 	String query;
 	DSAPIManager manager;
+	String sourceName;
 	Hierarchy hierarchy;
 	
 	final Set<Aspect> aspects = new HashSet<Aspect>();
@@ -119,6 +121,18 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	public String getBaseQuery() {
 	    return query;
 	}
+	
+	public void setSourceName(String sourceName) {
+	    this.sourceName = sourceName;
+	}
+	
+	/**
+	 * Return the sparql source which should be used to 
+	 * query this dataset
+	 */
+	public SparqlSource getSource() {
+	    return manager.getSource(sourceName);
+	}
     
     /**
      * Full json serialization used to report the dataset structure, language specific
@@ -153,6 +167,9 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
             out.pair(DATA_API, base + "/data");
             out.pair(STRUCTURE_API, base + "/structure");
             out.pair(DESCRIBE_API, base + "/describe");
+        }
+        if (sourceName != null) {
+            out.pair(SOURCE, sourceName);
         }
         if (isHierarchy()) {
             out.key(HIERARCHY);
