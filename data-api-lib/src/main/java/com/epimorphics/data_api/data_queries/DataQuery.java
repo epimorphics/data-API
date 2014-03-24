@@ -139,9 +139,16 @@ public class DataQuery {
 		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 	
-	private void booleanExpression(boolean b, List<Aspect> ordered,
-			Composition c, String head, String core, StringBuilder sb,
-			String baseQuery, PrefixMapping pm, API_Dataset api) {
+	private void booleanExpression
+		( boolean b
+		, List<Aspect> ordered
+		, Composition c
+		, String head
+		, String core
+		, StringBuilder sb
+		, String baseQuery
+		, PrefixMapping pm
+		, API_Dataset api) {
 		if (c instanceof Or) {
 			sb.append("(");
 			String or = "";
