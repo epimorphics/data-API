@@ -17,13 +17,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.riot.RDFLanguages;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.data.impl.ModelSparqlSource;
 import com.epimorphics.data_api.config.DSAPIManager;
-import com.epimorphics.data_api.config.DatasetMonitor;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -70,37 +69,56 @@ public class TestDescribe {
 
 	Resource A = r(":A"), B = r(":B"), C = r(":C"), D = r(":D");
 	
-	@Ignore @Test public void testAB() throws WebApplicationException, IOException {			
+	@Test public void testAB() throws WebApplicationException, IOException {			
 		List<String> uris = BunchLib.list(A.getURI(), B.getURI());
 		Model expected = readTurtle(":A :P 1. :B :Q 2.");
 		testExample(uris, expected);
 	}	
 	
-	@Ignore @Test public void testBC() throws WebApplicationException, IOException {			
+	@Test public void testBC() throws WebApplicationException, IOException {			
 		List<String> uris = BunchLib.list(B.getURI(), C.getURI());
 		Model expected = readTurtle(":B :Q 2. :C :R 3.");
 		testExample(uris, expected);
 	}
 	
-	@Ignore @Test public void testBCxx() throws WebApplicationException, IOException {			
+	@Test public void testBCxx() throws WebApplicationException, IOException {			
 		List<String> uris = BunchLib.list(D.getURI());
 		Model expected = readTurtle(":D :S [:T 4]");
 		testExample(uris, expected);
 	}
 
 	private void testExample(List<String> uris, Model expected)	throws IOException {
-		DSAPIManager d = new DSAPIManager();
-		DatasetMonitor mds = new DatasetMonitor();
-		d.setMonitoredDatasets(mds);
+		DSAPIManager d = makeManager();
 		SparqlSource s = new ModelSparqlSource(contentModel);
 		d.setSource(s);
 	//
 		Response r = d.datasetDescribeEndpoint("unused", uris);
+		
 		StreamingOutput so = (StreamingOutput) r.getEntity();
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		so.write(bos);
 	//
 		assertIso( expected, readJSON(bos.toString()) );
+	}
+
+	// make a manager that fakes out the dataset
+	private DSAPIManager makeManager() {
+		Resource config = contentModel.createResource("eh:/config");
+		
+		final API_Dataset[] ads = new API_Dataset[1];
+		
+ 		DSAPIManager d = new DSAPIManager() {
+			
+			@Override public API_Dataset getAPI(String name) {
+				return ads[0];
+			}
+		};
+		
+		final API_Dataset ad = new API_Dataset(config, d);
+		ad.setSourceName(null);
+		ads[0] = ad;
+		
+		return d;
 	}
 
 	private void assertIso(Model expected, Model obtained) {

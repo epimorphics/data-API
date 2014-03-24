@@ -184,7 +184,7 @@ public class DSAPIManager extends ComponentBase {
         return  getAPI(dataset).asJsonShort(lang, uribase); 
     }
 
-    private API_Dataset getAPI(String dataset) {
+    public API_Dataset getAPI(String dataset) {
         API_Dataset api = getDataset(dataset);
         if (api == null) {
             throw new NotFoundException("Dataset " + dataset + " not registered");
@@ -248,9 +248,9 @@ public class DSAPIManager extends ComponentBase {
     	sb.append("DESCRIBE");
     	for (String u: uris) sb.append("\n <").append(u).append(">");
     	String query = sb.append("\n").toString();
-    	
-        SparqlSource source = getAPI(dataset).getSource();
-    	final Model m = ModelFactory.createModelForGraph(source.describe(query));
+    //
+        SparqlSource source = getAPI(dataset).getSource();        
+        final Model m = ModelFactory.createModelForGraph(source.describe(query));
     	StreamingOutput description = new StreamingOutput() {
 
 			@Override public void write(OutputStream output) throws IOException, WebApplicationException {
