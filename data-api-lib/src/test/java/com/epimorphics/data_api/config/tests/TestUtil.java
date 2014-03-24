@@ -32,10 +32,10 @@ public class TestUtil {
         String sq = null;
         if (p.isOK()) {
             sq = q.toSparql(p, dataset);
-//            System.out.println(sq);
+            // System.out.println(">> " + sq);
         }
         if (p.isOK()) {
-            ResultSet results = dataset.getManager().getSource().select(sq);
+            ResultSet results = dataset.getSource().select(sq);
             return QueryUtil.resultsFor(results, "item");
         } else {
             throw new EpiException("Failed to parse query: " + p.getProblemStrings());

@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
@@ -30,7 +29,7 @@ public class TestBooleans {
 		.lock()
 		;
 
-	static final Aspect otherAspect = new Aspect(pm.expandPrefix("pre:other"), new Shortname(pm, "pre:other"));
+	static final Aspect otherAspect = new Aspect(pm, "pre:other");
 	
 	final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 		.add(Setup.localAspect)

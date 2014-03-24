@@ -9,7 +9,9 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
@@ -22,7 +24,6 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 public class DataQuery {
 	
@@ -37,8 +38,10 @@ public class DataQuery {
 	final List<Sort> sortby;
 	final Slice slice;
 	final List<Guard> guards; 
-	final String globalSearchPattern;
+	
 	final Composition c;
+	
+	final List<SearchSpec> searchPatterns = new ArrayList<SearchSpec>();
 	
 	public DataQuery(Composition c) {
 		this(c, new ArrayList<Sort>() );
@@ -57,15 +60,15 @@ public class DataQuery {
     }    
     
     public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice) {
-    	this(c, sortby, guards, slice, null);
+    	this(c, sortby, guards, slice, SearchSpec.none());
     }
 
-    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice, String globalSearchPattern) {
+    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice, List<SearchSpec> searchPatterns) {
 		this.c = c;
 		this.sortby = sortby;
 		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
-		this.globalSearchPattern = globalSearchPattern;
+		this.searchPatterns.addAll(searchPatterns);
 	}
 
 	public List<Sort> sorts() {
@@ -80,8 +83,8 @@ public class DataQuery {
 		return slice;
 	}
 
-	public String getGlobalSearchPattern() {
-		return globalSearchPattern;
+	public List<SearchSpec> getSearchPatterns() {
+		return searchPatterns;
 	}
 	
 	public List<Filter> filters() {
@@ -100,16 +103,18 @@ public class DataQuery {
     }
 
 	static final Term item = Term.var("item");
-	
 	static final boolean properly = true;
-
-	private String toSparqlString(Problems p, Set<Aspect> a, String baseQuery, PrefixMapping pm, API_Dataset api) {
-		List<Aspect> ordered = new ArrayList<Aspect>(a);
+	
+	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
+		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
 		Collections.sort(ordered, compareAspects);
+	
+		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
+		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 		
 		StringBuilder sb = new StringBuilder();
-		String core = queryCore(p, a, baseQuery, pm, api);
-		String head = queryHead(p, a, baseQuery, pm, api);
+		String core = queryCore(p, aspects, baseQuery, pm, api);
+		String head = queryHead(p, aspects, baseQuery, pm, api);
 				
 		sb.append(head).append("\n");
 		if (c.isPure()) {
@@ -275,6 +280,9 @@ public class DataQuery {
 	private String queryCore(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
+	
+		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
+		for (Aspect x: a) namesToAspects.put(x.getName(), x);
 		
 		StringBuilder sb = new StringBuilder();
         boolean baseQueryNeeded = true;
@@ -286,8 +294,8 @@ public class DataQuery {
         }
 		String dot = "";
 	//
-        if (globalSearchPattern != null) {
-            sb.append(dot).append("?item").append(" <http://jena.apache.org/text#query> ").append(quote(globalSearchPattern));
+		for (SearchSpec s: searchPatterns) {
+            sb.append(dot).append(s.toSearchTriple(namesToAspects, pm));
             dot = " .\n ";
         }
 	//
@@ -357,13 +365,6 @@ public class DataQuery {
 	private Aspect aspectFor(List<Aspect> ordered, Shortname name) {
 		for (Aspect a: ordered) if (a.getName().equals(name)) return a;
 		throw new BrokenException("Could not find aspect " + name + " in " + ordered);
-	}
-
-	/**
-	    Quote a string to turn in into a SPARQL term.
-	*/
-	private String quote(String s) {
-		return "\"" + FmtUtils.stringEsc(s, true) + "\"";
 	}
 
 	private String opForFilter(Filter f) {

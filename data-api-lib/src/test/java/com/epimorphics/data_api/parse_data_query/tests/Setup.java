@@ -6,7 +6,6 @@
 package com.epimorphics.data_api.parse_data_query.tests;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
@@ -15,7 +14,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Setup {
 
-	static final PrefixMapping pm = PrefixMapping.Factory.create()
+	public static final PrefixMapping pm = PrefixMapping.Factory.create()
 		.setNsPrefix("pre", "eh:/prefixPart/" )
 		.lock()
 		;
@@ -30,6 +29,6 @@ public class Setup {
 		return m.createResource("eh:/pseudoRoot");
 	}
 	
-	public static final Aspect localAspect = new Aspect(pm.expandPrefix("pre:local"), new Shortname(pm, "pre:local"));
+	public static final Aspect localAspect = new Aspect(pm, "pre:local");
 
 }

@@ -17,6 +17,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.monitor.ConfigMonitor;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -64,25 +65,29 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             // stops applications rebinding them in a way with might break internal assumptions
             config.setNsPrefixes(DefaultPrefixes.get());
             
+            // Check if the dataset specifies an explicit source
+            String sourceName = RDFUtil.getStringValue(configRoot, Dsapi.source);
+            SparqlSource source = manager.getSource(sourceName);
+            
             // The config may reference dataset or DSD information in the source
             // If so pull in a local copy
             Resource dataset = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dataset);
             Resource dsd = RDFUtil.getResourceValue(configRoot, Dsapi.qb_dsd);
             if (dataset != null && !hasProperties(dataset)) {
-                addClosure(dataset);
+                addClosure(source, dataset);
                 if (dsd == null) {
                     dsd = RDFUtil.getResourceValue(dataset, Cube.structure);
                 }
                 if (dsd != null && !hasProperties(dsd)) {
-                    addClosure(dsd);
+                    addClosure(source, dsd);
                     if (dsd.isURIResource()) {
                         // Try to fetch the descriptions of the components
                         String componentQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) ?x}",
                                 Cube.getURI(), dsd.getURI());
-                        addClosure(dataset, manager.getSource().describe(componentQuery));
+                        addClosure(dataset, source.describe(componentQuery));
                         String codelistQuery = String.format("PREFIX qb: <%s> DESCRIBE ?x WHERE {<%s> qb:component / (qb:dimension | qb:attribute | qb:measure | qb:componentProperty) / qb:codeList ?x}",
                                 Cube.getURI(), dsd.getURI());
-                        addClosure(dataset, manager.getSource().describe(codelistQuery));
+                        addClosure(dataset, source.describe(codelistQuery));
                     }
                 }
             }
@@ -94,10 +99,13 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             if ( ! aspectprops.isEmpty() ) {
                 String[] uris = new String[ aspectprops.size() ];
                 for (int i = 0; i < aspectprops.size(); i++) uris[i] = aspectprops.get(i).getURI();
-                config.add( ModelFactory.createModelForGraph( manager.getSource().describeAll(uris)) );
+                config.add( ModelFactory.createModelForGraph( source.describeAll(uris)) );
             }
             
-            API_Dataset dsapi = new API_Dataset(configRoot, manager); 
+            API_Dataset dsapi = new API_Dataset(configRoot, manager);
+            if (sourceName != null) {
+                dsapi.setSourceName(sourceName);
+            }
             if (configRoot.hasProperty(Dsapi.aspect)) {
                 parseAspects(dsapi, configRoot, datasets);
             } else if (dsd != null) {
@@ -160,7 +168,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             }
             Aspect a = addAspect(dsapi, datasets, aspect, ! RDFUtil.getBooleanValue(aspect, Dsapi.optional, false));
             a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
-            // TODO parse property paths
+            a.setPropertyPath( RDFUtil.getStringValue(aspect, Dsapi.propertyPath));
             // TODO parse range constraints
         }
     }
@@ -194,9 +202,9 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
         return result;
     }
     
-    private void addClosure(Resource root) {
+    private void addClosure(SparqlSource source, Resource root) {
         if (root.isURIResource()) {
-            Graph closure = manager.getSource().describeAll( root.getURI() );
+            Graph closure = source.describeAll( root.getURI() );
             addClosure(root, closure);
         }
     }

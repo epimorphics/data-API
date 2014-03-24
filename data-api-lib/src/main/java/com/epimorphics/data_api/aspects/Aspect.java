@@ -20,6 +20,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
+	
 	String ID;
 	final Shortname name;
 	String rangeDataset;
@@ -30,13 +31,23 @@ public class Aspect extends ResourceBasedConfig {
 	Resource rangeType = null;
 	String belowPredicate = null;
 	
+	String propertyPath = null;
+	
 	static final String DefaultBelowPredicate = "skos:narrower";
 	
-	public Aspect(String ID, Shortname name) {
-		this.ID = ID;
-		this.name = name;
+	PrefixMapping explictPrefixes = null;
+	
+	public Aspect(PrefixMapping pm, String shortName) {
+		String fullName = pm.expandPrefix(shortName);		
+		this.ID = fullName;
+		this.name = new Shortname(pm, shortName);
+		this.explictPrefixes = pm;
 	}
 	
+	@Override public PrefixMapping getPrefixes() {
+		return explictPrefixes == null ? super.getPrefixes() : explictPrefixes;
+	}
+
 	public Aspect(Resource aspect) {
 	    super(aspect);
 	    ID = aspect.getURI();
@@ -51,9 +62,7 @@ public class Aspect extends ResourceBasedConfig {
 	    }
 	    PrefixMapping pm = getPrefixes();
 	    name = new Shortname(pm, pm.shortForm(ID));
-	    
 	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
-	    
 	}
 	
 	@Override public String toString() {
@@ -77,7 +86,7 @@ public class Aspect extends ResourceBasedConfig {
 	}
 
 	public String asProperty() {
-		return name.getCURIE();
+		return propertyPath == null ? name.getCURIE() : propertyPath;	
 	}
 	
 	public String getBelowPredicate(API_Dataset dataset) {
@@ -127,7 +136,6 @@ public class Aspect extends ResourceBasedConfig {
 		return rangeType;
 	}
     
-	
     public String getRangeDataset() {
         return rangeDataset;
     }
@@ -135,8 +143,31 @@ public class Aspect extends ResourceBasedConfig {
     public void setRangeDataset(String codelist) {
         this.rangeDataset = codelist;
     }
+    
+    public String getPropertyPathRaw() {
+    	return propertyPath;
+    }
+    
+    public String getPropertyPath() {
+    	return asProperty();
+    }
+    
+    public Aspect setPropertyPath(String path) {
+    	checkLegalPropertyPath(path);
+    	propertyPath = path;
+    	return this;
+    }
 
-    /**
+    private void checkLegalPropertyPath(String path) {
+    	/*
+    	 	TODO.
+    		Place-holder for checking that a property path is
+    		legal, ie has SPARQL syntax. We may throw it away
+    		instead.
+    	*/
+	}
+
+	/**
      * Full json serialization used to report the dataset structure, language specific
      */
     public JSONWritable asJson(String lang) {

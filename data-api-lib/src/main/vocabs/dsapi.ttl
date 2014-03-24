@@ -29,6 +29,7 @@ DSD or implicitly from the DSD associated with the QB dataset.  """@en;
     rdfs:subClassOf [owl:onProperty rdfs:label       ; owl:minCardinality 1];
     rdfs:subClassOf [owl:onProperty dct:description  ; owl:minCardinality 0];
     rdfs:subClassOf [owl:onProperty :codeList        ; owl:minCardinality 0];
+    rdfs:subClassOf [owl:onProperty :source          ; owl:minCardinality 0];
     .
     
 :qb_dataset a owl:ObjectProperty;
@@ -51,7 +52,8 @@ DSD or implicitly from the DSD associated with the QB dataset.  """@en;
 of the dataset to the ?item variable."""@en;
     rdfs:domain :Dataset;
     rdfs:range  xsd:string
-    .    
+    .
+            
 :aspect a owl:ObjectProperty;
     rdfs:label "aspect"@en;
     rdfs:comment "Indicates a locally-configured 'aspect' of the data set."@en;
@@ -66,6 +68,13 @@ Applied to an Aspect it indicates that that there is a range dataset from the As
     rdfs:domain [ owl:unionOf (:Dataset :Aspect) ];
     rdfs:range  [ owl:unionOf (skos:ConceptScheme skos:Collection qb:HierarchicalCodeList)] ;
     .
+    
+:source  a owl:DatatypeProperty;
+    rdfs:label "source"@en;
+    rdfs:comment """The name of the sparql source to be queried, if omitted uses the default source."""@en;
+    rdfs:domain :Dataset;
+    rdfs:range  xsd:string
+    .    
     
 # Configuration an aspect definition
 
