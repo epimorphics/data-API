@@ -60,6 +60,13 @@ public class SearchSpec {
 
 	private String toSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		Aspect a = aspects.get(aspectName);
+		
+//		System.err.println( ">> toSearchApsectTriple of " + aspectName );
+//		System.err.println( ">>   aspect is " + a );
+//		System.err.println( ">>   .pattern = " + pattern );
+//		System.err.println( ">>   .aspectName = " + aspectName );
+//		System.err.println( ">>   .property = " + property );
+		
 		boolean hasLiteralRange = hasLiteralRange(a);
 		if (property == null) {
 			

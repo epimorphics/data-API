@@ -58,7 +58,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("lookfor", property)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, property)), q.getSearchPatterns() );
 	}
 
 }

@@ -164,7 +164,7 @@ public class DataQueryParser {
 			String pattern = ob.get("@value").getAsString().value();
 			String property = ob.get("@property").getAsString().value();
 			Shortname shortProperty = new Shortname(pm, property);
-			return new SearchSpec(pattern, shortProperty);
+			return new SearchSpec(pattern, aspectName, shortProperty);
 		} else {
 			p.add("Operand of @search must be string or object, given: " + value);
 			return SearchSpec.absent();
