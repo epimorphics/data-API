@@ -112,7 +112,7 @@ public class SearchSpec {
 	}
 
 	private boolean isLiteralType(Resource type) {
-		return type == null || type.getURI().startsWith(XSD.getURI());
+		return type != null && type.getURI().startsWith(XSD.getURI());
 	}
 
 	@Override public String toString() {
