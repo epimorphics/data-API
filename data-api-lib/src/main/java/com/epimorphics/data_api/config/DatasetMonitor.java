@@ -23,6 +23,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.rdfutil.RDFUtil;
+import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
@@ -68,6 +69,10 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             // Check if the dataset specifies an explicit source
             String sourceName = RDFUtil.getStringValue(configRoot, Dsapi.source);
             SparqlSource source = manager.getSource(sourceName);
+            
+            if (source == null) {
+                throw new EpiException("Specified data source (" + sourceName + ") is not configured");
+            }
             
             // The config may reference dataset or DSD information in the source
             // If so pull in a local copy

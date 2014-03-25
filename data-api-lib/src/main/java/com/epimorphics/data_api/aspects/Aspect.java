@@ -57,7 +57,7 @@ public class Aspect extends ResourceBasedConfig {
 	            ID = prop.getURI();
 	        } else {
 	            // TODO The ID should not be tied to the aspect definition but needs more refactoring here to sort it out
-	            throw new EpiException("Internal error - can't handle bNode aspects properly yet");
+	            throw new EpiException("Failed to parse aspect specification - aspects need to be either URI resources or have a dssapi:property whose value is a URI resource");
 	        }
 	    }
 	    PrefixMapping pm = getPrefixes();
