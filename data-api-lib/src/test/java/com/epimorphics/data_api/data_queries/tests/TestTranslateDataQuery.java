@@ -235,7 +235,7 @@ public class TestTranslateDataQuery {
 		String prop = useAspect.getName().getCURIE();
 		
 		String prefix_p = "PREFIX pre: <eh:/prefixPart/>\n";
-		String prefix_skos = (op.equals("below") ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
+		String prefix_skos = (op.equals(Operator.BELOW) ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
 		String select = "SELECT ?item _VAR WHERE { ?item _PROP _VAR . " + filter + " }";
 		
 		String expected = 

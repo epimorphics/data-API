@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public abstract class Operator {
@@ -35,14 +36,14 @@ public abstract class Operator {
 	public static final Operator ONEOF = new OneofOperator(false);
 	public static final Operator NOT_ONEOF = new OneofOperator(true);
 	
-	public static final Operator BELOW = new TrickyOperator("below", false);
-	public static final Operator SEARCH = new TrickyOperator("search", false);
-	public static final Operator NOT_BELOW = new TrickyOperator("not-below", true);
-	public static final Operator NOT_SEARCH = new TrickyOperator("not-search", true);
+	public static final Operator BELOW = new BelowOperator("below", false);
+	public static final Operator SEARCH = new SearchOperator("search", false);
+	public static final Operator NOT_BELOW = new BelowOperator("not-below", true);
+	public static final Operator NOT_SEARCH = new SearchOperator("not-search", true);
 	
 	protected static final Map<String, Operator> operators = new HashMap<String, Operator>();
 
-	static void declare_negative_pair( Operator A, Operator B ) {
+	static void declare_complementary_pair( Operator A, Operator B ) {
 		operators.put(A.JSONname(), A);
 		operators.put(B.JSONname(), B);
 		A.negated = B;
@@ -50,14 +51,14 @@ public abstract class Operator {
 	}
 	
 	static {
-		declare_negative_pair( EQ, NE );
-		declare_negative_pair( LE, GT );
-		declare_negative_pair( LT, GE );
-		declare_negative_pair( CONTAINS, NOT_CONTAINS );
-		declare_negative_pair( MATCHES, NOT_MATCHES );
-		declare_negative_pair( ONEOF, NOT_ONEOF );
-		declare_negative_pair( BELOW, NOT_BELOW );
-		declare_negative_pair( SEARCH, NOT_SEARCH );
+		declare_complementary_pair( EQ, NE );
+		declare_complementary_pair( LE, GT );
+		declare_complementary_pair( LT, GE );
+		declare_complementary_pair( CONTAINS, NOT_CONTAINS );
+		declare_complementary_pair( MATCHES, NOT_MATCHES );
+		declare_complementary_pair( ONEOF, NOT_ONEOF );
+		declare_complementary_pair( BELOW, NOT_BELOW );
+		declare_complementary_pair( SEARCH, NOT_SEARCH );
 	}
 	
 	public Operator(String name) {
@@ -141,12 +142,12 @@ public abstract class Operator {
 	
 	static class FunctionOperator extends Operator {
 		
-		final boolean negated;
+		final boolean needsNot;
 		final String functionName;
 		
 		public FunctionOperator(String name, String functionName, boolean negated) {
 			super(name);
-			this.negated = negated;
+			this.needsNot = negated;
 			this.functionName = functionName;
 		}
 
@@ -160,7 +161,7 @@ public abstract class Operator {
 			sb.append(" ")
 				.append(FILTER)
 				.append( "(")
-				.append( negated ? "!" : "")
+				.append( needsNot ? "!" : "")
 				.append( functionName )
 				.append("(")
 				.append(fVar)
@@ -199,16 +200,46 @@ public abstract class Operator {
 				orOp = " || ";
 			}
 			sb.append(")");
-		
-			
 		}
 	}
 	
-	static class TrickyOperator extends Operator {
+	static class EqOperator extends Operator {
+		
+		final String opName;
+		
+		public EqOperator(String name, String op) {
+			super(name);
+			this.opName = "=";
+		}
+
+		public void asSparqlFilter
+			( PrefixMapping pm
+			, Filter filter
+			, StringBuilder sb
+			, String FILTER
+			, API_Dataset api
+			, List<Aspect> ordered, String fVar, String value
+			) {
+//		sb.append("?item ").append(f.name.prefixed).append( " ").append(value);
+//		sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
+			sb.append(" ")
+				.append(FILTER)
+				.append("(" )
+				.append(fVar)
+				.append(" ")
+				.append("=")
+				.append(" ")
+				.append(value)
+				.append(")")
+				;
+		}
+	}		
+	
+	static class BelowOperator extends Operator {
 		
 		final boolean negated;
 		
-		public TrickyOperator(String name, boolean negated) {
+		public BelowOperator(String name, boolean negated) {
 			super(negated ? "not-oneof" : "oneof");
 			this.negated = negated;
 		}
@@ -221,18 +252,24 @@ public abstract class Operator {
 			, API_Dataset api
 			, List<Aspect> ordered, String fVar, String value
 			) {
-			sb.append(">> ").append(JSONname).append("not implemented yet");
+			Aspect x = aspectFor(ordered, filter.name);
+			String below = x.getBelowPredicate(api);
+			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);		
 		}
 	}
+
+	private static Aspect aspectFor(List<Aspect> ordered, Shortname name) {
+		for (Aspect a: ordered) if (a.getName().equals(name)) return a;
+		throw new BrokenException("Could not find aspect " + name + " in " + ordered);
+	}
 	
-	static class EqOperator extends Operator {
+	static class SearchOperator extends Operator {
 		
-		final String opName;
+		final boolean negated;
 		
-		public EqOperator(String name, String op) {
-			super(name);
-			this.opName = "=";
-			
+		public SearchOperator(String name, boolean negated) {
+			super(negated ? "not-oneof" : "oneof");
+			this.negated = negated;
 		}
 
 		public void asSparqlFilter
@@ -242,18 +279,11 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered, String fVar, String value
-			) {
-		//		sb.append("?item ").append(f.name.prefixed).append( " ").append(value);
-		//		sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
-			sb.append(" ")
-				.append(FILTER)
-				.append("(" )
+			) {		 
+			sb.append(". ")
 				.append(fVar)
-				.append(" ")
-				.append("=")
-				.append(" ")
+				.append(" <http://jena.apache.org/text#query> ")
 				.append(value)
-				.append(")")
 				;
 		}
 	}
