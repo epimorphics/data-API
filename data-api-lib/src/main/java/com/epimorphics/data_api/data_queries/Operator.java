@@ -98,7 +98,8 @@ public abstract class Operator {
 	}
 
 	public static Operator lookup(String opName) {
-		return operators.get(opName);
+		Operator result = operators.get(opName);
+		return result;
 	}
 
 	public abstract void asSparqlFilter
@@ -240,7 +241,7 @@ public abstract class Operator {
 		final boolean negated;
 		
 		public BelowOperator(String name, boolean negated) {
-			super(negated ? "not-oneof" : "oneof");
+			super(name);
 			this.negated = negated;
 		}
 

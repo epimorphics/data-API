@@ -311,9 +311,10 @@ public class DataQuery {
 	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
 		if (c instanceof Filters) {
 			for (Filter f: ((Filters) c).filters) {
-				if (f.name.prefixed.equals(name.prefixed))
+				if (f.name.prefixed.equals(name.prefixed)) {
 					if (f.range.op.equals(Operator.EQ)) 
 						return f.range.operands.get(0).asSparqlTerm(pm);
+				}
 			}
 			return null;
 		} else {

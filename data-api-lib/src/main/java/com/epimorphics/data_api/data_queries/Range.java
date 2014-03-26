@@ -9,6 +9,7 @@ package com.epimorphics.data_api.data_queries;
 import java.util.List;
 
 import com.epimorphics.data_api.libs.BunchLib;
+import com.hp.hpl.jena.shared.BrokenException;
 
 public class Range {
 	
@@ -16,6 +17,9 @@ public class Range {
 	final List<Term> operands;
 	
 	public Range(Operator op, List<Term> operands ) {
+		
+		if (op == null) throw new BrokenException( ">> OOPS OP IS NULL" );
+		
 		this.op = op;
 		this.operands = operands;
 	}

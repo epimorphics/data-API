@@ -22,7 +22,7 @@ public class Filter {
 	}
 	
 	@Override public String toString() {
-		return "<filter " + name + ": " + range;
+		return "<filter " + name + ": " + range + ">";
 	}
 	
 	@Override public int hashCode() {
