@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.epimorphics.data_api.libs.BunchLib;
+import com.hp.hpl.jena.shared.BrokenException;
+
 public class Composition {
 	
 	public static final Composition NONE = new Composition
@@ -25,6 +28,18 @@ public class Composition {
 		for (Composition c: operands) sb.append(" ").append(c.toString());
 		sb.append(")");
 		return sb.toString();
+	}
+	
+	@Override public boolean equals(Object other) {
+		return this.getClass() == other.getClass() && same((Composition) other);
+	}
+	
+	private boolean same(Composition other) {
+		return
+			this.getClass() == other.getClass()
+			&& this.op.equals(other.op)
+			&& this.operands.equals(other.operands)
+			;
 	}
 	
 	public Composition(String op, List<Composition> operands) {
@@ -124,10 +139,11 @@ public class Composition {
 		
 		List<Composition> ands = compositions.get("@and");
 		List<Composition> ors = compositions.get("@or");
-		// List<Composition> nots = compositions.get("@not");
+		List<Composition> nots = compositions.get("@not");
 		Composition fs = Composition.filters(filters);
 	//
 		List<Composition> expanded_ands = new ArrayList<Composition>(ands);
+		if (nots.size() > 0) expanded_ands.add(negate(nots));
 		if (filters.size() > 0) expanded_ands.add(fs);
 	//
 		List<Composition> expanded_ors = new ArrayList<Composition>(ors);
@@ -138,6 +154,47 @@ public class Composition {
 		// System.err.println( ">> built: " + result );
 		
 		return result;		
+	}
+
+	public static Composition negate(List<Composition> nots) {
+		List<Composition> x = new ArrayList<Composition>();
+		for (Composition n: nots) x.add(negate(n));
+		return x.size() == 1 ? x.get(0) : or(x);
+	}
+
+	private static Composition negate(Composition x) {
+		if (x instanceof And) {
+			
+		} else if (x instanceof Or) {
+			
+		} else if (x instanceof Not) {
+			
+		} else if (x instanceof Filters) {
+			Filters fs = (Filters) x;
+			List<Composition> y = new ArrayList<Composition>();
+			for (Filter f: fs.filters) {
+				y.add(Composition.filters(BunchLib.list(negate(f))));
+			}
+			return y.size() == 1 ? y.get(0) : and(y);
+		} 
+		throw new BrokenException("Cannot negate: " + x);
+	}
+
+	private static Filter negate(Filter f) {
+		return new Filter(f.name, new Range(negateOp(f.range.op), f.range.operands));
+	}
+
+	private static String negateOp(String op) {
+		if (op.equals("eq")) return "ne";
+		if (op.equals("ne")) return "eq";
+		if (op.equals("lt")) return "ge";
+		if (op.equals("le")) return "gt";
+		if (op.equals("ge")) return "lt";
+		if (op.equals("gt")) return "le";
+		if (op.equals("contains")) return "!contains";
+		if (op.equals("matches")) return "!matches";
+		throw new BrokenException("Cannot negate operator: " + op);
+
 	}	
 
 }
