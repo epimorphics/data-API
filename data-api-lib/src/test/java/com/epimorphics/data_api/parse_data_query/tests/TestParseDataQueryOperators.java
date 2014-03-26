@@ -19,6 +19,7 @@ import org.junit.Test;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -70,30 +71,30 @@ public class TestParseDataQueryOperators {
 	}
 	
 	@Test public void testSingleFilterQueryForEQ() {
-		testSingleFilterQueryWithNumericOp("eq");
+		testSingleFilterQueryWithNumericOp(Operator.EQ);
 	}
 	
 	@Test public void testSingleFilterQueryForNE() {
-		testSingleFilterQueryWithNumericOp("ne");
+		testSingleFilterQueryWithNumericOp(Operator.NE);
 	}
 	
 	@Test public void testSingleFilterQueryForLT() {
-		testSingleFilterQueryWithNumericOp("lt");
+		testSingleFilterQueryWithNumericOp(Operator.LT);
 	}
 	
 	@Test public void testSingleFilterQueryForLE() {
-		testSingleFilterQueryWithNumericOp("le");
+		testSingleFilterQueryWithNumericOp(Operator.LE);
 	}
 	
 	@Test public void testSingleFilterQueryForGE() {
-		testSingleFilterQueryWithNumericOp("ge");
+		testSingleFilterQueryWithNumericOp(Operator.GE);
 	}
 	
 	@Test public void testSingleFilterQueryForGT() {
-		testSingleFilterQueryWithNumericOp("gt");
+		testSingleFilterQueryWithNumericOp(Operator.GT);
 	}
 
-	private void testSingleFilterQueryWithNumericOp(String op) {
+	private void testSingleFilterQueryWithNumericOp(Operator op) {
 		Shortname sn = new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'@" + op + "': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
@@ -111,15 +112,15 @@ public class TestParseDataQueryOperators {
 	}
 	
 	@Test public void testSingleOneof() {
-		testSingleOperator("oneof", "[17, 99]", Term.number(new BigDecimal(17)), Term.number(new BigDecimal(99)) );
+		testSingleOperator(Operator.ONEOF, "[17, 99]", Term.number(new BigDecimal(17)), Term.number(new BigDecimal(99)) );
 	}
 	
 	@Test public void testSingleMatches() {
-		testSingleOperator("matches", "'reg.*exp'", Term.string("reg.*exp"));
+		testSingleOperator(Operator.MATCHES, "'reg.*exp'", Term.string("reg.*exp"));
 	}
 	
 	@Test public void testSingleContains() {
-		testSingleOperator("contains", "'substring'", Term.string("substring") );
+		testSingleOperator(Operator.CONTAINS, "'substring'", Term.string("substring") );
 	}
 	
 	// @search no longer generates filters; search objects are
@@ -141,13 +142,13 @@ public class TestParseDataQueryOperators {
 	}
 	
 	@Test public void testSingleBelow() {
-		testSingleOperator("below", "{'@id': 'eh:/resource'}", Term.URI("eh:/resource") );
+		testSingleOperator(Operator.BELOW, "{'@id': 'eh:/resource'}", Term.URI("eh:/resource") );
 	}
 		
-	void testSingleOperator(String op, String operand, Term...values) {
+	void testSingleOperator(Operator op, String operand, Term...values) {
 		Shortname sn = new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'@_OP': _ARGS}}"
-			.replaceAll("_OP", op)
+			.replaceAll("_OP", op.JSONname())
 			.replaceAll("_ARGS", operand)
 			;
 		JsonObject jo = JSON.parse(incoming);		

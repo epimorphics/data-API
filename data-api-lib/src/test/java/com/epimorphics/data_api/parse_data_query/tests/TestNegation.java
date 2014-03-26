@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
@@ -24,17 +25,17 @@ public class TestNegation {
 		;
 	
 	@Test public void testNegatePlainFilters() {
-		testNegateFilter("ge", Term.integer("17"), "lt", Term.integer("17"));
-		testNegateFilter("gt", Term.integer("17"), "le", Term.integer("17"));
-		testNegateFilter("le", Term.integer("17"), "gt", Term.integer("17"));
-		testNegateFilter("lt", Term.integer("17"), "ge", Term.integer("17"));
-		testNegateFilter("eq", Term.integer("17"), "ne", Term.integer("17"));
-		testNegateFilter("ne", Term.integer("17"), "eq", Term.integer("17"));
+		testNegateFilter(Operator.GE, Term.integer("17"), Operator.LT, Term.integer("17"));
+		testNegateFilter(Operator.GT, Term.integer("17"), Operator.LE, Term.integer("17"));
+		testNegateFilter(Operator.LE, Term.integer("17"), Operator.GT, Term.integer("17"));
+		testNegateFilter(Operator.LT, Term.integer("17"), Operator.GE, Term.integer("17"));
+		testNegateFilter(Operator.EQ, Term.integer("17"), Operator.NE, Term.integer("17"));
+		testNegateFilter(Operator.NE, Term.integer("17"), Operator.EQ, Term.integer("17"));
 	}
 
 	private void testNegateFilter
-		( String expectedOp, Term expectedValue
-		, String givenOp, Term givenValue
+		( Operator expectedOp, Term expectedValue
+		, Operator givenOp, Term givenValue
 		) {
 		Composition arg = aFilter("spoo:local", givenOp, givenValue);
 		Composition negated = Composition.negate( BunchLib.list(arg) );
@@ -46,7 +47,7 @@ public class TestNegation {
 		assertEquals( expected, negated );
 	}
 
-	private Composition aFilter(String name, String op, Term t) {
+	private Composition aFilter(String name, Operator op, Term t) {
 		Shortname sn = new Shortname(pm, name);
 		Range r = new Range(op, BunchLib.list(t));
 		Filter f = new Filter(sn, r);

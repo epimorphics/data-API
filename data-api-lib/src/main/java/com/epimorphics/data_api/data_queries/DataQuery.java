@@ -232,43 +232,41 @@ public class DataQuery {
 		String key = "?" + f.name.asVar();
 		String fVar = key;
 		String value = f.range.operands.get(0).asSparqlTerm(pm);
-		String rangeOp = f.getRangeOp();
+		Operator rangeOp = f.getRangeOp();		
 		
-		if (rangeOp.equals("oneof")) {
-			String orOp = "";
-			List<Term> operands = f.range.operands;
-			sb.append(" ").append(FILTER).append("(");
-			for (Term v: operands) {
-				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
-				orOp = " || ";
-			}
-			sb.append(")");
+		f.asSparqlFilter(pm, f, sb, FILTER, api, ordered, fVar, value);
 		
-		} else if (rangeOp.equals("below")) {		
-			Aspect x = aspectFor(ordered, f.name);
-			String below = x.getBelowPredicate(api);
-			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
+		if (true) return;
 		
-		} else if (rangeOp.equals("contains")) {
-			sb.append(" ").append(FILTER).append( "(").append("CONTAINS(").append(fVar).append(", ").append(value).append(")").append(")");
-		
-		} else if (rangeOp.equals("matches")) {
-			sb.append(" ").append(FILTER).append("(").append("REGEX(").append(fVar).append(", ").append(value).append(")").append(")");
+		 if (rangeOp.equals("below")) {		
+			doFilterBelow(sb, f, api, ordered, fVar, value);
 		
 		} else if (rangeOp.equals("search")) {
-			// System.err.println( ">> 'search' suppressed" );
-			 // sb.append(" TRUE ");
-			 sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+			doFilterSearch(sb, fVar, value);
 		
 		} else if (rangeOp.equals("eq")) {
-//			sb.append("?item ").append(f.name.prefixed).append( " ").append(value);
-//			sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
-			sb.append(" ").append(FILTER).append("(" ).append(fVar).append(" ").append("=").append(" ").append(value).append(")");
-		
-		} else {
-			String op = opForFilter(f);
-			sb.append(" ").append(FILTER).append("(" ).append(fVar).append(" ").append(op).append(" ").append(value).append(")");
+			doFilterEQ(FILTER, sb, fVar, value);
 		}
+	}
+
+	private void doFilterEQ(String FILTER, StringBuilder sb, String fVar,
+			String value) {
+		//			sb.append("?item ").append(f.name.prefixed).append( " ").append(value);
+//			sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
+		sb.append(" ").append(FILTER).append("(" ).append(fVar).append(" ").append("=").append(" ").append(value).append(")");
+	}
+
+	private void doFilterSearch(StringBuilder sb, String fVar, String value) {
+		// System.err.println( ">> 'search' suppressed" );
+		 // sb.append(" TRUE ");
+		 sb.append(". ").append(fVar).append(" <http://jena.apache.org/text#query> ").append(value);
+	}
+
+	private void doFilterBelow(StringBuilder sb, Filter f, API_Dataset api,
+			List<Aspect> ordered, String fVar, String value) {
+		Aspect x = aspectFor(ordered, f.name);
+		String below = x.getBelowPredicate(api);
+		sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);
 	}
 	
 	private String queryHead(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
@@ -348,7 +346,7 @@ public class DataQuery {
 		if (c instanceof Filters) {
 			for (Filter f: ((Filters) c).filters) {
 				if (f.name.prefixed.equals(name.prefixed))
-					if (f.range.op.equals("eq")) 
+					if (f.range.op.equals(Operator.EQ)) 
 						return f.range.operands.get(0).asSparqlTerm(pm);
 			}
 			return null;
@@ -372,20 +370,5 @@ public class DataQuery {
 	private Aspect aspectFor(List<Aspect> ordered, Shortname name) {
 		for (Aspect a: ordered) if (a.getName().equals(name)) return a;
 		throw new BrokenException("Could not find aspect " + name + " in " + ordered);
-	}
-
-	private String opForFilter(Filter f) {
-		String rangeOp = f.getRangeOp();
-		return opFor(rangeOp);
-	}
-	
-	private String opFor(String rangeOp) {
-		if (rangeOp.equals("eq")) return "=";
-		if (rangeOp.equals("ne")) return "!=";
-		if (rangeOp.equals("le")) return "<=";
-		if (rangeOp.equals("lt")) return "<";
-		if (rangeOp.equals("ge")) return ">=";
-		if (rangeOp.equals("gt")) return ">";
-		throw new RuntimeException("should never happen: unexpected range op '" + rangeOp + "'");
 	}
 }

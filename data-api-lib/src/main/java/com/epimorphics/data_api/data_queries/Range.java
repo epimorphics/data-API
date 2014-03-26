@@ -12,16 +12,16 @@ import com.epimorphics.data_api.libs.BunchLib;
 
 public class Range {
 	
-	final String op;
+	final Operator op;
 	final List<Term> operands;
 	
-	public Range(String op, List<Term> operands ) {
+	public Range(Operator op, List<Term> operands ) {
 		this.op = op;
 		this.operands = operands;
 	}
 	
 	public static Range EQ(Term v) {
-		return new Range("eq", BunchLib.list(v));
+		return new Range(Operator.EQ, BunchLib.list(v));
 	}
 	
 	@Override public String toString() {

@@ -13,6 +13,7 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
@@ -35,8 +36,8 @@ public class TestMultipleFilters {
 		Shortname local = new Shortname(pm, "pre:local");
 		Problems p = new Problems();
 	//		
-		Filter lt = new Filter(local, new Range("lt", BunchLib.list(Term.decimal("17"))));
-		Filter gt = new Filter(local, new Range("gt", BunchLib.list(Term.decimal("42"))));
+		Filter lt = new Filter(local, new Range(Operator.LT, BunchLib.list(Term.decimal("17"))));
+		Filter gt = new Filter(local, new Range(Operator.GT, BunchLib.list(Term.decimal("42"))));
 	//
 		List<Filter> filters = BunchLib.list(lt, gt);
 		

@@ -14,6 +14,7 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
@@ -34,7 +35,7 @@ public class TestPropertyPaths {
 	@Test public void testQueryUsesAspectPropertyPath() {
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range("gt", BunchLib.list(Term.number(17))));
+		Filter f = new Filter(sn, new Range(Operator.GT, BunchLib.list(Term.number(17))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//

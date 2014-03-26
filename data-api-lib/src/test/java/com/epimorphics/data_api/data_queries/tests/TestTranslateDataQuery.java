@@ -21,6 +21,7 @@ import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Guard;
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -112,33 +113,33 @@ public class TestTranslateDataQuery {
 	}		
 	
 	@Test public void testSingleEqFilter() {
-		testSingleFilterWithSpecifiedOp("eq", "=");
+		testSingleFilterWithSpecifiedOp(Operator.EQ, "=");
 	}	
 	
 	@Test public void testSingleNeFilter() {
-		testSingleFilterWithSpecifiedOp("ne", "!=");
+		testSingleFilterWithSpecifiedOp(Operator.NE, "!=");
 	}	
 	
 	@Test public void testSingleLeFilter() {
-		testSingleFilterWithSpecifiedOp("le", "<=");
+		testSingleFilterWithSpecifiedOp(Operator.LE, "<=");
 	}	
 	
 	@Test public void testSingleLtFilter() {
-		testSingleFilterWithSpecifiedOp("lt", "<");
+		testSingleFilterWithSpecifiedOp(Operator.LT, "<");
 	}	
 	
 	@Test public void testSingleGeFilter() {
-		testSingleFilterWithSpecifiedOp("gt", ">");
+		testSingleFilterWithSpecifiedOp(Operator.GT, ">");
 	}	
 	
 	@Test public void testSingleGtFilter() {
-		testSingleFilterWithSpecifiedOp("ge", ">=");
+		testSingleFilterWithSpecifiedOp(Operator.GE, ">=");
 	}
 
-	private void testSingleFilterWithSpecifiedOp(String opName, String opSparql) {	
+	private void testSingleFilterWithSpecifiedOp(Operator op, String opSparql) {	
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range(opName, BunchLib.list(Term.number(17))));
+		Filter f = new Filter(sn, new Range(op, BunchLib.list(Term.number(17))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
@@ -150,7 +151,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, (opName.equals("eq") ? "?item pre:X 17 BIND(17 AS ?pre_X)" : ("?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)"))
+			, (op.equals(Operator.EQ) ? "?item pre:X 17 BIND(17 AS ?pre_X)" : ("?item pre:X ?pre_X FILTER(?pre_X " + opSparql + " 17)"))
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -159,7 +160,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleOneofFilter() {	
 		Problems p = new Problems();
 		Shortname sn = new Shortname( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range("oneof", BunchLib.list(Term.number(17), Term.number(99))));
+		Filter f = new Filter(sn, new Range(Operator.ONEOF, BunchLib.list(Term.number(17), Term.number(99))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
@@ -176,7 +177,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleXBelowFilter() {
 		testSingleSimpleFilter
 			( X
-			, "below"
+			, Operator.BELOW
 			, Term.URI("eh:/prefixPart/stairs")
 			, "<eh:/prefixPart/stairs> skos:narrower* ?pre_X"
 			);
@@ -185,7 +186,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleYBelowFilter() {
 		testSingleSimpleFilter
 			( Y
-			, "below"
+			, Operator.BELOW
 			, Term.URI("eh:/prefixPart/stairs")
 			, "<eh:/prefixPart/stairs> pre:child* ?pre_Y"
 			);
@@ -194,7 +195,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleContainsFilter() {
 		testSingleSimpleFilter
 			( X
-			, "contains"
+			, Operator.CONTAINS
 			, Term.string("substring")
 			, "FILTER(CONTAINS(?pre_X, 'substring'))"
 			);
@@ -203,7 +204,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleMatchesFilter() {
 		testSingleSimpleFilter
 			( X
-			, "matches"
+			, Operator.MATCHES
 			, Term.string("alpha.*beta")
 			, "FILTER(REGEX(?pre_X, 'alpha.*beta'))"
 			);
@@ -212,13 +213,13 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleSearchFilter() {
 		testSingleSimpleFilter
 			( X
-			, "search"
+			, Operator.SEARCH
 			, Term.string("look for me")
 			, "?pre_X <http://jena.apache.org/text#query> 'look for me'"
 			);
 	}
 	
-	private void testSingleSimpleFilter(Aspect useAspect, String op, Term term, String filter) {
+	private void testSingleSimpleFilter(Aspect useAspect, Operator op, Term term, String filter) {
 		Shortname sn = useAspect.getName();
 		Problems p = new Problems();		
 		Filter f = new Filter(sn, new Range(op, BunchLib.list(term)));

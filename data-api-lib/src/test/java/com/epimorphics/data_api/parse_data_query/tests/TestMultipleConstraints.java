@@ -16,6 +16,7 @@ import org.junit.Test;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Term;
@@ -39,8 +40,8 @@ public class TestMultipleConstraints {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 	//		
-		Filter lt = new Filter(local, new Range("lt", BunchLib.list(Term.decimal("17"))));
-		Filter gt = new Filter(local, new Range("gt", BunchLib.list(Term.decimal("42"))));
+		Filter lt = new Filter(local, new Range(Operator.LT, BunchLib.list(Term.decimal("17"))));
+		Filter gt = new Filter(local, new Range(Operator.GT, BunchLib.list(Term.decimal("42"))));
 		List<Filter> filters = BunchLib.list(lt, gt);
 	//
 		assertEquals( filters, q.filters() );

@@ -63,7 +63,7 @@ public class Composition {
 	}
 	
 	private boolean isTrivial(List<Filter> filters) {
-		for (Filter f: filters) if (!f.range.op.equals("eq")) return false;
+		for (Filter f: filters) if (!f.range.op.equals(Operator.EQ)) return false;
 		return true;
 	}
 
@@ -181,20 +181,7 @@ public class Composition {
 	}
 
 	private static Filter negate(Filter f) {
-		return new Filter(f.name, new Range(negateOp(f.range.op), f.range.operands));
-	}
-
-	private static String negateOp(String op) {
-		if (op.equals("eq")) return "ne";
-		if (op.equals("ne")) return "eq";
-		if (op.equals("lt")) return "ge";
-		if (op.equals("le")) return "gt";
-		if (op.equals("ge")) return "lt";
-		if (op.equals("gt")) return "le";
-		if (op.equals("contains")) return "!contains";
-		if (op.equals("matches")) return "!matches";
-		throw new BrokenException("Cannot negate operator: " + op);
-
+		return new Filter(f.name, new Range(f.range.op.negate(), f.range.operands));
 	}	
 
 }

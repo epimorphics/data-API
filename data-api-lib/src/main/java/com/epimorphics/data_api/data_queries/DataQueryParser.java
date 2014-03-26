@@ -100,12 +100,13 @@ public class DataQueryParser {
 					if (opKey.equals("@search")) {
 						searchPatterns.add( extractSearchSpec(key, sn, operand) );
 					} else if (opKey.startsWith("@")) {
-						String op = opKey.substring(1);
+						String opName = opKey.substring(1);
 						List<Term> v = DataQueryParser.jsonToTerms(p, pm, operand);
-						if (isKnownOp(op)) {
+						if (isKnownOp(opName)) {
+							Operator op = Operator.lookup(opName);
 							filters.add( new Filter(sn, new Range(op, v) ) );
 						} else {
-							p.add("unknown operator '" + op + "' in data query.");
+							p.add("unknown operator '" + opName + "' in data query.");
 						}
 					} else {
 						p.add("illegal member " + opKey);

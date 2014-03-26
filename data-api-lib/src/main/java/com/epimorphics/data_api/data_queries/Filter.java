@@ -5,6 +5,12 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import java.util.List;
+
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.datasets.API_Dataset;
+import com.hp.hpl.jena.shared.PrefixMapping;
+
 public class Filter {
 	
 	final Range range;
@@ -31,7 +37,7 @@ public class Filter {
 		return this.name.equals(other.name) && this.range.equals(other.range);
 	}
 
-	public String getRangeOp() {
+	public Operator getRangeOp() {
 		return range.op;
 
 	}
@@ -41,8 +47,20 @@ public class Filter {
 	    match. For now we test for the two known impure operators
 	*/
 	public boolean isPure() {
-		if (range.op.equals("search") || range.op.equals("below")) return false;
+		if (range.op.equals(Operator.SEARCH) || range.op.equals(Operator.BELOW)) return false;
 		return true;
+	}
+
+	public void asSparqlFilter
+		( PrefixMapping pm
+		, Filter filter
+		, StringBuilder sb
+		, String FILTER
+		, API_Dataset api
+		, List<Aspect> ordered
+		, String fVar, String value) {
+		range.op.asSparqlFilter
+			( pm, filter, sb, FILTER, api, ordered, fVar, value);
 	}
 
 }
