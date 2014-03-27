@@ -32,6 +32,11 @@ public class TestNegation {
 		testNegateFilter(Operator.EQ, Term.integer("17"), Operator.NE, Term.integer("17"));
 		testNegateFilter(Operator.NE, Term.integer("17"), Operator.EQ, Term.integer("17"));
 	}
+	
+	@Test public void testNegateFunctionFilters() {
+		testNegateFilter(Operator.CONTAINS, Term.string("17"), Operator.NOT_CONTAINS, Term.string("17"));
+		testNegateFilter(Operator.MATCHES, Term.string("17"), Operator.NOT_MATCHES, Term.string("17"));
+	}
 
 	private void testNegateFilter
 		( Operator expectedOp, Term expectedValue
