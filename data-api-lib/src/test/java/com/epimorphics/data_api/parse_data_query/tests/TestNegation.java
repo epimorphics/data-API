@@ -45,10 +45,6 @@ public class TestNegation {
 		Composition arg = aFilter("spoo:local", givenOp, givenValue);
 		Composition negated = Composition.negate( BunchLib.list(arg) );
 		Composition expected = aFilter("spoo:local", expectedOp, expectedValue);
-		
-//		System.err.println( ">> expected: " + expected );
-//		System.err.println( ">> negated:  " + negated );
-		
 		assertEquals( expected, negated );
 	}
 
