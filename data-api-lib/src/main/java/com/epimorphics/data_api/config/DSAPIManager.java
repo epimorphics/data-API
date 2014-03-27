@@ -428,6 +428,8 @@ public class DSAPIManager extends ComponentBase {
         try {
             DataQuery q = null;
             String sq = null;
+            
+            comments.put("sparql", "(No SPARQL generated)");
 
             if (p.isOK())
                 q = DataQueryParser.Do(p, api, query);
@@ -464,6 +466,8 @@ public class DSAPIManager extends ComponentBase {
         }
         
         comments.put("status", p.isOK());
+        comments.put("problems", p.getProblemStrings());
+        
         return Response.ok(comments.toString()).build();
     }
 

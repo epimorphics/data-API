@@ -84,7 +84,12 @@ $(function() {
     
     
     var formatExplanation = function(data) {
-        var html = "<h3>Data set: " + data.datasetName + "</h3>";
+        var html =  data.status ? "<h3>Succeeded</h3>" :"<h3>Failed</h3>";
+	if (!data.status) {
+		html += "<pre>" + data.problems + "</pre>" 
+	}
+
+        html += "<h3>Data set: " + data.datasetName + "</h3>";
         html += "<ul>";
         for (var i = 0; i < data.aspects.length; i++) {
          html += "<li>" + data.aspects[i] + "</li>";
@@ -92,7 +97,6 @@ $(function() {
         html += "</ul>";
         html += "<h3>Request</h3><pre>" + data.request + "</pre>";
         html += "<h3>Query</h3><pre>" + data.sparql.replace(/</g,"&lt;") + "</pre>";
-        // html +=  data.status ? "<h3>Succeeded</h3>" :"<h3>Failed</h3>";
         // html += "<p>Processed in " + data.time + " ms</p>";
         return html;
     };

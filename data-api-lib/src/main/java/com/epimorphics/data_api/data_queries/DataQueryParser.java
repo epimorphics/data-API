@@ -156,14 +156,28 @@ public class DataQueryParser {
 			return new SearchSpec(pattern, aspectName);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
-			String pattern = ob.get("@value").getAsString().value();
-			String property = ob.get("@property").getAsString().value();
+			
+			String pattern = getString(ob, "@value"); // ob.get("@value").getAsString().value();
+			String property = getString(ob, "@property");
+			
 			Shortname shortProperty = new Shortname(pm, property);
 			return new SearchSpec(pattern, aspectName, shortProperty);
 		} else {
 			p.add("Operand of @search must be string or object, given: " + value);
 			return SearchSpec.absent();
 		}
+	}
+	
+	private String getString(JsonObject ob, String key) {
+		JsonValue v = ob.get(key);
+		if (v == null) {
+			p.add("Expected member " + key + " missing from " + ob );
+		} else if (v.isString()) {
+			return v.getAsString().value();
+		} else {
+			p.add("Member " + key + " of " + ob + " should be a string, was: " + v);
+		}
+		return "missing";
 	}
 
 	private static Integer extractNumber(Problems p, String key, JsonValue value) {
