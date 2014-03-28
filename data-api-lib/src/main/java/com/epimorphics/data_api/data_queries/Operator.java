@@ -158,7 +158,11 @@ public abstract class Operator {
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered, String fVar, String value) {		
+			, List<Aspect> ordered
+			, String fVar
+			, String value
+		) {	
+			List<Term> operands = filter.range.operands;
 			sb.append(" ")
 				.append(FILTER)
 				.append( "(")
@@ -168,6 +172,7 @@ public abstract class Operator {
 				.append(fVar)
 				.append(", ")
 				.append(value)
+				.append(operands.size() == 2 ? ", " + operands.get(1).asSparqlTerm(pm) : "")
 				.append(")")
 				.append(")")
 				;
