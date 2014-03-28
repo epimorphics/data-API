@@ -100,21 +100,26 @@ public class DataQuery {
         try { return toSparqlString(p, a.getAspects(), baseQuery, pm, null); }
         catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
     }
-
-	static final Term item = Term.var("item");
-	static final boolean properly = true;
 	
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
-		Collections.sort(ordered, compareAspects);
-	
-		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
-		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
-		
-		StringBuilder sb = new StringBuilder();
+	//
 		String core = queryCore(p, aspects, baseQuery, pm, api);
 		String head = queryHead(p, aspects, baseQuery, pm, api);
-				
+	//
+		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
+		Collections.sort(ordered, compareAspects);
+		StringBuilder sb = queryFilters(baseQuery, pm, api, ordered, core, head);
+	//
+		querySort(sb);
+		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
+		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
+	//	
+		return PrefixUtils.expandQuery(sb.toString(), pm);
+	}
+
+	private StringBuilder queryFilters(String baseQuery, PrefixMapping pm, API_Dataset api, List<Aspect> ordered, String core, String head) {
+		StringBuilder sb = new StringBuilder();
+	//		
 		sb.append(head).append("\n");
 		if (c.isPure()) {
 			sb.append( "{" );
@@ -130,12 +135,8 @@ public class DataQuery {
 		} else {
 			recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
 		}
-		querySort(sb);
-		
-		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
-		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
-		
-		return PrefixUtils.expandQuery(sb.toString(), pm);
+	//
+		return sb;
 	}
 	
 	private void booleanExpression
