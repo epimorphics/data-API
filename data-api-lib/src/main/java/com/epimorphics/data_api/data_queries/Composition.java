@@ -9,17 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.shared.BrokenException;
 
 public class Composition {
 	
-	public static final Composition NONE = new Composition
-		( "none"
-		, new ArrayList<Composition>() 
-		);
+	public enum COp { AND, OR, NOT, FILTER, NONE, SEARCH }
 	
-	final String op;
+	public static final Composition EMPTY = new Composition
+		( COp.NONE, new ArrayList<Composition>() );
+	
+	final COp op;
 	final List<Composition> operands;
 	
 	public String toString() {
@@ -42,7 +41,7 @@ public class Composition {
 			;
 	}
 	
-	public Composition(String op, List<Composition> operands) {
+	public Composition(COp op, List<Composition> operands) {
 		this.op = op;
 		this.operands = operands;
 	}
@@ -56,14 +55,18 @@ public class Composition {
 	}
 
 	public boolean isTrivial() {
-		return 
-			op.equals("none") 
-			|| (op.equals("filter") && isTrivial(((Filters) this).filters))
+		boolean result = 
+			op.equals(COp.NONE) 
+			|| (op.equals(COp.FILTER) && ((FilterWrap) this).f.range.op.equals(Operator.EQ))
+			|| (op.equals(COp.AND) && allTrivial())
 			;
+//		Systesm.err.println( ">> isTrivial " + this + ": " + result );
+		return result;
 	}
 	
-	private boolean isTrivial(List<Filter> filters) {
-		for (Filter f: filters) if (!f.range.op.equals(Operator.EQ)) return false;
+	private boolean allTrivial() {
+		for (Composition x: operands)
+			if (!x.isTrivial()) return false;
 		return true;
 	}
 
@@ -81,23 +84,55 @@ public class Composition {
 		return new Not(operands);
 	}
 	
-	public static Composition filters(List<Filter> filters ) {
-		return new Filters(filters);
+	public static Composition filters(List<Filter> filters) {
+		return filters(filters, SearchSpec.none());
 	}
 	
-	public static class Filters extends Composition {
+	public static Composition filters(List<Filter> filters, List<SearchSpec> searchPatterns ) {
+		List<Composition> operands = new ArrayList<Composition>(filters.size());
+		for (Filter f: filters) operands.add(new FilterWrap(f));	
+		for (SearchSpec s: searchPatterns) operands.add(new SearchWrap(s));
+		return and(operands);
+	}
+	
+	public static class SearchWrap extends Composition {
 		
-		final List<Filter> filters;
+		final SearchSpec s;
 		
-		public Filters(List<Filter> filters) {
-			super("filter", new ArrayList<Composition>() );
-			this.filters = filters;
+		public SearchWrap(SearchSpec s) {
+			super(COp.SEARCH, new ArrayList<Composition>() );
+			this.s = s;
 		}
 		
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append("(").append(op);
-			sb.append(" ").append(filters);
+			sb.append(" ").append(s);
+			sb.append(")");
+			return sb.toString();
+		}
+		
+		/**
+		    A SearchSpec is not pure.
+		*/
+		public boolean isPure() {
+			return false;
+		}	
+	}
+	
+	public static class FilterWrap extends Composition {
+		
+		final Filter f;
+		
+		public FilterWrap(Filter f) {
+			super(COp.FILTER, new ArrayList<Composition>());
+			this.f = f;
+		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("(").append(op);
+			sb.append(" ").append(f);
 			sb.append(")");
 			return sb.toString();
 		}
@@ -106,41 +141,40 @@ public class Composition {
 		    A Filters is pure if all of its sub-filters are pure.
 		*/
 		public boolean isPure() {
-			for (Filter f: filters) if (!f.isPure()) return false;
-			return true;
+			return f.isPure();
 		}
 	}
 	
 	public static class And extends Composition {
 
 		public And(List<Composition> operands) {
-			super("and", operands);
+			super(COp.AND, operands);
 		}
 	}
 	
 	public static class Or extends Composition {
 		
 		public Or(List<Composition> operands) {
-			super("or", operands);
+			super(COp.OR, operands);
 		}
 	}
 	
 	public static class Not extends Composition {
 		
 		public Not(List<Composition> operands) {
-			super("not", operands);
+			super(COp.NOT, operands);
 		}
 	}
 
 	// TODO not
-	public static Composition build(List<Filter> filters, Map<String, List<Composition>> compositions) {
+	public static Composition build(List<Filter> filters, List<SearchSpec> searchPatterns, Map<String, List<Composition>> compositions) {
 		
 		// System.err.println( ">> build: filters " + filters );		
 		
 		List<Composition> ands = compositions.get("@and");
 		List<Composition> ors = compositions.get("@or");
 		List<Composition> nots = compositions.get("@not");
-		Composition fs = Composition.filters(filters);
+		Composition fs = Composition.filters(filters, searchPatterns);
 	//
 		List<Composition> expanded_ands = new ArrayList<Composition>(ands);
 		if (nots.size() > 0) expanded_ands.add(negate(nots));
@@ -150,7 +184,7 @@ public class Composition {
 		if (expanded_ands.size() > 0) expanded_ors.add(Composition.and(expanded_ands));
 		Composition result = Composition.or(expanded_ors);
 		
-		if (result.operands.size() == 0 && result.op.equals("or")) result = NONE;
+		if (result.operands.size() == 0 && result.op.equals(COp.OR)) result = EMPTY;
 		// System.err.println( ">> built: " + result );
 		
 		return result;		
@@ -169,13 +203,10 @@ public class Composition {
 			
 		} else if (x instanceof Not) {
 			
-		} else if (x instanceof Filters) {
-			Filters fs = (Filters) x;
+		} else if (x instanceof FilterWrap) {
+			FilterWrap fs = (FilterWrap) x;
 			List<Composition> y = new ArrayList<Composition>();
-			for (Filter f: fs.filters) {
-				y.add(Composition.filters(BunchLib.list(negate(f))));
-			}
-			return y.size() == 1 ? y.get(0) : and(y);
+			return new FilterWrap(negate(fs.f));
 		} 
 		throw new BrokenException("Cannot negate: " + x);
 	}

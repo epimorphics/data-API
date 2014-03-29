@@ -84,7 +84,7 @@ public class DataQueryParser {
 				parseAspectMember(jo, key, value);
 			}
 		}
-		Composition c = Composition.build(filters, compositions);
+		Composition c = Composition.build(filters, searchPatterns, compositions);
 		return new DataQuery(c, sortby, guards, Slice.create(length, offset), searchPatterns);
 	}
 
@@ -188,12 +188,6 @@ public class DataQueryParser {
 		p.add("value of " + key + " must be non-negative number: " + value);
 		return null;
 	}
-
-//	private static String extractString(Problems p, String key, JsonValue value) {
-//		if (value.isString()) return value.getAsString().value();
-//		p.add("value of " + key + " must be string, given: " + value);
-//		return null;
-//	}
 
 	private static void extractSorts(PrefixMapping pm, Problems p, JsonObject jo, List<Sort> sortby, String key) {
 		JsonValue x = jo.get(key);

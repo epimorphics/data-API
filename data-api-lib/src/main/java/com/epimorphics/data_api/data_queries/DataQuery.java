@@ -17,7 +17,8 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
-import com.epimorphics.data_api.data_queries.Composition.Filters;
+import com.epimorphics.data_api.data_queries.Composition.COp;
+import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.Or;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
@@ -87,8 +88,12 @@ public class DataQuery {
 	}
 	
 	public List<Filter> filters() {
-		if (c instanceof Filters) return ((Filters) c).filters;
-		return new ArrayList<Filter>();
+		ArrayList<Filter> result = new ArrayList<Filter>();
+		if (c instanceof And) 
+			for (Composition cc: c.operands)
+				if (cc instanceof FilterWrap) result.add( ((FilterWrap) cc).f );
+		if (c instanceof FilterWrap) result.add( ((FilterWrap) c).f );
+		return result;
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
@@ -163,13 +168,12 @@ public class DataQuery {
 				sb.append(and); and = " && ";
 				booleanExpression(b, ordered, o, head, core, sb, baseQuery, pm, api); 
 			}
-		} else if (c instanceof Filters) {
+		} else if (c instanceof FilterWrap) {
 			String and = "";
-			for (Filter f: ((Filters) c).filters) {
-				sb.append(and); and = " && ";
-				doFilter("", "", sb, f, api, ordered, pm);
-			}
-		} else if (c.op == "none") {
+			Filter f = ((FilterWrap) c).f;
+			sb.append(and); and = " && ";
+			doFilter("", "", sb, f, api, ordered, pm);
+		} else if (c.op == Composition.COp.NONE) {
 			sb.append(" TRUE ");
 		} else {
 			throw new UnsupportedOperationException("unknown boolean expression: " + c);
@@ -211,15 +215,14 @@ public class DataQuery {
 				for (Composition o: c.operands) {
 					recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
 				}
-			} else if (c instanceof Filters) {	
+			} else if (c instanceof FilterWrap) {	
 			//
 				String dot = "";
-				for (Filter f: ((Filters) c).filters) {
-					sb.append(dot);
-					doFilter("FILTER", dot, sb, f, api, ordered, pm);
-					dot = " . ";
-				}
-			} else if (c.op.equals("none")) {
+				Filter f = ((FilterWrap) c).f;
+				sb.append(dot);
+				doFilter("FILTER", dot, sb, f, api, ordered, pm);
+				dot = " . ";
+			} else if (c.op.equals(COp.NONE)) {
 				//
 			} else {
 				throw new UnsupportedOperationException("Cannot recursively translate: " + c);
@@ -291,7 +294,7 @@ public class DataQuery {
 			String fVar = "?" + x.asVar();
 			sb.append(dot);	dot = "\n.";
 		//
-			String eqValue = findEqualityValue(pm, x.getName(), c);
+			String eqValue = findEqualityValue(pm, x.getName(), c);			
 			boolean isEquality = eqValue != null;				
 		//		
 			if (x.getIsOptional()) sb.append( " OPTIONAL {" );
@@ -310,28 +313,33 @@ public class DataQuery {
 	}
 
 	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
-		if (c instanceof Filters) {
-			for (Filter f: ((Filters) c).filters) {
-				if (f.name.prefixed.equals(name.prefixed)) {
-					if (f.range.op.equals(Operator.EQ)) 
-						return f.range.operands.get(0).asSparqlTerm(pm);
-				}
+		if (c instanceof FilterWrap) {
+			Filter f = ((FilterWrap) c).f;
+			if (f.name.prefixed.equals(name.prefixed)) {
+				if (f.range.op.equals(Operator.EQ)) 
+					return f.range.operands.get(0).asSparqlTerm(pm);
 			}
 			return null;
-		} else {
-			// All operands should have the same value, which is the result.
+		} else if (c instanceof And) {
 			String eqValue = null;
+			
 			for (Composition x: c.operands) {
 				String eq = findEqualityValue(pm, name, x);
-				if (eq == null) return null;
-			//
 				if (eqValue == null) {
 					eqValue = eq;
-				} else if (!eqValue.equals(eq)) {
+				} else if (eq == null) {
+					// nothing to do
+				} else if (eq.equals(eqValue)) {
+					// also nothing to do
+				} else {
+					// conflicting values
 					return null;
 				}
 			}
+			
 			return eqValue;
+		} else {
+			return null;
 		}
 	}
 }

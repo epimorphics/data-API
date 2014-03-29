@@ -18,6 +18,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.Composition;
+import com.epimorphics.data_api.data_queries.Composition.COp;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Guard;
@@ -269,7 +270,7 @@ public class TestTranslateDataQuery {
 	@Test public void testGlobalSearch() {		
 		Problems p = new Problems();
 		DataQuery q = new DataQuery
-			( Composition.NONE
+			( Composition.EMPTY
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
