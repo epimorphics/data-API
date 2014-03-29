@@ -33,8 +33,8 @@ public abstract class Operator {
 	public static final Operator NOT_CONTAINS = new FunctionOperator("not-contains", "contains", true);
 	public static final Operator NOT_MATCHES = new FunctionOperator("not-matches", "contains", true);
 
-	public static final Operator ONEOF = new OneofOperator(false);
-	public static final Operator NOT_ONEOF = new OneofOperator(true);
+	public static final Operator ONEOF = new OneofOperator("oneof", false);
+	public static final Operator NOT_ONEOF = new OneofOperator("not-oneof", true);
 	
 	public static final Operator BELOW = new BelowOperator("below", false);
 	public static final Operator SEARCH = new SearchOperator("search", false);
@@ -183,8 +183,8 @@ public abstract class Operator {
 		
 		final boolean negated;
 		
-		public OneofOperator(boolean negated) {
-			super(negated ? "not-oneof" : "oneof");
+		public OneofOperator(String name, boolean negated) {
+			super(name);
 			this.negated = negated;
 		}
 
@@ -274,7 +274,7 @@ public abstract class Operator {
 		final boolean negated;
 		
 		public SearchOperator(String name, boolean negated) {
-			super(negated ? "not-oneof" : "oneof");
+			super(name);
 			this.negated = negated;
 		}
 
@@ -285,7 +285,7 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered, String fVar, String value
-			) {		 
+			) {	
 			sb.append(". ")
 				.append(fVar)
 				.append(" <http://jena.apache.org/text#query> ")
