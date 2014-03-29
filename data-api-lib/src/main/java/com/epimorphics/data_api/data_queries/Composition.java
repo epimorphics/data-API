@@ -11,15 +11,42 @@ import java.util.Map;
 
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class Composition {
+public abstract class Composition {
 	
 	public enum COp { AND, OR, NOT, FILTER, NONE, SEARCH }
 	
-	public static final Composition EMPTY = new Composition
-		( COp.NONE, new ArrayList<Composition>() );
+	public static final Composition EMPTY = new EmptyComposition();
+	
+	
+	static class EmptyComposition extends Composition {
+
+		public EmptyComposition() {
+			super(COp.NONE, new ArrayList<Composition>() );
+		}
+
+		@Override public void topLevel(Context cx) {
+			cx.footPrint( "generated from an EmptyComposition", "");
+		}
+	}
 	
 	final COp op;
 	final List<Composition> operands;
+	
+	public interface Context {
+		public void footPrint(String message, Object value);
+		
+		public void generateHead();
+		
+		public void BEGIN();
+		
+		public void END();
+		
+		public void FILTER(Filter f);
+	}
+	
+	public abstract void topLevel(Context cx);
+	
+	
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -117,6 +144,10 @@ public class Composition {
 		*/
 		public boolean isPure() {
 			return false;
+		}
+
+		@Override public void topLevel(Context cx) {
+			cx.footPrint("generated from SearchSpec", s);
 		}	
 	}
 	
@@ -143,12 +174,29 @@ public class Composition {
 		public boolean isPure() {
 			return f.isPure();
 		}
+
+		@Override public void topLevel(Context cx) {
+			cx.footPrint("generated from Filter", f);
+			cx.generateHead();
+			cx.BEGIN();
+			cx.FILTER(f);
+			cx.END();
+			
+			
+		}
 	}
 	
 	public static class And extends Composition {
 
 		public And(List<Composition> operands) {
 			super(COp.AND, operands);
+		}
+
+		@Override public void topLevel(Context cx) {
+			cx.footPrint("generated from AND", this);
+			cx.generateHead();
+			cx.BEGIN();
+			cx.END();
 		}
 	}
 	
@@ -157,12 +205,21 @@ public class Composition {
 		public Or(List<Composition> operands) {
 			super(COp.OR, operands);
 		}
+
+		@Override public void topLevel(Context cx) {
+			cx.footPrint("generated from OR", this);
+		}
 	}
 	
 	public static class Not extends Composition {
 		
 		public Not(List<Composition> operands) {
 			super(COp.NOT, operands);
+		}
+
+		@Override public void topLevel(Context cx) {
+			cx.footPrint("generated from NOT", this);
+			
 		}
 	}
 

@@ -18,6 +18,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.COp;
+import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.Or;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -106,20 +107,116 @@ public class DataQuery {
         catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
     }
 	
+    static boolean newWay = true;
+    
+    
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-	//
-		String core = queryCore(p, aspects, baseQuery, pm, api);
-		String head = queryHead(p, aspects, baseQuery, pm, api);
-	//
+		return newWay 
+			? newWay(p, aspects, baseQuery, pm, api) 
+			: oldWay(p, aspects, baseQuery, pm, api)
+			;
+	}
+
+	private String newWay(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
+
 		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
 		Collections.sort(ordered, compareAspects);
-		StringBuilder sb = queryFilters(baseQuery, pm, api, ordered, core, head);
-	//
+		
+		StringBuilder sb = new StringBuilder();
+		
+		c.topLevel(new ContextImpl(this, sb, p, aspects, ordered, baseQuery, pm, api));
+
 		querySort(sb);
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
-	//	
+		
 		return PrefixUtils.expandQuery(sb.toString(), pm);
+	}
+	
+	static class ContextImpl implements Context {
+		
+		final DataQuery dq;
+		final StringBuilder sb;
+		final Problems p;
+		final Set<Aspect> aspects;
+		final List<Aspect> ordered;
+		final String baseQuery;
+		final PrefixMapping pm;
+		final API_Dataset api;
+		
+		public ContextImpl
+			( DataQuery dq
+			, StringBuilder sb
+			, Problems p
+			, Set<Aspect> aspects
+			, List<Aspect> ordered
+			, String baseQuery
+			, PrefixMapping pm
+			, API_Dataset api
+		) {
+			this.dq = dq;
+			this.sb = sb;
+			this.p = p;
+			this.aspects = aspects;
+			this.ordered = ordered;
+			this.baseQuery = baseQuery;
+			this.pm = pm;
+			this.api = api;
+		}
+
+		@Override public void footPrint(String message, Object value) {
+			sb.append( " # ")
+				.append(message)
+				.append(" ")
+				.append(value)
+				.append('\n')
+				;
+		}
+
+		@Override public void generateHead() {
+			String head = dq.queryHead(p, aspects, baseQuery, pm, api);
+			sb.append(head);
+		}
+
+		@Override public void BEGIN() {
+			String core = dq.queryCore(p, aspects, baseQuery, pm, api);
+			sb.append(" {\n" );
+			sb.append(core);
+			
+		}
+
+		@Override public void END() {
+			sb.append(" }\n" );
+		}
+
+		@Override public void FILTER(Filter f) {
+			f.range.op.asSparqlFilter
+				( pm
+				, f
+				, sb
+				, "FILTER"
+				, api
+				, ordered
+				, "?" + f.name.asVar()
+				, f.range.operands.get(0).asSparqlTerm(pm)
+				);
+		}
+	}
+
+	private String oldWay(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
+		//
+			String core = queryCore(p, aspects, baseQuery, pm, api);
+			String head = queryHead(p, aspects, baseQuery, pm, api);
+		//
+			List<Aspect> ordered = new ArrayList<Aspect>(aspects);
+			Collections.sort(ordered, compareAspects);
+			StringBuilder sb = queryFilters(baseQuery, pm, api, ordered, core, head);
+		//
+			querySort(sb);
+			if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
+			if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
+		//	
+			return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 
 	private StringBuilder queryFilters(String baseQuery, PrefixMapping pm, API_Dataset api, List<Aspect> ordered, String core, String head) {
