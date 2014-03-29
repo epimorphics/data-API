@@ -17,7 +17,6 @@ public abstract class Composition {
 	
 	public static final Composition EMPTY = new EmptyComposition();
 	
-	
 	static class EmptyComposition extends Composition {
 
 		public EmptyComposition() {
@@ -26,6 +25,11 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint( "generated from an EmptyComposition", "");
+		}
+
+		@Override public void asFilter(Context cx) {
+			cx.footPrint( "generated from an EmptyComposition", "");
+			cx.generate(" true ");
 		}
 	}
 	
@@ -41,10 +45,14 @@ public abstract class Composition {
 		
 		public void END();
 		
-		public void FILTER(Filter f);
+		public void FILTER(Filter f, boolean sayFILTER);
+		
+		public void generate(String fragment);
 	}
 	
 	public abstract void topLevel(Context cx);
+	
+	public abstract void asFilter(Context cx);
 	
 	
 	
@@ -148,6 +156,11 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint("generated from SearchSpec", s);
+		}
+
+		@Override public void asFilter(Context cx) {
+			cx.footPrint("generated from SearchSpec", s);
+			cx.generate(" BROKEN ");
 		}	
 	}
 	
@@ -167,22 +180,21 @@ public abstract class Composition {
 			sb.append(")");
 			return sb.toString();
 		}
-		
-		/**
-		    A Filters is pure if all of its sub-filters are pure.
-		*/
+
 		public boolean isPure() {
 			return f.isPure();
 		}
 
 		@Override public void topLevel(Context cx) {
-			cx.footPrint("generated from Filter", f);
+			cx.footPrint("generated from top-level Filter", f);
 			cx.generateHead();
 			cx.BEGIN();
-			cx.FILTER(f);
+			cx.FILTER(f, true);
 			cx.END();
-			
-			
+		}
+
+		@Override public void asFilter(Context cx) {
+			cx.FILTER(f, false);
 		}
 	}
 	
@@ -198,6 +210,16 @@ public abstract class Composition {
 			cx.BEGIN();
 			cx.END();
 		}
+
+		@Override public void asFilter(Context cx) {
+			cx.generate("(");
+			String and = "";
+			for (Composition x: operands) {
+				cx.generate(and); and = " && ";
+				x.asFilter(cx);
+			}
+			cx.generate(")");
+		}
 	}
 	
 	public static class Or extends Composition {
@@ -208,6 +230,26 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint("generated from OR", this);
+			cx.generateHead();
+			cx.generate("{\n");
+			String union = "";
+			for (Composition x: operands) {
+				cx.generate(union); union = " UNION ";
+				cx.generate( " {{ " );
+				x.topLevel(cx);
+				cx.generate(" }} ");
+			}
+			cx.generate("}\n");
+		}
+
+		@Override public void asFilter(Context cx) {
+			cx.generate("(");
+			String or = "";
+			for (Composition x: operands) {
+				cx.generate(or); or = " || ";
+				x.asFilter(cx);
+			}
+			cx.generate(")");
 		}
 	}
 	
@@ -218,8 +260,12 @@ public abstract class Composition {
 		}
 
 		@Override public void topLevel(Context cx) {
+			cx.footPrint("generated from top-level NOT", this);
+		}
+
+		@Override public void asFilter(Context cx) {
 			cx.footPrint("generated from NOT", this);
-			
+			cx.generate(" false ");
 		}
 	}
 

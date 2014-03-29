@@ -123,8 +123,23 @@ public class DataQuery {
 		Collections.sort(ordered, compareAspects);
 		
 		StringBuilder sb = new StringBuilder();
+				
+		ContextImpl cx = new ContextImpl(this, sb, p, aspects, ordered, baseQuery, pm, api);
 		
-		c.topLevel(new ContextImpl(this, sb, p, aspects, ordered, baseQuery, pm, api));
+		if (c.isPure()) {
+			cx.generateHead();
+			cx.BEGIN();
+			if (c.isTrivial()) {
+				cx.footPrint("trivial", this);
+			} else {
+				cx.generate(" FILTER(" );
+				c.asFilter(cx);
+				cx.generate(")");
+			}
+			cx.END();
+		} else {			
+			c.topLevel(cx);
+		}
 
 		querySort(sb);
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
@@ -182,24 +197,27 @@ public class DataQuery {
 			String core = dq.queryCore(p, aspects, baseQuery, pm, api);
 			sb.append(" {\n" );
 			sb.append(core);
-			
 		}
 
 		@Override public void END() {
 			sb.append(" }\n" );
 		}
 
-		@Override public void FILTER(Filter f) {
+		@Override public void FILTER(Filter f, boolean sayFILTER) {
 			f.range.op.asSparqlFilter
 				( pm
 				, f
 				, sb
-				, "FILTER"
+				, (sayFILTER ? "FILTER" : "")
 				, api
 				, ordered
 				, "?" + f.name.asVar()
 				, f.range.operands.get(0).asSparqlTerm(pm)
 				);
+		}
+
+		@Override public void generate(String fragment) {
+			sb.append(fragment);
 		}
 	}
 
