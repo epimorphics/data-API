@@ -313,16 +313,16 @@ public abstract class Composition {
 
 	private static Composition negate(Composition x) {
 		if (x instanceof And) {
-			
+			throw new UnsupportedOperationException("cannot negate AND");
 		} else if (x instanceof Or) {
-			
+			throw new UnsupportedOperationException("cannot negate OR");			
 		} else if (x instanceof Not) {
-			
+			throw new UnsupportedOperationException("cannot negate NOT");			
 		} else if (x instanceof FilterWrap) {
 			FilterWrap fs = (FilterWrap) x;
 			return new FilterWrap(negate(fs.f));
 		} 
-		throw new BrokenException("Cannot negate: " + x);
+		throw new BrokenException("Unhandled negate: " + x);
 	}
 
 	private static Filter negate(Filter f) {

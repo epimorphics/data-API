@@ -8,7 +8,6 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,14 +25,6 @@ import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
-	
-	private static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
-
-		@Override public int compare(Aspect a, Aspect b) {
-			if (a.getIsOptional() == b.getIsOptional()) return a.getID().compareTo(b.getID());
-			return a.getIsOptional() ? +1 : -1;
-		}
-	};
 	
 	final List<Sort> sortby;
 	final Slice slice;
@@ -177,7 +168,7 @@ public class DataQuery {
 			this.api = api;
 		//
 			this.ordered.addAll(aspects);
-			Collections.sort(this.ordered, compareAspects);
+			Collections.sort(this.ordered, Aspect.compareAspects);
 		//
 			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 		}

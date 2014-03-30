@@ -7,6 +7,8 @@ package com.epimorphics.data_api.aspects;
 
 import static com.epimorphics.data_api.config.JSONConstants.*;
 
+import java.util.Comparator;
+
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -20,6 +22,14 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
+	
+	public static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
+		
+		@Override public int compare(Aspect a, Aspect b) {
+			if (a.getIsOptional() == b.getIsOptional()) return a.getID().compareTo(b.getID());
+			return a.getIsOptional() ? +1 : -1;
+		}
+	};
 	
 	String ID;
 	final Shortname name;
