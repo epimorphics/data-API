@@ -192,7 +192,7 @@ public class DataQuery {
 		}
 
 		@Override public void generateHead() {
-			String head = dq.queryHead(p, aspects, baseQuery, pm, api);
+			String head = dq.queryHead(this);
 			sb.append(head);
 		}
 
@@ -243,9 +243,8 @@ public class DataQuery {
 		}
 	}
 
-	private String queryHead(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
-		List<Aspect> ordered = new ArrayList<Aspect>(a);
-		Collections.sort(ordered, compareAspects);
+	private String queryHead(ContextImpl cx) {
+		List<Aspect> ordered = cx.ordered;
 	//	
 		boolean needsDistinct = false;
         for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
