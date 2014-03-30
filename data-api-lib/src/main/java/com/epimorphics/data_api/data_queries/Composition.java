@@ -31,6 +31,10 @@ public abstract class Composition {
 			cx.footPrint( "generated from an EmptyComposition", "");
 			cx.generate(" true ");
 		}
+
+		@Override public void tripleLevel(Context cx) {
+			cx.footPrint("tripleLevel EmptyComposition", this);
+		}
 	}
 	
 	final COp op;
@@ -55,6 +59,8 @@ public abstract class Composition {
 	public abstract void topLevel(Context cx);
 	
 	public abstract void asFilter(Context cx);
+	
+	public abstract void tripleLevel(Context cx);
 		
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -165,6 +171,11 @@ public abstract class Composition {
 		@Override public void asFilter(Context cx) {
 			cx.footPrint("generated from (as filter) SearchSpec", s);
 			cx.generate(" BROKEN ");
+		}
+
+		@Override public void tripleLevel(Context cx) {
+			cx.footPrint("generated from (as tripleLevel) SearchSpec", s);
+			cx.search(s);
 		}	
 	}
 	
@@ -200,6 +211,10 @@ public abstract class Composition {
 		@Override public void asFilter(Context cx) {
 			cx.FILTER(f, false);
 		}
+
+		@Override public void tripleLevel(Context cx) {
+			cx.FILTER(f, true);
+		}
 	}
 	
 	public static class And extends Composition {
@@ -209,9 +224,10 @@ public abstract class Composition {
 		}
 
 		@Override public void topLevel(Context cx) {
-			cx.footPrint("generated from AND", this);
+			cx.footPrint("generated from top-level AND", this);
 			cx.generateHead();
 			cx.BEGIN();
+			for (Composition x: operands) x.tripleLevel(cx);
 			cx.END();
 		}
 
@@ -223,6 +239,10 @@ public abstract class Composition {
 				x.asFilter(cx);
 			}
 			cx.generate(")");
+		}
+
+		@Override public void tripleLevel(Context cx) {
+			for (Composition x: operands) x.tripleLevel(cx);
 		}
 	}
 	
@@ -255,6 +275,11 @@ public abstract class Composition {
 			}
 			cx.generate(")");
 		}
+
+		@Override public void tripleLevel(Context cx) {
+			cx.footPrint("generated from OR.tripleLevel", this);
+			cx.generate(" broken " );
+		}
 	}
 	
 	public static class Not extends Composition {
@@ -270,6 +295,10 @@ public abstract class Composition {
 		@Override public void asFilter(Context cx) {
 			cx.footPrint("generated from (asFilter)", this);
 			cx.generate(" false ");
+		}
+
+		@Override public void tripleLevel(Context cx) {
+			cx.footPrint("generated from tripleLevel NOT", this);
 		}
 	}
 
