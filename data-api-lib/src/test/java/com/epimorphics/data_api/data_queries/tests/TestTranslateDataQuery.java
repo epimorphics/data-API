@@ -308,7 +308,6 @@ public class TestTranslateDataQuery {
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( s )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -339,7 +338,6 @@ public class TestTranslateDataQuery {
 			, new ArrayList<Sort>()
 			, new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( s )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);

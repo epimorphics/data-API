@@ -85,7 +85,7 @@ public class DataQueryParser {
 			}
 		}
 		Composition c = Composition.build(filters, searchPatterns, compositions);
-		return new DataQuery(c, sortby, guards, Slice.create(length, offset), searchPatterns);
+		return new DataQuery(c, sortby, guards, Slice.create(length, offset));
 	}
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {

@@ -19,6 +19,7 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
+import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
@@ -40,8 +41,6 @@ public class DataQuery {
 	
 	final Composition c;
 	
-	final List<SearchSpec> searchPatterns = new ArrayList<SearchSpec>();
-	
 	public DataQuery(Composition c) {
 		this(c, new ArrayList<Sort>() );
 	}
@@ -59,15 +58,10 @@ public class DataQuery {
     }    
     
     public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice) {
-    	this(c, sortby, guards, slice, SearchSpec.none());
-    }
-
-    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice, List<SearchSpec> searchPatterns) {
 		this.c = c;
 		this.sortby = sortby;
 		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
-		this.searchPatterns.addAll(searchPatterns);
 	}
 
 	public List<Sort> sorts() {
@@ -83,9 +77,22 @@ public class DataQuery {
 	}
 
 	public List<SearchSpec> getSearchPatterns() {
-		return searchPatterns;
+		// TODO revise so it's not hackery
+		// this getter is only used for tests
+		// so tempoarilty faking it out is OK
+		List<SearchSpec> result = new ArrayList<SearchSpec>();
+		hackery(result, c);
+		return result;
 	}
 	
+	private void hackery(List<SearchSpec> result, Composition c) {
+		if (c instanceof SearchWrap) {
+			result.add(((SearchWrap) c).s);
+		} else {
+			for (Composition x: c.operands) hackery(result, x);
+		}
+	}
+
 	public List<Filter> filters() {
 		ArrayList<Filter> result = new ArrayList<Filter>();
 		if (c instanceof And) 
@@ -217,7 +224,7 @@ public class DataQuery {
 		}
 
 		@Override public void search(SearchSpec s) {
-			System.err.println( ">> cx.search(" + s + ")");
+			// System.err.println( ">> cx.search(" + s + ")");
 			sb.append("{");
 			sb.append( s.toSearchTriple(namesToAspects, pm) );
 			sb.append("}");
@@ -251,13 +258,10 @@ public class DataQuery {
 
 	private String queryCore(ContextImpl cx) {
 		
-		Set<Aspect> a = cx.aspects;
 		String baseQuery = cx.baseQuery;
 		PrefixMapping pm = cx.pm;
 		API_Dataset api = cx.api;
 		List<Aspect> ordered = cx.ordered;
-	
-		Map<Shortname, Aspect> namesToAspects = cx.namesToAspects;
 		
 		StringBuilder sb = new StringBuilder();
         boolean baseQueryNeeded = true;
@@ -268,12 +272,6 @@ public class DataQuery {
             }
         }
 		String dot = "";
-	//
-//		for (SearchSpec s: searchPatterns) {
-//            sb.append(dot).append(s.toSearchTriple(namesToAspects, pm));
-//            dot = " .\n ";
-//        }
-	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 		    // sb.append("# BASE QUERY\n");
 		    sb.append(dot).append("{ ").append( baseQuery ).append(" }");
