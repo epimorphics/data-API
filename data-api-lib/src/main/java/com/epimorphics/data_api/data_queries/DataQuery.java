@@ -174,12 +174,12 @@ public class DataQuery {
 		}
 
 		@Override public void footPrint(String message, Object value) {
-			sb.append( " # ")
-				.append(message)
-				.append(" ")
-				.append(value)
-				.append('\n')
-				;
+//			sb.append( " # ")
+//				.append(message)
+//				.append(" ")
+//				.append(value)
+//				.append('\n')
+//				;
 		}
 
 		@Override public void generateHead() {

@@ -35,19 +35,18 @@ public class TestJSONtoSPARQL {
 	
 	static File dataDir = new File("src/test/data/jsonToSparql");
 	
-	@Test public void testMe() {
+	@Test public void testFromDataDir() {
 		testMe( "gamesAPI-search_or_search");
 	}
 	
 	void testMe(String name) {
-		File J = new File(dataDir, name + ".json");
-		File S = new File(dataDir, name + ".rq" );
-		File C = new File(dataDir, shorten(name) + ".ttl" );
+		File jsonFile = new File(dataDir, name + ".json");
+		File sparqlFile = new File(dataDir, name + ".rq" );
+		File configFile = new File(dataDir, shorten(name) + ".ttl" );
 		
-		Model cModel = FileManager.get().loadModel(C.getPath());
+		Model configModel= FileManager.get().loadModel(configFile.getPath());
 		
-		Resource config = cModel
-			.listSubjectsWithProperty(RDF.type, Dsapi.Dataset)
+		Resource config = configModel.listSubjectsWithProperty(RDF.type, Dsapi.Dataset)
 			.toList()
 			.get(0)
 			;
@@ -63,8 +62,8 @@ public class TestJSONtoSPARQL {
 //		System.err.println( ">> PREFIXES: " + pm.getNsPrefixMap() );
 //		System.err.println( ">> ASPECTS: " + ds.getAspects());
 		
-		String json = FileManager.get().readWholeFileAsUTF8( J.getPath());
-		String sparql = FileManager.get().readWholeFileAsUTF8(S.getPath());
+		String json = FileManager.get().readWholeFileAsUTF8( jsonFile.getPath());
+		String sparql = FileManager.get().readWholeFileAsUTF8(sparqlFile.getPath());
 		
 		JsonObject jo = JSON.parse(json);
 		Problems p = new Problems();
@@ -75,11 +74,10 @@ public class TestJSONtoSPARQL {
 		String generated = dq.toSparql(p, a, ds.getBaseQuery(), pm);
 		
 		String expected = sparql;
-		
 		Asserts.assertSameSelect(expected, generated);
-		
 	}
 
+	// TODO integrate properly with monitor code
 	private Aspects andTheAspectsToo(API_Dataset ds, Resource config) {
 		Aspects aspects = new Aspects();
 		for (RDFNode x: config.listProperties(Dsapi.aspect).mapWith(Statement.Util.getObject).toList()) {
