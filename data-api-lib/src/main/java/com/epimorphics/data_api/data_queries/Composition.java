@@ -53,9 +53,7 @@ public abstract class Composition {
 	public abstract void topLevel(Context cx);
 	
 	public abstract void asFilter(Context cx);
-	
-	
-	
+		
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(").append(op);

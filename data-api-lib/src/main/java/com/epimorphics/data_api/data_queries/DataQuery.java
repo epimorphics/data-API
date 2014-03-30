@@ -17,10 +17,8 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
-import com.epimorphics.data_api.data_queries.Composition.COp;
 import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
-import com.epimorphics.data_api.data_queries.Composition.Or;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
@@ -109,12 +107,12 @@ public class DataQuery {
 	
     static boolean newWay = true;
     
-    
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-		return newWay 
-			? newWay(p, aspects, baseQuery, pm, api) 
-			: oldWay(p, aspects, baseQuery, pm, api)
-			;
+//		return newWay 
+//			? newWay(p, aspects, baseQuery, pm, api) 
+//			: oldWay(p, aspects, baseQuery, pm, api)
+//			;
+		return newWay(p, aspects, baseQuery, pm, api);
 	}
 
 	private String newWay(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
@@ -221,80 +219,6 @@ public class DataQuery {
 		}
 	}
 
-	private String oldWay(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-		//
-			String core = queryCore(p, aspects, baseQuery, pm, api);
-			String head = queryHead(p, aspects, baseQuery, pm, api);
-		//
-			List<Aspect> ordered = new ArrayList<Aspect>(aspects);
-			Collections.sort(ordered, compareAspects);
-			StringBuilder sb = queryFilters(baseQuery, pm, api, ordered, core, head);
-		//
-			querySort(sb);
-			if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
-			if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
-		//	
-			return PrefixUtils.expandQuery(sb.toString(), pm);
-	}
-
-	private StringBuilder queryFilters(String baseQuery, PrefixMapping pm, API_Dataset api, List<Aspect> ordered, String core, String head) {
-		StringBuilder sb = new StringBuilder();
-	//		
-		sb.append(head).append("\n");
-		if (c.isPure()) {
-			sb.append( "{" );
-			sb.append(core);
-			if (!c.isTrivial()) {
-				sb.append(" FILTER(" );
-				booleanExpression(true, ordered, c, head, core, sb, baseQuery, pm, api);
-				sb.append(")");
-			} else {
-				// nothing
-			}
-			sb.append( "}" );
-		} else {
-			recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
-		}
-	//
-		return sb;
-	}
-	
-	private void booleanExpression
-		( boolean b
-		, List<Aspect> ordered
-		, Composition c
-		, String head
-		, String core
-		, StringBuilder sb
-		, String baseQuery
-		, PrefixMapping pm
-		, API_Dataset api) {
-		if (c instanceof Or) {
-			sb.append("(");
-			String or = "";
-			for (Composition o: c.operands) {
-				sb.append(or); or = " || ";
-				booleanExpression(b, ordered, o, head, core, sb, baseQuery, pm, api);
-			}
-			sb.append(")");
-		} else if (c instanceof And) {
-			String and = "";
-			for (Composition o: c.operands) {
-				sb.append(and); and = " && ";
-				booleanExpression(b, ordered, o, head, core, sb, baseQuery, pm, api); 
-			}
-		} else if (c instanceof FilterWrap) {
-			String and = "";
-			Filter f = ((FilterWrap) c).f;
-			sb.append(and); and = " && ";
-			doFilter("", "", sb, f, api, ordered, pm);
-		} else if (c.op == Composition.COp.NONE) {
-			sb.append(" TRUE ");
-		} else {
-			throw new UnsupportedOperationException("unknown boolean expression: " + c);
-		}
-	}
-
 	private void querySort(StringBuilder sb) {
 		if (sortby.size() > 0) {
 			sb.append(" ORDER BY");
@@ -307,53 +231,7 @@ public class DataQuery {
 		}
 	}
 
-	private void recursiveTranslate
-		( boolean needsHead, List<Aspect> ordered, Composition c, String head, String core, StringBuilder sb, String baseQuery, PrefixMapping pm, API_Dataset api) {
-		
-		if (c instanceof Or) {
-			String union = "";
-			for (Composition o: c.operands) {
-				sb.append(union); union = " UNION ";
-				
-				sb.append( " {\n" );
-				sb.append( "{" ); sb.append(head);  
-				sb.append( " WHERE \n{ "); 
-				sb.append(core);
-				recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
-				sb.append( " \n}}" );
-				
-			}
-			sb.append( "\n}}");
-		} else  {
-			if (needsHead) sb.append( " WHERE \n{ ").append(core);
-			if (c instanceof And) {
-				for (Composition o: c.operands) {
-					recursiveTranslate(false, ordered, o, head, core, sb, baseQuery, pm, api);
-				}
-			} else if (c instanceof FilterWrap) {	
-			//
-				String dot = "";
-				Filter f = ((FilterWrap) c).f;
-				sb.append(dot);
-				doFilter("FILTER", dot, sb, f, api, ordered, pm);
-				dot = " . ";
-			} else if (c.op.equals(COp.NONE)) {
-				//
-			} else {
-				throw new UnsupportedOperationException("Cannot recursively translate: " + c);
-			}
-			if (needsHead) sb.append(" } ");
-		}
-	}
 
-	private void doFilter(String FILTER, String dot, StringBuilder sb, Filter f, API_Dataset api, List<Aspect> ordered, PrefixMapping pm) {
-		String key = "?" + f.name.asVar();
-		String fVar = key;
-		String value = f.range.operands.get(0).asSparqlTerm(pm);
-	//
-		f.asSparqlFilter(pm, f, sb, FILTER, api, ordered, fVar, value);
-	}
-	
 	private String queryHead(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);

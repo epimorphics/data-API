@@ -284,7 +284,9 @@ public abstract class Operator {
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered, String fVar, String value
+			, List<Aspect> ordered
+			, String fVar
+			, String value
 			) {	
 			sb.append(". ")
 				.append(fVar)
