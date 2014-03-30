@@ -34,18 +34,6 @@ public class SearchSpec {
 		this.aspectName = aspectName;
 	}
 
-	public String asSparqlTerm(PrefixMapping pm) {
-		String quoted = Term.quote(pattern);
-		if (property == null) {
-			return quoted;			
-		} else {
-			String expanded = pm.expandPrefix(property.URI);
-			String contracted = pm.qnameFor(expanded);
-			String use = contracted == null ? "<" + property.URI + ">" : contracted;
-			return "(" + use + " " + quoted + ")";		
-		}
-	}
-
 	public String toSearchTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		if (aspectName == null) {
 			return
@@ -55,6 +43,18 @@ public class SearchSpec {
 				;			
 		} else {
 			return toSearchAspectTriple(aspects, pm);
+		}
+	}
+
+	private String asSparqlTerm(PrefixMapping pm) {
+		String quoted = Term.quote(pattern);
+		if (property == null) {
+			return quoted;			
+		} else {
+			String expanded = pm.expandPrefix(property.URI);
+			String contracted = pm.qnameFor(expanded);
+			String use = contracted == null ? "<" + property.URI + ">" : contracted;
+			return "(" + use + " " + quoted + ")";		
 		}
 	}
 

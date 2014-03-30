@@ -106,17 +106,10 @@ public class DataQuery {
     }
 	    
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-		return newWay(p, aspects, baseQuery, pm, api);
-	}
-
-	private String newWay(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-
-		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
-		Collections.sort(ordered, compareAspects);
 		
 		StringBuilder sb = new StringBuilder();
 				
-		ContextImpl cx = new ContextImpl(this, sb, p, aspects, ordered, baseQuery, pm, api);
+		ContextImpl cx = new ContextImpl(this, sb, p, aspects, baseQuery, pm, api);
 		
 		if (c.isPure()) {
 			cx.generateHead();
@@ -132,7 +125,7 @@ public class DataQuery {
 		} else {			
 			c.topLevel(cx);
 		}
-
+		
 		querySort(sb);
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
@@ -156,7 +149,6 @@ public class DataQuery {
 			, StringBuilder sb
 			, Problems p
 			, Set<Aspect> aspects
-			, List<Aspect> ordered
 			, String baseQuery
 			, PrefixMapping pm
 			, API_Dataset api
@@ -165,10 +157,12 @@ public class DataQuery {
 			this.sb = sb;
 			this.p = p;
 			this.aspects = aspects;
-			this.ordered = ordered;
 			this.baseQuery = baseQuery;
 			this.pm = pm;
 			this.api = api;
+		//
+			this.ordered = new ArrayList<Aspect>(aspects);
+			Collections.sort(this.ordered, compareAspects);
 		}
 
 		@Override public void footPrint(String message, Object value) {
@@ -186,7 +180,7 @@ public class DataQuery {
 		}
 
 		@Override public void BEGIN() {
-			String core = dq.queryCore(p, aspects, baseQuery, pm, api);
+			String core = dq.queryCore(this);
 			sb.append(" {\n" );
 			sb.append(core);
 		}
@@ -225,7 +219,6 @@ public class DataQuery {
 		}
 	}
 
-
 	private String queryHead(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
@@ -239,7 +232,13 @@ public class DataQuery {
 		return sb.toString();
 	}
 
-	private String queryCore(Problems p, Set<Aspect> a,	String baseQuery, PrefixMapping pm, API_Dataset api) {
+	private String queryCore(ContextImpl cx) {
+		
+		Set<Aspect> a = cx.aspects;
+		String baseQuery = cx.baseQuery;
+		PrefixMapping pm = cx.pm;
+		API_Dataset api = cx.api;
+	
 		List<Aspect> ordered = new ArrayList<Aspect>(a);
 		Collections.sort(ordered, compareAspects);
 	
