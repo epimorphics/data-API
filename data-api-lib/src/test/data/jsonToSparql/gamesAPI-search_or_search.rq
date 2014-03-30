@@ -1,0 +1,32 @@
+PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  egc:  <http://epimorphics.com/public/vocabulary/games.ttl#>
+PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT  ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_playTimeMinutes
+WHERE
+  {   { { SELECT  ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_playTimeMinutes
+          WHERE
+            { ?item egc:players ?egc_players .
+              ?item egc:pubYear ?egc_pubYear .
+              ?item rdf:type ?rdf_type .
+              ?item rdfs:label ?rdfs_label
+              OPTIONAL
+                { ?item egc:playTimeMinutes ?egc_playTimeMinutes }
+              { ?egc_playTimeMinutes <http://jena.apache.org/text#query> "17" }
+            }
+        }
+      }
+    UNION
+      { { SELECT  ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_playTimeMinutes
+          WHERE
+            { ?item egc:players ?egc_players .
+              ?item egc:pubYear ?egc_pubYear .
+              ?item rdf:type ?rdf_type .
+              ?item rdfs:label ?rdfs_label
+              OPTIONAL
+                { ?item egc:playTimeMinutes ?egc_playTimeMinutes }
+              { ?egc_pubYear <http://jena.apache.org/text#query> "age" }
+            }
+        }
+      }
+  }

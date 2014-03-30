@@ -37,7 +37,7 @@ public class TestTranslateQuerySolution {
 	Aspect aspectA = new TestAspects.MockAspect("eh:/aspect/a");
 	Aspect aspectB = new TestAspects.MockAspect("eh:/aspect/b");
 	
-	@Test public void testMe() {
+	@Test public void testTranslate() {
 		QuerySolution qs = new LocalQuerySolution("pre_a", A, "pre_b", B);
 		List<Aspect> aspects = BunchLib.list(aspectA, aspectB);
 		

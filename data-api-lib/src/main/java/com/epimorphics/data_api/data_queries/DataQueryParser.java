@@ -90,6 +90,13 @@ public class DataQueryParser {
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
 		Shortname sn = new Shortname(pm, key);
+		
+//		System.err.println( ">> parseAspectMember: key = " + key );
+//		System.err.println( ">>   shortname sn = " + sn );
+//		System.err.println( ">>   URI of sn = " + sn.URI );
+//		System.err.println( ">>   aspectURIs = " + aspectURIs );
+//		System.err.println( ">>   known: " + (aspectURIs.contains(sn.URI) ? "yes" : "no") );
+		
 		if (!aspectURIs.contains(sn.URI)) {
 			p.add("Unknown shortname '" + key + "' in " + jo );
 		} else {			

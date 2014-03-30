@@ -1,0 +1,13 @@
+README for data-api-lib/src/test/data/jsonToSparql
+
+This directory contains files used by TestJSONtoSPARQL,
+which names specific clusters of files and uses them as
+gold tests.
+
+A file SPOO.ttl is a API_Dataset configuration file
+used by tests constructed from SPOO-name.json and
+SPOO-name.rq. The test constructs a DataQuery from
+SPOO-name.json using the aspects defined in SPOO.ttl,
+and then compares it with SPOO-name.rq. If they are
+not equal the test fails.
+

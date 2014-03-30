@@ -1,0 +1,7 @@
+
+{
+   "egc:pubYear" : { "@search": "age"}
+
+, "@or": [ {"egc:playTimeMinutes": {"@search": "17"}}]
+
+}

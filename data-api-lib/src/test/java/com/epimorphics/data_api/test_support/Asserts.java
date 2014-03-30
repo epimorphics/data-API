@@ -35,6 +35,10 @@ public class Asserts {
 		try {
 			e = QueryFactory.create(expected);
 			t = QueryFactory.create(toTest);
+			
+//			System.err.println(">> EXPECTED:\n" + e.toString() );
+//			System.err.println(">> OBTAINED:\n" + t.toString() );
+			
 			assertEquals(e, t);
 		} catch (QueryParseException q) {
 			if (e == null) {
