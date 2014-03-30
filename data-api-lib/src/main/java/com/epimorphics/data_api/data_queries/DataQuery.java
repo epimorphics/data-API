@@ -104,14 +104,8 @@ public class DataQuery {
         try { return toSparqlString(p, a.getAspects(), baseQuery, pm, null); }
         catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
     }
-	
-    static boolean newWay = true;
-    
+	    
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-//		return newWay 
-//			? newWay(p, aspects, baseQuery, pm, api) 
-//			: oldWay(p, aspects, baseQuery, pm, api)
-//			;
 		return newWay(p, aspects, baseQuery, pm, api);
 	}
 

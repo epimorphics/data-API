@@ -306,7 +306,6 @@ public abstract class Composition {
 			
 		} else if (x instanceof FilterWrap) {
 			FilterWrap fs = (FilterWrap) x;
-			List<Composition> y = new ArrayList<Composition>();
 			return new FilterWrap(negate(fs.f));
 		} 
 		throw new BrokenException("Cannot negate: " + x);
