@@ -107,6 +107,8 @@ public class DataQuery {
 	    
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
 		
+		// System.err.println( ">> toSparql: " + c );
+		
 		StringBuilder sb = new StringBuilder();
 				
 		ContextImpl cx = new ContextImpl(this, sb, p, aspects, baseQuery, pm, api);
@@ -130,7 +132,11 @@ public class DataQuery {
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
 		
-		return PrefixUtils.expandQuery(sb.toString(), pm);
+		String result = PrefixUtils.expandQuery(sb.toString(), pm);
+		
+		// System.err.println( ">> Generated Query:\n" + result );
+		
+		return result;
 	}
 	
 	static class ContextImpl implements Context {
@@ -139,10 +145,12 @@ public class DataQuery {
 		final StringBuilder sb;
 		final Problems p;
 		final Set<Aspect> aspects;
-		final List<Aspect> ordered;
 		final String baseQuery;
 		final PrefixMapping pm;
 		final API_Dataset api;
+		
+		final List<Aspect> ordered = new ArrayList<Aspect>();
+		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 		
 		public ContextImpl
 			( DataQuery dq
@@ -161,8 +169,10 @@ public class DataQuery {
 			this.pm = pm;
 			this.api = api;
 		//
-			this.ordered = new ArrayList<Aspect>(aspects);
+			this.ordered.addAll(aspects);
 			Collections.sort(this.ordered, compareAspects);
+		//
+			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 		}
 
 		@Override public void footPrint(String message, Object value) {
@@ -205,6 +215,13 @@ public class DataQuery {
 		@Override public void generate(String fragment) {
 			sb.append(fragment);
 		}
+
+		@Override public void search(SearchSpec s) {
+			System.err.println( ">> cx.search(" + s + ")");
+			sb.append("{");
+			sb.append( s.toSearchTriple(namesToAspects, pm) );
+			sb.append("}");
+		}
 	}
 
 	private void querySort(StringBuilder sb) {
@@ -238,12 +255,9 @@ public class DataQuery {
 		String baseQuery = cx.baseQuery;
 		PrefixMapping pm = cx.pm;
 		API_Dataset api = cx.api;
+		List<Aspect> ordered = cx.ordered;
 	
-		List<Aspect> ordered = new ArrayList<Aspect>(a);
-		Collections.sort(ordered, compareAspects);
-	
-		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
-		for (Aspect x: a) namesToAspects.put(x.getName(), x);
+		Map<Shortname, Aspect> namesToAspects = cx.namesToAspects;
 		
 		StringBuilder sb = new StringBuilder();
         boolean baseQueryNeeded = true;
@@ -255,10 +269,10 @@ public class DataQuery {
         }
 		String dot = "";
 	//
-		for (SearchSpec s: searchPatterns) {
-            sb.append(dot).append(s.toSearchTriple(namesToAspects, pm));
-            dot = " .\n ";
-        }
+//		for (SearchSpec s: searchPatterns) {
+//            sb.append(dot).append(s.toSearchTriple(namesToAspects, pm));
+//            dot = " .\n ";
+//        }
 	//
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 		    // sb.append("# BASE QUERY\n");

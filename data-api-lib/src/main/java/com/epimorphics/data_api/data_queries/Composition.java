@@ -48,6 +48,8 @@ public abstract class Composition {
 		public void FILTER(Filter f, boolean sayFILTER);
 		
 		public void generate(String fragment);
+		
+		public void search(SearchSpec s);
 	}
 	
 	public abstract void topLevel(Context cx);
@@ -153,11 +155,15 @@ public abstract class Composition {
 		}
 
 		@Override public void topLevel(Context cx) {
-			cx.footPrint("generated from SearchSpec", s);
+			cx.footPrint("generated from (top-level) SearchSpec", s);
+			cx.generateHead();
+			cx.BEGIN();
+			cx.search(s);
+			cx.END();
 		}
 
 		@Override public void asFilter(Context cx) {
-			cx.footPrint("generated from SearchSpec", s);
+			cx.footPrint("generated from (as filter) SearchSpec", s);
 			cx.generate(" BROKEN ");
 		}	
 	}
@@ -227,7 +233,7 @@ public abstract class Composition {
 		}
 
 		@Override public void topLevel(Context cx) {
-			cx.footPrint("generated from OR", this);
+			cx.footPrint("generated from: ", this);
 			cx.generateHead();
 			cx.generate("{\n");
 			String union = "";
@@ -258,11 +264,11 @@ public abstract class Composition {
 		}
 
 		@Override public void topLevel(Context cx) {
-			cx.footPrint("generated from top-level NOT", this);
+			cx.footPrint("generated from (top-level)", this);
 		}
 
 		@Override public void asFilter(Context cx) {
-			cx.footPrint("generated from NOT", this);
+			cx.footPrint("generated from (asFilter)", this);
 			cx.generate(" false ");
 		}
 	}
@@ -270,16 +276,24 @@ public abstract class Composition {
 	// TODO not
 	public static Composition build(List<Filter> filters, List<SearchSpec> searchPatterns, Map<String, List<Composition>> compositions) {
 		
-		// System.err.println( ">> build: filters " + filters );		
+//		System.err.println( ">> build: filters  " + filters );
+//		System.err.println( ">> build: searches " + searchPatterns );			
 		
 		List<Composition> ands = compositions.get("@and");
 		List<Composition> ors = compositions.get("@or");
 		List<Composition> nots = compositions.get("@not");
 		Composition fs = Composition.filters(filters, searchPatterns);
+		
+//		System.err.println( ">> ands: " + ands );
+//		System.err.println( ">> ors:  " + ors );
+//		System.err.println( ">> nots: " + nots );
+//		System.err.println( ">> fs:   " + fs );		
 	//
 		List<Composition> expanded_ands = new ArrayList<Composition>(ands);
 		if (nots.size() > 0) expanded_ands.add(negate(nots));
-		if (filters.size() > 0) expanded_ands.add(fs);
+		if (filters.size() > 0 || searchPatterns.size() > 0) expanded_ands.add(fs);
+		
+//		System.err.println( ">> expanded_ands: " + expanded_ands );
 	//
 		List<Composition> expanded_ors = new ArrayList<Composition>(ors);
 		if (expanded_ands.size() > 0) expanded_ors.add(Composition.and(expanded_ands));

@@ -291,8 +291,8 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, "?pre_local <http://jena.apache.org/text#query> 'look for me'."
-			, "?item pre:local ?pre_local."
+			, "?item pre:local ?pre_local"
+			, "{ ?pre_local <http://jena.apache.org/text#query> 'look for me'}"
 			, "}"
 			);
 		
@@ -301,12 +301,14 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testGlobalSearch() {		
 		Problems p = new Problems();
+		SearchSpec s = new SearchSpec("look for me");
+		ArrayList<Filter> noFilters = new ArrayList<Filter>();
 		DataQuery q = new DataQuery
-			( Composition.EMPTY
+			( Composition.filters(noFilters, BunchLib.list(s) )
 			, new ArrayList<Sort>()
 			, null // new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( new SearchSpec("look for me") )
+			, BunchLib.list( s )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -318,9 +320,9 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, "?item <http://jena.apache.org/text#query> 'look for me'."
 			, "?item pre:X ?pre_X."
 			, "?item pre:Y ?pre_Y"
+			, "{ ?item <http://jena.apache.org/text#query> 'look for me' }"
 			, "}"
 			);
 		
@@ -330,12 +332,14 @@ public class TestTranslateDataQuery {
 	@Test public void testGlobalSearchWithProperty() {		
 		Problems p = new Problems();
 		Shortname someProperty = X.getName();
+		SearchSpec s = new SearchSpec("look for me", null, someProperty );
+		ArrayList<Filter> noFilters = new ArrayList<Filter>();
 		DataQuery q = new DataQuery
-			( Composition.filters( new ArrayList<Filter>())
+			( Composition.filters( noFilters, BunchLib.list(s))
 			, new ArrayList<Sort>()
 			, new ArrayList<Guard>()
 			, Slice.all()
-			, BunchLib.list( new SearchSpec("look for me", null, someProperty ) )
+			, BunchLib.list( s )
 			);
 	//
 		Aspects a = new Aspects().include(X).include(Y);
@@ -348,9 +352,9 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, "?item <http://jena.apache.org/text#query> (pre:X 'look for me')."
 			, "?item pre:X ?pre_X."
 			, "?item pre:Y ?pre_Y"
+			, "{ ?item <http://jena.apache.org/text#query> (pre:X 'look for me') }"
 			, "}"
 			);
 		
