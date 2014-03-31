@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.junit.Test;
 
-import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.json.JSFullWriter;
 

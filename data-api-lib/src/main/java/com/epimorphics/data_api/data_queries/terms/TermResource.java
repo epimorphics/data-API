@@ -3,18 +3,15 @@
     
     (c) Copyright 2014 Epimorphics Limited
 */
-package com.epimorphics.data_api.data_queries;
+package com.epimorphics.data_api.data_queries.terms;
 
-import com.epimorphics.data_api.data_queries.Term.Primitive;
 import com.epimorphics.json.JSFullWriter;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TermNumber extends Primitive {
-
-	final Number value;
+public class TermResource extends TermComposite {
 	
-	public TermNumber(Number value) {
-		this.value = value;
+	public TermResource(String value) {
+		super(value);
 	}
 
 	@Override public String toString() {
@@ -26,18 +23,16 @@ public class TermNumber extends Primitive {
 	}
 	
 	@Override public boolean equals(Object other) {
-		return other instanceof TermNumber && value.equals(((TermNumber) other).value);
+		return other instanceof TermResource && value.equals(((TermResource) other).value);
 	}
 	
 	@Override public String asSparqlTerm(PrefixMapping pm) {
-		return toString();
+		return "<" + value + ">";
 	}
 
-	@Override public void writeMember(String key, JSFullWriter jw) {
-		jw.pair(key, value);
-	}
-
-	@Override public void writeElement(JSFullWriter jw) {
-		jw.arrayElement(value);
+	@Override public void writeTo(JSFullWriter jw) {
+		jw.startObject();
+		jw.pair("@id", value);
+		jw.finishObject();					
 	}
 }

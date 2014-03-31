@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 

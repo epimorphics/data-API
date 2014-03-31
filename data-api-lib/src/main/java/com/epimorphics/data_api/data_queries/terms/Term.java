@@ -4,7 +4,7 @@
     (c) Copyright 2014 Epimorphics Limited
 */
 
-package com.epimorphics.data_api.data_queries;
+package com.epimorphics.data_api.data_queries.terms;
 
 import java.math.BigDecimal;
 import java.util.List;

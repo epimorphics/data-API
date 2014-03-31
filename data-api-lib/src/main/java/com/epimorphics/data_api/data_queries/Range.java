@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.List;
 
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.shared.BrokenException;
 

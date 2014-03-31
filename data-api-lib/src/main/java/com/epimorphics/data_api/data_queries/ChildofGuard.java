@@ -10,6 +10,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.config.Hierarchy;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 
 public class ChildofGuard implements Guard {

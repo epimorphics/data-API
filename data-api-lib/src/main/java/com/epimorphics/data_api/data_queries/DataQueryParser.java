@@ -19,6 +19,7 @@ import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.JSONConstants;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;

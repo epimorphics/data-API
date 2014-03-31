@@ -3,7 +3,7 @@
     
     (c) Copyright 2014 Epimorphics Limited
 */
-package com.epimorphics.data_api.data_queries;
+package com.epimorphics.data_api.data_queries.terms;
 
 import com.epimorphics.json.JSFullWriter;
 import com.hp.hpl.jena.shared.PrefixMapping;

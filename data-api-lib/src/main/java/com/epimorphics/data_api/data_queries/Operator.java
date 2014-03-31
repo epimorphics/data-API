@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;

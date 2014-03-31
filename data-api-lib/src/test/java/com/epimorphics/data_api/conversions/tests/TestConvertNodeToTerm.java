@@ -8,7 +8,7 @@ package com.epimorphics.data_api.conversions.tests;
 import java.math.BigDecimal;
 import org.junit.Test;
 
-import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.graph.Node;

@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
-import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.test_support.Asserts;
 import com.hp.hpl.jena.shared.PrefixMapping;
 

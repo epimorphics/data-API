@@ -8,7 +8,7 @@ package com.epimorphics.data_api.conversions;
 import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.QuerySolution;

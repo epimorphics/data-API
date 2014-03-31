@@ -17,7 +17,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.conversions.ResultsToRows;
 import com.epimorphics.data_api.conversions.Row;
-import com.epimorphics.data_api.data_queries.Term;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.results.tests.TestTranslateQuerySolution;
 import com.hp.hpl.jena.graph.Node;

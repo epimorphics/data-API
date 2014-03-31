@@ -3,36 +3,36 @@
     
     (c) Copyright 2014 Epimorphics Limited
 */
-package com.epimorphics.data_api.data_queries;
+package com.epimorphics.data_api.data_queries.terms;
 
 import com.epimorphics.json.JSFullWriter;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TermVar extends Term {
-
-	final String name;
+public class TermBad extends Term {
 	
-	public TermVar(String name) {
-		this.name = name;
+	final Object problematic;
+	
+	public TermBad(Object problematic) {
+		this.problematic = problematic;
 	}
 
 	@Override public String toString() {
-		return "<var " + name + ">";
+		return problematic.toString();
 	}
 	
 	@Override public int hashCode() {
-		return name.hashCode();
+		return problematic.hashCode();
 	}
 	
 	@Override public boolean equals(Object other) {
-		return other instanceof TermVar && name.equals(((TermVar) other).name);
+		return other instanceof TermBad && problematic.equals(((TermBad) other).problematic);
 	}
 	
 	@Override public String asSparqlTerm(PrefixMapping pm) {
-		return "?" + name;
+		return "BAD(" + problematic + ")";
 	}
 
 	@Override public void writeTo(JSFullWriter out) {
-		throw new UnsupportedOperationException("Cannot write variables to JSON.");
+		throw new UnsupportedOperationException("Cannot write bad Term");
 	}
 }
