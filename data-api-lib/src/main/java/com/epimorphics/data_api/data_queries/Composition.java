@@ -35,6 +35,10 @@ public abstract class Composition {
 		@Override public void tripleLevel(Context cx) {
 			cx.footPrint("tripleLevel EmptyComposition", this);
 		}
+
+		@Override public void pureFilter(StringBuilder sb, Context cx) {
+			sb.append(" true ");
+		}
 	}
 	
 	final COp op;
@@ -54,6 +58,8 @@ public abstract class Composition {
 		public void generateFragment(String fragment);
 		
 		public void generateSearch(SearchSpec s);
+
+		public void assemblePureFilter(StringBuilder sb, Filter f);
 	}
 	
 	public abstract void topLevel(Context cx);
@@ -61,6 +67,8 @@ public abstract class Composition {
 	public abstract void asFilter(Context cx);
 	
 	public abstract void tripleLevel(Context cx);
+
+	public abstract void pureFilter(StringBuilder sb, Context cx);
 		
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -176,6 +184,10 @@ public abstract class Composition {
 		@Override public void tripleLevel(Context cx) {
 			cx.footPrint("generated from (as tripleLevel) SearchSpec", s);
 			cx.generateSearch(s);
+		}
+
+		@Override public void pureFilter(StringBuilder sb, Context cx) {
+			throw new BrokenException( "@search " + s + " used as pure filter");
 		}	
 	}
 	
@@ -215,6 +227,10 @@ public abstract class Composition {
 		@Override public void tripleLevel(Context cx) {
 			cx.generateFilter(f, true);
 		}
+
+		@Override public void pureFilter(StringBuilder sb, Context cx) {
+			cx.assemblePureFilter(sb, f);
+		}
 	}
 	
 	public static class And extends Composition {
@@ -243,6 +259,16 @@ public abstract class Composition {
 
 		@Override public void tripleLevel(Context cx) {
 			for (Composition x: operands) x.tripleLevel(cx);
+		}
+
+		@Override public void pureFilter(StringBuilder sb, Context cx) {
+			sb.append("(");
+			String and = "";
+			for (Composition x: operands) {
+				sb.append(and); and = " && ";
+				x.pureFilter(sb, cx);
+			}
+			sb.append(")");			
 		}
 	}
 	
@@ -280,6 +306,16 @@ public abstract class Composition {
 			cx.footPrint("generated from OR.tripleLevel", this);
 			cx.generateFragment(" broken " );
 		}
+
+		@Override public void pureFilter(StringBuilder sb, Context cx) {
+			sb.append("(");
+			String or = "";
+			for (Composition x: operands) {
+				sb.append(or); or = " || ";
+				x.pureFilter(sb, cx);
+			}
+			sb.append(")");			
+		}
 	}
 	
 	public static class Not extends Composition {
@@ -299,6 +335,10 @@ public abstract class Composition {
 
 		@Override public void tripleLevel(Context cx) {
 			cx.footPrint("generated from tripleLevel NOT", this);
+		}
+
+		@Override public void pureFilter(StringBuilder sb, Context cx) {
+			sb.append("false");
 		}
 	}
 

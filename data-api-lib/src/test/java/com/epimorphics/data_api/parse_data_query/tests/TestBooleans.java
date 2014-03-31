@@ -45,8 +45,8 @@ public class TestBooleans {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local {"		
-			, "    ?item pre:local ?pre_local"
-			, "    FILTER(?pre_local < 1 || ?pre_local > 2)"
+			, " { ?item pre:local ?pre_local }"
+			, " FILTER(?pre_local < 1 || ?pre_local > 2)"
 			, "}"
 			);	
 		assertSameSelect(expected, generated);
@@ -63,8 +63,8 @@ public class TestBooleans {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local ?pre_other {"		
-			, "    ?item pre:local ?pre_local"
-			, "  . ?item pre:other ?pre_other"
+			, "  { ?item pre:local ?pre_local }"
+			, "  { ?item pre:other ?pre_other }"
 			, "    FILTER(?pre_local = 1 || ?pre_other = 2)"
 			, "}"
 			);	

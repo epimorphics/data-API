@@ -120,7 +120,12 @@ public class DataQuery {
 		
 		StringBuilder sb = new StringBuilder();
 				
-		ContextImpl cx = new ContextImpl(this, sb, p, aspects, baseQuery, pm, api);
+		boolean impure = !c.isPure();
+				
+		ContextImpl cx = new ContextImpl(this, sb, p, aspects, baseQuery, pm, api, impure);
+		
+		System.err.println( ">> toSparql: " + c );
+		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
 		
 		if (c.isPure()) {
 			cx.generateQueryHead();
@@ -131,6 +136,7 @@ public class DataQuery {
 				cx.generateFragment(" FILTER(" );
 				c.asFilter(cx);
 				cx.generateFragment(")");
+				cx.block.pureFilter(c);
 			}
 			cx.endQueryCore();
 		} else {			
@@ -197,7 +203,6 @@ public class DataQuery {
 				);
 			sb.append("\n");
 		}
-		
 	}
 	
 	static class SearchBasic extends Basic {
@@ -257,11 +262,18 @@ public class DataQuery {
 		String baseQuery;
 		List<String> guards = new ArrayList<String>();
 		
+		Composition pureFilter;
+		final ContextImpl cx;
+		
 		public void addSelect(boolean needsDistinct, List<Aspect> ordered) {
 			this.needsDistinct = needsDistinct;
 			this.ordered = ordered;
 		}
 		
+		public void pureFilter(Composition c) {
+			this.pureFilter = c;
+		}
+
 		public void addBaseQuery(String baseQuery) {
 			this.baseQuery = baseQuery;
 		}
@@ -280,7 +292,7 @@ public class DataQuery {
 		}
 		
 		public void addFilter(Filter f, boolean notNested, PrefixMapping pm, API_Dataset api, List<Aspect> ordered) {
-			prepend(new FilterBasic(f, notNested, pm, api, ordered));
+			if (cx.impure) prepend(new FilterBasic(f, notNested, pm, api, ordered));
 		}
 		
 		final List<Basic> firstBasics = new ArrayList<Basic>();
@@ -347,10 +359,16 @@ public class DataQuery {
 				b.toSparql(sb);
 			}
 		//
+			if (pureFilter != null) {
+				sb.append( " FILTER" );
+				pureFilter.pureFilter(sb, cx);
+			}
+		//
 			sb.append( " }\n");
 		}
 		
-		public BlockBasic() {
+		public BlockBasic(ContextImpl cx) {
+			this.cx = cx;
 		}
 	}
 	
@@ -363,11 +381,12 @@ public class DataQuery {
 		final String baseQuery;
 		final PrefixMapping pm;
 		final API_Dataset api;
+		final boolean impure;
 		
 		final List<Aspect> ordered = new ArrayList<Aspect>();
 		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 		
-		protected BlockBasic block = new BlockBasic();
+		protected BlockBasic block;
 		
 		public ContextImpl
 			( DataQuery dq
@@ -377,6 +396,7 @@ public class DataQuery {
 			, String baseQuery
 			, PrefixMapping pm
 			, API_Dataset api
+			, boolean impure
 		) {
 			this.dq = dq;
 			this.sb = sb;
@@ -385,6 +405,8 @@ public class DataQuery {
 			this.baseQuery = baseQuery;
 			this.pm = pm;
 			this.api = api;
+			this.impure = impure;
+			this.block = new BlockBasic(this);
 		//
 			this.ordered.addAll(aspects);
 			Collections.sort(this.ordered, Aspect.compareAspects);
@@ -440,6 +462,19 @@ public class DataQuery {
 			sb.append( s.toSearchTriple(namesToAspects, pm) );
 			sb.append("}");
 			block.addSearch(s, namesToAspects, pm);
+		}
+
+		@Override public void assemblePureFilter(StringBuilder sb, Filter f) {
+			f.range.op.asSparqlFilter
+				( pm
+				, f
+				, sb
+				, ""
+				, api
+				, ordered
+				, "?" + f.name.asVar()
+				, f.range.operands.get(0).asSparqlTerm(pm)
+				);
 		}
 	}
 
