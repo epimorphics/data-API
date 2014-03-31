@@ -47,7 +47,8 @@ public class TestPropertyPaths {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, ("?item pre:A/pre:B ?pre_X FILTER(?pre_X " + ">" + " 17)")
+			, " { ?item pre:A/pre:B ?pre_X }"
+			, "FILTER(?pre_X " + ">" + " 17)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );

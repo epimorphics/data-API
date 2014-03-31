@@ -189,7 +189,7 @@ public class DataQuery {
 				( pm
 				, f
 				, sb
-				, (notNested ? "FILTER" : "")
+				, "FILTER" // TODO (notNested ? "FILTER" : "")
 				, api
 				, ordered
 				, "?" + f.name.asVar()
