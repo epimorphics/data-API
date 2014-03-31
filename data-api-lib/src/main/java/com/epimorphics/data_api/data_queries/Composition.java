@@ -29,7 +29,7 @@ public abstract class Composition {
 
 		@Override public void asFilter(Context cx) {
 			cx.footPrint( "generated from an EmptyComposition", "");
-			cx.generate(" true ");
+			cx.generateFragment(" true ");
 		}
 
 		@Override public void tripleLevel(Context cx) {
@@ -43,17 +43,17 @@ public abstract class Composition {
 	public interface Context {
 		public void footPrint(String message, Object value);
 		
-		public void generateHead();
+		public void generateQueryHead();
 		
-		public void BEGIN();
+		public void startQueryCore();
 		
-		public void END();
+		public void endQueryCore();
 		
-		public void FILTER(Filter f, boolean sayFILTER);
+		public void generateFilter(Filter f, boolean sayFILTER);
 		
-		public void generate(String fragment);
+		public void generateFragment(String fragment);
 		
-		public void search(SearchSpec s);
+		public void generateSearch(SearchSpec s);
 	}
 	
 	public abstract void topLevel(Context cx);
@@ -162,20 +162,20 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint("generated from (top-level) SearchSpec", s);
-			cx.generateHead();
-			cx.BEGIN();
-			cx.search(s);
-			cx.END();
+			cx.generateQueryHead();
+			cx.startQueryCore();
+			cx.generateSearch(s);
+			cx.endQueryCore();
 		}
 
 		@Override public void asFilter(Context cx) {
 			cx.footPrint("generated from (as filter) SearchSpec", s);
-			cx.generate(" BROKEN ");
+			cx.generateFragment(" BROKEN ");
 		}
 
 		@Override public void tripleLevel(Context cx) {
 			cx.footPrint("generated from (as tripleLevel) SearchSpec", s);
-			cx.search(s);
+			cx.generateSearch(s);
 		}	
 	}
 	
@@ -202,18 +202,18 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint("generated from top-level Filter", f);
-			cx.generateHead();
-			cx.BEGIN();
-			cx.FILTER(f, true);
-			cx.END();
+			cx.generateQueryHead();
+			cx.startQueryCore();
+			cx.generateFilter(f, true);
+			cx.endQueryCore();
 		}
 
 		@Override public void asFilter(Context cx) {
-			cx.FILTER(f, false);
+			cx.generateFilter(f, false);
 		}
 
 		@Override public void tripleLevel(Context cx) {
-			cx.FILTER(f, true);
+			cx.generateFilter(f, true);
 		}
 	}
 	
@@ -225,20 +225,20 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint("generated from top-level AND", this);
-			cx.generateHead();
-			cx.BEGIN();
+			cx.generateQueryHead();
+			cx.startQueryCore();
 			for (Composition x: operands) x.tripleLevel(cx);
-			cx.END();
+			cx.endQueryCore();
 		}
 
 		@Override public void asFilter(Context cx) {
-			cx.generate("(");
+			cx.generateFragment("(");
 			String and = "";
 			for (Composition x: operands) {
-				cx.generate(and); and = " && ";
+				cx.generateFragment(and); and = " && ";
 				x.asFilter(cx);
 			}
-			cx.generate(")");
+			cx.generateFragment(")");
 		}
 
 		@Override public void tripleLevel(Context cx) {
@@ -254,31 +254,31 @@ public abstract class Composition {
 
 		@Override public void topLevel(Context cx) {
 			cx.footPrint("generated from: ", this);
-			cx.generateHead();
-			cx.generate("{\n");
+			cx.generateQueryHead();
+			cx.generateFragment("{\n");
 			String union = "";
 			for (Composition x: operands) {
-				cx.generate(union); union = " UNION ";
-				cx.generate( " {{ " );
+				cx.generateFragment(union); union = " UNION ";
+				cx.generateFragment( " {{ " );
 				x.topLevel(cx);
-				cx.generate(" }} ");
+				cx.generateFragment(" }} ");
 			}
-			cx.generate("}\n");
+			cx.generateFragment("}\n");
 		}
 
 		@Override public void asFilter(Context cx) {
-			cx.generate("(");
+			cx.generateFragment("(");
 			String or = "";
 			for (Composition x: operands) {
-				cx.generate(or); or = " || ";
+				cx.generateFragment(or); or = " || ";
 				x.asFilter(cx);
 			}
-			cx.generate(")");
+			cx.generateFragment(")");
 		}
 
 		@Override public void tripleLevel(Context cx) {
 			cx.footPrint("generated from OR.tripleLevel", this);
-			cx.generate(" broken " );
+			cx.generateFragment(" broken " );
 		}
 	}
 	
@@ -294,7 +294,7 @@ public abstract class Composition {
 
 		@Override public void asFilter(Context cx) {
 			cx.footPrint("generated from (asFilter)", this);
-			cx.generate(" false ");
+			cx.generateFragment(" false ");
 		}
 
 		@Override public void tripleLevel(Context cx) {
