@@ -78,6 +78,7 @@ public class TestBooleans {
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertTrue(p.isOK());
 		String generated = q.toSparql(p, ds);
+		Asserts.assertNoProblems("failure with @union query", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"

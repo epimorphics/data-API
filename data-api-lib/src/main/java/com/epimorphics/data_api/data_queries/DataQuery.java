@@ -160,11 +160,11 @@ public class DataQuery {
 		
 		String oldCode = sortAndLimit(pm, sb);
 		
-		if (true) assertSameSelect(oldCode, newCode);
+		if (false) assertSameSelect(oldCode, newCode);
 		
 		System.err.println( ">> Used query:\n" + newCode);
 		
-		return oldCode;
+		return newCode;
 	}
 	
 	public static void assertSameSelect(String expected, String toTest) {
@@ -274,6 +274,20 @@ public class DataQuery {
 		
 	}
 	
+	static class BasicUnion extends Basic {
+		
+		final String content;
+		
+		public BasicUnion(String content) {
+			this.content = content;
+		}
+
+		@Override public void toSparql(StringBuilder sb) {
+			sb.append(content);
+		}
+		
+	}
+	
 	static class FootprintBasic extends Basic {
 		
 		final String message;
@@ -367,6 +381,10 @@ public class DataQuery {
 				sb.append( "\n" );
 			}
 		}
+		
+		public void addUnion(String content) {
+			append(new BasicUnion(content));
+		}
 
 		DataQuery dq;
 		PrefixMapping pm;
@@ -455,6 +473,10 @@ public class DataQuery {
 		//
 			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 		}
+		
+		protected ContextImpl fork() {
+			return new ContextImpl(dq, sb, p, aspects, baseQuery, pm, api, impure);
+		}
 
 		static final boolean footPrinting = false;
 		
@@ -519,16 +541,18 @@ public class DataQuery {
 				);
 		}
 
-		@Override public void topLevelUnion(List<Composition> operands) {
-			BlockBasic preserve = block;
+		@Override public void topLevelUnion(List<Composition> operands) {			
+			ContextImpl cx = this.fork();
+			StringBuilder sb2 = new StringBuilder();
+			String union = "";
 			for (Composition x: operands) {
-				StringBuilder sb = new StringBuilder();
-				block = new BlockBasic(this);
-				x.topLevel(this);
-				block.toSparql(sb);
-				String nested = sb.toString();
+				sb2.append(union); union = " UNION ";
+				sb2.append(" {{\n");
+				x.topLevel(cx);
+				cx.block.toSparql(sb2);
+				sb2.append( " }}\n" );
 			}
-			block = preserve;
+			block.addUnion(sb2.toString());
 		}
 	}
 
