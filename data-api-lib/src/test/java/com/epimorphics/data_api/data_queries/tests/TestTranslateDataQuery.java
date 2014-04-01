@@ -400,7 +400,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, " ?item pre:X 17 . BIND(17 AS ?pre_X) "
-			, " { OPTIONAL ?item pre:Y ?pre_Y . }"
+			, " OPTIONAL {?item pre:Y ?pre_Y .}"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -527,7 +527,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_Y WHERE {"
-			, " ?item pre:has pre:value ."
+			, " { ?item pre:has pre:value . }"
 			, " ?item pre:Y ?pre_Y ."
 			, "}"
 			);
