@@ -37,5 +37,9 @@ public class ChildofGuard implements Guard {
     @Override public boolean needsDistinct() {
         return h.getNeedsDistinct();
     }
+    
+    @Override public String toString() {
+    	return "@childof (" + parent + " " + h + ")";
+    }
 
 }

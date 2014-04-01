@@ -23,6 +23,10 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
@@ -152,19 +156,53 @@ public class DataQuery {
 		if (baseQuery != null && baseQuery.length() > 0)	System.err.println( ">> BASE QUERY:\n    " + baseQuery);
 		System.err.println( ">>\n>> REVISED SPQRAL:\n" + blocked );		
 		
-		// hack in new code
-//		sb.setLength(0);
-//		sb.append(blocked);
+		String newCode = sortAndLimit(pm, sb2);
 		
+		String oldCode = sortAndLimit(pm, sb);
+		
+		if (true) assertSameSelect(oldCode, newCode);
+		
+		System.err.println( ">> Used query:\n" + newCode);
+		
+		return oldCode;
+	}
+	
+	public static void assertSameSelect(String expected, String toTest) {
+		Query t = null, e = null;
+		try {
+			e = QueryFactory.create(expected);
+			t = QueryFactory.create(toTest);
+			
+//			System.err.println(">> EXPECTED:\n" + e.toString() );
+//			System.err.println(">> OBTAINED:\n" + t.toString() );
+			
+			if (e.equals(t)) return;
+			
+//			System.err.println( "OLD CODE\n" + e.toString());
+//			System.err.println( "NEW CODE\n" + t.toString());
+			
+			throw new BrokenException
+				( "Different answers"
+				+ "\nOLD CODE:\n" + expected
+				+ "\nNEW CODE:\n" + toTest
+				+ "\n"
+				);
+			
+		} catch (QueryParseException q) {
+			if (e == null) {
+				throw new BrokenException( "parse failure: " + q.getMessage() + "\n" + expected );
+			}
+			if (t == null) {
+				throw new BrokenException( "parse failure: " + q.getMessage() + "\n" + toTest );
+			}
+		}
+	}
+	
+	private String sortAndLimit(PrefixMapping pm, StringBuilder sb) {
 		querySort(sb);
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
-		
-		String result = PrefixUtils.expandQuery(sb.toString(), pm);
-		
-		System.err.println( ">> Generated Query:\n" + result );
-		
-		return result;
+		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 	
 	static abstract class Basic {
@@ -313,6 +351,8 @@ public class DataQuery {
 				String eqValue = dq.findEqualityValue(pm, x.getName(), c);			
 				boolean isEquality = eqValue != null;				
 			//		
+				sb.append("  ");
+			//
 				if (x.getIsOptional()) sb.append( " OPTIONAL {" );
 				sb
 					.append("?item")
@@ -339,14 +379,17 @@ public class DataQuery {
 		}
 		
 		public void toSparql(StringBuilder sb) {
-			sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT" : "") + "?item");
+			sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT " : "") + "?item");
 			for (Aspect x: ordered) sb.append("\n     ?").append( x.asVar() );
 		//
 			sb.append( "\n {\n" );
 		//
-			if (baseQuery != null) sb.append("  { " ).append(baseQuery).append( "}\n" );
+			if (baseQuery != null) {
+				sb.append( " # BASE QUERY (NEW STYLE)\n");
+				sb.append("  { " ).append(baseQuery).append( " }\n" );
+			}
 		//
-			for (String guard: guards) sb.append( " { " ).append(guard).append( " }\n" );
+			for (String guard: guards) sb.append( " " ).append(guard); 
 		//
 			establishAspectVars(sb);
 		//
@@ -509,7 +552,7 @@ public class DataQuery {
         for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
     //
         StringBuilder sb = new StringBuilder();
-		sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT" : "") + "?item");
+		sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT " : "") + "?item");
 		for (Aspect x: ordered) sb.append(" ?").append( x.asVar() );	
 		
 		block.addSelect(needsDistinct, ordered);
@@ -535,12 +578,11 @@ public class DataQuery {
         }
 		String dot = "";
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-		    // sb.append("# BASE QUERY\n");
-		    sb.append(dot).append("{ ").append( baseQuery ).append(" }");
+		    sb.append("# BASE QUERY (OLD STYLE)\n");
+		    sb.append(dot).append(" { ").append( baseQuery ).append(" }\n");
 		    
 		    block.addBaseQuery( baseQuery );
 		    
-//            dot = " .\n";
             dot = "\n";
 		}
 	    for (Guard guard : guards) {
@@ -550,17 +592,16 @@ public class DataQuery {
 	        
 	        block.addGuard(guard.queryFragment(api));
 	    }
-	    establishAspectVars(dot, pm, sb, ordered);
+	    establishAspectVars(pm, sb, ordered);
 	    
 	    block.core(this, pm, c);
 	    
 	    return sb.toString();
 	}
 
-	private String establishAspectVars(String dot, PrefixMapping pm, StringBuilder sb, List<Aspect> ordered) {
+	private void establishAspectVars(PrefixMapping pm, StringBuilder sb, List<Aspect> ordered) {
 		for (Aspect x: ordered) {
 			String fVar = "?" + x.asVar();
-			sb.append(dot);	dot = "\n.";
 		//
 			String eqValue = findEqualityValue(pm, x.getName(), c);			
 			boolean isEquality = eqValue != null;				
@@ -571,13 +612,13 @@ public class DataQuery {
 				.append("?item")
 				.append(" ").append(x.asProperty())
 				.append(" ").append(isEquality ? eqValue : fVar)
+				.append(" .")
 				;
 			if (x.getIsOptional()) sb.append( " }" );
 			if (isEquality) {
 				sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
 			}
 		}
-		return dot;
 	}
 
 	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {

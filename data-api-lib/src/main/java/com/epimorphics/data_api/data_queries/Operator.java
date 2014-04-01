@@ -261,7 +261,14 @@ public abstract class Operator {
 			) {
 			Aspect x = aspectFor(ordered, filter.name);
 			String below = x.getBelowPredicate(api);
-			sb.append(". ").append(value).append(" ").append(below).append("* ").append(fVar);		
+			sb.append(value)
+				.append(" ")
+				.append(below)
+				.append("* ")
+				.append(fVar)
+				.append(" .")
+				.append("\n")
+				;		
 		}
 	}
 
@@ -289,10 +296,10 @@ public abstract class Operator {
 			, String fVar
 			, String value
 			) {	
-			sb.append(". ")
-				.append(fVar)
+			sb.append(fVar)
 				.append(" <http://jena.apache.org/text#query> ")
 				.append(value)
+				.append(" .")
 				;
 		}
 	}
