@@ -50,13 +50,9 @@ public abstract class Composition {
 		public void addQueryHead();
 		
 		public void addQueryCore();
-		
-//		public void endQueryCore();
-		
+				
 		public void addFilter(Filter f, boolean sayFILTER);
-		
-//		public void generateFragment(String fragment);
-		
+				
 		public void addSearch(SearchSpec s);
 
 		public void buildPureFilter(StringBuilder sb, Filter f);
@@ -111,7 +107,6 @@ public abstract class Composition {
 			|| (op.equals(COp.FILTER) && ((FilterWrap) this).f.range.op.equals(Operator.EQ))
 			|| (op.equals(COp.AND) && allTrivial())
 			;
-//		Systesm.err.println( ">> isTrivial " + this + ": " + result );
 		return result;
 	}
 	
@@ -175,12 +170,10 @@ public abstract class Composition {
 			cx.addQueryHead();
 			cx.addQueryCore();
 			cx.addSearch(s);
-//			cx.endQueryCore();
 		}
 
 		@Override public void asFilter(Context cx) {
 			cx.comment("generated from (as filter) SearchSpec", s);
-//			cx.generateFragment(" BROKEN ");
 		}
 
 		@Override public void tripleLevel(Context cx) {
@@ -219,7 +212,6 @@ public abstract class Composition {
 			cx.addQueryHead();
 			cx.addQueryCore();
 			cx.addFilter(f, true);
-//			cx.endQueryCore();
 		}
 
 		@Override public void asFilter(Context cx) {
@@ -246,17 +238,12 @@ public abstract class Composition {
 			cx.addQueryHead();
 			cx.addQueryCore();
 			for (Composition x: operands) x.tripleLevel(cx);
-//			cx.endQueryCore();
 		}
 
 		@Override public void asFilter(Context cx) {
-//			cx.generateFragment("(");
-			String and = "";
 			for (Composition x: operands) {
-//				cx.generateFragment(and); and = " && ";
 				x.asFilter(cx);
 			}
-//			cx.generateFragment(")");
 		}
 
 		@Override public void tripleLevel(Context cx) {
@@ -283,31 +270,20 @@ public abstract class Composition {
 		@Override public void topLevel(Context cx) {
 			cx.comment("generated from top-level ", this);
 			cx.addQueryHead();
-//			cx.generateFragment("{\n");
 			cx.topLevelUnion(operands);
-//			String union = "";
 			for (Composition x: operands) {
-//				cx.generateFragment(union); union = " UNION ";
-//				cx.generateFragment( " {{ " );
 				x.topLevel(cx);
-//				cx.generateFragment(" }} ");
 			}
-//			cx.generateFragment("}\n");
 		}
 
 		@Override public void asFilter(Context cx) {
-//			cx.generateFragment("(");
-//			String or = "";
 			for (Composition x: operands) {
-//				cx.generateFragment(or); or = " || ";
 				x.asFilter(cx);
 			}
-//			cx.generateFragment(")");
 		}
 
 		@Override public void tripleLevel(Context cx) {
 			cx.comment("generated from OR.tripleLevel", this);
-//			cx.generateFragment(" broken " );
 		}
 
 		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
