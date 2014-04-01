@@ -71,7 +71,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " { ?item pre:X ?pre_X }"
+			, " ?item pre:X ?pre_X ."
 			, "}"
 			);
 		assertSameSelect( expected, sq );
@@ -90,7 +90,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X"
-			, "WHERE { { ?item pre:X ?pre_X } }"
+			, "WHERE { ?item pre:X ?pre_X. }"
 			, "ORDER BY ?pre_X"
 			);
 		assertSameSelect( expected, sq );
@@ -112,8 +112,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " { ?item pre:X ?pre_X }"
-			, " { ?item pre:Y ?pre_Y }"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
 			, "}"
 			, "ORDER BY ?pre_X DESC(?pre_Y)"
 			);
@@ -133,7 +133,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " { ?item pre:X 17 BIND(17 AS?pre_X) }}"
+			, " ?item pre:X 17 . BIND(17 AS?pre_X)"
+			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
 	}		
@@ -177,7 +178,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, (op.equals(Operator.EQ) ? " { ?item pre:X 17 BIND(17 AS ?pre_X) }" : (" { ?item pre:X ?pre_X } FILTER(?pre_X " + opSparql + " 17)"))
+			, (op.equals(Operator.EQ) ? " ?item pre:X 17 . BIND(17 AS ?pre_X) " : (" ?item pre:X ?pre_X . FILTER(?pre_X " + opSparql + " 17)"))
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -197,7 +198,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " { ?item pre:X ?pre_X }"
+			, " ?item pre:X ?pre_X ."
 			, "FILTER( (?pre_X = 17) || (?pre_X = 99))"
 			, "}"
 			);
@@ -266,7 +267,7 @@ public class TestTranslateDataQuery {
 		
 		String prefix_p = "PREFIX pre: <eh:/prefixPart/>\n";
 		String prefix_skos = (op.equals(Operator.BELOW) ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
-		String select = "SELECT ?item _VAR WHERE { { ?item _PROP _VAR } " + filter + " }";
+		String select = "SELECT ?item _VAR WHERE { ?item _PROP _VAR . " + filter + " }";
 		
 		String expected = 
 			prefix_p + (select.contains("skos:") ? prefix_skos : "") 
@@ -290,8 +291,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " { ?item pre:X 17 BIND(17 AS ?pre_X) }"
-			, " { ?item pre:Y ?pre_Y }"
+			, " ?item pre:X 17 . BIND(17 AS ?pre_X)"
+			, " ?item pre:Y ?pre_Y ."
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -316,7 +317,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, " { ?item pre:local ?pre_local }"
+			, " ?item pre:local ?pre_local ."
 			, "{ ?pre_local <http://jena.apache.org/text#query> 'look for me'}"
 			, "}"
 			);
@@ -344,8 +345,8 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, " { ?item pre:X ?pre_X }"
-			, " { ?item pre:Y ?pre_Y }"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
 			, "{ ?item <http://jena.apache.org/text#query> 'look for me' }"
 			, "}"
 			);
@@ -375,8 +376,8 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, " { ?item pre:X ?pre_X }"
-			, " { ?item pre:Y ?pre_Y }"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
 			, "{ ?item <http://jena.apache.org/text#query> (pre:X 'look for me') }"
 			, "}"
 			);
@@ -398,8 +399,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " { ?item pre:X 17 BIND(17 AS ?pre_X) }"
-			, " { OPTIONAL {?item pre:Y ?pre_Y} }"
+			, " ?item pre:X 17 . BIND(17 AS ?pre_X) "
+			, " { OPTIONAL ?item pre:Y ?pre_Y . }"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -422,8 +423,8 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " { ?item pre:X 8 BIND(8 AS ?pre_X) }"
-			, " { ?item pre:Y 9 BIND(9 AS ?pre_Y) }"
+			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
+			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
 			, "}"
 			, "LIMIT 17"
 			);
@@ -447,8 +448,8 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " { ?item pre:X 8 BIND(8 AS ?pre_X) }"
-			, " { ?item pre:Y 9 BIND(9 AS ?pre_Y) }"
+			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
+			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
 			, "}"
 			, "OFFSET 1066"
 			);
@@ -472,8 +473,8 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " { ?item pre:X 8 BIND(8 AS ?pre_X) }"
-			, " { ?item pre:Y 9 BIND(9 AS ?pre_Y) }"
+			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
+			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
 			, "}"
 			, "LIMIT 17 OFFSET 1829"
 			);
@@ -497,8 +498,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE { "
-			, " { ?item pre:X 8 BIND(8 AS ?pre_X) }"
-			, " { ?item pre:Y 9 BIND(9 AS ?pre_Y) }"
+			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
+			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -526,8 +527,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_Y WHERE {"
-			, " { ?item pre:has pre:value }"
-			, " { ?item pre:Y ?pre_Y }"
+			, " ?item pre:has pre:value ."
+			, " ?item pre:Y ?pre_Y ."
 			, "}"
 			);
 		assertSameSelect( expected, sq );

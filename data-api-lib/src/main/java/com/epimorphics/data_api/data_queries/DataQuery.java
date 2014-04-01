@@ -153,8 +153,8 @@ public class DataQuery {
 		System.err.println( ">>\n>> REVISED SPQRAL:\n" + blocked );		
 		
 		// hack in new code
-		sb.setLength(0);
-		sb.append(blocked);
+//		sb.setLength(0);
+//		sb.append(blocked);
 		
 		querySort(sb);
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
@@ -162,7 +162,7 @@ public class DataQuery {
 		
 		String result = PrefixUtils.expandQuery(sb.toString(), pm);
 		
-		// System.err.println( ">> Generated Query:\n" + result );
+		System.err.println( ">> Generated Query:\n" + result );
 		
 		return result;
 	}
@@ -310,8 +310,6 @@ public class DataQuery {
 			for (Aspect x: ordered) {
 				String fVar = "?" + x.asVar();
 			//
-				sb.append( "  { " );
-			//
 				String eqValue = dq.findEqualityValue(pm, x.getName(), c);			
 				boolean isEquality = eqValue != null;				
 			//		
@@ -320,12 +318,13 @@ public class DataQuery {
 					.append("?item")
 					.append(" ").append(x.asProperty())
 					.append(" ").append(isEquality ? eqValue : fVar)
+					.append(" .")
 					;
 				if (x.getIsOptional()) sb.append( " }" );
 				if (isEquality) {
 					sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
 				}
-				sb.append( " }\n" );
+				sb.append( "\n" );
 			}
 		}
 
@@ -475,6 +474,18 @@ public class DataQuery {
 				, "?" + f.name.asVar()
 				, f.range.operands.get(0).asSparqlTerm(pm)
 				);
+		}
+
+		@Override public void topLevelUnion(List<Composition> operands) {
+			BlockBasic preserve = block;
+			for (Composition x: operands) {
+				StringBuilder sb = new StringBuilder();
+				block = new BlockBasic(this);
+				x.topLevel(this);
+				block.toSparql(sb);
+				String nested = sb.toString();
+			}
+			block = preserve;
 		}
 	}
 

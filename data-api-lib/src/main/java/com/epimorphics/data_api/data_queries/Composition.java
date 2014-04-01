@@ -60,6 +60,8 @@ public abstract class Composition {
 		public void generateSearch(SearchSpec s);
 
 		public void assemblePureFilter(StringBuilder sb, Filter f);
+
+		public void topLevelUnion(List<Composition> operands);
 	}
 	
 	public abstract void topLevel(Context cx);
@@ -282,6 +284,7 @@ public abstract class Composition {
 			cx.footPrint("generated from: ", this);
 			cx.generateQueryHead();
 			cx.generateFragment("{\n");
+			cx.topLevelUnion(operands);
 			String union = "";
 			for (Composition x: operands) {
 				cx.generateFragment(union); union = " UNION ";

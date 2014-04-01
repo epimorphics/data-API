@@ -47,7 +47,7 @@ public class TestPropertyPaths {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, " { ?item pre:A/pre:B ?pre_X }"
+			, " ?item pre:A/pre:B ?pre_X ."
 			, "FILTER(?pre_X " + ">" + " 17)"
 			, "}"
 			);
