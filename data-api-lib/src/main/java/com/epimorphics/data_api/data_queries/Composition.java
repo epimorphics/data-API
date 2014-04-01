@@ -281,8 +281,9 @@ public abstract class Composition {
 		}
 
 		@Override public void topLevel(Context cx) {
-			cx.footPrint("generated from: ", this);
+			cx.footPrint("generated from top-level ", this);
 			cx.generateQueryHead();
+			cx.footPrint("that was the query head", this);
 			cx.generateFragment("{\n");
 			cx.topLevelUnion(operands);
 			String union = "";

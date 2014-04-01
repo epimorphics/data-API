@@ -478,7 +478,7 @@ public class DataQuery {
 			return new ContextImpl(dq, sb, p, aspects, baseQuery, pm, api, impure);
 		}
 
-		static final boolean footPrinting = false;
+		static final boolean footPrinting = true;
 		
 		@Override public void footPrint(String message, Object value) {
 			sb.append( " # ")
