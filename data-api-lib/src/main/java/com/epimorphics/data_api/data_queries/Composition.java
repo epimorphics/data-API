@@ -22,6 +22,10 @@ public abstract class Composition {
 		public EmptyComposition() {
 			super(COp.NONE, new ArrayList<Composition>() );
 		}
+
+		@Override public void toSparql(RenderContext cx) {
+			cx.comment("empty composition");
+		}
 	}
 	
 	final COp op;
@@ -38,25 +42,7 @@ public abstract class Composition {
 		void generateSearch(SearchSpec s);
 	}
 	
-	public static void render(Composition c, RenderContext rx) {
-		if (c instanceof And) {
-			for (Composition x: c.operands) render(x, rx); 
-		} else if (c instanceof Or) {
-			rx.notImplemented(c);
-		} else if (c instanceof Not) {
-			rx.notImplemented(c);
-		} else if (c instanceof FilterWrap) {
-			FilterWrap w = (FilterWrap) c;
-			rx.generateFilter(w.f);
-		} else if (c instanceof SearchWrap) {
-			SearchWrap s = (SearchWrap) c;
-			rx.generateSearch(s.s);
-		} else if (c instanceof EmptyComposition) {
-			rx.comment("empty composition");
-		} else {
-			rx.notImplemented(c);
-		}
-	}
+	public abstract void toSparql(RenderContext cx);
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -81,29 +67,6 @@ public abstract class Composition {
 	public Composition(COp op, List<Composition> operands) {
 		this.op = op;
 		this.operands = operands;
-	}
-
-	/**
-	    A Composition is pure if all its filters are non-triple-filters.
-	*/
-	public boolean isPure() {
-		for (Composition c: operands) if (!c.isPure()) return false;
-		return true;
-	}
-
-	public boolean isTrivial() {
-		boolean result = 
-			op.equals(COp.NONE) 
-			|| (op.equals(COp.FILTER) && ((FilterWrap) this).f.range.op.equals(Operator.EQ))
-			|| (op.equals(COp.AND) && allTrivial())
-			;
-		return result;
-	}
-	
-	private boolean allTrivial() {
-		for (Composition x: operands)
-			if (!x.isTrivial()) return false;
-		return true;
 	}
 
 	public static Composition and(List<Composition> operands) {
@@ -146,6 +109,10 @@ public abstract class Composition {
 			sb.append(" ").append(s);
 			sb.append(")");
 			return sb.toString();
+		}
+
+		@Override public void toSparql(RenderContext cx) {
+			cx.generateSearch(s);			
 		}	
 	}
 	
@@ -164,6 +131,10 @@ public abstract class Composition {
 			sb.append(" ").append(f);
 			sb.append(")");
 			return sb.toString();
+		}
+
+		@Override public void toSparql(RenderContext cx) {
+			cx.generateFilter(f);
 		}
 	}
 	
@@ -195,6 +166,10 @@ public abstract class Composition {
 			}
 			return result;
 		}
+
+		@Override public void toSparql(RenderContext cx) {
+			for (Composition x: operands) x.toSparql(cx); 
+		}
 	}
 	
 	public static class Or extends Composition {
@@ -202,12 +177,20 @@ public abstract class Composition {
 		public Or(List<Composition> operands) {
 			super(COp.OR, operands);
 		}
+
+		@Override public void toSparql(RenderContext cx) {
+			cx.notImplemented(this);
+		}
 	}
 	
 	public static class Not extends Composition {
 		
 		public Not(List<Composition> operands) {
 			super(COp.NOT, operands);
+		}
+
+		@Override public void toSparql(RenderContext cx) {			
+			cx.notImplemented(this);
 		}
 	}
 

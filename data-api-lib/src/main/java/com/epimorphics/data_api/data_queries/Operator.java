@@ -109,7 +109,10 @@ public abstract class Operator {
 		, StringBuilder sb
 		, String FILTER
 		, API_Dataset api
-		, List<Aspect> ordered, String fVar, String value);
+		, List<Aspect> ordered
+		, String fVar
+		, String value
+		);
 	
 	static class InfixOperator extends Operator {
 		
@@ -195,7 +198,9 @@ public abstract class Operator {
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered, String fVar, String value
+			, List<Aspect> ordered
+			, String fVar
+			, String value
 			) {
 			String orOp = "";
 			List<Term> operands = filter.range.operands;
@@ -225,10 +230,10 @@ public abstract class Operator {
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered, String fVar, String value
+			, List<Aspect> ordered
+			, String fVar
+			, String value
 			) {
-//		sb.append("?item ").append(f.name.prefixed).append( " ").append(value);
-//		sb.append(" BIND(").append(value).append(" AS ").append(fVar).append(")");
 			sb.append(" ")
 				.append(FILTER)
 				.append("(" )
@@ -257,7 +262,9 @@ public abstract class Operator {
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered, String fVar, String value
+			, List<Aspect> ordered
+			, String fVar
+			, String value
 			) {
 			Aspect x = aspectFor(ordered, filter.name);
 			String below = x.getBelowPredicate(api);

@@ -16,7 +16,6 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
-//import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.RenderContext;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
@@ -125,7 +124,6 @@ public class DataQuery {
 		StringBuilder out = new StringBuilder();
 		RenderContextImpl rx = new RenderContextImpl
 			( out
-			, this
 			, p
 			, aspects
 			, baseQuery
@@ -135,7 +133,7 @@ public class DataQuery {
 			);
 		
 		Composition adjusted = rx.begin(c);
-		Composition.render(adjusted, rx);
+		adjusted.toSparql(rx);
 		rx.end();
 		
 		String newerCode = sortAndSlice(pm, out);
@@ -156,8 +154,6 @@ public class DataQuery {
 	static class RenderContextImpl implements RenderContext {
 
 		final StringBuilder out;
-
-		final DataQuery dq;
 		final Problems p;
 		final Set<Aspect> aspects;
 		final String baseQuery;
@@ -170,7 +166,6 @@ public class DataQuery {
 		
 		public RenderContextImpl
 			( StringBuilder out
-			, DataQuery dq
 			, Problems p
 			, Set<Aspect> aspects
 			, String baseQuery
@@ -178,8 +173,7 @@ public class DataQuery {
 			, API_Dataset api
 			, List<Guard> guards
 			) {
-			this.out = out;			
-			this.dq = dq;
+			this.out = out;		
 			this.p = p;
 			this.aspects = aspects;
 			this.baseQuery = baseQuery;
