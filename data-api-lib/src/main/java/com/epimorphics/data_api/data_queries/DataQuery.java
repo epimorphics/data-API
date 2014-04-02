@@ -20,6 +20,7 @@ import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.RenderContext;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
+import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.util.PrefixUtils;
@@ -151,8 +152,8 @@ public class DataQuery {
 			, guards
 			);
 		
-		rx.begin();
-		Composition.render(c, rx);
+		Composition adjusted = rx.begin(c);
+		Composition.render(adjusted, rx);
 		rx.end();
 		String newerCode = sortAndSlice(pm, out);
 		System.err.println( ">> RENDERED QUERY:\n" + newerCode );
@@ -163,7 +164,8 @@ public class DataQuery {
 		String newCode = sortAndSlice(pm, sb);
 		
 //		System.err.println( ">> Generated SPARQL query:\n" + newCode);
-		return newerCode;
+//		return newCode;
+		 return newerCode;
 	}
 
 	private String sortAndSlice(PrefixMapping pm, StringBuilder sb) {
@@ -217,11 +219,11 @@ public class DataQuery {
 		
 		}
 		
-		public void begin() {
+		public Composition begin(Composition c) {
 			comment("begin a SELECT query");
 			generateSelect();
 			out.append("WHERE {\n");
-			queryCore();
+			return queryCore(c);
 		}
 		
 		public void end() {
@@ -250,7 +252,7 @@ public class DataQuery {
 			out.append("\n");
 		}
 		
-		public void queryCore() {
+		public Composition queryCore(Composition c) {
 	        boolean baseQueryNeeded = true;  
 	        for (Guard guard : guards) {
 	            if (guard.supplantsBaseQuery()) {
@@ -265,41 +267,63 @@ public class DataQuery {
 				comment("no base query");
 			}
 		//
-	        		
 			int ng = guards.size();
 	        comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
 	        for (Guard guard : guards)
 	        	out.append(guard.queryFragment(api));
 	    //
-	        declareAspectVars();
+	        return declareAspectVars(c);
 		}
 
-		private void declareAspectVars() {
+		private Composition declareAspectVars(Composition c) {
 			int nb = ordered.size();
 			comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
+		//
+			Map<Shortname, Term> equalities = new HashMap<Shortname, Term>();
+			Composition adjusted = findEqualities(equalities, c);
+		//
 			for (Aspect x: ordered) {
 				String fVar = "?" + x.asVar();
+				Term equals = equalities.get(x.getName());
+				String stringEquals = equals == null ? null : equals.asSparqlTerm(pm);
 			//
-				// String eqValue = dq.findEqualityValue(pm, x.getName(), c);			
-				// boolean isEquality = eqValue != null;				
-			//		
 				out.append("  ");
 			//
 				if (x.getIsOptional()) out.append( " OPTIONAL {" );
 				out
 					.append("?item")
 					.append(" ").append(x.asProperty())
-					.append(" ").append(fVar) // isEquality ? eqValue : fVar)
+					.append(" ").append(stringEquals == null ? fVar : stringEquals)
 					.append(" .")
 					;
 				if (x.getIsOptional()) out.append( " }" );
-//				if (isEquality) {
-//					out.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
-//				}
+				if (stringEquals != null) {
+					out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
+				}
 				out.append( "\n" );
 			}
+			return adjusted;
 		}
 		
+		private Composition findEqualities(Map<Shortname, Term> result, Composition c) {
+			if (c instanceof FilterWrap) {
+				Filter f = ((FilterWrap) c).f;
+				if (f.range.op.equals(Operator.EQ)) {
+					result.put(f.name, f.range.operands.get(0));
+					return Composition.EMPTY;
+				} else {
+					return c;
+				}
+			} else if (c instanceof And) {
+				List<Composition> operands = new ArrayList<Composition>();
+				for (Composition x: c.operands) operands.add( findEqualities(result, x) );
+				return Composition.and(operands);
+			} else {
+				return c;
+			}
+				
+		}
+
 		@Override public void notImplemented(Composition c) {
 			System.err.println( ">> not implemented: " + c );
 			comment("not implemented: " + c.toString());
@@ -383,9 +407,11 @@ public class DataQuery {
 		}
 
 		@Override public void toSparql(StringBuilder sb) {
-			sb.append("  { ");
+			// sb.append("  { ");
+			sb.append("  ");
 			sb.append(s.toSearchTriple(namesToAspects, pm));
-			sb.append(" }");
+			sb.append(" .\n");
+			// sb.append(" }");
 		}
 	}
 	

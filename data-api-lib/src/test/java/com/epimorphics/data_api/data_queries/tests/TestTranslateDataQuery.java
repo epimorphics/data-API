@@ -318,7 +318,7 @@ public class TestTranslateDataQuery {
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
 			, " ?item pre:local ?pre_local ."
-			, "{ ?pre_local <http://jena.apache.org/text#query> 'look for me'}"
+			, " ?pre_local <http://jena.apache.org/text#query> 'look for me' ."
 			, "}"
 			);
 		
@@ -347,7 +347,7 @@ public class TestTranslateDataQuery {
 			, "WHERE {"
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
-			, "{ ?item <http://jena.apache.org/text#query> 'look for me' }"
+			, " ?item <http://jena.apache.org/text#query> 'look for me'."
 			, "}"
 			);
 		
@@ -378,7 +378,7 @@ public class TestTranslateDataQuery {
 			, "WHERE {"
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
-			, "{ ?item <http://jena.apache.org/text#query> (pre:X 'look for me') }"
+			, " ?item <http://jena.apache.org/text#query> (pre:X 'look for me') ."
 			, "}"
 			);
 		

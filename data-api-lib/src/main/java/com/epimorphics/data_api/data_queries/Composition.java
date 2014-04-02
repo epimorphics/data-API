@@ -264,8 +264,32 @@ public abstract class Composition {
 	public static class And extends Composition {
 
 		public And(List<Composition> operands) {
-			super(COp.AND, operands);
+			super(COp.AND, rearrange(operands));
 		}
+
+		// flatten ANDs. Move searches to the front. TODO efficient!
+		private static List<Composition> rearrange(List<Composition> operands) {
+			List<Composition> A = new ArrayList<Composition>();
+			List<Composition> B = new ArrayList<Composition>();
+			for (Composition x: flattenANDs(operands)) {
+				(x instanceof SearchWrap ? A : B).add(x); 				
+			}
+			A.addAll(B);
+			return A;
+		}
+
+		private static List<Composition> flattenANDs(List<Composition> operands) {
+			List<Composition> result = new ArrayList<Composition>();
+			for (Composition x: operands) {
+				if (x instanceof And) {
+					result.addAll( x.operands );
+				} else {
+					result.add(x);
+				}
+			}
+			return result;
+		}
+
 
 		@Override public void topLevel(Context cx) {
 			cx.comment("generated from top-level AND", this);
