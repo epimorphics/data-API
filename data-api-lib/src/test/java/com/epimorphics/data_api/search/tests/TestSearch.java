@@ -9,7 +9,7 @@
 
 package com.epimorphics.data_api.search.tests;
 
-import static com.epimorphics.data_api.config.tests.TestUtil.query;
+import static com.epimorphics.data_api.config.tests.TestUtil.queryAsResultList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -39,15 +39,15 @@ public class TestSearch {
         API_Dataset dataset = man.getDataset("search-dataset");
         assertNotNull(dataset);
         
-        List<Resource> results =  query(dataset, "{}");
+        List<Resource> results =  queryAsResultList(dataset, "{}");
         assertEquals(10, results.size());
 
         // Search on aspect whose values are labeled resources
-        results =  query(dataset, "{'eg:resource' : {'@search' : 'Thornbury'}}");	
+        results =  queryAsResultList(dataset, "{'eg:resource' : {'@search' : 'Thornbury'}}");	
         assertEquals(4, results.size());
         
         // Global search for dataset items which are labeled by some indexed property
-        results =  query(dataset, "{'@search' : 'Thornbury'}");
+        results =  queryAsResultList(dataset, "{'@search' : 'Thornbury'}");
         assertEquals(4, results.size());
         
         // Search on aspect whose values are strings, where aspect property has been included in the text index

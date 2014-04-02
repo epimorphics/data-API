@@ -38,7 +38,6 @@ import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -52,7 +51,6 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.vocabulary.RDFS;
 import com.sun.jersey.api.NotFoundException;
 
@@ -362,7 +360,7 @@ public class DSAPIManager extends ComponentBase {
      */
     public JSONWritable datasetDataEndpoint(String lang, String dataset, JsonObject query) {
     	Problems p = new Problems();
-        RowWriter so = null;        
+        JSONWritable so = null;        
         final API_Dataset api = getAPI(dataset);
         try {
             DataQuery q = DataQueryParser.Do(p, api, query);
@@ -375,11 +373,11 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
-                so = new RowWriter(api.getAspects(), api.getSource().select(sq));
+                so = q.getWriter(api, api.getSource().select(sq));
             }
 
         } catch (Exception e) {
-            System.err.println("BROKEN: " + e);
+            log.error("BROKEN: " + e);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             PrintStream ps = new PrintStream(os);
             e.printStackTrace(ps);

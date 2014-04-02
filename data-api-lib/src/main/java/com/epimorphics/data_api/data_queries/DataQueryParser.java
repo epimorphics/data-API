@@ -30,7 +30,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public class DataQueryParser {
 	
 	// these would be built up from the plugins. Probably use the appbase configure stuff.
-	static final String opNames = "eq ne le lt ge gt contains matches search below oneof childof in";
+	static final String opNames = "eq ne le lt ge gt contains matches search below oneof childof in count";
 	
 	static final Set<String> allowedOps = new HashSet<String>(Arrays.asList(opNames.split(" ")));
     
@@ -59,6 +59,7 @@ public class DataQueryParser {
 
 	List<SearchSpec> searchPatterns = SearchSpec.none();
 	Integer length = null, offset = null;
+	boolean isCount = false;
 	
 	final Problems p;
 	final API_Dataset dataset;
@@ -85,7 +86,7 @@ public class DataQueryParser {
 			}
 		}
 		Composition c = Composition.build(filters, compositions);
-		return new DataQuery(c, sortby, guards, Slice.create(length, offset), searchPatterns);
+		return new DataQuery(c, sortby, guards, Slice.create(length, offset, isCount), searchPatterns);
 	}
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
@@ -128,6 +129,8 @@ public class DataQueryParser {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {
 			offset = extractNumber(p, key, value);
+        } else if (key.equals("@count")) {
+            isCount = true;
 		} else if (key.equals(JSONConstants.CHILDOF)) {
 		    if (dataset == null || !dataset.isHierarchy()) {
 		        p.add("Tried to use @childof on a dataset that isn't a code list");

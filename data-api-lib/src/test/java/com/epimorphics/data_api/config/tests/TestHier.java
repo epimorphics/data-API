@@ -11,7 +11,7 @@ package com.epimorphics.data_api.config.tests;
 
 import static com.epimorphics.data_api.config.tests.TestConfig.asJson;
 import static com.epimorphics.data_api.config.tests.TestConfig.aspectLabeled;
-import static com.epimorphics.data_api.config.tests.TestUtil.query;
+import static com.epimorphics.data_api.config.tests.TestUtil.queryAsResultList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -50,39 +50,39 @@ public class TestHier {
         assertNotNull(dataset);
         assertEquals("?item skos:inScheme <http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type> .", dataset.getBaseQuery().trim());
         // Test basic membership
-        List<Resource> results =  query(dataset, "{}");
+        List<Resource> results =  queryAsResultList(dataset, "{}");
         assertEquals(32, results.size());
         
         // Test root listing
-        results = query(dataset, "{ '@childof' : null }");
+        results = queryAsResultList(dataset, "{ '@childof' : null }");
         assertEquals(17, results.size());
         assertTrue(results.contains( ResourceFactory.createResource("http://ukgovld-registry.dnsalias.net/def/education/isb/assessment-method-type/performance") ));
         
         // Test child listing
-        results = query(dataset, "{ '@childof' : 'amt:performance' }");
+        results = queryAsResultList(dataset, "{ '@childof' : 'amt:performance' }");
         assertEquals(15, results.size());
         
         // Collection tests
         dataset = man.getDataset("categories");
         assertNotNull(dataset);
         assertEquals("<http://ukgovld-registry.dnsalias.net/def/dataset-categories> skos:member ?item .", dataset.getBaseQuery().trim());
-        results =  query(dataset, "{}");
+        results =  queryAsResultList(dataset, "{}");
         assertEquals(12, results.size());
         assertTrue(results.contains( ResourceFactory.createResource("http://ukgovld-registry.dnsalias.net/def/dataset-categories/defence") ));
-        results = query(dataset, "{ '@childof' : null }");
+        results = queryAsResultList(dataset, "{ '@childof' : null }");
         assertEquals(12, results.size());
-        results = query(dataset, "{ '@childof' : 'http://ukgovld-registry.dnsalias.net/def/dataset-categories/defence' }");
+        results = queryAsResultList(dataset, "{ '@childof' : 'http://ukgovld-registry.dnsalias.net/def/dataset-categories/defence' }");
         assertTrue( results.isEmpty() );
         
         // Hierarchy Code list tests
         dataset = man.getDataset("areas");
         assertNotNull(dataset);
-        results = query(dataset, "{ '@childof' : null }");
+        results = queryAsResultList(dataset, "{ '@childof' : null }");
         assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
         assertEquals(6, results.size());
-        results = query(dataset, "{ '@childof' : 'http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1' }");
+        results = queryAsResultList(dataset, "{ '@childof' : 'http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1' }");
         assertEquals(3, results.size());
-        results =  query(dataset, "{}");
+        results =  queryAsResultList(dataset, "{}");
         assertEquals(22, results.size());
         assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10-36") ));
         
@@ -100,7 +100,7 @@ public class TestHier {
         
         dataset = man.getDataset("ea-areas-hcl");
         assertNotNull(dataset);
-        results = query(dataset, "{ '@childof' : null }");
+        results = queryAsResultList(dataset, "{ '@childof' : null }");
         assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
         assertEquals(6, results.size());
         
@@ -121,12 +121,12 @@ public class TestHier {
 
         dataset = man.getDataset("ea-areas-hcl2");
         assertNotNull(dataset);
-        results = query(dataset, "{ '@childof' : null }");
+        results = queryAsResultList(dataset, "{ '@childof' : null }");
         assertEquals(6, results.size());
         
         // Below query applied to hierarchical code lists
         dataset = man.getDataset("ea-data");
-        results = query(dataset, "{ 'data:area' : {'@below' : {'@id' : 'http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10'} } }");
+        results = queryAsResultList(dataset, "{ 'data:area' : {'@below' : {'@id' : 'http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/10'} } }");
         assertEquals(5, results.size());
         assertTrue(results.contains( ResourceFactory.createResource("http://www.epimorphics.com/test/dsapi/sprint3-data#obs1")));
         assertTrue(results.contains( ResourceFactory.createResource("http://www.epimorphics.com/test/dsapi/sprint3-data#obs3")));

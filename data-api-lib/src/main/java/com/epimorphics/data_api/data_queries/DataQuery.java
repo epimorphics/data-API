@@ -16,12 +16,16 @@ import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.conversions.CountWriter;
+import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.Filters;
 import com.epimorphics.data_api.data_queries.Composition.Or;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
@@ -81,6 +85,14 @@ public class DataQuery {
 	public Slice slice() {
 		return slice;
 	}
+    
+    public boolean isCountQuery() {
+        return slice.isCount;
+    }
+    
+    public boolean isNestedCountQuery() {
+        return slice.isCount && (slice.length != null || slice.offset != null);
+    }
 
 	public List<SearchSpec> getSearchPatterns() {
 		return searchPatterns;
@@ -100,6 +112,14 @@ public class DataQuery {
         try { return toSparqlString(p, a.getAspects(), baseQuery, pm, null); }
         catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
     }
+    
+    public JSONWritable getWriter(API_Dataset api, ResultSet resultSet) {
+        if (isCountQuery()) {
+            return new CountWriter(resultSet);
+        } else {
+            return new RowWriter(api.getAspects(), resultSet);
+        }
+    }
 
 	static final Term item = Term.var("item");
 	static final boolean properly = true;
@@ -113,9 +133,14 @@ public class DataQuery {
 		
 		StringBuilder sb = new StringBuilder();
 		String core = queryCore(p, aspects, baseQuery, pm, api);
-		String head = queryHead(p, aspects, baseQuery, pm, api);
+		String realhead = queryHead(p, aspects, baseQuery, pm, api);
+		String head = isCountQuery() ? "SELECT ?item" : realhead;
 				
-		sb.append(head).append("\n");
+		sb.append(realhead).append("\n");
+		if (isNestedCountQuery()) {
+		    sb.append("  { SELECT ?item\n");
+		}
+		
 		if (c.isPure()) {
 			sb.append( "{" );
 			sb.append(core);
@@ -134,6 +159,10 @@ public class DataQuery {
 		
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
+		
+		if (isNestedCountQuery()) {
+		    sb.append("\n}");
+		}
 		
 		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
@@ -243,8 +272,19 @@ public class DataQuery {
         for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
     //
         StringBuilder sb = new StringBuilder();
-		sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT" : "") + "?item");
-		for (Aspect x: ordered) sb.append(" ?").append( x.asVar() );		
+        sb.append( "\nSELECT " );
+		if (isCountQuery()) {
+		    for (Aspect as : a) {
+		        if (as.getIsMultiValued()) {
+		            needsDistinct = true;
+		            break;
+		        }
+		    }
+            sb.append(" (COUNT (" + (needsDistinct ? "DISTINCT" : "") + " ?item) AS ?_count)");
+		} else {
+	        sb.append( (needsDistinct ? "DISTINCT" : "") + "?item" );
+	        for (Aspect x: ordered) sb.append(" ?").append( x.asVar() );
+		}
 		return sb.toString();
 	}
 
