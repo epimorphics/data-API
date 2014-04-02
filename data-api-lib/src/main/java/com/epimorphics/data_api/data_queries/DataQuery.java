@@ -16,7 +16,7 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
-import com.epimorphics.data_api.data_queries.Composition.Context;
+//import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.RenderContext;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
@@ -117,8 +117,8 @@ public class DataQuery {
     
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
 				
-		boolean impure = !c.isPure();
-		ContextImpl cx = new ContextImpl(this, p, aspects, baseQuery, pm, api, impure);
+//		boolean impure = !c.isPure();
+//		ContextImpl cx = new ContextImpl(this, p, aspects, baseQuery, pm, api, impure);
 		
 		System.err.println( ">> toSparql: " + c );
 //		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
@@ -128,17 +128,17 @@ public class DataQuery {
 //		if (baseQuery != null && baseQuery.length() > 0)	
 //			System.err.println( ">> BASE QUERY:\n    " + baseQuery);
 		
-		if (c.isPure()) {
-			cx.addQueryHead();
-			cx.addQueryCore();
-			if (c.isTrivial()) {
-				cx.comment("trivial", c);
-			} else {
-				cx.block.setPureFilter(c);
-			}
-		} else {			
-			c.topLevel(cx);
-		}
+//		if (c.isPure()) {
+//			cx.addQueryHead();
+//			cx.addQueryCore();
+//			if (c.isTrivial()) {
+//				cx.comment("trivial", c);
+//			} else {
+//				cx.block.setPureFilter(c);
+//			}
+//		} else {			
+//			c.topLevel(cx);
+//		}
 		
 		StringBuilder out = new StringBuilder();
 		RenderContextImpl rx = new RenderContextImpl
@@ -158,10 +158,10 @@ public class DataQuery {
 		String newerCode = sortAndSlice(pm, out);
 		System.err.println( ">> RENDERED QUERY:\n" + newerCode );
 		
-		StringBuilder sb = new StringBuilder();		
-		cx.block.toSparql(sb);
+//		StringBuilder sb = new StringBuilder();		
+//		cx.block.toSparql(sb);
 		
-		String newCode = sortAndSlice(pm, sb);
+//		String newCode = sortAndSlice(pm, sb);
 		
 //		System.err.println( ">> Generated SPARQL query:\n" + newCode);
 //		return newCode;
@@ -356,314 +356,314 @@ public class DataQuery {
 		
 	}
 	
-	static abstract class PreSPARQL {
-		public abstract void toSparql(StringBuilder sb);
-	}
+//	static abstract class PreSPARQL {
+//		public abstract void toSparql(StringBuilder sb);
+//	}
 	
-	static class PreSPARQL_Filter extends PreSPARQL {
-		
-		final Filter f;
-		final boolean notNested;
-		
-		final PrefixMapping pm;
-		final API_Dataset api;
-		final List<Aspect> ordered;
-		
-		public PreSPARQL_Filter(Filter f, boolean notNested, PrefixMapping pm, API_Dataset api, List<Aspect> ordered) {
-			this.f = f;
-			this.notNested = notNested;
-		//
-			this.pm = pm;
-			this.api = api;
-			this.ordered = ordered;
-		}
-		
-		public void toSparql(StringBuilder sb) {
-			sb.append("  ");
-			f.range.op.asSparqlFilter
-				( pm
-				, f
-				, sb
-				, "FILTER"
-				, api
-				, ordered
-				, "?" + f.name.asVar()
-				, f.range.operands.get(0).asSparqlTerm(pm)
-				);
-			sb.append("\n");
-		}
-	}
+//	static class PreSPARQL_Filter extends PreSPARQL {
+//		
+//		final Filter f;
+//		final boolean notNested;
+//		
+//		final PrefixMapping pm;
+//		final API_Dataset api;
+//		final List<Aspect> ordered;
+//		
+//		public PreSPARQL_Filter(Filter f, boolean notNested, PrefixMapping pm, API_Dataset api, List<Aspect> ordered) {
+//			this.f = f;
+//			this.notNested = notNested;
+//		//
+//			this.pm = pm;
+//			this.api = api;
+//			this.ordered = ordered;
+//		}
+//		
+//		public void toSparql(StringBuilder sb) {
+//			sb.append("  ");
+//			f.range.op.asSparqlFilter
+//				( pm
+//				, f
+//				, sb
+//				, "FILTER"
+//				, api
+//				, ordered
+//				, "?" + f.name.asVar()
+//				, f.range.operands.get(0).asSparqlTerm(pm)
+//				);
+//			sb.append("\n");
+//		}
+//	}
 	
-	static class PreSPARQL_Search extends PreSPARQL {
-		
-		final SearchSpec s;
-		final Map<Shortname, Aspect> namesToAspects;
-		final PrefixMapping pm;
-		
-		public PreSPARQL_Search(SearchSpec s, Map<Shortname, Aspect> namesToAspects, PrefixMapping pm) {
-			this.pm = pm;
-			this.namesToAspects = namesToAspects;
-			this.s = s;
-		}
-
-		@Override public void toSparql(StringBuilder sb) {
-			// sb.append("  { ");
-			sb.append("  ");
-			sb.append(s.toSearchTriple(namesToAspects, pm));
-			sb.append(" .\n");
-			// sb.append(" }");
-		}
-	}
+//	static class PreSPARQL_Search extends PreSPARQL {
+//		
+//		final SearchSpec s;
+//		final Map<Shortname, Aspect> namesToAspects;
+//		final PrefixMapping pm;
+//		
+//		public PreSPARQL_Search(SearchSpec s, Map<Shortname, Aspect> namesToAspects, PrefixMapping pm) {
+//			this.pm = pm;
+//			this.namesToAspects = namesToAspects;
+//			this.s = s;
+//		}
+//
+//		@Override public void toSparql(StringBuilder sb) {
+//			// sb.append("  { ");
+//			sb.append("  ");
+//			sb.append(s.toSearchTriple(namesToAspects, pm));
+//			sb.append(" .\n");
+//			// sb.append(" }");
+//		}
+//	}
 	
-	static class PreSPARQL_Union extends PreSPARQL {
-		
-		final String content;
-		
-		public PreSPARQL_Union(String content) {
-			this.content = content;
-		}
-
-		@Override public void toSparql(StringBuilder sb) {
-			sb.append(content);
-		}
-	}
+//	static class PreSPARQL_Union extends PreSPARQL {
+//		
+//		final String content;
+//		
+//		public PreSPARQL_Union(String content) {
+//			this.content = content;
+//		}
+//
+//		@Override public void toSparql(StringBuilder sb) {
+//			sb.append(content);
+//		}
+//	}
+//	
+//	static class PreSPARQL_Comment extends PreSPARQL {
+//		
+//		final String message;
+//		final Object value;
+//		
+//		public PreSPARQL_Comment(String message, Object value) {
+//			this.message = message;
+//			this.value = value;
+//		}
+//
+//		@Override public void toSparql(StringBuilder sb) {	
+//			sb.append( " # ")
+//			.append(message)
+//			.append(" ")
+//			.append(value)
+//			.append('\n');			
+//		}
+//	}
 	
-	static class PreSPARQL_Comment extends PreSPARQL {
-		
-		final String message;
-		final Object value;
-		
-		public PreSPARQL_Comment(String message, Object value) {
-			this.message = message;
-			this.value = value;
-		}
-
-		@Override public void toSparql(StringBuilder sb) {	
-			sb.append( " # ")
-			.append(message)
-			.append(" ")
-			.append(value)
-			.append('\n');			
-		}
-	}
+//	static class PreSPARQL_Block {
+//
+//		boolean needsDistinct; 
+//		List<Aspect> ordered;
+//		String baseQuery;
+//		List<String> guards = new ArrayList<String>();
+//		
+//		Composition pureFilter;
+//		final ContextImpl cx;
+//		
+//		public void setSelectParameters(boolean needsDistinct, List<Aspect> ordered) {
+//			this.needsDistinct = needsDistinct;
+//			this.ordered = ordered;
+//		}
+//		
+//		public void setPureFilter(Composition c) {
+//			this.pureFilter = c;
+//		}
+//
+//		public void setBaseQuery(String baseQuery) {
+//			this.baseQuery = baseQuery;
+//		}
+//		
+//		public void addGuard(String guardFragment) {
+//			guards.add(guardFragment);
+//		}
+//		
+//		public void addComment(String message, Object value) {
+//			append_to_1(new PreSPARQL_Comment(message + " (A)", value));
+//			append_to_2(new PreSPARQL_Comment(message + " (B)", value));
+//		}
+//
+//		public void addSearch(SearchSpec s, Map<Shortname, Aspect> namesToAspects, PrefixMapping pm) {
+//			append_to_1(new PreSPARQL_Search(s, namesToAspects, pm));
+//		}
+////		
+////		public void addFilter(Filter f, boolean notNested, PrefixMapping pm, API_Dataset api, List<Aspect> ordered) {
+////			if (cx.impure) append_to_1(new PreSPARQL_Filter(f, notNested, pm, api, ordered));
+////		}
+//		
+//		final List<PreSPARQL> section_1 = new ArrayList<PreSPARQL>();
+//		final List<PreSPARQL> section_2 = new ArrayList<PreSPARQL>();
+//
+//		protected void append_to_1(PreSPARQL b) {
+//			section_1.add(b);
+//		}
+//		
+//		protected void append_to_2(PreSPARQL b) {
+//			section_2.add(b);
+//		}
+//		
+////		private void declareAspectVars(StringBuilder sb) {
+////			for (Aspect x: ordered) {
+////				String fVar = "?" + x.asVar();
+////			//
+////				String eqValue = dq.findEqualityValue(pm, x.getName(), c);			
+////				boolean isEquality = eqValue != null;				
+////			//		
+////				sb.append("  ");
+////			//
+////				if (x.getIsOptional()) sb.append( " OPTIONAL {" );
+////				sb
+////					.append("?item")
+////					.append(" ").append(x.asProperty())
+////					.append(" ").append(isEquality ? eqValue : fVar)
+////					.append(" .")
+////					;
+////				if (x.getIsOptional()) sb.append( " }" );
+////				if (isEquality) {
+////					sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
+////				}
+////				sb.append( "\n" );
+////			}
+////		}
+//		
+//		public void addUnion(String content) {
+//			append_to_2(new PreSPARQL_Union(content));
+//		}
+//
+//		DataQuery dq;
+//		PrefixMapping pm;
+//		Composition c;
+//		
+//		public void setCoreParameters(DataQuery dq, PrefixMapping pm, Composition c) {
+//			this.pm = pm;
+//			this.c = c;
+//			this.dq = dq;
+//		}
+//		
+////		public void toSparql(StringBuilder sb) {
+////			sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT " : "") + "?item");
+////			for (Aspect x: ordered) sb.append("\n     ?").append( x.asVar() );
+////		//
+////			sb.append( "\n {\n" );
+////		//
+////			if (baseQuery != null) {
+////				sb.append( " # BASE QUERY (NEW STYLE)\n");
+////				sb.append("  { " ).append(baseQuery).append( " }\n" );
+////			}
+////		//
+////			for (String guard: guards) sb.append( " " ).append(guard); 
+////		//
+////			declareAspectVars(sb);
+////		//
+////			for (PreSPARQL b: section_1) {
+////				b.toSparql(sb);
+////			}
+////		//
+////			for (PreSPARQL b: section_2) {
+////				b.toSparql(sb);
+////			}
+////		//
+////			if (pureFilter != null) {
+////				sb.append( " FILTER" );
+////				pureFilter.translatePureFilter(sb, cx);
+////			}
+////		//
+////			sb.append( " }\n");
+////		}
+////		
+////		public PreSPARQL_Block(ContextImpl cx) {
+////			this.cx = cx;
+////		}
+//	}
 	
-	static class PreSPARQL_Block {
-
-		boolean needsDistinct; 
-		List<Aspect> ordered;
-		String baseQuery;
-		List<String> guards = new ArrayList<String>();
-		
-		Composition pureFilter;
-		final ContextImpl cx;
-		
-		public void setSelectParameters(boolean needsDistinct, List<Aspect> ordered) {
-			this.needsDistinct = needsDistinct;
-			this.ordered = ordered;
-		}
-		
-		public void setPureFilter(Composition c) {
-			this.pureFilter = c;
-		}
-
-		public void setBaseQuery(String baseQuery) {
-			this.baseQuery = baseQuery;
-		}
-		
-		public void addGuard(String guardFragment) {
-			guards.add(guardFragment);
-		}
-		
-		public void addComment(String message, Object value) {
-			append_to_1(new PreSPARQL_Comment(message + " (A)", value));
-			append_to_2(new PreSPARQL_Comment(message + " (B)", value));
-		}
-
-		public void addSearch(SearchSpec s, Map<Shortname, Aspect> namesToAspects, PrefixMapping pm) {
-			append_to_1(new PreSPARQL_Search(s, namesToAspects, pm));
-		}
-		
-		public void addFilter(Filter f, boolean notNested, PrefixMapping pm, API_Dataset api, List<Aspect> ordered) {
-			if (cx.impure) append_to_1(new PreSPARQL_Filter(f, notNested, pm, api, ordered));
-		}
-		
-		final List<PreSPARQL> section_1 = new ArrayList<PreSPARQL>();
-		final List<PreSPARQL> section_2 = new ArrayList<PreSPARQL>();
-
-		protected void append_to_1(PreSPARQL b) {
-			section_1.add(b);
-		}
-		
-		protected void append_to_2(PreSPARQL b) {
-			section_2.add(b);
-		}
-		
-		private void declareAspectVars(StringBuilder sb) {
-			for (Aspect x: ordered) {
-				String fVar = "?" + x.asVar();
-			//
-				String eqValue = dq.findEqualityValue(pm, x.getName(), c);			
-				boolean isEquality = eqValue != null;				
-			//		
-				sb.append("  ");
-			//
-				if (x.getIsOptional()) sb.append( " OPTIONAL {" );
-				sb
-					.append("?item")
-					.append(" ").append(x.asProperty())
-					.append(" ").append(isEquality ? eqValue : fVar)
-					.append(" .")
-					;
-				if (x.getIsOptional()) sb.append( " }" );
-				if (isEquality) {
-					sb.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
-				}
-				sb.append( "\n" );
-			}
-		}
-		
-		public void addUnion(String content) {
-			append_to_2(new PreSPARQL_Union(content));
-		}
-
-		DataQuery dq;
-		PrefixMapping pm;
-		Composition c;
-		
-		public void setCoreParameters(DataQuery dq, PrefixMapping pm, Composition c) {
-			this.pm = pm;
-			this.c = c;
-			this.dq = dq;
-		}
-		
-		public void toSparql(StringBuilder sb) {
-			sb.append( "\nSELECT " + (needsDistinct ? "DISTINCT " : "") + "?item");
-			for (Aspect x: ordered) sb.append("\n     ?").append( x.asVar() );
-		//
-			sb.append( "\n {\n" );
-		//
-			if (baseQuery != null) {
-				sb.append( " # BASE QUERY (NEW STYLE)\n");
-				sb.append("  { " ).append(baseQuery).append( " }\n" );
-			}
-		//
-			for (String guard: guards) sb.append( " " ).append(guard); 
-		//
-			declareAspectVars(sb);
-		//
-			for (PreSPARQL b: section_1) {
-				b.toSparql(sb);
-			}
-		//
-			for (PreSPARQL b: section_2) {
-				b.toSparql(sb);
-			}
-		//
-			if (pureFilter != null) {
-				sb.append( " FILTER" );
-				pureFilter.translatePureFilter(sb, cx);
-			}
-		//
-			sb.append( " }\n");
-		}
-		
-		public PreSPARQL_Block(ContextImpl cx) {
-			this.cx = cx;
-		}
-	}
-	
-	static class ContextImpl implements Context {
-		
-		final DataQuery dq;
-		final Problems p;
-		final Set<Aspect> aspects;
-		final String baseQuery;
-		final PrefixMapping pm;
-		final API_Dataset api;
-		final boolean impure;
-		
-		final List<Aspect> ordered = new ArrayList<Aspect>();
-		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
-		
-		protected PreSPARQL_Block block;
-		
-		public ContextImpl
-			( DataQuery dq
-			, Problems p
-			, Set<Aspect> aspects
-			, String baseQuery
-			, PrefixMapping pm
-			, API_Dataset api
-			, boolean impure
-		) {
-			this.dq = dq;
-			this.p = p;
-			this.aspects = aspects;
-			this.baseQuery = baseQuery;
-			this.pm = pm;
-			this.api = api;
-			this.impure = impure;
-			this.block = new PreSPARQL_Block(this);
-		//
-			this.ordered.addAll(aspects);
-			Collections.sort(this.ordered, Aspect.compareAspects);
-		//
-			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
-		}
-		
-		protected ContextImpl fork() {
-			return new ContextImpl(dq, /* sb, */ p, aspects, baseQuery, pm, api, impure);
-		}
-
-		static final boolean keepComments = true;
-		
-		@Override public void comment(String message, Object value) {
-			if (keepComments) block.addComment(message, value);
-		}
-
-		@Override public void addQueryHead() {
-			dq.queryHead(this);
-		}
-
-		@Override public void addQueryCore() {
-			dq.generateQueryCore(this);
-		}
-
-		@Override public void addFilter(Filter f, boolean notNested) {
-			block.addFilter(f, notNested, pm, api, ordered);
-		}
-
-		@Override public void addSearch(SearchSpec s) {
-			block.addSearch(s, namesToAspects, pm);
-		}
-
-		@Override public void buildPureFilter(StringBuilder sb, Filter f) {
-			f.range.op.asSparqlFilter
-				( pm
-				, f
-				, sb
-				, ""
-				, api
-				, ordered
-				, "?" + f.name.asVar()
-				, f.range.operands.get(0).asSparqlTerm(pm)
-				);
-		}
-
-		@Override public void topLevelUnion(List<Composition> operands) {			
-			ContextImpl cx = this.fork();
-			StringBuilder sb2 = new StringBuilder();
-			String union = "";
-			for (Composition x: operands) {
-				sb2.append(union); union = " UNION ";
-				sb2.append(" {{\n");
-				x.topLevel(cx);
-				cx.block.toSparql(sb2);
-				sb2.append( " }}\n" );
-			}
-			block.addUnion(sb2.toString());
-		}
-	}
+//	static class ContextImpl implements Context {
+//		
+//		final DataQuery dq;
+//		final Problems p;
+//		final Set<Aspect> aspects;
+//		final String baseQuery;
+//		final PrefixMapping pm;
+//		final API_Dataset api;
+//		final boolean impure;
+//		
+//		final List<Aspect> ordered = new ArrayList<Aspect>();
+//		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
+//		
+//		protected PreSPARQL_Block block;
+//		
+//		public ContextImpl
+//			( DataQuery dq
+//			, Problems p
+//			, Set<Aspect> aspects
+//			, String baseQuery
+//			, PrefixMapping pm
+//			, API_Dataset api
+//			, boolean impure
+//		) {
+//			this.dq = dq;
+//			this.p = p;
+//			this.aspects = aspects;
+//			this.baseQuery = baseQuery;
+//			this.pm = pm;
+//			this.api = api;
+//			this.impure = impure;
+//			this.block = new PreSPARQL_Block(this);
+//		//
+//			this.ordered.addAll(aspects);
+//			Collections.sort(this.ordered, Aspect.compareAspects);
+//		//
+//			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
+//		}
+//		
+//		protected ContextImpl fork() {
+//			return new ContextImpl(dq, /* sb, */ p, aspects, baseQuery, pm, api, impure);
+//		}
+//
+//		static final boolean keepComments = true;
+//		
+//		@Override public void comment(String message, Object value) {
+//			if (keepComments) block.addComment(message, value);
+//		}
+//
+//		@Override public void addQueryHead() {
+//			dq.queryHead(this);
+//		}
+//
+//		@Override public void addQueryCore() {
+//			dq.generateQueryCore(this);
+//		}
+////
+////		@Override public void addFilter(Filter f, boolean notNested) {
+////			block.addFilter(f, notNested, pm, api, ordered);
+////		}
+//
+//		@Override public void addSearch(SearchSpec s) {
+//			block.addSearch(s, namesToAspects, pm);
+//		}
+//
+//		@Override public void buildPureFilter(StringBuilder sb, Filter f) {
+//			f.range.op.asSparqlFilter
+//				( pm
+//				, f
+//				, sb
+//				, ""
+//				, api
+//				, ordered
+//				, "?" + f.name.asVar()
+//				, f.range.operands.get(0).asSparqlTerm(pm)
+//				);
+//		}
+//
+//		@Override public void topLevelUnion(List<Composition> operands) {			
+//			ContextImpl cx = this.fork();
+//			StringBuilder sb2 = new StringBuilder();
+//			String union = "";
+//			for (Composition x: operands) {
+//				sb2.append(union); union = " UNION ";
+//				sb2.append(" {{\n");
+//				x.topLevel(cx);
+//				cx.block.toSparql(sb2);
+//				sb2.append( " }}\n" );
+//			}
+//			block.addUnion(sb2.toString());
+//		}
+//	}
 
 	private void querySort(StringBuilder sb) {
 		if (sortby.size() > 0) {
@@ -677,68 +677,68 @@ public class DataQuery {
 		}
 	}
 
-	private void queryHead(ContextImpl cx) {
-		List<Aspect> ordered = cx.ordered;
-		PreSPARQL_Block block = cx.block;
-	//	
-		boolean needsDistinct = false;
-        for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
-    //
-		block.setSelectParameters(needsDistinct, ordered);
-	}
+//	private void queryHead(ContextImpl cx) {
+//		List<Aspect> ordered = cx.ordered;
+//		PreSPARQL_Block block = cx.block;
+//	//	
+//		boolean needsDistinct = false;
+//        for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
+//    //
+//		block.setSelectParameters(needsDistinct, ordered);
+//	}
 
-	private void generateQueryCore(ContextImpl cx) {
-		String baseQuery = cx.baseQuery;
-		PrefixMapping pm = cx.pm;
-		API_Dataset api = cx.api;
-		PreSPARQL_Block block = cx.block;
-	//
-        boolean baseQueryNeeded = true;  
-        for (Guard guard : guards) {
-            if (guard.supplantsBaseQuery()) {
-                baseQueryNeeded = false;
-            }
-        }
-    //
-		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-		    block.setBaseQuery( baseQuery );
-		}
-	//
-	    for (Guard guard : guards) {
-	        block.addGuard(guard.queryFragment(api));
-	    }
-	//
-	    block.setCoreParameters(this, pm, c);
-	}
+//	private void generateQueryCore(ContextImpl cx) {
+//		String baseQuery = cx.baseQuery;
+//		PrefixMapping pm = cx.pm;
+//		API_Dataset api = cx.api;
+//		PreSPARQL_Block block = cx.block;
+//	//
+//        boolean baseQueryNeeded = true;  
+//        for (Guard guard : guards) {
+//            if (guard.supplantsBaseQuery()) {
+//                baseQueryNeeded = false;
+//            }
+//        }
+//    //
+//		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+//		    block.setBaseQuery( baseQuery );
+//		}
+//	//
+//	    for (Guard guard : guards) {
+//	        block.addGuard(guard.queryFragment(api));
+//	    }
+//	//
+//	    block.setCoreParameters(this, pm, c);
+//	}
 
-	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
-		if (c instanceof FilterWrap) {
-			Filter f = ((FilterWrap) c).f;
-			if (f.name.prefixed.equals(name.prefixed)) {
-				if (f.range.op.equals(Operator.EQ)) 
-					return f.range.operands.get(0).asSparqlTerm(pm);
-			}
-			return null;
-		} else if (c instanceof And) {
-			String eqValue = null;
-			
-			for (Composition x: c.operands) {
-				String eq = findEqualityValue(pm, name, x);
-				if (eqValue == null) {
-					eqValue = eq;
-				} else if (eq == null) {
-					// nothing to do
-				} else if (eq.equals(eqValue)) {
-					// also nothing to do
-				} else {
-					// conflicting values
-					return null;
-				}
-			}
-			
-			return eqValue;
-		} else {
-			return null;
-		}
-	}
+//	private String findEqualityValue(PrefixMapping pm, Shortname name, Composition c) {
+//		if (c instanceof FilterWrap) {
+//			Filter f = ((FilterWrap) c).f;
+//			if (f.name.prefixed.equals(name.prefixed)) {
+//				if (f.range.op.equals(Operator.EQ)) 
+//					return f.range.operands.get(0).asSparqlTerm(pm);
+//			}
+//			return null;
+//		} else if (c instanceof And) {
+//			String eqValue = null;
+//			
+//			for (Composition x: c.operands) {
+//				String eq = findEqualityValue(pm, name, x);
+//				if (eqValue == null) {
+//					eqValue = eq;
+//				} else if (eq == null) {
+//					// nothing to do
+//				} else if (eq.equals(eqValue)) {
+//					// also nothing to do
+//				} else {
+//					// conflicting values
+//					return null;
+//				}
+//			}
+//			
+//			return eqValue;
+//		} else {
+//			return null;
+//		}
+//	}
 }

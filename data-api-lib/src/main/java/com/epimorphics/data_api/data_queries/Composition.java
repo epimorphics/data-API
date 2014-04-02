@@ -22,23 +22,23 @@ public abstract class Composition {
 		public EmptyComposition() {
 			super(COp.NONE, new ArrayList<Composition>() );
 		}
-
-		@Override public void topLevel(Context cx) {
-			cx.comment( "generated from an EmptyComposition", "");
-		}
-
-		@Override public void asFilter(Context cx) {
-			cx.comment( "generated from an EmptyComposition", "");
-//			cx.generateFragment(" true ");
-		}
-
-		@Override public void tripleLevel(Context cx) {
-			cx.comment("tripleLevel EmptyComposition", this);
-		}
-
-		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
-			sb.append(" true ");
-		}
+//
+//		@Override public void topLevel(Context cx) {
+//			cx.comment( "generated from an EmptyComposition", "");
+//		}
+//
+//		@Override public void asFilter(Context cx) {
+//			cx.comment( "generated from an EmptyComposition", "");
+////			cx.generateFragment(" true ");
+//		}
+//
+//		@Override public void tripleLevel(Context cx) {
+//			cx.comment("tripleLevel EmptyComposition", this);
+//		}
+//
+//		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
+//			sb.append(" true ");
+//		}
 	}
 	
 	final COp op;
@@ -60,10 +60,8 @@ public abstract class Composition {
 			for (Composition x: c.operands) render(x, rx); 
 		} else if (c instanceof Or) {
 			rx.notImplemented(c);
-			
 		} else if (c instanceof Not) {
 			rx.notImplemented(c);
-			
 		} else if (c instanceof FilterWrap) {
 			FilterWrap w = (FilterWrap) c;
 			rx.generateFilter(w.f);
@@ -77,30 +75,30 @@ public abstract class Composition {
 		}
 	}
 	
-	public interface Context {
-		
-		public void comment(String message, Object value);
-		
-		public void addQueryHead();
-		
-		public void addQueryCore();
-				
-		public void addFilter(Filter f, boolean sayFILTER);
-				
-		public void addSearch(SearchSpec s);
-
-		public void buildPureFilter(StringBuilder sb, Filter f);
-
-		public void topLevelUnion(List<Composition> operands);
-	}
+//	public interface Context {
+//		
+//		public void comment(String message, Object value);
+//		
+//		public void addQueryHead();
+//		
+//		public void addQueryCore();
+//				
+//		public void addFilter(Filter f, boolean sayFILTER);
+//				
+//		public void addSearch(SearchSpec s);
+//
+//		public void buildPureFilter(StringBuilder sb, Filter f);
+//
+//		public void topLevelUnion(List<Composition> operands);
+//	}
 	
-	public abstract void topLevel(Context cx);
-	
-	public abstract void asFilter(Context cx);
-	
-	public abstract void tripleLevel(Context cx);
-
-	public abstract void translatePureFilter(StringBuilder sb, Context cx);
+//	public abstract void topLevel(Context cx);
+//	
+//	public abstract void asFilter(Context cx);
+//	
+//	public abstract void tripleLevel(Context cx);
+//
+//	public abstract void translatePureFilter(StringBuilder sb, Context cx);
 		
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -192,32 +190,32 @@ public abstract class Composition {
 			return sb.toString();
 		}
 		
-		/**
-		    A SearchSpec is not pure.
-		*/
-		public boolean isPure() {
-			return false;
-		}
+//		/**
+//		    A SearchSpec is not pure.
+//		*/
+//		public boolean isPure() {
+//			return false;
+//		}
 
-		@Override public void topLevel(Context cx) {
-			cx.comment("generated from (top-level) SearchSpec", s);
-			cx.addQueryHead();
-			cx.addQueryCore();
-			cx.addSearch(s);
-		}
-
-		@Override public void asFilter(Context cx) {
-			cx.comment("generated from (as filter) SearchSpec", s);
-		}
-
-		@Override public void tripleLevel(Context cx) {
-			cx.comment("generated from (as tripleLevel) SearchSpec", s);
-			cx.addSearch(s);
-		}
-
-		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
-			throw new BrokenException( "@search " + s + " used as pure filter");
-		}	
+//		@Override public void topLevel(Context cx) {
+//			cx.comment("generated from (top-level) SearchSpec", s);
+//			cx.addQueryHead();
+//			cx.addQueryCore();
+//			cx.addSearch(s);
+//		}
+//
+//		@Override public void asFilter(Context cx) {
+//			cx.comment("generated from (as filter) SearchSpec", s);
+//		}
+//
+//		@Override public void tripleLevel(Context cx) {
+//			cx.comment("generated from (as tripleLevel) SearchSpec", s);
+//			cx.addSearch(s);
+//		}
+//
+//		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
+//			throw new BrokenException( "@search " + s + " used as pure filter");
+//		}	
 	}
 	
 	public static class FilterWrap extends Composition {
@@ -237,28 +235,28 @@ public abstract class Composition {
 			return sb.toString();
 		}
 
-		public boolean isPure() {
-			return f.isPure();
-		}
-
-		@Override public void topLevel(Context cx) {
-			cx.comment("generated from top-level Filter", f);
-			cx.addQueryHead();
-			cx.addQueryCore();
-			cx.addFilter(f, true);
-		}
-
-		@Override public void asFilter(Context cx) {
-			cx.addFilter(f, false);
-		}
-
-		@Override public void tripleLevel(Context cx) {
-			cx.addFilter(f, true);
-		}
-
-		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
-			cx.buildPureFilter(sb, f);
-		}
+//		public boolean isPure() {
+//			return f.isPure();
+//		}
+//
+//		@Override public void topLevel(Context cx) {
+//			cx.comment("generated from top-level Filter", f);
+//			cx.addQueryHead();
+//			cx.addQueryCore();
+//			cx.addFilter(f, true);
+//		}
+//
+//		@Override public void asFilter(Context cx) {
+//			cx.addFilter(f, false);
+//		}
+//
+//		@Override public void tripleLevel(Context cx) {
+//			cx.addFilter(f, true);
+//		}
+//
+//		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
+//			cx.buildPureFilter(sb, f);
+//		}
 	}
 	
 	public static class And extends Composition {
@@ -291,32 +289,32 @@ public abstract class Composition {
 		}
 
 
-		@Override public void topLevel(Context cx) {
-			cx.comment("generated from top-level AND", this);
-			cx.addQueryHead();
-			cx.addQueryCore();
-			for (Composition x: operands) x.tripleLevel(cx);
-		}
-
-		@Override public void asFilter(Context cx) {
-			for (Composition x: operands) {
-				x.asFilter(cx);
-			}
-		}
-
-		@Override public void tripleLevel(Context cx) {
-			for (Composition x: operands) x.tripleLevel(cx);
-		}
-
-		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
-			sb.append("(");
-			String and = "";
-			for (Composition x: operands) {
-				sb.append(and); and = " && ";
-				x.translatePureFilter(sb, cx);
-			}
-			sb.append(")");			
-		}
+//		@Override public void topLevel(Context cx) {
+//			cx.comment("generated from top-level AND", this);
+//			cx.addQueryHead();
+//			cx.addQueryCore();
+//			for (Composition x: operands) x.tripleLevel(cx);
+//		}
+//
+//		@Override public void asFilter(Context cx) {
+//			for (Composition x: operands) {
+//				x.asFilter(cx);
+//			}
+//		}
+//
+//		@Override public void tripleLevel(Context cx) {
+//			for (Composition x: operands) x.tripleLevel(cx);
+//		}
+//
+//		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
+//			sb.append("(");
+//			String and = "";
+//			for (Composition x: operands) {
+//				sb.append(and); and = " && ";
+//				x.translatePureFilter(sb, cx);
+//			}
+//			sb.append(")");			
+//		}
 	}
 	
 	public static class Or extends Composition {
@@ -325,34 +323,34 @@ public abstract class Composition {
 			super(COp.OR, operands);
 		}
 
-		@Override public void topLevel(Context cx) {
-			cx.comment("generated from top-level ", this);
-			cx.addQueryHead();
-			cx.topLevelUnion(operands);
-			for (Composition x: operands) {
-				x.topLevel(cx);
-			}
-		}
-
-		@Override public void asFilter(Context cx) {
-			for (Composition x: operands) {
-				x.asFilter(cx);
-			}
-		}
-
-		@Override public void tripleLevel(Context cx) {
-			cx.comment("generated from OR.tripleLevel", this);
-		}
-
-		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
-			sb.append("(");
-			String or = "";
-			for (Composition x: operands) {
-				sb.append(or); or = " || ";
-				x.translatePureFilter(sb, cx);
-			}
-			sb.append(")");			
-		}
+//		@Override public void topLevel(Context cx) {
+//			cx.comment("generated from top-level ", this);
+//			cx.addQueryHead();
+//			cx.topLevelUnion(operands);
+//			for (Composition x: operands) {
+//				x.topLevel(cx);
+//			}
+//		}
+//
+//		@Override public void asFilter(Context cx) {
+//			for (Composition x: operands) {
+//				x.asFilter(cx);
+//			}
+//		}
+//
+//		@Override public void tripleLevel(Context cx) {
+//			cx.comment("generated from OR.tripleLevel", this);
+//		}
+//
+//		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
+//			sb.append("(");
+//			String or = "";
+//			for (Composition x: operands) {
+//				sb.append(or); or = " || ";
+//				x.translatePureFilter(sb, cx);
+//			}
+//			sb.append(")");			
+//		}
 	}
 	
 	public static class Not extends Composition {
@@ -360,23 +358,23 @@ public abstract class Composition {
 		public Not(List<Composition> operands) {
 			super(COp.NOT, operands);
 		}
-
-		@Override public void topLevel(Context cx) {
-			cx.comment("generated from (top-level)", this);
-		}
-
-		@Override public void asFilter(Context cx) {
-			cx.comment("generated from (asFilter)", this);
-//			cx.generateFragment(" false ");
-		}
-
-		@Override public void tripleLevel(Context cx) {
-			cx.comment("generated from tripleLevel NOT", this);
-		}
-
-		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
-			sb.append("false");
-		}
+//
+//		@Override public void topLevel(Context cx) {
+//			cx.comment("generated from (top-level)", this);
+//		}
+//
+//		@Override public void asFilter(Context cx) {
+//			cx.comment("generated from (asFilter)", this);
+////			cx.generateFragment(" false ");
+//		}
+//
+//		@Override public void tripleLevel(Context cx) {
+//			cx.comment("generated from tripleLevel NOT", this);
+//		}
+//
+//		@Override public void translatePureFilter(StringBuilder sb, Context cx) {
+//			sb.append("false");
+//		}
 	}
 
 	// TODO not
