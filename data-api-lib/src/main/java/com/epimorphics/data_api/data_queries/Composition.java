@@ -23,7 +23,7 @@ public abstract class Composition {
 			super(COp.NONE, new ArrayList<Composition>() );
 		}
 
-		@Override public void toSparql(RenderContext cx) {
+		@Override public void toSparql(Context cx) {
 			cx.comment("empty composition");
 		}
 	}
@@ -31,7 +31,7 @@ public abstract class Composition {
 	final COp op;
 	final List<Composition> operands;
 	
-	public interface RenderContext {
+	public interface Context {
 
 		void notImplemented(Composition c);
 		
@@ -42,7 +42,7 @@ public abstract class Composition {
 		void generateSearch(SearchSpec s);
 	}
 	
-	public abstract void toSparql(RenderContext cx);
+	public abstract void toSparql(Context cx);
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -111,7 +111,7 @@ public abstract class Composition {
 			return sb.toString();
 		}
 
-		@Override public void toSparql(RenderContext cx) {
+		@Override public void toSparql(Context cx) {
 			cx.generateSearch(s);			
 		}	
 	}
@@ -133,7 +133,7 @@ public abstract class Composition {
 			return sb.toString();
 		}
 
-		@Override public void toSparql(RenderContext cx) {
+		@Override public void toSparql(Context cx) {
 			cx.generateFilter(f);
 		}
 	}
@@ -167,7 +167,7 @@ public abstract class Composition {
 			return result;
 		}
 
-		@Override public void toSparql(RenderContext cx) {
+		@Override public void toSparql(Context cx) {
 			for (Composition x: operands) x.toSparql(cx); 
 		}
 	}
@@ -178,7 +178,7 @@ public abstract class Composition {
 			super(COp.OR, operands);
 		}
 
-		@Override public void toSparql(RenderContext cx) {
+		@Override public void toSparql(Context cx) {
 			cx.notImplemented(this);
 		}
 	}
@@ -189,7 +189,7 @@ public abstract class Composition {
 			super(COp.NOT, operands);
 		}
 
-		@Override public void toSparql(RenderContext cx) {			
+		@Override public void toSparql(Context cx) {			
 			cx.notImplemented(this);
 		}
 	}

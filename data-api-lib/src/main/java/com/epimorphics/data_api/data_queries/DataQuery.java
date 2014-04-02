@@ -17,7 +17,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
-import com.epimorphics.data_api.data_queries.Composition.RenderContext;
+import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -122,7 +122,7 @@ public class DataQuery {
 //		System.err.println( ">> ASPECTS:\n    " + aspects );
 
 		StringBuilder out = new StringBuilder();
-		RenderContextImpl rx = new RenderContextImpl
+		ContextImpl rx = new ContextImpl
 			( out
 			, p
 			, aspects
@@ -151,7 +151,7 @@ public class DataQuery {
 		return newCode;
 	}
 	
-	static class RenderContextImpl implements RenderContext {
+	static class ContextImpl implements Context {
 
 		final StringBuilder out;
 		final Problems p;
@@ -164,7 +164,7 @@ public class DataQuery {
 		final List<Aspect> ordered = new ArrayList<Aspect>();
 		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 		
-		public RenderContextImpl
+		public ContextImpl
 			( StringBuilder out
 			, Problems p
 			, Set<Aspect> aspects
@@ -185,7 +185,6 @@ public class DataQuery {
 			Collections.sort(this.ordered, Aspect.compareAspects);
 		//
 			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
-		
 		}
 		
 		public Composition begin(Composition c) {
@@ -290,7 +289,6 @@ public class DataQuery {
 			} else {
 				return c;
 			}
-				
 		}
 
 		@Override public void notImplemented(Composition c) {
