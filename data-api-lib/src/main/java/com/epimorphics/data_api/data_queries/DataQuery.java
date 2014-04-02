@@ -18,6 +18,7 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
+import com.epimorphics.data_api.data_queries.Composition.RenderContext;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
@@ -119,12 +120,12 @@ public class DataQuery {
 		ContextImpl cx = new ContextImpl(this, p, aspects, baseQuery, pm, api, impure);
 		
 		System.err.println( ">> toSparql: " + c );
-		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
-		System.err.println( ">> FOR:\n    " + this );
-		System.err.println( ">> ASPECTS:\n    " + aspects );
+//		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
+//		System.err.println( ">> FOR:\n    " + this );
+//		System.err.println( ">> ASPECTS:\n    " + aspects );
 		
-		if (baseQuery != null && baseQuery.length() > 0)	
-			System.err.println( ">> BASE QUERY:\n    " + baseQuery);
+//		if (baseQuery != null && baseQuery.length() > 0)	
+//			System.err.println( ">> BASE QUERY:\n    " + baseQuery);
 		
 		if (c.isPure()) {
 			cx.addQueryHead();
@@ -138,18 +139,197 @@ public class DataQuery {
 			c.topLevel(cx);
 		}
 		
+		StringBuilder out = new StringBuilder();
+		RenderContextImpl rx = new RenderContextImpl
+			( out
+			, this
+			, p
+			, aspects
+			, baseQuery
+			, pm
+			, api
+			, guards
+			);
+		
+		rx.begin();
+		Composition.render(c, rx);
+		rx.end();
+		String newerCode = sortAndSlice(pm, out);
+		System.err.println( ">> RENDERED QUERY:\n" + newerCode );
+		
 		StringBuilder sb = new StringBuilder();		
 		cx.block.toSparql(sb);
 		
+		String newCode = sortAndSlice(pm, sb);
+		
+//		System.err.println( ">> Generated SPARQL query:\n" + newCode);
+		return newerCode;
+	}
+
+	private String sortAndSlice(PrefixMapping pm, StringBuilder sb) {
 		querySort(sb);
 		
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
 		
 		String newCode = PrefixUtils.expandQuery(sb.toString(), pm);
-		
-		System.err.println( ">> Generated SPARQL query:\n" + newCode);
 		return newCode;
+	}
+	
+	static class RenderContextImpl implements RenderContext {
+
+		final StringBuilder out;
+
+		final DataQuery dq;
+		final Problems p;
+		final Set<Aspect> aspects;
+		final String baseQuery;
+		final PrefixMapping pm;
+		final API_Dataset api;
+		final List<Guard> guards;
+		
+		final List<Aspect> ordered = new ArrayList<Aspect>();
+		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
+		
+		public RenderContextImpl
+			( StringBuilder out
+			, DataQuery dq
+			, Problems p
+			, Set<Aspect> aspects
+			, String baseQuery
+			, PrefixMapping pm
+			, API_Dataset api
+			, List<Guard> guards
+			) {
+			this.out = out;			
+			this.dq = dq;
+			this.p = p;
+			this.aspects = aspects;
+			this.baseQuery = baseQuery;
+			this.pm = pm;
+			this.api = api;
+			this.guards = guards;
+		//
+			this.ordered.addAll(aspects);
+			Collections.sort(this.ordered, Aspect.compareAspects);
+		//
+			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
+		
+		}
+		
+		public void begin() {
+			comment("begin a SELECT query");
+			generateSelect();
+			out.append("WHERE {\n");
+			queryCore();
+		}
+		
+		public void end() {
+			comment("end a SELECT query");
+			out.append("}").append("\n");
+		}
+		
+		public void comment(String message, Object... values) {
+			out.append( "# ").append(message);
+			for (Object v: values) out.append(" ").append(v);
+			out.append(".\n");
+		}
+
+		private void generateSelect() {		
+			
+			boolean needsDistinct = false;
+        	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
+		
+        	out.append("\n")
+				.append("SELECT ")
+				.append(needsDistinct ? "DISTINCT " : "")
+				.append(" ")
+				.append("?item")
+				;
+			for (Aspect x: ordered) out.append("\n     ?").append( x.asVar() );
+			out.append("\n");
+		}
+		
+		public void queryCore() {
+	        boolean baseQueryNeeded = true;  
+	        for (Guard guard : guards) {
+	            if (guard.supplantsBaseQuery()) {
+	                baseQueryNeeded = false;
+	            }
+	        }
+	    //
+			if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+				comment("base query");
+			    out.append( "  { ").append(baseQuery).append( "}\n");
+			} else {
+				comment("no base query");
+			}
+		//
+	        		
+			int ng = guards.size();
+	        comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+	        for (Guard guard : guards)
+	        	out.append(guard.queryFragment(api));
+	    //
+	        declareAspectVars();
+		}
+
+		private void declareAspectVars() {
+			int nb = ordered.size();
+			comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
+			for (Aspect x: ordered) {
+				String fVar = "?" + x.asVar();
+			//
+				// String eqValue = dq.findEqualityValue(pm, x.getName(), c);			
+				// boolean isEquality = eqValue != null;				
+			//		
+				out.append("  ");
+			//
+				if (x.getIsOptional()) out.append( " OPTIONAL {" );
+				out
+					.append("?item")
+					.append(" ").append(x.asProperty())
+					.append(" ").append(fVar) // isEquality ? eqValue : fVar)
+					.append(" .")
+					;
+				if (x.getIsOptional()) out.append( " }" );
+//				if (isEquality) {
+//					out.append(" BIND(").append(eqValue).append(" AS ").append(fVar).append(")");
+//				}
+				out.append( "\n" );
+			}
+		}
+		
+		@Override public void notImplemented(Composition c) {
+			System.err.println( ">> not implemented: " + c );
+			comment("not implemented: " + c.toString());
+		}
+
+		@Override public void generateFilter(Filter f) {
+			comment("@" + f.range.op.JSONname, f);
+			out.append("  ");
+			f.range.op.asSparqlFilter
+				( pm
+				, f
+				, out
+				, "FILTER"
+				, api
+				, ordered
+				, "?" + f.name.asVar()
+				, f.range.operands.get(0).asSparqlTerm(pm)
+				);
+			out.append("\n");
+		}
+
+		@Override public void generateSearch(SearchSpec s) {
+			comment("@search", s);
+//			out.append("  { ");
+			out.append("  ");
+			out.append(s.toSearchTriple(namesToAspects, pm));
+			out.append(" .\n");
+//			out.append(" }");
+		}
+		
 	}
 	
 	static abstract class PreSPARQL {

@@ -44,7 +44,41 @@ public abstract class Composition {
 	final COp op;
 	final List<Composition> operands;
 	
+	public interface RenderContext {
+
+		void notImplemented(Composition c);
+		
+		void comment(String message, Object... values);
+
+		void generateFilter(Filter f);
+		
+		void generateSearch(SearchSpec s);
+	}
+	
+	public static void render(Composition c, RenderContext rx) {
+		if (c instanceof And) {
+			for (Composition x: c.operands) render(x, rx); 
+		} else if (c instanceof Or) {
+			rx.notImplemented(c);
+			
+		} else if (c instanceof Not) {
+			rx.notImplemented(c);
+			
+		} else if (c instanceof FilterWrap) {
+			FilterWrap w = (FilterWrap) c;
+			rx.generateFilter(w.f);
+		} else if (c instanceof SearchWrap) {
+			SearchWrap s = (SearchWrap) c;
+			rx.generateSearch(s.s);
+		} else if (c instanceof EmptyComposition) {
+			rx.comment("empty composition");
+		} else {
+			rx.notImplemented(c);
+		}
+	}
+	
 	public interface Context {
+		
 		public void comment(String message, Object value);
 		
 		public void addQueryHead();
