@@ -40,6 +40,16 @@ public abstract class Composition {
 		void generateFilter(Filter f);
 		
 		void generateSearch(SearchSpec s);
+		
+		void nest();
+
+		void unNest();
+
+		Composition begin(Composition c);
+
+		void end();
+
+		void union();
 	}
 	
 	public abstract void toSparql(Context cx);
@@ -179,7 +189,16 @@ public abstract class Composition {
 		}
 
 		@Override public void toSparql(Context cx) {
-			cx.notImplemented(this);
+			cx.nest();
+			int counter = 0;
+			for (Composition x: operands) {
+				if (counter > 0) cx.union();
+				cx.begin(this);
+				x.toSparql(cx);
+				cx.end();
+				counter += 1;
+			}
+			cx.unNest();
 		}
 	}
 	

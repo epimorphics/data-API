@@ -318,6 +318,21 @@ public class DataQuery {
 			out.append(s.toSearchTriple(namesToAspects, pm));
 			out.append(" .\n");
 		}
+
+		@Override public void nest() {
+			comment("nest for @or");
+			out.append("{{\n");
+		}
+
+		@Override public void unNest() {
+			comment("un-nest for @or");
+			out.append("}}\n");
+		}
+
+		@Override public void union() {
+			out.append( "}} UNION {{\n" );
+		}
+		
 	}
 
 	private void querySort(StringBuilder sb) {
