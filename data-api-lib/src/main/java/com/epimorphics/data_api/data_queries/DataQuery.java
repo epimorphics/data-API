@@ -158,53 +158,14 @@ public class DataQuery {
 		adjusted.toSparql(rx);
 		rx.end();
 		
-		String newerCode = sortAndSlice(pm, out);
-		System.err.println( ">> RENDERED QUERY:\n" + newerCode );
-		return newerCode;
-	}
-
-	private String sortAndSlice(PrefixMapping pm, StringBuilder sb) {
-//=======
-//	
-//	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-//		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
-//		Collections.sort(ordered, compareAspects);
-//	
-//		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
-//		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
-//		
-//		StringBuilder sb = new StringBuilder();
-//		String core = queryCore(p, aspects, baseQuery, pm, api);
-//		String realhead = queryHead(p, aspects, baseQuery, pm, api);
-//		String head = isCountQuery() ? "SELECT ?item" : realhead;
-//				
-//		sb.append(realhead).append("\n");
-//		if (isNestedCountQuery()) {
-//		    sb.append("  { SELECT ?item\n");
-//		}
-//		
-//		if (c.isPure()) {
-//			sb.append( "{" );
-//			sb.append(core);
-//			if (!c.isTrivial()) {
-//				sb.append(" FILTER(" );
-//				booleanExpression(true, ordered, c, head, core, sb, baseQuery, pm, api);
-//				sb.append(")");
-//			} else {
-//				// nothing
-//			}
-//			sb.append( "}" );
-//		} else {
-//			recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
-//		}
-//>>>>>>> master
-		querySort(sb);
+		querySort(out);		
+		if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
+		if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
 		
-		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
-		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
+		String query = PrefixUtils.expandQuery(out.toString(), pm);
 		
-//		if (isNestedCountQuery()) sb.append("\n}");
-		return PrefixUtils.expandQuery(sb.toString(), pm);
+		System.err.println( ">> RENDERED QUERY:\n" + query );
+		return query;
 	}
 	
 	static class ContextImpl implements Context {
@@ -269,7 +230,7 @@ public class DataQuery {
 			boolean needsDistinct = false;
         	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
         	
-        	out.append( "\nSELECT " );
+        	out.append( "SELECT " );
     		if (isCountQuery) {
     		    for (Aspect as : aspects) {
     		        if (as.getIsMultiValued()) {
@@ -277,9 +238,9 @@ public class DataQuery {
     		            break;
     		        }
     		    }
-                out.append(" (COUNT (" + (needsDistinct ? "DISTINCT" : "") + " ?item) AS ?_count)");
+                out.append(" (COUNT (" + (needsDistinct ? "DISTINCT " : "") + "?item) AS ?_count)");
     		} else {
-    	        out.append( (needsDistinct ? "DISTINCT" : "") + "?item" );
+    	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
     	        for (Aspect x: ordered) out.append(" ?").append( x.asVar() );
     		}
 			out.append("\n");
