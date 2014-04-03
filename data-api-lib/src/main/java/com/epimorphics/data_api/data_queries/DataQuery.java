@@ -15,6 +15,8 @@ import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.Aspects;
+import com.epimorphics.data_api.conversions.CountWriter;
+import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.Context;
@@ -22,7 +24,9 @@ import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
+import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
@@ -67,6 +71,14 @@ public class DataQuery {
 	public Slice slice() {
 		return slice;
 	}
+    
+    public boolean isCountQuery() {
+        return slice.isCount;
+    }
+    
+    public boolean isNestedCountQuery() {
+        return slice.isCount && (slice.length != null || slice.offset != null);
+    }
 
 	public List<SearchSpec> getSearchPatterns() {
 		// TODO revise so it's not hackery
@@ -114,8 +126,17 @@ public class DataQuery {
     		;
     }
     
+    public JSONWritable getWriter(API_Dataset api, ResultSet resultSet) {
+    	if (isCountQuery()) {
+    		return new CountWriter(resultSet);
+    	} else {
+    		return new RowWriter(api.getAspects(), resultSet);
+    	}
+    }
+    
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
 				
+		System.err.println( ">> " );
 		System.err.println( ">> toSparql: " + c );
 //		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
 //		System.err.println( ">> FOR:\n    " + this );
@@ -124,6 +145,7 @@ public class DataQuery {
 		StringBuilder out = new StringBuilder();
 		ContextImpl rx = new ContextImpl
 			( out
+			, isCountQuery()
 			, p
 			, aspects
 			, baseQuery
@@ -142,13 +164,47 @@ public class DataQuery {
 	}
 
 	private String sortAndSlice(PrefixMapping pm, StringBuilder sb) {
+//=======
+//	
+//	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
+//		List<Aspect> ordered = new ArrayList<Aspect>(aspects);
+//		Collections.sort(ordered, compareAspects);
+//	
+//		Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
+//		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
+//		
+//		StringBuilder sb = new StringBuilder();
+//		String core = queryCore(p, aspects, baseQuery, pm, api);
+//		String realhead = queryHead(p, aspects, baseQuery, pm, api);
+//		String head = isCountQuery() ? "SELECT ?item" : realhead;
+//				
+//		sb.append(realhead).append("\n");
+//		if (isNestedCountQuery()) {
+//		    sb.append("  { SELECT ?item\n");
+//		}
+//		
+//		if (c.isPure()) {
+//			sb.append( "{" );
+//			sb.append(core);
+//			if (!c.isTrivial()) {
+//				sb.append(" FILTER(" );
+//				booleanExpression(true, ordered, c, head, core, sb, baseQuery, pm, api);
+//				sb.append(")");
+//			} else {
+//				// nothing
+//			}
+//			sb.append( "}" );
+//		} else {
+//			recursiveTranslate(true, ordered, c, head, core, sb, baseQuery, pm, api);
+//		}
+//>>>>>>> master
 		querySort(sb);
 		
 		if (slice.length != null) sb.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) sb.append( " OFFSET " ).append(slice.offset);
 		
-		String newCode = PrefixUtils.expandQuery(sb.toString(), pm);
-		return newCode;
+//		if (isNestedCountQuery()) sb.append("\n}");
+		return PrefixUtils.expandQuery(sb.toString(), pm);
 	}
 	
 	static class ContextImpl implements Context {
@@ -160,12 +216,14 @@ public class DataQuery {
 		final PrefixMapping pm;
 		final API_Dataset api;
 		final List<Guard> guards;
+		final boolean isCountQuery;
 		
 		final List<Aspect> ordered = new ArrayList<Aspect>();
 		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 		
 		public ContextImpl
 			( StringBuilder out
+			, boolean isCountQuery
 			, Problems p
 			, Set<Aspect> aspects
 			, String baseQuery
@@ -174,6 +232,7 @@ public class DataQuery {
 			, List<Guard> guards
 			) {
 			this.out = out;		
+			this.isCountQuery = isCountQuery;
 			this.p = p;
 			this.aspects = aspects;
 			this.baseQuery = baseQuery;
@@ -209,14 +268,20 @@ public class DataQuery {
 			
 			boolean needsDistinct = false;
         	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
-		
-        	out.append("\n")
-				.append("SELECT ")
-				.append(needsDistinct ? "DISTINCT " : "")
-				.append(" ")
-				.append("?item")
-				;
-			for (Aspect x: ordered) out.append("\n     ?").append( x.asVar() );
+        	
+        	out.append( "\nSELECT " );
+    		if (isCountQuery) {
+    		    for (Aspect as : aspects) {
+    		        if (as.getIsMultiValued()) {
+    		            needsDistinct = true;
+    		            break;
+    		        }
+    		    }
+                out.append(" (COUNT (" + (needsDistinct ? "DISTINCT" : "") + " ?item) AS ?_count)");
+    		} else {
+    	        out.append( (needsDistinct ? "DISTINCT" : "") + "?item" );
+    	        for (Aspect x: ordered) out.append(" ?").append( x.asVar() );
+    		}
 			out.append("\n");
 		}
 		

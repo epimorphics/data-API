@@ -1,30 +1,63 @@
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX egc: <http://epimorphics.com/public/vocabulary/games.ttl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
- # generated from:  (OR (SEARCH @search[egc:playTimeMinutes]("17")) (SEARCH @search[egc:pubYear]("age")))
+# begin a SELECT query.
 
-SELECT ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_co2Ddesigned ?egc_designed2Dby ?egc_designer2Dof ?egc_playTimeMinutes{
- {{  # generated from (top-level) SearchSpec @search[egc:playTimeMinutes]("17")
+SELECT ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_co2Ddesigned ?egc_designed2Dby ?egc_designer2Dof ?egc_playTimeMinutes
+WHERE {
+# no base query.
+# no guards.
+# 8 aspect bindings.
+  ?item egc:players ?egc_players .
+  ?item egc:pubYear ?egc_pubYear .
+  ?item rdf:type ?rdf_type .
+  ?item rdfs:label ?rdfs_label .
+   OPTIONAL {?item egc:designed-by/egc:designer-of ?egc_co2Ddesigned . }
+   OPTIONAL {?item egc:designed-by ?egc_designed2Dby . }
+   OPTIONAL {?item egc:designer-of ?egc_designer2Dof . }
+   OPTIONAL {?item egc:playTimeMinutes ?egc_playTimeMinutes . }
+# nest for @or.
+{{
+# begin a SELECT query.
 
-SELECT ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_co2Ddesigned ?egc_designed2Dby ?egc_designer2Dof ?egc_playTimeMinutes {
- ?item egc:players ?egc_players
-. ?item egc:pubYear ?egc_pubYear
-. ?item rdf:type ?rdf_type
-. ?item rdfs:label ?rdfs_label
-. OPTIONAL { ?item egc:designed-by/egc:designer-of ?egc_co2Ddesigned }
-. OPTIONAL { ?item egc:designed-by ?egc_designed2Dby }
-. OPTIONAL { ?item egc:designer-of ?egc_designer2Dof }
-. OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes }{?egc_playTimeMinutes <http://jena.apache.org/text#query> "17"} }
- }}  UNION  {{  # generated from (top-level) SearchSpec @search[egc:pubYear]("age")
+SELECT ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_co2Ddesigned ?egc_designed2Dby ?egc_designer2Dof ?egc_playTimeMinutes
+WHERE {
+# no base query.
+# no guards.
+# 8 aspect bindings.
+  ?item egc:players ?egc_players .
+  ?item egc:pubYear ?egc_pubYear .
+  ?item rdf:type ?rdf_type .
+  ?item rdfs:label ?rdfs_label .
+   OPTIONAL {?item egc:designed-by/egc:designer-of ?egc_co2Ddesigned . }
+   OPTIONAL {?item egc:designed-by ?egc_designed2Dby . }
+   OPTIONAL {?item egc:designer-of ?egc_designer2Dof . }
+   OPTIONAL {?item egc:playTimeMinutes ?egc_playTimeMinutes . }
+# @search @search[egc:playTimeMinutes]("17").
+  ?egc_playTimeMinutes <http://jena.apache.org/text#query> "17" .
+# end a SELECT query.
+}
+}} UNION {{
+# begin a SELECT query.
 
-SELECT ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_co2Ddesigned ?egc_designed2Dby ?egc_designer2Dof ?egc_playTimeMinutes {
- ?item egc:players ?egc_players
-. ?item egc:pubYear ?egc_pubYear
-. ?item rdf:type ?rdf_type
-. ?item rdfs:label ?rdfs_label
-. OPTIONAL { ?item egc:designed-by/egc:designer-of ?egc_co2Ddesigned }
-. OPTIONAL { ?item egc:designed-by ?egc_designed2Dby }
-. OPTIONAL { ?item egc:designer-of ?egc_designer2Dof }
-. OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes }{?egc_pubYear <http://jena.apache.org/text#query> "age"} }
- }} }
-
+SELECT ?item ?egc_players ?egc_pubYear ?rdf_type ?rdfs_label ?egc_co2Ddesigned ?egc_designed2Dby ?egc_designer2Dof ?egc_playTimeMinutes
+WHERE {
+# no base query.
+# no guards.
+# 8 aspect bindings.
+  ?item egc:players ?egc_players .
+  ?item egc:pubYear ?egc_pubYear .
+  ?item rdf:type ?rdf_type .
+  ?item rdfs:label ?rdfs_label .
+   OPTIONAL {?item egc:designed-by/egc:designer-of ?egc_co2Ddesigned . }
+   OPTIONAL {?item egc:designed-by ?egc_designed2Dby . }
+   OPTIONAL {?item egc:designer-of ?egc_designer2Dof . }
+   OPTIONAL {?item egc:playTimeMinutes ?egc_playTimeMinutes . }
+# @search @search[egc:pubYear]("age").
+  ?egc_pubYear <http://jena.apache.org/text#query> "age" .
+# end a SELECT query.
+}
+# un-nest for @or.
+}}
+# end a SELECT query.
+}

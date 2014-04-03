@@ -36,10 +36,10 @@ public class TestJSONtoSPARQL {
 	static File dataDir = new File("src/test/data/jsonToSparql");
 	
 	@Test public void testFromDataDir() {
-		testMe( "gamesAPI-search_or_search");
+		testFromDataDir( "gamesAPI-search_or_search");
 	}
 	
-	void testMe(String name) {
+	void testFromDataDir(String name) {
 		File jsonFile = new File(dataDir, name + ".json");
 		File sparqlFile = new File(dataDir, name + ".rq" );
 		File configFile = new File(dataDir, shorten(name) + ".ttl" );
@@ -72,6 +72,8 @@ public class TestJSONtoSPARQL {
 //		Asserts.assertNoProblems("JSON query did not parse", p);
 		
 		String generated = dq.toSparql(p, a, ds.getBaseQuery(), pm);
+		
+//		System.err.println( ">> GENERATED:\n" + generated );
 		
 		String expected = sparql;
 		Asserts.assertSameSelect(expected, generated);

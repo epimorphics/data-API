@@ -9,7 +9,7 @@
 
 package com.epimorphics.data_api.config.tests;
 
-import static com.epimorphics.data_api.config.tests.TestUtil.query;
+import static com.epimorphics.data_api.config.tests.TestUtil.queryAsResultList;
 import static org.junit.Assert.*;
 
 import java.io.File;
@@ -38,13 +38,13 @@ public class TestMultiSrc {
         API_Dataset dataset1 = man.getDataset("dataset1");
         assertNotNull(dataset1);
         
-        List<Resource> results =  query(dataset1, "{'eg:label' : {'@eq' : 'Somerset'}}");
+        List<Resource> results =  queryAsResultList(dataset1, "{'eg:label' : {'@eq' : 'Somerset'}}");
         assertEquals(2, results.size());
         assertTrue( results.get(0).getURI().startsWith("http://www.epimorphics.com/test/dsapi/sprint3/multiSrc/data1/"));
         
         API_Dataset dataset2 = man.getDataset("dataset2");
         assertNotNull(dataset2);
-        results =  query(dataset2, "{'eg:label' : {'@eq' : 'Somerset'}}");
+        results =  queryAsResultList(dataset2, "{'eg:label' : {'@eq' : 'Somerset'}}");
         assertEquals(2, results.size());
         assertTrue( results.get(0).getURI().startsWith("http://www.epimorphics.com/test/dsapi/sprint3/multiSrc/data2/"));
     }

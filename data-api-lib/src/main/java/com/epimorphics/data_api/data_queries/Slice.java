@@ -10,19 +10,29 @@ public class Slice {
 
 	final Integer length;
 	final Integer offset;
-	
-	public Slice(Integer length, Integer offset) {
-		this.length = length;
-		this.offset = offset;
-	}
+	final boolean isCount;
+    
+    public Slice(Integer length, Integer offset, boolean isCount) {
+        this.length = length;
+        this.offset = offset;
+        this.isCount = isCount;
+    }
+    
+    public Slice(Integer length, Integer offset) {
+        this(length, offset, false);
+    }
 	
 	public static Slice create(Integer length) {
 		return new Slice(length, null);
 	}
-	
-	public static Slice create(Integer length, Integer offset) {
-		return new Slice(length, offset);
-	}
+    
+    public static Slice create(Integer length, Integer offset) {
+        return new Slice(length, offset);
+    }
+    
+    public static Slice create(Integer length, Integer offset, boolean isCount) {
+        return new Slice(length, offset, isCount);
+    }
 	
 	public boolean isAll() {
 		return length == null && offset == null;
@@ -36,8 +46,10 @@ public class Slice {
 		return
 			"<slice "
 			+ (length == null ? "ALL" : length)
-			+ " "
-			+ (offset == null ? "" : " FROM " + offset)
+            + " "
+            + (offset == null ? "" : " FROM " + offset)
+            + " "
+            + (isCount ? "" : " COUNTING")
 			+ ">"
 			;
 	}
@@ -47,7 +59,7 @@ public class Slice {
 	}
 
 	private boolean same(Slice other) {
-		return same(length, other.length) && same(offset, other.offset);
+		return same(length, other.length) && same(offset, other.offset) && isCount == other.isCount;
 	}
 
 	private boolean same(Integer a, Integer b) {
