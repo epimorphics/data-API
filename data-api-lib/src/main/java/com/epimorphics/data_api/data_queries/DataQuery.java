@@ -136,8 +136,8 @@ public class DataQuery {
     
 	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
 				
-		System.err.println( ">> " );
-		System.err.println( ">> toSparql: " + c );
+//		System.err.println( ">> " );
+//		System.err.println( ">> toSparql: " + c );
 //		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
 //		System.err.println( ">> FOR:\n    " + this );
 //		System.err.println( ">> ASPECTS:\n    " + aspects );
@@ -145,7 +145,7 @@ public class DataQuery {
 		StringBuilder out = new StringBuilder();
 		ContextImpl rx = new ContextImpl
 			( out
-			, isCountQuery()
+			, this
 			, p
 			, aspects
 			, baseQuery
@@ -162,9 +162,11 @@ public class DataQuery {
 		if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
 		if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
 		
+		if (isNestedCountQuery()) out.append("}");
+		
 		String query = PrefixUtils.expandQuery(out.toString(), pm);
 		
-		System.err.println( ">> RENDERED QUERY:\n" + query );
+		// System.err.println( ">> RENDERED QUERY:\n" + query );
 		return query;
 	}
 	
@@ -177,14 +179,14 @@ public class DataQuery {
 		final PrefixMapping pm;
 		final API_Dataset api;
 		final List<Guard> guards;
-		final boolean isCountQuery;
+		final DataQuery dq;
 		
 		final List<Aspect> ordered = new ArrayList<Aspect>();
 		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 		
 		public ContextImpl
 			( StringBuilder out
-			, boolean isCountQuery
+			, DataQuery dq
 			, Problems p
 			, Set<Aspect> aspects
 			, String baseQuery
@@ -193,7 +195,7 @@ public class DataQuery {
 			, List<Guard> guards
 			) {
 			this.out = out;		
-			this.isCountQuery = isCountQuery;
+			this.dq = dq;
 			this.p = p;
 			this.aspects = aspects;
 			this.baseQuery = baseQuery;
@@ -231,14 +233,18 @@ public class DataQuery {
         	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
         	
         	out.append( "SELECT " );
-    		if (isCountQuery) {
+    		if (dq.isCountQuery()) {
     		    for (Aspect as : aspects) {
     		        if (as.getIsMultiValued()) {
     		            needsDistinct = true;
     		            break;
     		        }
     		    }
-                out.append(" (COUNT (" + (needsDistinct ? "DISTINCT " : "") + "?item) AS ?_count)");
+                out.append(" (COUNT (" + (needsDistinct ? "DISTINCT " : "") + "?item) AS ?_count)\n");
+                if (dq.isNestedCountQuery()) {
+                	comment("this is a nested count query, so:");
+                	out.append("  { SELECT ?item").append("\n");
+                }
     		} else {
     	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
     	        for (Aspect x: ordered) out.append(" ?").append( x.asVar() );
