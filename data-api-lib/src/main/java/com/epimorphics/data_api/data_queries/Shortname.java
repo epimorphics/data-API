@@ -25,12 +25,12 @@ public class Shortname {
 	public Shortname(PrefixMapping pm, String prefixed ) {
 		this.prefixed = prefixed;
 		this.URI = pm.expandPrefix(prefixed);
-		this.varName = asVar(prefixed);
+		this.varName = asVarName(prefixed);
 	}
 	
 	static final char[] digit = "0123456789ABCDEF".toCharArray();
 	
-	private String asVar(String s) {
+	private String asVarName(String s) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < s.length(); i += 1) {
 			char ch = s.charAt(i);
@@ -68,7 +68,11 @@ public class Shortname {
 		return URI.equals(other.URI) && prefixed.equals(other.prefixed);
 	}
 
-	public String asVar() {
+	public String getVarName() {
 		return varName;
+	}
+
+	public String asVar() {
+		return "?" + varName;
 	}
 }

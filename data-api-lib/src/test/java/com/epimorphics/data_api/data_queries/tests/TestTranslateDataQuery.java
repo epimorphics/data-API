@@ -262,7 +262,7 @@ public class TestTranslateDataQuery {
 		String sq = q.toSparql(p, a, null, pm);
 		assertNoProblems("translation failed", p);
 		
-		String var = "?" + useAspect.asVar();
+		String var = useAspect.asVar();
 		String prop = useAspect.getName().getCURIE();
 		
 		String prefix_p = "PREFIX pre: <eh:/prefixPart/>\n";

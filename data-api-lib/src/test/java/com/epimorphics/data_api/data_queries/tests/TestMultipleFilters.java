@@ -42,10 +42,12 @@ public class TestMultipleFilters {
 		List<Filter> filters = BunchLib.list(lt, gt);
 		
 		DataQuery dq = new DataQuery(Composition.filters(filters));
+
+		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
+			.add(Setup.localAspect)
+			;
 		
-		Aspects a = new Aspects().include(Setup.localAspect);
-		
-		String sq = dq.toSparql(p, a, null, pm);
+		String sq = dq.toSparql(p, ds);
 		Asserts.assertNoProblems("filter translation failed", p);
 		
 		String expected = BunchLib.join

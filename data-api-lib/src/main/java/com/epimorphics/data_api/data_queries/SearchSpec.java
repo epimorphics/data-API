@@ -82,7 +82,7 @@ public class SearchSpec {
 			} else {
 				
 				return
-					("?" + aspectName.asVar())
+					( aspectName.asVar())
 					+ " <http://jena.apache.org/text#query> "
 					+ Term.quote(pattern)
 					;
@@ -99,7 +99,7 @@ public class SearchSpec {
 			} else {
 				
 				return
-					("?" + aspectName.asVar())
+					( aspectName.asVar())
 					+ " <http://jena.apache.org/text#query> "
 					+ asSparqlTerm(pm)
 					;

@@ -26,8 +26,8 @@ public class ResultsToRows {
 		
 		for (Aspect a: aspects) 
 			if (a.getIsMultiValued()) {
-				valuess.put(a.asVar(), new ArrayList<Term>() );
-				shorts.put(a.asVar(), a.getName().getCURIE() );
+				valuess.put(a.asVarName(), new ArrayList<Term>() );
+				shorts.put(a.asVarName(), a.getName().getCURIE() );
 			}
 		
 		while (solutions.hasNext()) {
@@ -69,7 +69,7 @@ public class ResultsToRows {
 		Row result = new Row();
 		for (Aspect a: aspects) {
 			String key = a.getName().getCURIE();		
-			RDFNode value = qs.get(a.asVar());
+			RDFNode value = qs.get(a.asVarName());
 		//			
 			if (value == null) {
 				result.put(key, none);				

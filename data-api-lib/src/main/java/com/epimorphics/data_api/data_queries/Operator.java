@@ -110,8 +110,6 @@ public abstract class Operator {
 		, String FILTER
 		, API_Dataset api
 		, List<Aspect> ordered
-		, String fVar
-		, String value
 		);
 	
 	static class InfixOperator extends Operator {
@@ -130,8 +128,9 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered
-			, String fVar
-			, String value) {
+			) {
+			String fVar = filter.name.asVar();
+			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
 				.append(FILTER)
 				.append("(" )
@@ -163,10 +162,10 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered
-			, String fVar
-			, String value
 		) {	
 			List<Term> operands = filter.range.operands;
+			String value = filter.range.operands.get(0).asSparqlTerm(pm);
+			String fVar = filter.name.asVar();
 			sb.append(" ")
 				.append(FILTER)
 				.append( "(")
@@ -199,9 +198,9 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered
-			, String fVar
-			, String value
 			) {
+			String fVar = filter.name.asVar();
+			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			String orOp = "";
 			List<Term> operands = filter.range.operands;
 			sb.append(" ")
@@ -231,9 +230,9 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered
-			, String fVar
-			, String value
 			) {
+			String fVar = filter.name.asVar();
+			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
 				.append(FILTER)
 				.append("(" )
@@ -263,9 +262,9 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered
-			, String fVar
-			, String value
 			) {
+			String fVar = filter.name.asVar();
+			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			Aspect x = aspectFor(ordered, filter.name);
 			String below = x.getBelowPredicate(api);
 			sb.append(value)
@@ -300,9 +299,9 @@ public abstract class Operator {
 			, String FILTER
 			, API_Dataset api
 			, List<Aspect> ordered
-			, String fVar
-			, String value
 			) {	
+			String fVar = filter.name.asVar();
+			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(fVar)
 				.append(" <http://jena.apache.org/text#query> ")
 				.append(value)

@@ -247,7 +247,7 @@ public class DataQuery {
                 }
     		} else {
     	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
-    	        for (Aspect x: ordered) out.append(" ?").append( x.asVar() );
+    	        for (Aspect x: ordered) out.append(" ").append( x.asVar() );
     		}
 			out.append("\n");
 		}
@@ -283,7 +283,7 @@ public class DataQuery {
 			Composition adjusted = findEqualities(equalities, c);
 		//
 			for (Aspect x: ordered) {
-				String fVar = "?" + x.asVar();
+				String fVar = x.asVar();
 				Term equals = equalities.get(x.getName());
 				String stringEquals = equals == null ? null : equals.asSparqlTerm(pm);
 			//
@@ -338,8 +338,6 @@ public class DataQuery {
 				, "FILTER"
 				, api
 				, ordered
-				, "?" + f.name.asVar()
-				, f.range.operands.get(0).asSparqlTerm(pm)
 				);
 			out.append("\n");
 		}
@@ -373,7 +371,7 @@ public class DataQuery {
 			for (Sort s: sortby) {
 				sb.append(" ");
 				if (!s.upwards) sb.append("DESC(");
-				sb.append( "?" ).append(s.by.asVar());
+				sb.append(s.by.asVar());
 				if (!s.upwards)sb.append(")"); 
 			}
 		}

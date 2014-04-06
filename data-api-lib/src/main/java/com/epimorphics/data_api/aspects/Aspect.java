@@ -91,8 +91,20 @@ public class Aspect extends ResourceBasedConfig {
     // getLabel()       getLabel(lang)
     // getDescription() getDescription(lang)
 
+	/**
+	    The variable-name rendering of this aspect, with no
+	    "?" prefix.
+	*/
+	public String asVarName() {
+		return name.getVarName();
+	}
+	
+	/**
+	    The SPARQL variable rendering of this aspect, with
+	    the "?" prefix.
+	*/
 	public String asVar() {
-		return name.asVar();
+		return "?" + name.getVarName();
 	}
 
 	public String asProperty() {
