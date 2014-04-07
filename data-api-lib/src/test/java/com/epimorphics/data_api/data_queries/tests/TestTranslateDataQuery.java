@@ -17,7 +17,6 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
@@ -69,8 +68,6 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list();
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
-		Aspects a = new Aspects().include(X);
-	//
 		String sq = q.toSparql(p, dsX);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
@@ -87,8 +84,6 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list();
 		List<Sort> sorts = BunchLib.list(new Sort(new Shortname(pm, "pre:X"), true));
 		DataQuery q = new DataQuery(Composition.filters(filters), sorts);
-	//
-		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, dsX);
 		assertNoProblems("translation failed", p);
@@ -110,8 +105,6 @@ public class TestTranslateDataQuery {
 			);
 		DataQuery q = new DataQuery(Composition.filters(filters), sorts);
 	//
-		Aspects a = new Aspects().include(X).include(Y);
-	//
 		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
@@ -131,8 +124,6 @@ public class TestTranslateDataQuery {
 		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
-	//
-		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, dsX);	
 		String expected = BunchLib.join
@@ -195,8 +186,6 @@ public class TestTranslateDataQuery {
 		Filter f = new Filter(sn, new Range(Operator.ONEOF, BunchLib.list(Term.number(17), Term.number(99))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
-	//
-		Aspects a = new Aspects().include(X);
 	//
 		String sq = q.toSparql(p, dsX);
 		assertNoProblems("translation failed", p);
@@ -261,8 +250,6 @@ public class TestTranslateDataQuery {
 		Filter f = new Filter(sn, new Range(op, BunchLib.list(term)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
-	//
-		Aspects a = new Aspects().include(useAspect);
 	//	
 		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 			.add(useAspect)
@@ -293,8 +280,6 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
-		Aspects a = new Aspects().include(X).include(Y);
-	//
 		String sq = q.toSparql(p, dsXY);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
@@ -316,8 +301,6 @@ public class TestTranslateDataQuery {
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
-	//
-		Aspects a = new Aspects().include(LOC);
 	//
 		String sq = q.toSparql(p, dsLOC);
 		assertNoProblems("translation failed", p);
@@ -344,8 +327,6 @@ public class TestTranslateDataQuery {
 			, null // new ArrayList<Guard>()
 			, Slice.all()
 			);
-	//
-		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
@@ -375,8 +356,6 @@ public class TestTranslateDataQuery {
 			, Slice.all()
 			);
 	//
-		Aspects a = new Aspects().include(X).include(Y);
-	//
 		String sq = q.toSparql(p, dsXY);
 		
 		Asserts.assertNoProblems("translation failed", p);
@@ -401,8 +380,6 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
-		Aspects a = new Aspects().include(X).include(Yopt);
-	//
 		final API_Dataset dsXYopt = new API_Dataset(Setup.pseudoRoot(), null).add(X).add(Yopt);
 		String sq = q.toSparql(p, dsXYopt);
 		Asserts.assertNoProblems("translation failed", p);
@@ -425,8 +402,6 @@ public class TestTranslateDataQuery {
 		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Composition.filters(filters), new ArrayList<Sort>(), Slice.create(17));
-	//
-		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
@@ -451,8 +426,6 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Composition.filters(filters), new ArrayList<Sort>(), Slice.create(null, 1066));
 	//
-		Aspects a = new Aspects().include(X).include(Y);
-	//
 		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
@@ -475,8 +448,6 @@ public class TestTranslateDataQuery {
 		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Composition.filters(filters), new ArrayList<Sort>(), Slice.create(17, 1829));
-	//
-		Aspects a = new Aspects().include(X).include(Y);
 	//
 		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
@@ -501,8 +472,6 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
-		Aspects a = new Aspects().include(X).include(Y);
-	//
 		String sq = q.toSparql(p, dsXY);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
@@ -519,12 +488,10 @@ public class TestTranslateDataQuery {
 		Problems p = new Problems();
 		DataQuery q = new DataQuery(Composition.filters(BunchLib.<Filter>list()));
 	//
-		Aspects a = new Aspects();
-	//
 		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
 			.setBaseQuery("?item pre:has pre:value")
 			;
-		
+	//	
 		String sq = q.toSparql(p, dsBased);
 		assertNoProblems("translation failed", p);
 		assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item WHERE { { ?item pre:has pre:value } }", sq );
@@ -533,9 +500,7 @@ public class TestTranslateDataQuery {
 	@Test public void testDatasetRestrictionWithAspects() {
 		Problems p = new Problems();
 		DataQuery q = new DataQuery(Composition.filters(BunchLib.<Filter>list()));
-	//
-		Aspects a = new Aspects().include(Y);
-		
+	//		
 		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
 			.add(Y)
 			.setBaseQuery("?item pre:has pre:value")

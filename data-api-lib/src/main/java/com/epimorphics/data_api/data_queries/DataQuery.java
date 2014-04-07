@@ -21,6 +21,7 @@ import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
+import com.epimorphics.data_api.data_queries.DataQuery.ContextImpl;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
@@ -108,13 +109,39 @@ public class DataQuery {
 	}
     
     public String toSparql(Problems p, API_Dataset api) {
-        try { return toSparqlString(p, api.getAspects(), api.getBaseQuery(), api.getPrefixes(), api); }
-        catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
-    }
-    
-    public String toSparql(Problems p, Aspects a, String baseQuery, PrefixMapping pm) {
-        try { return toSparqlString(p, a.getAspects(), baseQuery, pm, null); }
-        catch (Exception e) { p.add("exception generating SPARQL query: " + e.getMessage()); e.printStackTrace(System.err); return null; }
+        try {
+        	PrefixMapping pm = api.getPrefixes();
+			StringBuilder out = new StringBuilder();
+			ContextImpl rx = new ContextImpl
+				( out
+				, this
+				, p
+				, api.getAspects()
+				, pm
+				, api
+				, guards
+				);
+			
+			Composition adjusted = rx.begin(c);
+			adjusted.toSparql(rx);
+			rx.end();
+			
+			querySort(out);		
+			if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
+			if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
+			
+			if (isNestedCountQuery()) out.append("}");
+			
+			String query = PrefixUtils.expandQuery(out.toString(), pm);
+			
+			// System.err.println( ">> RENDERED QUERY:\n" + query );
+			return query; 
+		}
+        catch (Exception e) { 
+        	p.add("exception generating SPARQL query: " + e.getMessage()); 
+        	e.printStackTrace(System.err); 
+        	return null; 
+        }
     }
 	    
     @Override public String toString() {
@@ -134,52 +161,12 @@ public class DataQuery {
     		return new RowWriter(api.getAspects(), resultSet);
     	}
     }
-    
-	private String toSparqlString(Problems p, Set<Aspect> aspects, String baseQuery, PrefixMapping pm, API_Dataset api) {
-				
-//		System.err.println( ">> " );
-//		System.err.println( ">> toSparql: " + c );
-//		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
-//		System.err.println( ">> FOR:\n    " + this );
-//		System.err.println( ">> ASPECTS:\n    " + aspects );
-		
-		if (api == null) System.err.println( ">> null API detected" ); // throw new BrokenException("Null API");
-		if (api == null) throw new BrokenException("Null API");
-
-		StringBuilder out = new StringBuilder();
-		ContextImpl rx = new ContextImpl
-			( out
-			, this
-			, p
-			, aspects
-			, baseQuery
-			, pm
-			, api
-			, guards
-			);
-		
-		Composition adjusted = rx.begin(c);
-		adjusted.toSparql(rx);
-		rx.end();
-		
-		querySort(out);		
-		if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
-		if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
-		
-		if (isNestedCountQuery()) out.append("}");
-		
-		String query = PrefixUtils.expandQuery(out.toString(), pm);
-		
-		// System.err.println( ">> RENDERED QUERY:\n" + query );
-		return query;
-	}
-	
+    	
 	static class ContextImpl implements Context {
 
 		final StringBuilder out;
 		final Problems p;
 		final Set<Aspect> aspects;
-		final String baseQuery;
 		final PrefixMapping pm;
 		final API_Dataset api;
 		final List<Guard> guards;
@@ -193,7 +180,6 @@ public class DataQuery {
 			, DataQuery dq
 			, Problems p
 			, Set<Aspect> aspects
-			, String baseQuery
 			, PrefixMapping pm
 			, API_Dataset api
 			, List<Guard> guards
@@ -202,7 +188,6 @@ public class DataQuery {
 			this.dq = dq;
 			this.p = p;
 			this.aspects = aspects;
-			this.baseQuery = baseQuery;
 			this.pm = pm;
 			this.api = api;
 			this.guards = guards;
@@ -264,6 +249,7 @@ public class DataQuery {
 	            }
 	        }
 	    //
+	        String baseQuery = api.getBaseQuery();
 			if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 				comment("base query");
 			    out.append( "  { ").append(baseQuery).append( "}\n");
