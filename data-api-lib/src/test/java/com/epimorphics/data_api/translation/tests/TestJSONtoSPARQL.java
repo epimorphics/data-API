@@ -55,9 +55,7 @@ public class TestJSONtoSPARQL {
 		
 		DSAPIManager manager = new DSAPIManager();
 		API_Dataset ds = new API_Dataset(config, manager);
-		Aspects a = andTheAspectsToo(ds, config);
-		
-		PrefixMapping pm = ds.getPrefixes();
+		addAspectsToDataset(ds, config);
 		
 //		System.err.println( ">> PREFIXES: " + pm.getNsPrefixMap() );
 //		System.err.println( ">> ASPECTS: " + ds.getAspects());
@@ -70,9 +68,7 @@ public class TestJSONtoSPARQL {
 		DataQuery dq = DataQueryParser.Do(p, ds, jo);
 
 //		Asserts.assertNoProblems("JSON query did not parse", p);
-		
-		String generated = dq.toSparql(p, a, ds.getBaseQuery(), pm);
-		
+		String generated = dq.toSparql(p, ds);
 //		System.err.println( ">> GENERATED:\n" + generated );
 		
 		String expected = sparql;
@@ -80,8 +76,7 @@ public class TestJSONtoSPARQL {
 	}
 
 	// TODO integrate properly with monitor code
-	private Aspects andTheAspectsToo(API_Dataset ds, Resource config) {
-		Aspects aspects = new Aspects();
+	private void addAspectsToDataset(API_Dataset ds, Resource config) {
 		for (RDFNode x: config.listProperties(Dsapi.aspect).mapWith(Statement.Util.getObject).toList()) {
 			Resource rx = (Resource) x;
 			Aspect a = new Aspect(rx);
@@ -89,9 +84,7 @@ public class TestJSONtoSPARQL {
 			a.setIsMultiValued( RDFUtil.getBooleanValue(rx, Dsapi.multivalued, false));
 			a.setPropertyPath( RDFUtil.getStringValue(rx, Dsapi.propertyPath));
 			ds.add(a);
-			aspects.include(a);
 		}
-		return aspects;
 	}
 
 	private String shorten(String name) {

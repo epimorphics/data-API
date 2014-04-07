@@ -27,6 +27,7 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
@@ -141,6 +142,9 @@ public class DataQuery {
 //		System.err.println( ">>   isPure: " + c.isPure() + ", isTrivial: " + c.isTrivial() );
 //		System.err.println( ">> FOR:\n    " + this );
 //		System.err.println( ">> ASPECTS:\n    " + aspects );
+		
+		if (api == null) System.err.println( ">> null API detected" ); // throw new BrokenException("Null API");
+		if (api == null) throw new BrokenException("Null API");
 
 		StringBuilder out = new StringBuilder();
 		ContextImpl rx = new ContextImpl

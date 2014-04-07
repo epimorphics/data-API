@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
@@ -18,6 +17,7 @@ import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
@@ -39,9 +39,12 @@ public class TestPropertyPaths {
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
-		Aspects a = new Aspects().include(X);
+		final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
+			.add(X)
+			;
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, ds);
+		
 		Asserts.assertNoProblems("translation failed", p);	
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"

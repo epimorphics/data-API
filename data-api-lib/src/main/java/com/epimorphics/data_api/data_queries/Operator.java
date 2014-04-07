@@ -200,7 +200,6 @@ public abstract class Operator {
 			, List<Aspect> ordered
 			) {
 			String fVar = filter.name.asVar();
-			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			String orOp = "";
 			List<Term> operands = filter.range.operands;
 			sb.append(" ")

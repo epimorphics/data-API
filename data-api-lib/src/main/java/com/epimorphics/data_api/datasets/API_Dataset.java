@@ -122,6 +122,14 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    return query;
 	}
 	
+	/**
+	    Setter (mostly for testing)
+	*/
+	public API_Dataset setBaseQuery(String baseQuery) {
+		this.query = baseQuery;
+		return this;
+	}
+	
 	public void setSourceName(String sourceName) {
 	    this.sourceName = sourceName;
 	}

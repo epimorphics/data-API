@@ -58,6 +58,11 @@ public class TestTranslateDataQuery {
 	
 	static final Aspect Yopt = new TestAspects.MockAspect("eh:/prefixPart/Y").setIsOptional(true);
 
+	static final API_Dataset dsX = new API_Dataset(Setup.pseudoRoot(), null).add(X);
+	
+	static final API_Dataset dsLOC = new API_Dataset(Setup.pseudoRoot(), null).add(LOC);
+	
+	static final API_Dataset dsXY = new API_Dataset(Setup.pseudoRoot(), null).add(X).add(Y);
 	
 	@Test public void testUnfilteredSingleAspect() {
 		Problems p = new Problems();
@@ -66,7 +71,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsX);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -85,7 +90,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsX);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -107,7 +112,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -129,7 +134,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, null, pm);	
+		String sq = q.toSparql(p, dsX);	
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
@@ -170,9 +175,9 @@ public class TestTranslateDataQuery {
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
-		Aspects a = new Aspects().include(X);
+//		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null).add(X);
+		String sq = q.toSparql(p, dsX);
 	//
-		String sq = q.toSparql(p, a, null, pm);
 		Asserts.assertNoProblems("translation failed", p);	
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -193,7 +198,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsX);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -258,8 +263,12 @@ public class TestTranslateDataQuery {
 		DataQuery q = new DataQuery(Composition.filters(filters));
 	//
 		Aspects a = new Aspects().include(useAspect);
-	//
-		String sq = q.toSparql(p, a, null, pm);
+	//	
+		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
+			.add(useAspect)
+			;
+		
+		String sq = q.toSparql(p, ds);
 		assertNoProblems("translation failed", p);
 		
 		String var = useAspect.asVar();
@@ -286,7 +295,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -298,7 +307,7 @@ public class TestTranslateDataQuery {
 		Asserts.assertSameSelect( expected, sq );
 	}			
 
-	static final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
+	final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 		.add(Setup.localAspect)
 		;
 	
@@ -310,7 +319,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(LOC);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsLOC);
 		assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
@@ -338,7 +347,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
@@ -368,7 +377,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		
 		Asserts.assertNoProblems("translation failed", p);
 		
@@ -394,7 +403,8 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Yopt);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		final API_Dataset dsXYopt = new API_Dataset(Setup.pseudoRoot(), null).add(X).add(Yopt);
+		String sq = q.toSparql(p, dsXYopt);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -418,7 +428,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -443,7 +453,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -468,7 +478,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		assertNoProblems("translation failed", p);
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -493,7 +503,7 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects().include(X).include(Y);
 	//
-		String sq = q.toSparql(p, a, null, pm);
+		String sq = q.toSparql(p, dsXY);
 		Asserts.assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
@@ -511,7 +521,11 @@ public class TestTranslateDataQuery {
 	//
 		Aspects a = new Aspects();
 	//
-		String sq = q.toSparql(p, a, "?item pre:has pre:value", pm);
+		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
+			.setBaseQuery("?item pre:has pre:value")
+			;
+		
+		String sq = q.toSparql(p, dsBased);
 		assertNoProblems("translation failed", p);
 		assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item WHERE { { ?item pre:has pre:value } }", sq );
 		}
@@ -521,8 +535,13 @@ public class TestTranslateDataQuery {
 		DataQuery q = new DataQuery(Composition.filters(BunchLib.<Filter>list()));
 	//
 		Aspects a = new Aspects().include(Y);
+		
+		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
+			.add(Y)
+			.setBaseQuery("?item pre:has pre:value")
+			;
 	//
-		String sq = q.toSparql(p, a, "?item pre:has pre:value .", pm);
+		String sq = q.toSparql(p, dsBased);
 		assertNoProblems("translation failed", p);
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"

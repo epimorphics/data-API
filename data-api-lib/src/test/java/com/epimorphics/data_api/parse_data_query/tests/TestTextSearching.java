@@ -13,7 +13,6 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
@@ -77,13 +76,11 @@ public class TestTextSearching {
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
-		
+	//
 		Asserts.assertNoProblems("test data did not parse", p);
-		
-		Aspects a = new Aspects().include(X).include(Y);
-		
-		String generated = q.toSparql(p, a, null, ds.getPrefixes());
-		
+	//
+		String generated = q.toSparql(p, ds);
+	//
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
@@ -102,6 +99,6 @@ public class TestTextSearching {
 		  	, "}}"
 		  	, "}"
 			);
-	Asserts.assertSameSelect(expected, generated);
+		Asserts.assertSameSelect(expected, generated);
 	}
 }
