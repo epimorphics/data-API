@@ -104,12 +104,11 @@ public abstract class Operator {
 	}
 
 	public abstract void asSparqlFilter
-		( PrefixMapping pm
-		, Filter newParam
+		( Filter newParam
 		, StringBuilder sb
 		, String FILTER
 		, API_Dataset api
-		, List<Aspect> ordered
+		, Map<Shortname, Aspect> namesToAspects
 		);
 	
 	static class InfixOperator extends Operator {
@@ -122,14 +121,14 @@ public abstract class Operator {
 		}
 
 		public void asSparqlFilter
-			( PrefixMapping pm
-			, Filter filter
+			( Filter filter
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered
+			, Map<Shortname, Aspect> namesToAspects
 			) {
 			String fVar = filter.name.asVar();
+			PrefixMapping pm = api.getPrefixes();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
 				.append(FILTER)
@@ -156,13 +155,13 @@ public abstract class Operator {
 		}
 
 		public void asSparqlFilter
-			( PrefixMapping pm
-			, Filter filter
+			( Filter filter
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered
+			, Map<Shortname, Aspect> namesToAspects
 		) {	
+			PrefixMapping pm = api.getPrefixes();
 			List<Term> operands = filter.range.operands;
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			String fVar = filter.name.asVar();
@@ -192,13 +191,13 @@ public abstract class Operator {
 		}
 
 		public void asSparqlFilter
-			( PrefixMapping pm
-			, Filter filter
+			( Filter filter
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered
+			, Map<Shortname, Aspect> namesToAspects
 			) {
+			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.name.asVar();
 			String orOp = "";
 			List<Term> operands = filter.range.operands;
@@ -223,13 +222,13 @@ public abstract class Operator {
 		}
 
 		public void asSparqlFilter
-			( PrefixMapping pm
-			, Filter filter
+			( Filter filter
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered
+			, Map<Shortname, Aspect> namesToAspects
 			) {
+			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.name.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
@@ -255,16 +254,16 @@ public abstract class Operator {
 		}
 
 		public void asSparqlFilter
-			( PrefixMapping pm
-			, Filter filter
+			( Filter filter
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered
+			, Map<Shortname, Aspect> namesToAspects
 			) {
+			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.name.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			Aspect x = aspectFor(ordered, filter.name);
+			Aspect x = namesToAspects.get(filter.name);
 			String below = x.getBelowPredicate(api);
 			sb.append(value)
 				.append(" ")
@@ -275,11 +274,6 @@ public abstract class Operator {
 				.append("\n")
 				;		
 		}
-	}
-
-	private static Aspect aspectFor(List<Aspect> ordered, Shortname name) {
-		for (Aspect a: ordered) if (a.getName().equals(name)) return a;
-		throw new BrokenException("Could not find aspect " + name + " in " + ordered);
 	}
 	
 	static class SearchOperator extends Operator {
@@ -292,13 +286,13 @@ public abstract class Operator {
 		}
 
 		public void asSparqlFilter
-			( PrefixMapping pm
-			, Filter filter
+			( Filter filter
 			, StringBuilder sb
 			, String FILTER
 			, API_Dataset api
-			, List<Aspect> ordered
+			, Map<Shortname, Aspect> namesToAspects
 			) {	
+			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.name.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(fVar)

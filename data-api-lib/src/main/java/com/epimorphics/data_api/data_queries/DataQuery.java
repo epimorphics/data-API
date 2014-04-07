@@ -14,22 +14,18 @@ import java.util.Map;
 import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.Composition.And;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
-import com.epimorphics.data_api.data_queries.DataQuery.ContextImpl;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.shared.BrokenException;
-import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
 	
@@ -110,16 +106,12 @@ public class DataQuery {
     
     public String toSparql(Problems p, API_Dataset api) {
         try {
-        	PrefixMapping pm = api.getPrefixes();
 			StringBuilder out = new StringBuilder();
 			ContextImpl rx = new ContextImpl
 				( out
 				, this
 				, p
-				, api.getAspects()
-				, pm
 				, api
-				, guards
 				);
 			
 			Composition adjusted = rx.begin(c);
@@ -132,7 +124,7 @@ public class DataQuery {
 			
 			if (isNestedCountQuery()) out.append("}");
 			
-			String query = PrefixUtils.expandQuery(out.toString(), pm);
+			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
 			
 			// System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
@@ -164,13 +156,10 @@ public class DataQuery {
     	
 	static class ContextImpl implements Context {
 
-		final StringBuilder out;
 		final Problems p;
-		final Set<Aspect> aspects;
-		final PrefixMapping pm;
-		final API_Dataset api;
-		final List<Guard> guards;
 		final DataQuery dq;
+		final API_Dataset api;
+		final StringBuilder out;
 		
 		final List<Aspect> ordered = new ArrayList<Aspect>();
 		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
@@ -179,19 +168,14 @@ public class DataQuery {
 			( StringBuilder out
 			, DataQuery dq
 			, Problems p
-			, Set<Aspect> aspects
-			, PrefixMapping pm
 			, API_Dataset api
-			, List<Guard> guards
 			) {
 			this.out = out;		
 			this.dq = dq;
 			this.p = p;
-			this.aspects = aspects;
-			this.pm = pm;
 			this.api = api;
-			this.guards = guards;
 		//
+			Set<Aspect> aspects = api.getAspects();
 			this.ordered.addAll(aspects);
 			Collections.sort(this.ordered, Aspect.compareAspects);
 		//
@@ -218,12 +202,13 @@ public class DataQuery {
 
 		private void generateSelect() {		
 			
+			List<Guard> guards = dq.guards;
 			boolean needsDistinct = false;
         	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
         	
         	out.append( "SELECT " );
     		if (dq.isCountQuery()) {
-    		    for (Aspect as : aspects) {
+    		    for (Aspect as : api.getAspects()) {
     		        if (as.getIsMultiValued()) {
     		            needsDistinct = true;
     		            break;
@@ -242,6 +227,7 @@ public class DataQuery {
 		}
 		
 		public Composition queryCore(Composition c) {
+			List<Guard> guards = dq.guards;
 	        boolean baseQueryNeeded = true;  
 	        for (Guard guard : guards) {
 	            if (guard.supplantsBaseQuery()) {
@@ -275,7 +261,7 @@ public class DataQuery {
 			for (Aspect x: ordered) {
 				String fVar = x.asVar();
 				Term equals = equalities.get(x.getName());
-				String stringEquals = equals == null ? null : equals.asSparqlTerm(pm);
+				String stringEquals = equals == null ? null : equals.asSparqlTerm(api.getPrefixes());
 			//
 				out.append("  ");
 			//
@@ -320,14 +306,12 @@ public class DataQuery {
 
 		@Override public void generateFilter(Filter f) {
 			comment("@" + f.range.op.JSONname, f);
-			out.append("  ");
 			f.range.op.asSparqlFilter
-				( pm
-				, f
+				( f
 				, out
 				, "FILTER"
 				, api
-				, ordered
+				, namesToAspects
 				);
 			out.append("\n");
 		}
@@ -335,7 +319,7 @@ public class DataQuery {
 		@Override public void generateSearch(SearchSpec s) {
 			comment("@search", s);
 			out.append("  ");
-			out.append(s.toSearchTriple(namesToAspects, pm));
+			out.append(s.toSearchTriple(namesToAspects, api.getPrefixes()));
 			out.append(" .\n");
 		}
 
