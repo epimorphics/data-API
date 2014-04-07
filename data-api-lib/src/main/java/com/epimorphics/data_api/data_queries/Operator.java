@@ -102,10 +102,9 @@ public abstract class Operator {
 		return result;
 	}
 
-	public abstract void asSparqlFilter
+	public abstract void asConstraint
 		( Filter newParam
 		, StringBuilder sb
-		, String FILTER
 		, API_Dataset api
 		);
 	
@@ -118,24 +117,20 @@ public abstract class Operator {
 			this.sparqlOp = sparqlOp;
 		}
 
-		public void asSparqlFilter
+		public void asConstraint
 			( Filter filter
 			, StringBuilder sb
-			, String FILTER
 			, API_Dataset api
 			) {
 			String fVar = filter.name.asVar();
 			PrefixMapping pm = api.getPrefixes();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
-				.append(FILTER)
-				.append("(" )
 				.append(fVar)
 				.append(" ")
 				.append(sparqlOp)
 				.append(" ")
 				.append(value)
-				.append(")")
 				;	
 		}
 	}
@@ -151,10 +146,9 @@ public abstract class Operator {
 			this.functionName = functionName;
 		}
 
-		public void asSparqlFilter
+		public void asConstraint
 			( Filter filter
 			, StringBuilder sb
-			, String FILTER
 			, API_Dataset api
 		) {	
 			PrefixMapping pm = api.getPrefixes();
@@ -162,8 +156,6 @@ public abstract class Operator {
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			String fVar = filter.name.asVar();
 			sb.append(" ")
-				.append(FILTER)
-				.append( "(")
 				.append( needsNot ? "!" : "")
 				.append( functionName )
 				.append("(")
@@ -171,7 +163,6 @@ public abstract class Operator {
 				.append(", ")
 				.append(value)
 				.append(operands.size() == 2 ? ", " + operands.get(1).asSparqlTerm(pm) : "")
-				.append(")")
 				.append(")")
 				;
 		}
@@ -186,24 +177,19 @@ public abstract class Operator {
 			this.negated = negated;
 		}
 
-		public void asSparqlFilter
+		public void asConstraint
 			( Filter filter
 			, StringBuilder sb
-			, String FILTER
 			, API_Dataset api
 			) {
 			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.name.asVar();
 			String orOp = "";
-			List<Term> operands = filter.range.operands;
-			sb.append(" ")
-				.append(FILTER)
-				.append("(");
-			for (Term v: operands) {
+			sb.append(" ");
+			for (Term v: filter.range.operands) {
 				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
 				orOp = " || ";
 			}
-			sb.append(")");
 		}
 	}
 	
@@ -216,24 +202,20 @@ public abstract class Operator {
 			this.opName = "=";
 		}
 
-		public void asSparqlFilter
+		public void asConstraint
 			( Filter filter
 			, StringBuilder sb
-			, String FILTER
 			, API_Dataset api
 			) {
 			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.name.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
-				.append(FILTER)
-				.append("(" )
 				.append(fVar)
 				.append(" ")
 				.append("=")
 				.append(" ")
 				.append(value)
-				.append(")")
 				;
 		}
 	}		
@@ -247,10 +229,9 @@ public abstract class Operator {
 			this.negated = negated;
 		}
 
-		public void asSparqlFilter
+		public void asConstraint
 			( Filter filter
 			, StringBuilder sb
-			, String FILTER
 			, API_Dataset api
 			) {
 			PrefixMapping pm = api.getPrefixes();
@@ -278,10 +259,9 @@ public abstract class Operator {
 			this.negated = negated;
 		}
 
-		public void asSparqlFilter
+		public void asConstraint
 			( Filter filter
 			, StringBuilder sb
-			, String FILTER
 			, API_Dataset api
 			) {	
 			PrefixMapping pm = api.getPrefixes();

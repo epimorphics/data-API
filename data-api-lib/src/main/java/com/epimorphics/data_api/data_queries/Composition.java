@@ -13,7 +13,7 @@ import com.hp.hpl.jena.shared.BrokenException;
 
 public abstract class Composition {
 	
-	public enum COp { AND, OR, NOT, FILTER, NONE, SEARCH }
+	public enum COp { AND, OR, NOT, FILTER, NONE, SEARCH, BELOW }
 	
 	public static final Composition EMPTY = new EmptyComposition();
 	
@@ -39,6 +39,8 @@ public abstract class Composition {
 
 		void generateFilter(Filter f);
 		
+		void generateBelow(Filter f);
+
 		void generateSearch(SearchSpec s);
 		
 		void nest();
@@ -99,11 +101,38 @@ public abstract class Composition {
 	
 	public static Composition filters(List<Filter> filters, List<SearchSpec> searchPatterns ) {
 		List<Composition> operands = new ArrayList<Composition>(filters.size());
-		for (Filter f: filters) operands.add(new FilterWrap(f));	
+		for (Filter f: filters) operands.add(Composition.wrap(f));	
 		for (SearchSpec s: searchPatterns) operands.add(new SearchWrap(s));
 		return and(operands);
 	}
 	
+	private static Composition wrap(Filter f) {
+		if (f.range.op.equals(Operator.BELOW)) return new BelowWrap(f);
+		return new FilterWrap(f);
+	}
+
+	public static class BelowWrap extends Composition {
+		
+		final Filter f;
+		
+		public BelowWrap(Filter f) {
+			super(COp.BELOW, new ArrayList<Composition>() );
+			this.f = f;
+		}
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("(").append(op);
+			sb.append(" ").append(f);
+			sb.append(")");
+			return sb.toString();
+		}
+
+		@Override public void toSparql(Context cx) {
+			cx.generateBelow(f);			
+		}	
+	}
+
 	public static class SearchWrap extends Composition {
 		
 		final SearchSpec s;

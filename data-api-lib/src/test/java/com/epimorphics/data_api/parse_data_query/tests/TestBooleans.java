@@ -114,5 +114,6 @@ public class TestBooleans {
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertTrue(p.isOK());
 	//
+		q = q;
 	}	
 }

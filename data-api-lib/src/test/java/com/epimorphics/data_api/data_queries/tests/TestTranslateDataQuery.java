@@ -236,12 +236,23 @@ public class TestTranslateDataQuery {
 	}
 	
 	@Test public void testSingleSearchFilter() {
-		testSingleSimpleFilter
-			( X
-			, Operator.SEARCH
-			, Term.string("look for me")
-			, "?pre_X <http://jena.apache.org/text#query> 'look for me'"
+		Problems p = new Problems();		
+		List<Filter> filters = BunchLib.list();
+		SearchSpec s = new SearchSpec( "look for me");
+		List<SearchSpec> searches = BunchLib.list(s);
+		DataQuery q = new DataQuery(Composition.filters(filters, searches));
+	//	
+		String sq = q.toSparql(p, dsX);
+		assertNoProblems("translation failed", p);
+	//
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/prefixPart/>"
+			, "SELECT ?item ?pre_X WHERE {"
+			, "  ?item pre:X ?pre_X . "
+			, "  ?item <http://jena.apache.org/text#query> 'look for me' . "
+			, "}"
 			);
+		assertSameSelect( expected, sq	);
 	}
 	
 	private void testSingleSimpleFilter(Aspect useAspect, Operator op, Term term, String filter) {
@@ -269,7 +280,6 @@ public class TestTranslateDataQuery {
 			prefix_p + (select.contains("skos:") ? prefix_skos : "") 
 			+ select.replaceAll("_VAR", var).replaceAll("_PROP", prop )
 			;
-				
 		assertSameSelect( expected, sq	);
 	}		
 	

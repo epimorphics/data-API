@@ -17,6 +17,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.Composition.And;
+import com.epimorphics.data_api.data_queries.Composition.BelowWrap;
 import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
 import com.epimorphics.data_api.data_queries.Composition.Context;
 import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
@@ -98,9 +99,12 @@ public class DataQuery {
 	public List<Filter> filters() {
 		ArrayList<Filter> result = new ArrayList<Filter>();
 		if (c instanceof And) 
-			for (Composition cc: c.operands)
+			for (Composition cc: c.operands) {
 				if (cc instanceof FilterWrap) result.add( ((FilterWrap) cc).f );
+				if (cc instanceof BelowWrap) result.add( ((BelowWrap) cc).f );
+			}
 		if (c instanceof FilterWrap) result.add( ((FilterWrap) c).f );
+		if (c instanceof BelowWrap) result.add( ((BelowWrap) c).f );
 		return result;
 	}
     
@@ -295,7 +299,14 @@ public class DataQuery {
 
 		@Override public void generateFilter(Filter f) {
 			comment("@" + f.range.op.JSONname, f);
-			f.range.op.asSparqlFilter( f, out, "FILTER", api	);
+			out.append("  FILTER(");
+			f.range.op.asConstraint( f, out, api	);
+			out.append(")\n");
+		}
+
+		@Override public void generateBelow(Filter f) {
+			comment("@" + f.range.op.JSONname, f);
+			f.range.op.asConstraint( f, out, api	);
 			out.append("\n");
 		}
 
