@@ -107,12 +107,7 @@ public class DataQuery {
     public String toSparql(Problems p, API_Dataset api) {
         try {
 			StringBuilder out = new StringBuilder();
-			ContextImpl rx = new ContextImpl
-				( out
-				, this
-				, p
-				, api
-				);
+			ContextImpl rx = new ContextImpl( out, this, p, api );
 			
 			Composition adjusted = rx.begin(c);
 			adjusted.toSparql(rx);
@@ -147,11 +142,10 @@ public class DataQuery {
     }
     
     public JSONWritable getWriter(API_Dataset api, ResultSet resultSet) {
-    	if (isCountQuery()) {
-    		return new CountWriter(resultSet);
-    	} else {
-    		return new RowWriter(api.getAspects(), resultSet);
-    	}
+    	return isCountQuery()
+    		? new CountWriter(resultSet)
+    		: new RowWriter(api.getAspects(), resultSet)
+    		;
     }
     	
 	static class ContextImpl implements Context {
@@ -164,12 +158,7 @@ public class DataQuery {
 		final List<Aspect> ordered = new ArrayList<Aspect>();
 		final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 		
-		public ContextImpl
-			( StringBuilder out
-			, DataQuery dq
-			, Problems p
-			, API_Dataset api
-			) {
+		public ContextImpl( StringBuilder out, DataQuery dq, Problems p, API_Dataset api) {
 			this.out = out;		
 			this.dq = dq;
 			this.p = p;
@@ -306,13 +295,7 @@ public class DataQuery {
 
 		@Override public void generateFilter(Filter f) {
 			comment("@" + f.range.op.JSONname, f);
-			f.range.op.asSparqlFilter
-				( f
-				, out
-				, "FILTER"
-				, api
-				, namesToAspects
-				);
+			f.range.op.asSparqlFilter( f, out, "FILTER", api	);
 			out.append("\n");
 		}
 

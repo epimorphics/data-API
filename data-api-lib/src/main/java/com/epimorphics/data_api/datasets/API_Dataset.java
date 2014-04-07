@@ -7,8 +7,10 @@ package com.epimorphics.data_api.datasets;
 
 import static com.epimorphics.data_api.config.JSONConstants.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.config.Hierarchy;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
+import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.rdfutil.RDFUtil;
@@ -37,7 +40,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	String sourceName;
 	Hierarchy hierarchy;
 	
-	final Set<Aspect> aspects = new HashSet<Aspect>();
+	final Map<Shortname, Aspect> nameToAspect = new HashMap<Shortname, Aspect>();
 	
 	public API_Dataset(String name) {
 		this.name = name;
@@ -87,7 +90,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	}
 
 	public Set<Aspect> getAspects() {
-		return aspects;
+		return new HashSet<Aspect>( nameToAspect.values() );
 	}
 
 	/**
@@ -95,8 +98,12 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    dataset for chaining.
 	*/
 	public API_Dataset add(Aspect a) {
-		aspects.add(a);
+		nameToAspect.put(a.getName(), a);
 		return this;
+	}
+	
+	public Aspect getAspectNamed(Shortname name) {
+		return nameToAspect.get(name);
 	}
 	
 	public boolean isHierarchy() {
@@ -205,7 +212,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
         }
         out.key(ASPECTS);
         out.startArray();
-        for (Iterator<Aspect> ai = aspects.iterator(); ai.hasNext();) {
+        for (Iterator<Aspect> ai = getAspects().iterator(); ai.hasNext();) {
             ai.next().writeJson(out, lang);
             if (ai.hasNext()) {
                 out.arraySep();
@@ -218,10 +225,11 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     class Writer implements JSONWritable {
         String lang;
         String uribase;
-        public Writer(String lang, String uribase) {  this.lang = lang; this.uribase = uribase; }
+        public Writer(String lang, String uribase) {  
+        	this.lang = lang; this.uribase = uribase; 
+        }
         
-        @Override
-        public void writeTo(JSFullWriter out) {
+        @Override public void writeTo(JSFullWriter out) {
             writeJson(out, lang, uribase);
         }
     }
@@ -229,10 +237,11 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     class ShortWriter implements JSONWritable {
         String lang;
         String uribase;
-        public ShortWriter(String lang, String uribase) {  this.lang = lang; this.uribase = uribase; }
+        public ShortWriter(String lang, String uribase) {  
+        	this.lang = lang; this.uribase = uribase; 
+        }
         
-        @Override
-        public void writeTo(JSFullWriter out) {
+        @Override public void writeTo(JSFullWriter out) {
             writeShortTo(out, lang, uribase);
         }
     }
