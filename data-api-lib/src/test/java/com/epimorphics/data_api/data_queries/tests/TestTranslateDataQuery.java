@@ -65,7 +65,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testUnfilteredSingleAspect() {
 		Problems p = new Problems();
-		List<Filter> filters = BunchLib.list();
+		List<Constraint> filters = BunchLib.list();
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		String sq = q.toSparql(p, dsX);
@@ -81,7 +81,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testSingleSort() {
 		Problems p = new Problems();
-		List<Filter> filters = BunchLib.list();
+		List<Constraint> filters = BunchLib.list();
 		List<Sort> sorts = BunchLib.list(new Sort(new Shortname(pm, "pre:X"), true));
 		DataQuery q = new DataQuery(Constraint.filters(filters), sorts);
 	//
@@ -98,7 +98,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testMultipleSorts() {
 		Problems p = new Problems();
-		List<Filter> filters = BunchLib.list();
+		List<Constraint> filters = BunchLib.list();
 		List<Sort> sorts = BunchLib.list
 			( new Sort(new Shortname(pm, "pre:X"), true)
 			, new Sort(new Shortname(pm, "pre:Y"), false)
@@ -121,8 +121,8 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleEqualityFilter() {
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
-		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		String sq = q.toSparql(p, dsX);	
@@ -162,8 +162,8 @@ public class TestTranslateDataQuery {
 	private void testSingleFilterWithSpecifiedOp(Operator op, String opSparql) {	
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range(op, BunchLib.list(Term.number(17))));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, new Range(op, BunchLib.list(Term.number(17))));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 //		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null).add(X);
@@ -183,8 +183,8 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleOneofFilter() {	
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range(Operator.ONEOF, BunchLib.list(Term.number(17), Term.number(99))));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, new Range(Operator.ONEOF, BunchLib.list(Term.number(17), Term.number(99))));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		String sq = q.toSparql(p, dsX);
@@ -199,23 +199,23 @@ public class TestTranslateDataQuery {
 		assertSameSelect( expected, sq );
 	}	
 	
-	@Test public void testSingleXBelowFilter() {
-		testSingleSimpleFilter
-			( X
-			, Operator.BELOW
-			, Term.URI("eh:/prefixPart/stairs")
-			, "<eh:/prefixPart/stairs> skos:narrower* ?pre_X"
-			);
-	}	
-	
-	@Test public void testSingleYBelowFilter() {
-		testSingleSimpleFilter
-			( Y
-			, Operator.BELOW
-			, Term.URI("eh:/prefixPart/stairs")
-			, "<eh:/prefixPart/stairs> pre:child* ?pre_Y"
-			);
-	}
+//	@Test public void testSingleXBelowFilter() {
+//		testSingleSimpleFilter
+//			( X
+//			, Operator.BELOW
+//			, Term.URI("eh:/prefixPart/stairs")
+//			, "<eh:/prefixPart/stairs> skos:narrower* ?pre_X"
+//			);
+//	}	
+//	
+//	@Test public void testSingleYBelowFilter() {
+//		testSingleSimpleFilter
+//			( Y
+//			, Operator.BELOW
+//			, Term.URI("eh:/prefixPart/stairs")
+//			, "<eh:/prefixPart/stairs> pre:child* ?pre_Y"
+//			);
+//	}
 	
 	@Test public void testSingleContainsFilter() {
 		testSingleSimpleFilter
@@ -237,7 +237,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testSingleSearchFilter() {
 		Problems p = new Problems();		
-		List<Filter> filters = BunchLib.list();
+		List<Constraint> filters = BunchLib.list();
 		SearchSpec s = new SearchSpec( "look for me");
 		List<SearchSpec> searches = BunchLib.list(s);
 		DataQuery q = new DataQuery(Constraint.filters(filters, searches));
@@ -258,8 +258,8 @@ public class TestTranslateDataQuery {
 	private void testSingleSimpleFilter(Aspect useAspect, Operator op, Term term, String filter) {
 		Aspect sn = useAspect;
 		Problems p = new Problems();		
-		Filter f = new Filter(sn, new Range(op, BunchLib.list(term)));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, new Range(op, BunchLib.list(term)));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//	
 		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
@@ -286,8 +286,8 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
-		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -330,7 +330,7 @@ public class TestTranslateDataQuery {
 	@Test public void testGlobalSearch() {		
 		Problems p = new Problems();
 		SearchSpec s = new SearchSpec("look for me");
-		ArrayList<Filter> noFilters = new ArrayList<Filter>();
+		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
 			( Constraint.filters(noFilters, BunchLib.list(s) )
 			, new ArrayList<Sort>()
@@ -358,7 +358,7 @@ public class TestTranslateDataQuery {
 		Problems p = new Problems();
 		Shortname someProperty = X.getName();
 		SearchSpec s = new SearchSpec("look for me", null, someProperty );
-		ArrayList<Filter> noFilters = new ArrayList<Filter>();
+		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
 			( Constraint.filters( noFilters, BunchLib.list(s))
 			, new ArrayList<Sort>()
@@ -386,8 +386,8 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
-		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		final API_Dataset dsXYopt = new API_Dataset(Setup.pseudoRoot(), null).add(X).add(Yopt);
@@ -408,9 +408,9 @@ public class TestTranslateDataQuery {
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
 		Aspect snB = new Aspect( pm, "pre:Y" );
-		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
-		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
-		List<Filter> filters = BunchLib.list(fA, fB);
+		Constraint fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Constraint fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Constraint> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Constraint.filters(filters), new ArrayList<Sort>(), Slice.create(17));
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -431,9 +431,9 @@ public class TestTranslateDataQuery {
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
 		Aspect snB = new Aspect( pm, "pre:Y" );
-		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
-		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
-		List<Filter> filters = BunchLib.list(fA, fB);
+		Constraint fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Constraint fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Constraint> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Constraint.filters(filters), new ArrayList<Sort>(), Slice.create(null, 1066));
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -454,9 +454,9 @@ public class TestTranslateDataQuery {
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
 		Aspect snB = new Aspect( pm, "pre:Y" );
-		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
-		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
-		List<Filter> filters = BunchLib.list(fA, fB);
+		Constraint fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Constraint fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Constraint> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Constraint.filters(filters), new ArrayList<Sort>(), Slice.create(17, 1829));
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -477,9 +477,9 @@ public class TestTranslateDataQuery {
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect(pm, "pre:X");
 		Aspect snB = new Aspect(pm, "pre:Y" );
-		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
-		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
-		List<Filter> filters = BunchLib.list(fA, fB);
+		Constraint fA = new Filter(snA, Range.EQ(Term.number(8)));
+		Constraint fB = new Filter(snB, Range.EQ(Term.number(9)));
+		List<Constraint> filters = BunchLib.list(fA, fB);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -496,7 +496,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testDatasetRestriction() {
 		Problems p = new Problems();
-		DataQuery q = new DataQuery(Constraint.filters(BunchLib.<Filter>list()));
+		DataQuery q = new DataQuery(Constraint.filters(BunchLib.<Constraint>list()));
 	//
 		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
 			.setBaseQuery("?item pre:has pre:value")
@@ -509,7 +509,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testDatasetRestrictionWithAspects() {
 		Problems p = new Problems();
-		DataQuery q = new DataQuery(Constraint.filters(BunchLib.<Filter>list()));
+		DataQuery q = new DataQuery(Constraint.filters(BunchLib.<Constraint>list()));
 	//		
 		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
 			.add(Y)

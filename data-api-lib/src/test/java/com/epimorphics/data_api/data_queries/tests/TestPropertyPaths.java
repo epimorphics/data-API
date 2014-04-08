@@ -35,8 +35,8 @@ public class TestPropertyPaths {
 	@Test public void testQueryUsesAspectPropertyPath() {
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
-		Filter f = new Filter(sn, new Range(Operator.GT, BunchLib.list(Term.number(17))));
-		List<Filter> filters = BunchLib.list(f);
+		Constraint f = new Filter(sn, new Range(Operator.GT, BunchLib.list(Term.number(17))));
+		List<Constraint> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)

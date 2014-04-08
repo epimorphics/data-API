@@ -36,10 +36,10 @@ public class TestMultipleFilters {
 		Aspect local = new Aspect(pm, "pre:local");
 		Problems p = new Problems();
 	//		
-		Filter lt = new Filter(local, new Range(Operator.LT, BunchLib.list(Term.decimal("17"))));
-		Filter gt = new Filter(local, new Range(Operator.GT, BunchLib.list(Term.decimal("42"))));
+		Constraint lt = new Filter(local, new Range(Operator.LT, BunchLib.list(Term.decimal("17"))));
+		Constraint gt = new Filter(local, new Range(Operator.GT, BunchLib.list(Term.decimal("42"))));
 	//
-		List<Filter> filters = BunchLib.list(lt, gt);
+		List<Constraint> filters = BunchLib.list(lt, gt);
 		
 		DataQuery dq = new DataQuery(Constraint.filters(filters));
 

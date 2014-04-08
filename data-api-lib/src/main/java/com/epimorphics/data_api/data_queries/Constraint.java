@@ -26,44 +26,6 @@ public abstract class Constraint {
 	public Constraint() {
 	}
 	
-	public abstract static class Bool extends Constraint {
-		
-		final List<Constraint> operands;
-
-		public Bool(List<Constraint> operands ) {
-			this.operands = operands;
-		}
-		
-		@Override public abstract void toSparql(ToSparqlContext cx);
-		
-		@Override protected boolean same(Constraint other) {
-			List<Constraint> otherOperands = ((Bool) other).operands;
-			return operands.equals(otherOperands);
-		}
-		
-		@Override public String toString() {
-			return "(" + getClass().getName() + " " + operands + ")";
-		}
-	}
-	
-	public static class True extends Constraint {
-		
-		public True() {
-		}
-		
-		@Override public void toSparql(ToSparqlContext cx) {
-			cx.comment("True");
-		}
-
-		@Override public String toString() {
-			return "True";
-		}
-
-		@Override protected boolean same(Constraint other) {
-			return true;
-		}
-	}
-	
 	public static final Constraint EMPTY = new True();
 	
 
@@ -81,47 +43,19 @@ public abstract class Constraint {
 		return new Not(operands);
 	}
 	
-	public static Constraint filters(List<Filter> filters) {
+	public static Constraint filters(List<Constraint> filters) {
 		return filters(filters, SearchSpec.none());
 	}
 	
-	public static Constraint filters(List<Filter> filters, List<SearchSpec> searchPatterns ) {
+	public static Constraint filters(List<Constraint> filters, List<SearchSpec> searchPatterns ) {
 		List<Constraint> operands = new ArrayList<Constraint>(filters.size());
-		for (Filter f: filters) operands.add(Constraint.wrap(f));	
-		for (SearchSpec s: searchPatterns) operands.add(s);
+		// for (Filter f: filters) operands.add(Constraint.wrap(f));
+		operands.addAll(filters);
+		operands.addAll(searchPatterns);
+//		for (SearchSpec s: searchPatterns) operands.add(s);
 		return and(operands);
 	}
-	
-	private static Constraint wrap(Filter f) {
-		if (f.range.op.equals(Operator.BELOW)) return new Below(f);
-		return f;
-	}
 
-	public static class Below extends Constraint {
-		
-		final Filter f;
-		
-		public Below(Filter f) {
-			this.f = f;
-		}
-
-		@Override public void toSparql(ToSparqlContext cx) {
-			cx.generateBelow(f);			
-		}
-
-		@Override public String toString() {
-			return f.toString();
-		}
-
-		@Override protected boolean same(Constraint other) {
-			return same((Below) other);
-		}
-
-		protected boolean same(Below other) {
-			return f.equals(other.f);
-		}	
-	}
-	
 	public static class And extends Bool {
 
 		public And(List<Constraint> operands) {
@@ -188,7 +122,7 @@ public abstract class Constraint {
 	}
 
 	// TODO not
-	public static Constraint build(List<Filter> filters, List<SearchSpec> searchPatterns, Map<String, List<Constraint>> compositions) {
+	public static Constraint build(List<Constraint> filters, List<SearchSpec> searchPatterns, Map<String, List<Constraint>> compositions) {
 		
 //		System.err.println( ">> build: filters  " + filters );
 //		System.err.println( ">> build: searches " + searchPatterns );			

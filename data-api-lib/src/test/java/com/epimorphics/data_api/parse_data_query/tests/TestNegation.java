@@ -51,7 +51,7 @@ public class TestNegation {
 	private Constraint aFilter(String name, Operator op, Term t) {
 		Aspect sn = new Aspect(pm, name);
 		Range r = new Range(op, BunchLib.list(t));
-		Filter f = new Filter(sn, r);
+		Constraint f = new Filter(sn, r);
 		return Constraint.filters(BunchLib.list(f));
 	}
 	

@@ -17,14 +17,13 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.Constraint.And;
-import com.epimorphics.data_api.data_queries.Constraint.Below;
-import com.epimorphics.data_api.data_queries.Constraint.Bool;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.query.ResultSet;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class DataQuery {
 	
@@ -94,15 +93,15 @@ public class DataQuery {
 		}
 	}
 
-	public List<Filter> filters() {
-		ArrayList<Filter> result = new ArrayList<Filter>();
+	public List<Constraint> filters() {
+		ArrayList<Constraint> result = new ArrayList<Constraint>();
 		if (c instanceof And) 
 			for (Constraint cc: ((And) c).operands) {
 				if (cc instanceof Filter) result.add( ((Filter) cc) );
-				if (cc instanceof Below) result.add( ((Below) cc).f );
+				if (cc instanceof Below) result.add( ((Below) cc) );
 			}
 		if (c instanceof Filter) result.add( ((Filter) c) );
-		if (c instanceof Below) result.add( ((Below) c).f );
+		if (c instanceof Below) result.add( ((Below) c) );
 		return result;
 	}
     
@@ -302,10 +301,25 @@ public class DataQuery {
 			out.append(")\n");
 		}
 
-		@Override public void generateBelow(Filter f) {
-			comment("@" + f.range.op.JSONname, f);
-			f.range.op.asConstraint( f, out, api );
-			out.append("\n");
+		@Override public void generateBelow(Below b) {
+			
+			comment("@below", b);
+//			f.range.op.asConstraint( f, out, api );
+//			out.append("\n");	
+			
+			PrefixMapping pm = api.getPrefixes();
+			String fVar = b.a.asVar(); 
+			String value = b.v.asSparqlTerm(pm);			
+			Aspect x = b.a;
+			String below = x.getBelowPredicate(api);
+			out.append(value)
+				.append(" ")
+				.append(below)
+				.append("* ")
+				.append(fVar)
+				.append(" .")
+				.append("\n")
+				;
 		}
 
 		@Override public void generateSearch(SearchSpec s) {

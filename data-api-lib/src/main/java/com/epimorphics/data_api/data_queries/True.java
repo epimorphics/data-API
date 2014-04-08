@@ -5,25 +5,20 @@
 */
 package com.epimorphics.data_api.data_queries;
 
-public interface ToSparqlContext {
-
-	void notImplemented(Constraint c);
+public class True extends Constraint {
 	
-	void comment(String message, Object... values);
-
-	void generateFilter(Filter f);
+	public True() {
+	}
 	
-	void generateBelow(Below b);
+	@Override public void toSparql(ToSparqlContext cx) {
+		cx.comment("True");
+	}
 
-	void generateSearch(SearchSpec s);
-	
-	void nest();
+	@Override public String toString() {
+		return "True";
+	}
 
-	void unNest();
-
-	Constraint begin(Constraint c);
-
-	void end();
-
-	void union();
+	@Override protected boolean same(Constraint other) {
+		return true;
+	}
 }

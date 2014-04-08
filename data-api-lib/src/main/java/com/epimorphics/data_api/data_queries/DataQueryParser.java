@@ -52,13 +52,14 @@ public class DataQueryParser {
 	}
 	
 	final Set<String> aspectURIs = new HashSet<String>();
-	final List<Filter> filters = new ArrayList<Filter>();
+	final List<Constraint> filters = new ArrayList<Constraint>();
 	final List<Sort> sortby = new ArrayList<Sort>();
 	final List<Guard> guards = new ArrayList<Guard>();
 	
 	final Map<String, List<Constraint>> compositions = new HashMap<String, List<Constraint>>();
 
 	List<SearchSpec> searchPatterns = SearchSpec.none();
+	
 	Integer length = null, offset = null;
 	boolean isCount = false;
 	
@@ -114,7 +115,10 @@ public class DataQueryParser {
 						List<Term> v = DataQueryParser.jsonToTerms(p, pm, operand);
 						if (isKnownOp(opName)) {
 							Operator op = Operator.lookup(opName);
-							filters.add( new Filter(a, new Range(op, v) ) );
+							if (op == Operator.BELOW)
+								filters.add( new Below(a, v.get(0)) );
+							else
+								filters.add( new Filter(a, new Range(op, v) ) );
 						} else {
 							p.add("unknown operator '" + opName + "' in data query.");
 						}

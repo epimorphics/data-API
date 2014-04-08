@@ -17,6 +17,8 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.Below;
+import com.epimorphics.data_api.data_queries.Constraint;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
@@ -143,7 +145,25 @@ public class TestParseDataQueryOperators {
 	}
 	
 	@Test public void testSingleBelow() {
-		testSingleOperator(Operator.BELOW, "{'@id': 'eh:/resource'}", Term.URI("eh:/resource") );
+		Operator op = Operator.BELOW;
+		Term value = Term.URI("eh:/resource");
+		Aspect sn = new Aspect(pm, "pre:local");
+		String incoming = "{'pre:local': {'@_OP': _ARGS}}"
+			.replaceAll("_OP", op.JSONname())
+			.replaceAll("_ARGS", "{'@id': 'eh:/resource'}")
+			;
+		
+		JsonObject jo = JSON.parse(incoming);		
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);
+//
+		if (p.size() > 0) fail("problems detected in parser: " + p.getProblemStrings());
+		assertTrue(q.slice().isAll());
+		assertNull(q.lang());
+		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
+//
+		List<Constraint> expected = BunchLib.list((Constraint) new Below(sn, value));		
+		assertEquals(expected, q.filters());
 	}
 		
 	void testSingleOperator(Operator op, String operand, Term...values) {
