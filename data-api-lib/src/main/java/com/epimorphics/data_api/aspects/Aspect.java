@@ -75,6 +75,10 @@ public class Aspect extends ResourceBasedConfig {
 	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
 	}
 	
+	@Override public int hashCode() {
+		return name.hashCode();
+	}
+	
 	@Override public String toString() {
 		return name.toString();
 	}

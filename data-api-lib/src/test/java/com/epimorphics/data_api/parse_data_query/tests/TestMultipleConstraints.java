@@ -13,6 +13,7 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
@@ -34,7 +35,7 @@ public class TestMultipleConstraints {
 	
 	@Test public void testParseMultipleConstraints() {
 		PrefixMapping pm = ds.getPrefixes();
-		Shortname local = new Shortname(pm, "pre:local");
+		Aspect local = new Aspect(pm, "pre:local");
 		String incoming = "{'pre:local': {'@lt': 17, '@gt': 42}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();

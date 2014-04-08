@@ -9,9 +9,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Range;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.test_support.Asserts;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -37,10 +37,7 @@ public class TestFilter {
 	
 	static PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart").lock();
 	
-	Shortname sn(String name) {
-		return new Shortname(pm, "pre:" + name);
+	Aspect sn(String name) {
+		return new Aspect( pm, "pre:" + name);
 	}
-	
-	
-
 }

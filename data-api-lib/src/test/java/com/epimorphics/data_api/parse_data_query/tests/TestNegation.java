@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Operator;
@@ -49,7 +50,7 @@ public class TestNegation {
 	}
 
 	private Composition aFilter(String name, Operator op, Term t) {
-		Shortname sn = new Shortname(pm, name);
+		Aspect sn = new Aspect(pm, name);
 		Range r = new Range(op, BunchLib.list(t));
 		Filter f = new Filter(sn, r);
 		return Composition.filters(BunchLib.list(f));

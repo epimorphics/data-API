@@ -289,13 +289,14 @@ public abstract class Composition {
 			throw new UnsupportedOperationException("cannot negate NOT");			
 		} else if (x instanceof FilterWrap) {
 			FilterWrap fs = (FilterWrap) x;
+			
 			return new FilterWrap(negate(fs.f));
 		} 
 		throw new BrokenException("Unhandled negate: " + x);
 	}
 
 	private static Filter negate(Filter f) {
-		return new Filter(f.name, new Range(f.range.op.negate(), f.range.operands));
+		return new Filter(f.a, new Range(f.range.op.negate(), f.range.operands));
 	}	
 
 }

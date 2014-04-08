@@ -16,6 +16,7 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
@@ -55,7 +56,7 @@ public class TestParseDataQueryOperators {
 		;
 
 	@Test public void testSingleFilterQuery() {
-		Shortname sn = new Shortname(pm, "pre:local");
+		Aspect sn = new Aspect(pm, "pre:local");
 		String incoming = "{'pre:local': {'@eq': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
@@ -95,7 +96,7 @@ public class TestParseDataQueryOperators {
 	}
 
 	private void testSingleFilterQueryWithNumericOp(Operator op) {
-		Shortname sn = new Shortname(pm, "pre:local");
+		Aspect sn = new Aspect(pm, "pre:local");
 		String incoming = "{'pre:local': {'@" + op + "': 17}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
@@ -146,7 +147,7 @@ public class TestParseDataQueryOperators {
 	}
 		
 	void testSingleOperator(Operator op, String operand, Term...values) {
-		Shortname sn = new Shortname(pm, "pre:local");
+		Aspect sn = new Aspect(pm, "pre:local");
 		String incoming = "{'pre:local': {'@_OP': _ARGS}}"
 			.replaceAll("_OP", op.JSONname())
 			.replaceAll("_ARGS", operand)

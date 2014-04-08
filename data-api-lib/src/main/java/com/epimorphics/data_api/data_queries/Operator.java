@@ -122,7 +122,7 @@ public abstract class Operator {
 			, StringBuilder sb
 			, API_Dataset api
 			) {
-			String fVar = filter.name.asVar();
+			String fVar = filter.a.asVar();
 			PrefixMapping pm = api.getPrefixes();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
@@ -154,7 +154,7 @@ public abstract class Operator {
 			PrefixMapping pm = api.getPrefixes();
 			List<Term> operands = filter.range.operands;
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			String fVar = filter.name.asVar();
+			String fVar = filter.a.asVar();
 			sb.append(" ")
 				.append( needsNot ? "!" : "")
 				.append( functionName )
@@ -183,7 +183,7 @@ public abstract class Operator {
 			, API_Dataset api
 			) {
 			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.name.asVar();
+			String fVar = filter.a.asVar();
 			String orOp = "";
 			sb.append(" ");
 			for (Term v: filter.range.operands) {
@@ -208,7 +208,7 @@ public abstract class Operator {
 			, API_Dataset api
 			) {
 			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.name.asVar();
+			String fVar = filter.a.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
 				.append(fVar)
@@ -235,9 +235,9 @@ public abstract class Operator {
 			, API_Dataset api
 			) {
 			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.name.asVar();
+			String fVar = filter.a.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);			
-			Aspect x = api.getAspectNamed(filter.name);
+			Aspect x = api.getAspectNamed(filter.a.getName());
 			String below = x.getBelowPredicate(api);
 			sb.append(value)
 				.append(" ")
@@ -265,7 +265,7 @@ public abstract class Operator {
 			, API_Dataset api
 			) {	
 			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.name.asVar();
+			String fVar = filter.a.getName().asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(fVar)
 				.append(" <http://jena.apache.org/text#query> ")

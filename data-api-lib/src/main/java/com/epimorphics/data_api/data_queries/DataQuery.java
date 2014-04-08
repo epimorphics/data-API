@@ -278,7 +278,7 @@ public class DataQuery {
 			if (c instanceof FilterWrap) {
 				Filter f = ((FilterWrap) c).f;
 				if (f.range.op.equals(Operator.EQ)) {
-					result.put(f.name, f.range.operands.get(0));
+					result.put(f.a.getName(), f.range.operands.get(0));
 					return Composition.EMPTY;
 				} else {
 					return c;

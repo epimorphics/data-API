@@ -120,7 +120,7 @@ public class TestTranslateDataQuery {
 		
 	@Test public void testSingleEqualityFilter() {
 		Problems p = new Problems();
-		Shortname sn = new Shortname( pm, "pre:X" );
+		Aspect sn = new Aspect( pm, "pre:X" );
 		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
@@ -161,7 +161,7 @@ public class TestTranslateDataQuery {
 
 	private void testSingleFilterWithSpecifiedOp(Operator op, String opSparql) {	
 		Problems p = new Problems();
-		Shortname sn = new Shortname( pm, "pre:X" );
+		Aspect sn = new Aspect( pm, "pre:X" );
 		Filter f = new Filter(sn, new Range(op, BunchLib.list(Term.number(17))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
@@ -182,7 +182,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testSingleOneofFilter() {	
 		Problems p = new Problems();
-		Shortname sn = new Shortname( pm, "pre:X" );
+		Aspect sn = new Aspect( pm, "pre:X" );
 		Filter f = new Filter(sn, new Range(Operator.ONEOF, BunchLib.list(Term.number(17), Term.number(99))));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
@@ -256,7 +256,7 @@ public class TestTranslateDataQuery {
 	}
 	
 	private void testSingleSimpleFilter(Aspect useAspect, Operator op, Term term, String filter) {
-		Shortname sn = useAspect.getName();
+		Aspect sn = useAspect;
 		Problems p = new Problems();		
 		Filter f = new Filter(sn, new Range(op, BunchLib.list(term)));
 		List<Filter> filters = BunchLib.list(f);
@@ -285,7 +285,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
 		Problems p = new Problems();
-		Shortname sn = new Shortname( pm, "pre:X" );
+		Aspect sn = new Aspect( pm, "pre:X" );
 		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
@@ -385,7 +385,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
 		Problems p = new Problems();
-		Shortname sn = new Shortname( pm, "pre:X" );
+		Aspect sn = new Aspect( pm, "pre:X" );
 		Filter f = new Filter(sn, Range.EQ(Term.number(17)));
 		List<Filter> filters = BunchLib.list(f);
 		DataQuery q = new DataQuery(Composition.filters(filters));
@@ -406,8 +406,8 @@ public class TestTranslateDataQuery {
 	@Test public void testLengthCopied() {
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
-		Shortname snA = new Shortname( pm, "pre:X" );
-		Shortname snB = new Shortname( pm, "pre:Y" );
+		Aspect snA = new Aspect( pm, "pre:X" );
+		Aspect snB = new Aspect( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
 		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);
@@ -429,8 +429,8 @@ public class TestTranslateDataQuery {
 	@Test public void testOffsetCopied() {
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
-		Shortname snA = new Shortname( pm, "pre:X" );
-		Shortname snB = new Shortname( pm, "pre:Y" );
+		Aspect snA = new Aspect( pm, "pre:X" );
+		Aspect snB = new Aspect( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
 		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);
@@ -452,8 +452,8 @@ public class TestTranslateDataQuery {
 	@Test public void testLengthAndOffsetCopied() {
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
-		Shortname snA = new Shortname( pm, "pre:X" );
-		Shortname snB = new Shortname( pm, "pre:Y" );
+		Aspect snA = new Aspect( pm, "pre:X" );
+		Aspect snB = new Aspect( pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
 		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);
@@ -475,8 +475,8 @@ public class TestTranslateDataQuery {
 	@Test public void testDoubleEqualityFilter() {
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
-		Shortname snA = new Shortname( pm, "pre:X" );
-		Shortname snB = new Shortname( pm, "pre:Y" );
+		Aspect snA = new Aspect(pm, "pre:X");
+		Aspect snB = new Aspect(pm, "pre:Y" );
 		Filter fA = new Filter(snA, Range.EQ(Term.number(8)));
 		Filter fB = new Filter(snB, Range.EQ(Term.number(9)));
 		List<Filter> filters = BunchLib.list(fA, fB);

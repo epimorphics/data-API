@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Composition;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
@@ -32,7 +33,7 @@ public class TestMultipleFilters {
 	
 	@Test public void testDoubleFilter() {
 		PrefixMapping pm = ds.getPrefixes();
-		Shortname local = new Shortname(pm, "pre:local");
+		Aspect local = new Aspect(pm, "pre:local");
 		Problems p = new Problems();
 	//		
 		Filter lt = new Filter(local, new Range(Operator.LT, BunchLib.list(Term.decimal("17"))));

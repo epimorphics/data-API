@@ -5,22 +5,24 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import com.epimorphics.data_api.aspects.Aspect;
+
 public class Filter {
 	
 	final Range range;
-	final Shortname name;
+	final Aspect a;
 	
-	public Filter(Shortname name, Range range) {
+	public Filter(Aspect a, Range range) {
+		this.a = a;
 		this.range = range;
-		this.name = name;
 	}
 	
 	@Override public String toString() {
-		return "<filter " + name + ": " + range + ">";
+		return "<filter " + a.getName() + ": " + range + ">";
 	}
 	
 	@Override public int hashCode() {
-		return name.hashCode() ^ range.hashCode();
+		return a.getName().hashCode() ^ range.hashCode();
 	}
 	
 	@Override public boolean equals(Object other) {
@@ -28,7 +30,7 @@ public class Filter {
 	}
 
 	private boolean same(Filter other) {
-		return this.name.equals(other.name) && this.range.equals(other.range);
+		return this.a.getName().equals(other.a.getName()) && this.range.equals(other.range);
 	}
 
 	public Operator getRangeOp() {
