@@ -10,11 +10,10 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Composition;
+import com.epimorphics.data_api.data_queries.Constraint;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -43,16 +42,41 @@ public class TestNegation {
 		( Operator expectedOp, Term expectedValue
 		, Operator givenOp, Term givenValue
 		) {
-		Composition arg = aFilter("spoo:local", givenOp, givenValue);
-		Composition negated = Composition.negate( BunchLib.list(arg) );
-		Composition expected = aFilter("spoo:local", expectedOp, expectedValue);
+		Constraint arg = aFilter("spoo:local", givenOp, givenValue);
+		Constraint negated = Constraint.negate( BunchLib.list(arg) );
+		Constraint expected = aFilter("spoo:local", expectedOp, expectedValue);
 		assertEquals( expected, negated );
 	}
 
-	private Composition aFilter(String name, Operator op, Term t) {
+	private Constraint aFilter(String name, Operator op, Term t) {
 		Aspect sn = new Aspect(pm, name);
 		Range r = new Range(op, BunchLib.list(t));
 		Filter f = new Filter(sn, r);
-		return Composition.filters(BunchLib.list(f));
+		return Constraint.filters(BunchLib.list(f));
 	}
+	
+	
+//	@Test public void testNegateOptionalFilter() {
+//		Term v = Term.integer("17");
+//		Aspect A = new Aspect(pm, "spoo:A").setIsOptional(true);
+//		
+//		Range r = new Range(Operator.LE, BunchLib.list(v));
+//		Filter f = new Filter(A, r);
+//		Composition c = Composition.filters(BunchLib.list(f));
+//		
+//		System.err.println( ">> c = " + c );
+//		
+//		Range notR = new Range(Operator.GT, BunchLib.list(v));
+//		Filter notF = new Filter(A, notR );
+//		
+//		Filter unboundA = new UnboundFilter(A);
+//		
+//		Composition expected = Composition.smallOr( notF, unboundA );
+//		
+//		assertEquals(expected, Composition.negate(BunchLib.list(c)));
+//		
+//	}
+	
+	
+	
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Composition;
+import com.epimorphics.data_api.data_queries.Constraint;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Operator;
@@ -37,7 +37,7 @@ public class TestPropertyPaths {
 		Aspect sn = new Aspect( pm, "pre:X" );
 		Filter f = new Filter(sn, new Range(Operator.GT, BunchLib.list(Term.number(17))));
 		List<Filter> filters = BunchLib.list(f);
-		DataQuery q = new DataQuery(Composition.filters(filters));
+		DataQuery q = new DataQuery(Constraint.filters(filters));
 	//
 		final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 			.add(X)

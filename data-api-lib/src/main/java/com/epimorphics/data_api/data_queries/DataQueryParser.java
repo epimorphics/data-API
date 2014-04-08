@@ -56,7 +56,7 @@ public class DataQueryParser {
 	final List<Sort> sortby = new ArrayList<Sort>();
 	final List<Guard> guards = new ArrayList<Guard>();
 	
-	final Map<String, List<Composition>> compositions = new HashMap<String, List<Composition>>();
+	final Map<String, List<Constraint>> compositions = new HashMap<String, List<Constraint>>();
 
 	List<SearchSpec> searchPatterns = SearchSpec.none();
 	Integer length = null, offset = null;
@@ -72,9 +72,9 @@ public class DataQueryParser {
 		this.pm = dataset.getPrefixes();
 	//
 		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
-		compositions.put("@or", new ArrayList<Composition>() );
-		compositions.put("@and", new ArrayList<Composition>() );
-		compositions.put("@not", new ArrayList<Composition>() );
+		compositions.put("@or", new ArrayList<Constraint>() );
+		compositions.put("@and", new ArrayList<Constraint>() );
+		compositions.put("@not", new ArrayList<Constraint>() );
 	}
 
 	private DataQuery parseDataQuery(JsonObject jo) {		
@@ -86,7 +86,7 @@ public class DataQueryParser {
 				parseAspectMember(jo, key, value);
 			}
 		}
-		Composition c = Composition.build(filters, searchPatterns, compositions);
+		Constraint c = Constraint.build(filters, searchPatterns, compositions);
 		return new DataQuery(c, sortby, guards, Slice.create(length, offset, isCount));
 	}
 
@@ -147,7 +147,7 @@ public class DataQueryParser {
 		        guards.add( new ChildofGuard(jsonResourceToTerm(p, pm, value), dataset.getHierarchy()) );
 		    }
 		} else if (key.equals("@and") || key.equals("@or") || key.equals("@not")) {			
-			List<Composition> these = compositions.get(key);
+			List<Constraint> these = compositions.get(key);
 			if (value.isArray()) {
 				for (JsonValue element: value.getAsArray()) {
 					DataQuery subQuery = DoQuietly(p, dataset, element);
@@ -169,7 +169,7 @@ public class DataQueryParser {
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
 			
-			String pattern = getString(ob, "@value"); // ob.get("@value").getAsString().value();
+			String pattern = getString(ob, "@value");
 			String property = getString(ob, "@property");
 			
 			Shortname shortProperty = new Shortname(pm, property);

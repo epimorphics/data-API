@@ -16,11 +16,9 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
-import com.epimorphics.data_api.data_queries.Composition.And;
-import com.epimorphics.data_api.data_queries.Composition.BelowWrap;
-import com.epimorphics.data_api.data_queries.Composition.FilterWrap;
-import com.epimorphics.data_api.data_queries.Composition.Context;
-import com.epimorphics.data_api.data_queries.Composition.SearchWrap;
+import com.epimorphics.data_api.data_queries.Constraint.And;
+import com.epimorphics.data_api.data_queries.Constraint.Below;
+import com.epimorphics.data_api.data_queries.Constraint.Bool;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
@@ -34,25 +32,25 @@ public class DataQuery {
 	final Slice slice;
 	final List<Guard> guards; 
 	
-	final Composition c;
+	final Constraint c;
 	
-	public DataQuery(Composition c) {
+	public DataQuery(Constraint c) {
 		this(c, new ArrayList<Sort>() );
 	}
 
-	public DataQuery(Composition c, List<Sort> sortby ) {
+	public DataQuery(Constraint c, List<Sort> sortby ) {
         this(c, sortby, null, Slice.all());
     }
 
-    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards ) {
+    public DataQuery(Constraint c, List<Sort> sortby, List<Guard> guards ) {
         this(c, sortby, guards, Slice.all());
     }
     
-    public DataQuery(Composition c, List<Sort> sortby, Slice slice) {
+    public DataQuery(Constraint c, List<Sort> sortby, Slice slice) {
         this(c, sortby, null, slice);
     }    
     
-    public DataQuery(Composition c, List<Sort> sortby, List<Guard> guards, Slice slice) {
+    public DataQuery(Constraint c, List<Sort> sortby, List<Guard> guards, Slice slice) {
 		this.c = c;
 		this.sortby = sortby;
 		this.slice = slice;
@@ -88,23 +86,23 @@ public class DataQuery {
 		return result;
 	}
 	
-	private void hackery(List<SearchSpec> result, Composition c) {
-		if (c instanceof SearchWrap) {
-			result.add(((SearchWrap) c).s);
-		} else {
-			for (Composition x: c.operands) hackery(result, x);
+	private void hackery(List<SearchSpec> result, Constraint c) {
+		if (c instanceof SearchSpec) {
+			result.add(((SearchSpec) c));
+		} else if (c instanceof Bool) {
+			for (Constraint x: ((Bool) c).operands) hackery(result, x);
 		}
 	}
 
 	public List<Filter> filters() {
 		ArrayList<Filter> result = new ArrayList<Filter>();
 		if (c instanceof And) 
-			for (Composition cc: c.operands) {
-				if (cc instanceof FilterWrap) result.add( ((FilterWrap) cc).f );
-				if (cc instanceof BelowWrap) result.add( ((BelowWrap) cc).f );
+			for (Constraint cc: ((And) c).operands) {
+				if (cc instanceof Filter) result.add( ((Filter) cc) );
+				if (cc instanceof Below) result.add( ((Below) cc).f );
 			}
-		if (c instanceof FilterWrap) result.add( ((FilterWrap) c).f );
-		if (c instanceof BelowWrap) result.add( ((BelowWrap) c).f );
+		if (c instanceof Filter) result.add( ((Filter) c) );
+		if (c instanceof Below) result.add( ((Below) c).f );
 		return result;
 	}
     
@@ -113,7 +111,7 @@ public class DataQuery {
 			StringBuilder out = new StringBuilder();
 			ContextImpl rx = new ContextImpl( out, this, p, api );
 			
-			Composition adjusted = rx.begin(c);
+			Constraint adjusted = rx.begin(c);
 			adjusted.toSparql(rx);
 			rx.end();
 			
@@ -152,7 +150,7 @@ public class DataQuery {
     		;
     }
     	
-	static class ContextImpl implements Context {
+	static class ContextImpl implements ToSparqlContext {
 
 		final Problems p;
 		final DataQuery dq;
@@ -175,7 +173,7 @@ public class DataQuery {
 			for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 		}
 		
-		public Composition begin(Composition c) {
+		public Constraint begin(Constraint c) {
 			comment("begin a SELECT query");
 			generateSelect();
 			out.append("WHERE {\n");
@@ -219,7 +217,7 @@ public class DataQuery {
 			out.append("\n");
 		}
 		
-		public Composition queryCore(Composition c) {
+		public Constraint queryCore(Constraint c) {
 			List<Guard> guards = dq.guards;
 	        boolean baseQueryNeeded = true;  
 	        for (Guard guard : guards) {
@@ -244,12 +242,12 @@ public class DataQuery {
 	        return declareAspectVars(c);
 		}
 
-		private Composition declareAspectVars(Composition c) {
+		private Constraint declareAspectVars(Constraint c) {
 			int nb = ordered.size();
 			comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
 		//
 			Map<Shortname, Term> equalities = new HashMap<Shortname, Term>();
-			Composition adjusted = findEqualities(equalities, c);
+			Constraint adjusted = findEqualities(equalities, c);
 		//
 			for (Aspect x: ordered) {
 				String fVar = x.asVar();
@@ -274,25 +272,25 @@ public class DataQuery {
 			return adjusted;
 		}
 		
-		private Composition findEqualities(Map<Shortname, Term> result, Composition c) {
-			if (c instanceof FilterWrap) {
-				Filter f = ((FilterWrap) c).f;
+		private Constraint findEqualities(Map<Shortname, Term> result, Constraint c) {
+			if (c instanceof Filter) {
+				Filter f = ((Filter) c);
 				if (f.range.op.equals(Operator.EQ)) {
 					result.put(f.a.getName(), f.range.operands.get(0));
-					return Composition.EMPTY;
+					return Constraint.EMPTY;
 				} else {
 					return c;
 				}
 			} else if (c instanceof And) {
-				List<Composition> operands = new ArrayList<Composition>();
-				for (Composition x: c.operands) operands.add( findEqualities(result, x) );
-				return Composition.and(operands);
+				List<Constraint> operands = new ArrayList<Constraint>();
+				for (Constraint x: ((And) c).operands) operands.add( findEqualities(result, x) );
+				return Constraint.and(operands);
 			} else {
 				return c;
 			}
 		}
 
-		@Override public void notImplemented(Composition c) {
+		@Override public void notImplemented(Constraint c) {
 			System.err.println( ">> not implemented: " + c );
 			comment("not implemented: " + c.toString());
 		}
@@ -300,13 +298,13 @@ public class DataQuery {
 		@Override public void generateFilter(Filter f) {
 			comment("@" + f.range.op.JSONname, f);
 			out.append("  FILTER(");
-			f.range.op.asConstraint( f, out, api	);
+			f.range.op.asConstraint( f, out, api );
 			out.append(")\n");
 		}
 
 		@Override public void generateBelow(Filter f) {
 			comment("@" + f.range.op.JSONname, f);
-			f.range.op.asConstraint( f, out, api	);
+			f.range.op.asConstraint( f, out, api );
 			out.append("\n");
 		}
 

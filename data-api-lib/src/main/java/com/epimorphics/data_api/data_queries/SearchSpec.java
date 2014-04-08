@@ -15,7 +15,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
 
-public class SearchSpec {
+public class SearchSpec extends Constraint {
 
 	private final String pattern;
 	private final Shortname aspectName;
@@ -129,11 +129,11 @@ public class SearchSpec {
 			^ (aspectName == null ? 0 : aspectName.hashCode())
 			;
 	}
-	
-	@Override public boolean equals(Object other) {
-		return other instanceof SearchSpec && same( (SearchSpec) other );
-	}
 
+	@Override protected boolean same(Constraint other) {
+		return same((SearchSpec) other);
+	}
+	
 	private boolean same(SearchSpec other) {
 		return
 			(aspectName == null ? other.aspectName == null : aspectName.equals(other.aspectName))
@@ -152,5 +152,9 @@ public class SearchSpec {
 
 	public static List<SearchSpec> none() {
 		return new ArrayList<SearchSpec>();
+	}
+
+	@Override public void toSparql(ToSparqlContext cx) {
+		cx.generateSearch(this);
 	}
 }
