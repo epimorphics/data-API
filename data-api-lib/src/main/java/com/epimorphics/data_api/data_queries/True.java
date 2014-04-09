@@ -5,12 +5,14 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import com.hp.hpl.jena.shared.BrokenException;
+
 public class True extends Constraint {
 	
 	public True() {
 	}
 	
-	@Override public void toSparql(ToSparqlContext cx) {
+	@Override public void toSparql(Context cx) {
 		cx.comment("True");
 	}
 
@@ -20,5 +22,9 @@ public class True extends Constraint {
 
 	@Override protected boolean same(Constraint other) {
 		return true;
+	}
+
+	@Override public void toFilterBody(Context cx) {
+		throw new BrokenException("FilterBody of True");
 	}
 }

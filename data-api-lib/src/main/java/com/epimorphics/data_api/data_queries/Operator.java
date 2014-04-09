@@ -31,7 +31,7 @@ public abstract class Operator {
 	public static final Operator CONTAINS = new FunctionOperator("contains", "contains", false);
 	
 	public static final Operator NOT_CONTAINS = new FunctionOperator("not-contains", "contains", true);
-	public static final Operator NOT_MATCHES = new FunctionOperator("not-matches", "contains", true);
+	public static final Operator NOT_MATCHES = new FunctionOperator("not-matches", "regex", true);
 
 	public static final Operator ONEOF = new OneofOperator("oneof", false);
 	public static final Operator NOT_ONEOF = new OneofOperator("not-oneof", true);

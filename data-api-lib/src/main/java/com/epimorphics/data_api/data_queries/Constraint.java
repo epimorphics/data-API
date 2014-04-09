@@ -9,11 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.hp.hpl.jena.shared.BrokenException;
 
 public abstract class Constraint {
 
-	public abstract void toSparql(ToSparqlContext cx);
+	public abstract void toSparql(Context cx);
+	
+	public abstract void toFilterBody(Context cx);
 
 	public abstract String toString();
 	
@@ -28,7 +31,6 @@ public abstract class Constraint {
 	
 	public static final Constraint EMPTY = new True();
 	
-
 	public static Constraint and(List<Constraint> operands) {
 		if (operands.size() == 1) return operands.get(0);
 		return new And(operands);
@@ -85,8 +87,12 @@ public abstract class Constraint {
 			return result;
 		}
 
-		@Override public void toSparql(ToSparqlContext cx) {
+		@Override public void toSparql(Context cx) {
 			for (Constraint x: operands) x.toSparql(cx); 
+		}
+
+		@Override public void toFilterBody(Context cx) {
+			throw new BrokenException("AND as a filter body");
 		}
 	}
 	
@@ -96,7 +102,7 @@ public abstract class Constraint {
 			super(operands);
 		}
 
-		@Override public void toSparql(ToSparqlContext cx) {
+		@Override public void toSparql(Context cx) {
 			cx.nest();
 			int counter = 0;
 			for (Constraint x: operands) {
@@ -108,6 +114,10 @@ public abstract class Constraint {
 			}
 			cx.unNest();
 		}
+
+		@Override public void toFilterBody(Context cx) {
+			throw new BrokenException("OR as a filter body");			
+		}
 	}
 	
 	public static class Not extends Bool {
@@ -116,13 +126,21 @@ public abstract class Constraint {
 			super(operands);
 		}
 
-		@Override public void toSparql(ToSparqlContext cx) {			
+		@Override public void toSparql(Context cx) {			
 			cx.notImplemented(this);
 		}
-	}
 
+		@Override public void toFilterBody(Context cx) {
+			throw new BrokenException("NOT as a filter body");			
+		}
+	}
+	
+	public static Constraint smallOr( Constraint A, Constraint B ) {
+		return new FilterOr(A, B);		
+	}
+	
 	// TODO not
-	public static Constraint build(List<Constraint> filters, List<SearchSpec> searchPatterns, Map<String, List<Constraint>> compositions) {
+	public static Constraint build(List<Constraint> constraints, Map<String, List<Constraint>> compositions) {
 		
 //		System.err.println( ">> build: filters  " + filters );
 //		System.err.println( ">> build: searches " + searchPatterns );			
@@ -130,7 +148,7 @@ public abstract class Constraint {
 		List<Constraint> ands = compositions.get("@and");
 		List<Constraint> ors = compositions.get("@or");
 		List<Constraint> nots = compositions.get("@not");
-		Constraint fs = Constraint.filters(filters, searchPatterns);
+		Constraint fs = and(constraints); // Constraint.filters(filters, searchPatterns);
 		
 //		System.err.println( ">> ands: " + ands );
 //		System.err.println( ">> ors:  " + ors );
@@ -139,7 +157,9 @@ public abstract class Constraint {
 	//
 		List<Constraint> expanded_ands = new ArrayList<Constraint>(ands);
 		if (nots.size() > 0) expanded_ands.add(negate(nots));
-		if (filters.size() > 0 || searchPatterns.size() > 0) expanded_ands.add(fs);
+		
+//		if (filters.size() > 0 || searchPatterns.size() > 0) expanded_ands.add(fs);
+		if (constraints.size() > 0) expanded_ands.add(fs);
 		
 //		System.err.println( ">> expanded_ands: " + expanded_ands );
 	//
@@ -174,8 +194,18 @@ public abstract class Constraint {
 		throw new BrokenException("Unhandled negate: " + x);
 	}
 
-	private static Filter negate(Filter f) {
-		return new Filter(f.a, new Range(f.range.op.negate(), f.range.operands));
+	private static Constraint negate(Filter f) {
+		Aspect a = f.a;
+		if (a.getIsMultiValued()) {
+			throw new BrokenException("Unhandled multi-valued negate: " + f);
+		} else if (a.getIsOptional()) {
+			Range notR = new Range(f.range.op.negate(), f.range.operands);
+			Constraint notF = new Filter(a, notR);
+			Constraint unboundA = new Unbound(a);			
+			return smallOr(notF, unboundA);			
+		} else {
+			return new Filter(a, new Range(f.range.op.negate(), f.range.operands));		
+		}
 	}	
 
 }

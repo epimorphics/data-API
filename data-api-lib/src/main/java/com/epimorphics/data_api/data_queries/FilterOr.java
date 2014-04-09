@@ -5,37 +5,36 @@
 */
 package com.epimorphics.data_api.data_queries;
 
-import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.terms.Term;
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class Below extends Constraint {
+public final class FilterOr extends Constraint {
 	
-	final Aspect a;
-	final Term v;
+	final Constraint A, B;
 	
-	public Below(Aspect a, Term v) {
-		this.a = a;
-		this.v = v;
+	public FilterOr(Constraint A, Constraint B) {
+		this.A = A;
+		this.B = B;
 	}
-
+	
 	@Override public void toSparql(Context cx) {
-		cx.generateBelow(this);			
+		cx.comment("SmallOr", A, B);
+		cx.out.append( "  FILTER(" );
+		A.toFilterBody(cx);
+		cx.out.append(" || ");
+		B.toFilterBody(cx);
+		cx.out.append(")\n");
 	}
 
 	@Override public String toString() {
-		return a + " @below " + v;
+		return "(" + A + " || " + B + ")";
 	}
 
 	@Override protected boolean same(Constraint other) {
-		return same((Below) other);
-	}
-
-	protected boolean same(Below other) {
-		return a.getName().equals(other.a.getName()) && v.equals(other.v);
+		FilterOr o = (FilterOr) other;
+		return A.equals(o.A) && B.equals(o.B);
 	}
 
 	@Override public void toFilterBody(Context cx) {
-		throw new BrokenException("Below as FilterBody");
-	}	
+		throw new BrokenException("SnallOr as a filter body");
+	}
 }

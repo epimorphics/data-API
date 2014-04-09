@@ -44,7 +44,14 @@ public class Filter extends Constraint {
 		return range.op;
 	}
 
-	@Override public void toSparql(ToSparqlContext cx) {
-		cx.generateFilter(this);
+	@Override public void toSparql(Context cx) {
+		cx.comment("@" + this.range.op.JSONname, this);
+		cx.out.append("  FILTER(");
+		this.range.op.asConstraint( this, cx.out, cx.api );
+		cx.out.append(")\n");
+	}
+
+	@Override public void toFilterBody(Context cx) {
+		this.range.op.asConstraint( this, cx.out, cx.api );
 	}
 }

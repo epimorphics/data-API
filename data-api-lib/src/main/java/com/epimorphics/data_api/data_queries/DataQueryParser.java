@@ -52,13 +52,11 @@ public class DataQueryParser {
 	}
 	
 	final Set<String> aspectURIs = new HashSet<String>();
-	final List<Constraint> filters = new ArrayList<Constraint>();
+	final List<Constraint> constraints = new ArrayList<Constraint>();
 	final List<Sort> sortby = new ArrayList<Sort>();
 	final List<Guard> guards = new ArrayList<Guard>();
 	
 	final Map<String, List<Constraint>> compositions = new HashMap<String, List<Constraint>>();
-
-	List<SearchSpec> searchPatterns = SearchSpec.none();
 	
 	Integer length = null, offset = null;
 	boolean isCount = false;
@@ -73,6 +71,7 @@ public class DataQueryParser {
 		this.pm = dataset.getPrefixes();
 	//
 		for (Aspect a: dataset.getAspects()) aspectURIs.add(a.getID());
+	//
 		compositions.put("@or", new ArrayList<Constraint>() );
 		compositions.put("@and", new ArrayList<Constraint>() );
 		compositions.put("@not", new ArrayList<Constraint>() );
@@ -87,12 +86,12 @@ public class DataQueryParser {
 				parseAspectMember(jo, key, value);
 			}
 		}
-		Constraint c = Constraint.build(filters, searchPatterns, compositions);
+		Constraint c = Constraint.build(constraints, compositions);
 		return new DataQuery(c, sortby, guards, Slice.create(length, offset, isCount));
 	}
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
-		Shortname sn = new Shortname(pm, key);
+		Shortname sn = new Shortname(pm, key);		
 		Aspect a = dataset.getAspectNamed(sn);
 		
 //		System.err.println( ">> parseAspectMember: key = " + key );
@@ -109,16 +108,16 @@ public class DataQueryParser {
 				for (String opKey: rob.keys()) {
 					JsonValue operand = rob.get(opKey);
 					if (opKey.equals("@search")) {
-						searchPatterns.add( extractSearchSpec(key, sn, operand) );
+						constraints.add( extractSearchSpec(key, sn, operand) );
 					} else if (opKey.startsWith("@")) {
 						String opName = opKey.substring(1);
 						List<Term> v = DataQueryParser.jsonToTerms(p, pm, operand);
 						if (isKnownOp(opName)) {
 							Operator op = Operator.lookup(opName);
 							if (op == Operator.BELOW)
-								filters.add( new Below(a, v.get(0)) );
+								constraints.add( new Below(a, v.get(0)) );
 							else
-								filters.add( new Filter(a, new Range(op, v) ) );
+								constraints.add( new Filter(a, new Range(op, v) ) );
 						} else {
 							p.add("unknown operator '" + opName + "' in data query.");
 						}
@@ -137,7 +136,7 @@ public class DataQueryParser {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
-			searchPatterns.add( extractSearchSpec(key, null, value) );
+			constraints.add( extractSearchSpec(key, null, value) );
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {

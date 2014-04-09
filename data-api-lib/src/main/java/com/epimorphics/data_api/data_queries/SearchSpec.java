@@ -12,6 +12,7 @@ import java.util.Map;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -154,7 +155,11 @@ public class SearchSpec extends Constraint {
 		return new ArrayList<SearchSpec>();
 	}
 
-	@Override public void toSparql(ToSparqlContext cx) {
+	@Override public void toSparql(Context cx) {
 		cx.generateSearch(this);
+	}
+
+	@Override public void toFilterBody(Context cx) {
+		throw new BrokenException("Search as FilterBody");
 	}
 }
