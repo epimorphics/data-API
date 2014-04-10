@@ -88,7 +88,7 @@ public class SearchSpec extends Constraint {
 			if (hasLiteralRange) {
 
 				return
-					("?item")
+					"?item"
 					+ " <http://jena.apache.org/text#query> "
 					+ asSparqlTerm(pm)
 					;
@@ -96,9 +96,9 @@ public class SearchSpec extends Constraint {
 			} else {
 				
 				return
-					( aspectName.asVar())
+					aspectName.asVar()
 					+ " <http://jena.apache.org/text#query> "
-					+ Term.quote(pattern)
+					+ asSparqlTerm(pm)
 					;
 				
 			}
@@ -108,12 +108,12 @@ public class SearchSpec extends Constraint {
 			if (hasLiteralRange) {
 
 				throw new UnsupportedOperationException
-				("@search on aspect " + a + " has @property " + property + " -- should have been detected earlier" );
+					("@search on aspect " + a + " has @property " + property + " -- should have been detected earlier" );
 				
 			} else {
 				
 				return
-					( aspectName.asVar())
+					aspectName.asVar()
 					+ " <http://jena.apache.org/text#query> "
 					+ asSparqlTerm(pm)
 					;
@@ -132,8 +132,13 @@ public class SearchSpec extends Constraint {
 
 	@Override public String toString() {
 		if (pattern == null) return "absent @search";
-		String match = Term.quote(pattern) + (property == null ? "" : property);
-		return "@search" + (aspectName == null ? "[global]" : "[" + aspectName + "]") + "(" + match + ")";
+		String match = Term.quote(pattern) + (property == null ? "" : ", " + property);
+		String limitString = (limit == null ? "" : ", limit: " + limit );
+		return 
+			"@search" 
+			+ (aspectName == null ? "[global]" : "[" + aspectName + "]") 
+			+ " (" + match + limitString + ")"
+			;
 	}
 	
 	@Override public int hashCode() {
@@ -153,6 +158,7 @@ public class SearchSpec extends Constraint {
 			(aspectName == null ? other.aspectName == null : aspectName.equals(other.aspectName))
 			&& (pattern == null ? other.pattern == null : pattern.equals(other.pattern))
 			&& (property == null ? other.property == null : property.equals(other.property))
+			&& (limit == null ? other.limit == null : limit.equals(other.limit))
 			;
 	}
 

@@ -51,6 +51,50 @@ public class TestTextSearching {
 		assertEquals(BunchLib.list(new SearchSpec("pattern", sn("pre:local"))), q.getSearchPatterns() );
 	}
 	
+	@Test public void testSearchWithLimit() {
+		Shortname property = sn("eh:/some.uri/");
+		String incoming = "{'@search': {'@value': 'lookfor', '@limit': 17}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);		
+		Asserts.assertNoProblems("failed to parse @search query", p);
+	//
+		String generated = q.toSparql(p, ds);
+	//
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/prefixPart/>"
+			, "SELECT ?item ?pre_local"
+			, "WHERE {"
+			, "  ?item pre:local ?pre_local ."
+			, "  ?item <http://jena.apache.org/text#query> ('lookfor' 17)"
+			, "}"
+			);
+	//
+		Asserts.assertSameSelect(expected, generated);
+		}
+	
+	@Test public void testSearchWithLimitAndProperty() {
+		String incoming = "{'@search': {'@value': 'lookfor', '@property': 'eh:/some.uri/', '@limit': 17}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);		
+		Asserts.assertNoProblems("failed to parse @search query", p);
+	//
+		String generated = q.toSparql(p, ds);
+	//
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/prefixPart/>"
+			, "SELECT ?item ?pre_local"
+			, "WHERE {"
+			, "  ?item pre:local ?pre_local ."
+			, "  ?item <http://jena.apache.org/text#query> (<eh:/some.uri/> 'lookfor' 17)"
+			, "}"
+			);
+	//
+		Asserts.assertSameSelect(expected, generated);
+		}
+	
+	
 	private Shortname sn(String name) {
 		return new Shortname(ds.getPrefixes(), name);
 	}

@@ -18,6 +18,7 @@ import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.test_support.Asserts;
 
 public class TestTextSearch {
 
@@ -60,5 +61,32 @@ public class TestTextSearch {
 		assertEquals(0, p.size());
 		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, property)), q.getSearchPatterns() );
 	}
-
+	
+	@Test public void testSearchWithJustLimit() {
+		String incoming = "{'@search': {'@value': 'lookfor', '@limit': 17}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);		
+		Asserts.assertNoProblems("failed to parse search", p);
+		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, null, 17)), q.getSearchPatterns() );
+	}
+	
+	@Test public void testSearchWithLimitAndProperty() {
+		Shortname property = sn("eh:/some.uri/");
+		String incoming = "{'@search': {'@value': 'lookfor', '@limit': 17, '@property': 'eh:/some.uri/'}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery q = DataQueryParser.Do(p, ds, jo);		
+		Asserts.assertNoProblems("failed to parse search", p);
+		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, property, 17)), q.getSearchPatterns() );
+	}
+	
+	@Test public void testSearchWithNeitherLimitNotPropertyRaisesProblem() {
+		String incoming = "{'@search': {'@value': 'lookfor'}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		DataQuery _ignored = DataQueryParser.Do(p, ds, jo);		
+		assertFalse("failed to detect missing-both-property-and-limit error", p.isOK());
+		Asserts.assertContains("neither @property nor @limit", p.getProblemStrings());
+	}
 }

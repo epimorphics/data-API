@@ -171,16 +171,29 @@ public class DataQueryParser {
 			return new SearchSpec(pattern, aspectName);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
-			
 			String pattern = getString(ob, "@value");
-			String property = getString(ob, "@property");
+			String property = getOptionalString(ob, "@property");
 			Integer limit = getOptionalInteger(ob, "@limit");
-			Shortname shortProperty = new Shortname(pm, property);
+			Shortname shortProperty = (property == null ? null : new Shortname(pm, property));
+			if (property == null && limit == null)
+				p.add("@search object has neither @property nor @limit: " + value);
 			return new SearchSpec(pattern, aspectName, shortProperty, limit);
 		} else {
 			p.add("Operand of @search must be string or object, given: " + value);
 			return SearchSpec.absent();
 		}
+	}
+	
+	private String getOptionalString(JsonObject ob, String key) {
+		JsonValue v = ob.get(key);
+		if (v == null) {
+			return null;
+		} else if (v.isString()) {
+			return v.getAsString().value();
+		} else {
+			p.add("Member " + key + " of " + ob + " should be a string, was: " + v);
+		}
+		return null;
 	}
 	
 	private String getString(JsonObject ob, String key) {
