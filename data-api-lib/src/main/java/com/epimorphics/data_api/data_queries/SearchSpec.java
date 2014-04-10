@@ -35,6 +35,10 @@ public class SearchSpec extends Constraint {
 		this.property = property;
 		this.aspectName = aspectName;
 	}
+	
+	public Shortname getAspectName() {
+		return aspectName;
+	}
 
 	public String toSearchTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		if (aspectName == null) {

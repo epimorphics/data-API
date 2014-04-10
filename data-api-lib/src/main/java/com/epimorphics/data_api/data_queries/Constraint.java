@@ -71,8 +71,26 @@ public abstract class Constraint {
 			for (Constraint x: flattenANDs(operands)) {
 				(x instanceof SearchSpec ? A : B).add(x); 				
 			}
-			A.addAll(B);
+			List<Constraint> Astar = combineSearches(A);
+			Astar.addAll(B);
 			return A;
+		}
+
+		private static List<Constraint> combineSearches(List<Constraint> searches) {
+			if (searches.size() < 2) {
+				return searches; 
+			} else {
+				return searches;
+//				List<Constraint> combined = new ArrayList<Constraint>();
+//				SearchSpec first = (SearchSpec) combined.get(0);
+//				Shortname a = first.getAspectName();
+//				
+//				for (int i = 1; i < searches.size(); i += 1) {
+//					if ()
+//				}
+//				
+//				return combined;
+			}			
 		}
 
 		private static List<Constraint> flattenANDs(List<Constraint> operands) {
@@ -182,11 +200,11 @@ public abstract class Constraint {
 
 	private static Constraint negate(Constraint x) {
 		if (x instanceof And) {
-			throw new UnsupportedOperationException("cannot negate AND");
+			throw new UnsupportedOperationException("cannot negate AND yet");
 		} else if (x instanceof Or) {
-			throw new UnsupportedOperationException("cannot negate OR");			
+			throw new UnsupportedOperationException("cannot negate OR yet");			
 		} else if (x instanceof Not) {
-			throw new UnsupportedOperationException("cannot negate NOT");			
+			throw new UnsupportedOperationException("cannot negate NOT yet");			
 		} else if (x instanceof Filter) {
 			Filter f = (Filter) x;
 			return negate(f);
