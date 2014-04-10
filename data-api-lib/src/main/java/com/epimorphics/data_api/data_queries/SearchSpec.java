@@ -18,10 +18,10 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SearchSpec extends Constraint {
 
-	private final String pattern;
-	private final Shortname aspectName;
-	private final Shortname property;
+	final String pattern;
 	final Integer limit;
+	private final Shortname aspectName;
+	final Shortname property;
 	
 	public SearchSpec(String pattern) {
 		this(pattern, null);

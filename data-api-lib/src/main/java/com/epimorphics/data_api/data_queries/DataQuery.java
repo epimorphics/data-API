@@ -115,7 +115,7 @@ public class DataQuery {
 			
 			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
 			
-			// System.err.println( ">> RENDERED QUERY:\n" + query );
+//			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
         catch (Exception e) { 

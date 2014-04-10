@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,24 +74,76 @@ public abstract class Constraint {
 			}
 			List<Constraint> Astar = combineSearches(A);
 			Astar.addAll(B);
-			return A;
+			return Astar;
 		}
 
 		private static List<Constraint> combineSearches(List<Constraint> searches) {
 			if (searches.size() < 2) {
 				return searches; 
 			} else {
-				return searches;
-//				List<Constraint> combined = new ArrayList<Constraint>();
-//				SearchSpec first = (SearchSpec) combined.get(0);
-//				Shortname a = first.getAspectName();
-//				
-//				for (int i = 1; i < searches.size(); i += 1) {
-//					if ()
-//				}
-//				
-//				return combined;
+				Map<Shortname, SearchSpec> specs = new HashMap<Shortname, SearchSpec>();
+				for (Constraint c: searches) {
+					SearchSpec s = (SearchSpec) c;
+					Shortname aName = s.getAspectName();
+					SearchSpec already = specs.get(aName);
+					if (already == null) {
+						specs.put(aName, revise(s));
+					} else {
+						specs.put(aName, combine(already, s));
+					}
+				}
+				ArrayList<Constraint> result = new ArrayList<Constraint>(specs.values());
+				return result;
 			}			
+		}
+
+		private static SearchSpec revise(SearchSpec s) {
+			String aPattern = 
+				localName(s.property.URI)
+				+ ": "
+				+ s.pattern
+				;
+			return new SearchSpec
+				( aPattern
+				, s.getAspectName()
+				, null
+				, s.limit
+				);
+		}
+
+		private static SearchSpec combine(SearchSpec A, SearchSpec B) {
+			
+			String bField = localName(B.property.URI);
+			
+			String jointPattern = 
+				A.pattern + " "
+				+ " " + bField + ": " + B.pattern;
+				;		
+			
+			SearchSpec result = new SearchSpec
+					( jointPattern
+					, A.getAspectName()	
+					, null
+					, max(A.limit, B.limit)
+					);
+			
+			System.err.println( ">> created " + result );
+			
+			return result;
+		}
+
+		private static String localName(String resource) {
+			int lastSlash = resource.lastIndexOf('/');
+			int lastHash = resource.lastIndexOf('#');
+			int begin = Math.max(lastSlash, lastHash);
+			return resource.substring(begin + 1);
+		}
+
+		private static Integer max(Integer A, Integer B) {
+//			return A == null ? B : B == null ? A : Math.max(A, B);
+			if (A == null) return B;
+			if (B == null) return A;
+			return Math.max(A, B);
 		}
 
 		private static List<Constraint> flattenANDs(List<Constraint> operands) {
