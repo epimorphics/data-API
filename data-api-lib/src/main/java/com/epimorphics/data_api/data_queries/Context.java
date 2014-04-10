@@ -98,7 +98,7 @@ public class Context  {
         String baseQuery = api.getBaseQuery();
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 			comment("base query");
-		    out.append( "  { ").append(baseQuery).append( "}\n");
+		    out.append( "  ").append(baseQuery).append( "\n");
 		} else {
 			comment("no base query");
 		}

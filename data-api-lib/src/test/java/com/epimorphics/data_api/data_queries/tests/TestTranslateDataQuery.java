@@ -504,7 +504,13 @@ public class TestTranslateDataQuery {
 	//	
 		String sq = q.toSparql(p, dsBased);
 		assertNoProblems("translation failed", p);
-		assertSameSelect( "PREFIX pre: <eh:/prefixPart/> SELECT ?item WHERE { { ?item pre:has pre:value } }", sq );
+		String expected = BunchLib.join
+			( "PREFIX pre: <eh:/prefixPart/>"
+			, "SELECT ?item WHERE {"
+			, "  ?item pre:has pre:value . "
+			, "}"
+			);
+		assertSameSelect( expected, sq );
 		}
 	
 	@Test public void testDatasetRestrictionWithAspects() {
@@ -513,7 +519,7 @@ public class TestTranslateDataQuery {
 	//		
 		API_Dataset dsBased = new API_Dataset(Setup.pseudoRoot(), null)
 			.add(Y)
-			.setBaseQuery("?item pre:has pre:value")
+			.setBaseQuery("?item pre:has pre:value.")
 			;
 	//
 		String sq = q.toSparql(p, dsBased);
@@ -521,7 +527,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_Y WHERE {"
-			, " { ?item pre:has pre:value . }"
+			, " ?item pre:has pre:value ."
 			, " ?item pre:Y ?pre_Y ."
 			, "}"
 			);
