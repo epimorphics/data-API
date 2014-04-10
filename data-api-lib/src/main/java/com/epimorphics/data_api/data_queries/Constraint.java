@@ -117,7 +117,7 @@ public abstract class Constraint {
 			
 			String jointPattern = 
 				A.pattern + " "
-				+ " " + bField + ": " + B.pattern;
+				+ " AND " + bField + ": " + B.pattern;
 				;		
 			
 			SearchSpec result = new SearchSpec
