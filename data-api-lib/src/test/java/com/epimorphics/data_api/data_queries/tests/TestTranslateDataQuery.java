@@ -248,8 +248,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, "  ?item pre:X ?pre_X . "
 			, "  ?item <http://jena.apache.org/text#query> 'look for me' . "
+			, "  ?item pre:X ?pre_X . "
 			, "}"
 			);
 		assertSameSelect( expected, sq	);
@@ -319,8 +319,8 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, " ?item pre:local ?pre_local ."
 			, " ?pre_local <http://jena.apache.org/text#query> 'look for me' ."
+			, " ?item pre:local ?pre_local ."
 			, "}"
 			);
 		
@@ -345,9 +345,9 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
+			, " ?item <http://jena.apache.org/text#query> 'look for me'."
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
-			, " ?item <http://jena.apache.org/text#query> 'look for me'."
 			, "}"
 			);
 		
@@ -374,9 +374,9 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
+			, " ?item <http://jena.apache.org/text#query> (pre:X 'look for me') ."
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
-			, " ?item <http://jena.apache.org/text#query> (pre:X 'look for me') ."
 			, "}"
 			);
 		

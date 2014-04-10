@@ -107,8 +107,27 @@ public class Context  {
         comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
         for (Guard guard : guards)
         	out.append(guard.queryFragment(api));
-    //
-        return declareAspectVars(c);
+    // 
+        return declareAspectVars(earlySearches(c));
+	}
+
+	private Constraint earlySearches(Constraint c) {
+		if (c instanceof SearchSpec) {
+        	generateSearch( (SearchSpec) c);
+        	return Constraint.EMPTY;
+        } else if (c instanceof And) {
+        	List<Constraint> nonSearches = new ArrayList<Constraint>();
+        	for (Constraint x: ((And) c).operands) {
+        		if (x instanceof SearchSpec) {
+        			generateSearch((SearchSpec) x);        			
+        		} else {
+        			nonSearches.add(x);
+        		}
+        	}
+        	return Constraint.and(nonSearches);
+        } else {
+        	return c;
+        }
 	}
 
 	private Constraint declareAspectVars(Constraint c) {

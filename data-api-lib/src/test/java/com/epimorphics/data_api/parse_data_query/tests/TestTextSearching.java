@@ -65,8 +65,8 @@ public class TestTextSearching {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
+			, "  ?item <http://jena.apache.org/text#query> ('lookfor' 17) ."
 			, "  ?item pre:local ?pre_local ."
-			, "  ?item <http://jena.apache.org/text#query> ('lookfor' 17)"
 			, "}"
 			);
 	//
@@ -86,8 +86,8 @@ public class TestTextSearching {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
+			, "  ?item <http://jena.apache.org/text#query> (<eh:/some.uri/> 'lookfor' 17) ."
 			, "  ?item pre:local ?pre_local ."
-			, "  ?item <http://jena.apache.org/text#query> (<eh:/some.uri/> 'lookfor' 17)"
 			, "}"
 			);
 	//
