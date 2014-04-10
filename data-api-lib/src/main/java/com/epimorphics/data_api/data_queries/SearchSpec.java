@@ -21,6 +21,7 @@ public class SearchSpec extends Constraint {
 	private final String pattern;
 	private final Shortname aspectName;
 	private final Shortname property;
+	final Integer limit;
 	
 	public SearchSpec(String pattern) {
 		this(pattern, null);
@@ -31,9 +32,14 @@ public class SearchSpec extends Constraint {
 	}
 
 	public SearchSpec(String pattern, Shortname aspectName, Shortname property) {
+		this(pattern, aspectName, property, null);
+	}
+
+	public SearchSpec(String pattern, Shortname aspectName, Shortname property, Integer limit) {
 		this.pattern = pattern;
 		this.property = property;
 		this.aspectName = aspectName;
+		this.limit = limit;
 	}
 	
 	public Shortname getAspectName() {
@@ -54,13 +60,16 @@ public class SearchSpec extends Constraint {
 
 	private String asSparqlTerm(PrefixMapping pm) {
 		String quoted = Term.quote(pattern);
-		if (property == null) {
-			return quoted;			
+		String limitString = (limit == null ? "" : " " + limit);
+		if (property == null && limit == null) {
+			return quoted;		
+		} else if (property == null) {
+			return "(" + quoted + limitString + ")";
 		} else {
 			String expanded = pm.expandPrefix(property.URI);
 			String contracted = pm.qnameFor(expanded);
 			String use = contracted == null ? "<" + property.URI + ">" : contracted;
-			return "(" + use + " " + quoted + ")";		
+			return "(" + use + " " + quoted + limitString + ")";		
 		}
 	}
 

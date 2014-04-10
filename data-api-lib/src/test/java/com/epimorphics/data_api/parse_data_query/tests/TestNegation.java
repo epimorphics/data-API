@@ -72,7 +72,7 @@ public class TestNegation {
 		Constraint f = new Filter(A, r);
 		Constraint c = Constraint.filters(BunchLib.list(f));
 		
-		System.err.println( ">> c = " + c );
+//		System.err.println( ">> c = " + c );
 		
 		Range notR = new Range(Operator.GT, BunchLib.list(v));
 		Constraint notF = new Filter(A, notR );

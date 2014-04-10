@@ -174,9 +174,9 @@ public class DataQueryParser {
 			
 			String pattern = getString(ob, "@value");
 			String property = getString(ob, "@property");
-			
+			Integer limit = getOptionalInteger(ob, "@limit");
 			Shortname shortProperty = new Shortname(pm, property);
-			return new SearchSpec(pattern, aspectName, shortProperty);
+			return new SearchSpec(pattern, aspectName, shortProperty, limit);
 		} else {
 			p.add("Operand of @search must be string or object, given: " + value);
 			return SearchSpec.absent();
@@ -193,6 +193,18 @@ public class DataQueryParser {
 			p.add("Member " + key + " of " + ob + " should be a string, was: " + v);
 		}
 		return "missing";
+	}
+	
+	private Integer getOptionalInteger(JsonObject ob, String key) {
+		JsonValue v = ob.get(key);
+		if (v == null) {
+			return null;
+		} else if (v.isNumber()) {
+			return v.getAsNumber().value().intValue();
+		} else {
+			p.add("Member " + key + " of " + ob + " should be a number, was: " + v);
+			return null;
+		}
 	}
 
 	private static Integer extractNumber(Problems p, String key, JsonValue value) {
