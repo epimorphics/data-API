@@ -127,8 +127,6 @@ public abstract class Constraint {
 					, max(A.limit, B.limit)
 					);
 			
-			System.err.println( ">> created " + result );
-			
 			return result;
 		}
 
