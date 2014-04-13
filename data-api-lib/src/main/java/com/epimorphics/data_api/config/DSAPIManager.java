@@ -379,7 +379,7 @@ public class DSAPIManager extends ComponentBase {
             }
 
         } catch (Exception e) {
-            log.error("BROKEN: " + e);
+            log.error("BROKEN: " + e, e);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             PrintStream ps = new PrintStream(os);
             e.printStackTrace(ps);
@@ -460,8 +460,7 @@ public class DSAPIManager extends ComponentBase {
             */
 
         } catch (Exception e) {
-            System.err.println("BROKEN: " + e);
-            e.printStackTrace(System.err);
+            log.error("BROKEN: " + e, e);
             p.add("BROKEN: " + e);
         }
         
