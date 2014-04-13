@@ -1,0 +1,124 @@
+
+# app configuration
+
+# Velocity library plugin for json handling
+json                 = com.epimorphics.data_api.endpoints.LibJson
+
+# Velocity engine
+velocity             = com.epimorphics.appbase.templates.VelocityRender
+velocity.templates   = {webapp}/WEB-INF/templates
+velocity.root        = /
+velocity.production  = false
+velocity.plugin      = $json
+
+source1              = com.epimorphics.appbase.data.impl.RemoteSparqlSource
+#source1.endpoint = http://54.217.84.92/sparql/ds-ro/query
+source1.endpoint = http://ec2-54-220-125-236.eu-west-1.compute.amazonaws.com/landregistry/query
+
+source2              = com.epimorphics.appbase.data.impl.RemoteSparqlSource
+source2.endpoint     = http://localhost:3030/ds/sparql
+
+# The dataset configurations
+monitor              = com.epimorphics.data_api.config.DatasetMonitor
+#monitor.directory    = {webapp}/WEB-INF/conf
+monitor.directory    = /home/eh/dsapi
+monitor.fileSampleLength = 500
+
+# The API service
+dsapi                = com.epimorphics.data_api.config.DSAPIManager
+dsapi.sources         = $source2, $source1
+dsapi.apiBase        = /dsapi
+dsapi.monitoredDatasets = $monitor
+***
+data-api-app/src/main/webapp/WEB-INF/app.conf
+***
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix qb:    <http://purl.org/linked-data/cube#> .
+@prefix wfd: <http://location.data.gov.uk/def/am/wfd/> .
+@prefix ppd:  <http://landregistry.data.gov.uk/def/ppi/> .
+@prefix lrcommon: <http://landregistry.data.gov.uk/def/common/>.
+@prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix admingeo: <http://data.ordnancesurvey.co.uk/ontology/admingeo/> .
+@prefix sr:    <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
+@prefix :  <http://landregistry.data.gov.uk/dsapi/ppd#> .
+
+:ppd a dsapi:Dataset;
+    rdfs:label "Property price data";
+    dct:description "A dataset of property transactions";
+#    dsapi:baseQuery "?item rdf:type ppd:TransactionRecord";
+    dsapi:source "source1";
+    dsapi:aspect
+      [rdfs:label "transaction"              ; dsapi:property ppd:hasTransaction],
+      [rdfs:label "publish date"             ; dsapi:property ppd:publishDate],
+      [rdfs:label "transaction date"         ; dsapi:property ppd:transactionDate],
+      [rdfs:label "transaction ID"           ; dsapi:property ppd:transactionId],
+      [rdfs:label "price paid"               ; dsapi:property ppd:pricePaid],
+      [rdfs:label "property address"         ; dsapi:property ppd:propertyAddress],
+
+      [rdfs:label "estate type"              ; dsapi:property ppd:estateType;     dsapi:optional true],
+      [rdfs:label "new build"                ; dsapi:property ppd:newBuild;       dsapi:optional true],
+      [rdfs:label "property type"            ; dsapi:property ppd:propertyType;   dsapi:optional true],
+
+      [rdfs:label "property-paon"            ; dsapi:property ppd:propertyAddressPaon ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:paon";     dsapi:optional true],
+      [rdfs:label "property-postcode"        ; dsapi:property ppd:propertyAddressPostcode ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:postcode"; dsapi:optional true],
+      [rdfs:label "property-saon"            ; dsapi:property ppd:propertyAddressSaon ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:saon";     dsapi:optional true],
+      [rdfs:label "property-town"            ; dsapi:property ppd:propertyAddressTown ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:town";     dsapi:optional true],
+      [rdfs:label "property-locality"        ; dsapi:property ppd:propertyAddressLocality ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:locality"; dsapi:optional true],
+      [rdfs:label "property-district"        ; dsapi:property ppd:propertyAddressDistrict ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:district"; dsapi:optional true],
+      [rdfs:label "property-county"          ; dsapi:property ppd:propertyAddressCounty ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:county";   dsapi:optional true],
+      [rdfs:label "property-street"          ; dsapi:property ppd:propertyAddressStreet ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:street";   dsapi:optional true]
+
+    .
+
+
+
+
+
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix qb:    <http://purl.org/linked-data/cube#> .
+@prefix wfd: <http://location.data.gov.uk/def/am/wfd/> .
+@prefix ppd:  <http://landregistry.data.gov.uk/def/ppi/> .
+@prefix lrcommon: <http://landregistry.data.gov.uk/def/common/>.
+@prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix admingeo: <http://data.ordnancesurvey.co.uk/ontology/admingeo/> .
+@prefix sr:    <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
+@prefix :  <http://landregistry.data.gov.uk/dsapi/ppd#> .
+
+:ppd a dsapi:Dataset;
+    rdfs:label "Property price data";
+    dct:description "A dataset of property transactions";
+#    dsapi:baseQuery "?item rdf:type ppd:TransactionRecord";
+    dsapi:source "source1";
+    dsapi:aspect
+      [rdfs:label "transaction"              ; dsapi:property ppd:hasTransaction],
+      [rdfs:label "publish date"             ; dsapi:property ppd:publishDate],
+      [rdfs:label "transaction date"         ; dsapi:property ppd:transactionDate],
+      [rdfs:label "transaction ID"           ; dsapi:property ppd:transactionId],
+      [rdfs:label "price paid"               ; dsapi:property ppd:pricePaid],
+      [rdfs:label "property address"         ; dsapi:property ppd:propertyAddress],
+
+      [rdfs:label "estate type"              ; dsapi:property ppd:estateType;     dsapi:optional true],
+      [rdfs:label "new build"                ; dsapi:property ppd:newBuild;       dsapi:optional true],
+      [rdfs:label "property type"            ; dsapi:property ppd:propertyType;   dsapi:optional true],
+
+      [rdfs:label "property-paon"            ; dsapi:property ppd:propertyAddressPaon ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:paon";     dsapi:optional true],
+      [rdfs:label "property-postcode"        ; dsapi:property ppd:propertyAddressPostcode ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:postcode"; dsapi:optional true],
+      [rdfs:label "property-saon"            ; dsapi:property ppd:propertyAddressSaon ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:saon";     dsapi:optional true],
+      [rdfs:label "property-town"            ; dsapi:property ppd:propertyAddressTown ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:town";     dsapi:optional true],
+      [rdfs:label "property-locality"        ; dsapi:property ppd:propertyAddressLocality ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:locality"; dsapi:optional true],
+      [rdfs:label "property-district"        ; dsapi:property ppd:propertyAddressDistrict ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:district"; dsapi:optional true],
+      [rdfs:label "property-county"          ; dsapi:property ppd:propertyAddressCounty ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:county";   dsapi:optional true],
+      [rdfs:label "property-street"          ; dsapi:property ppd:propertyAddressStreet ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:street";   dsapi:optional true]
+
+    .
+
