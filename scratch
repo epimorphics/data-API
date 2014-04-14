@@ -21,7 +21,7 @@ source2.endpoint     = http://localhost:3030/ds/sparql
 # The dataset configurations
 monitor              = com.epimorphics.data_api.config.DatasetMonitor
 #monitor.directory    = {webapp}/WEB-INF/conf
-monitor.directory    = /home/eh/dsapi
+monitor.directory    = /home/chris/dsapi
 monitor.fileSampleLength = 500
 
 # The API service
