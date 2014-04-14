@@ -8,6 +8,7 @@ package com.epimorphics.data_api.conversions;
 
 import java.util.Set;
 
+import com.epimorphics.appbase.data.ClosableResultSet;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.libs.MutableBool;
 import com.epimorphics.json.JSFullWriter;
@@ -30,18 +31,25 @@ public final class RowWriter implements JSONWritable {
 	}
 
 	@Override public void writeTo(final JSFullWriter jw) {
-		final MutableBool comma = new MutableBool();
-		jw.startArray();
-		
-		RowConsumer stream = new RowConsumer() {
-			
-			@Override public void consume(Row jv) {
-				if (comma.value) jw.arraySep(); 
-				jv.writeTo(jw);
-				comma.value = true;
-			}
-		};
-		ResultsToRows.convert(aspects, stream, rs);
-		jw.finishArray();
+	    try {
+    		final MutableBool comma = new MutableBool();
+    		jw.startArray();
+    		
+    		RowConsumer stream = new RowConsumer() {
+    			
+    			@Override public void consume(Row jv) {
+    				if (comma.value) jw.arraySep(); 
+    				jv.writeTo(jw);
+    				comma.value = true;
+    			}
+    		};
+    		ResultsToRows.convert(aspects, stream, rs);
+    		jw.finishArray();
+	    } catch (Exception e) {
+	        if (rs instanceof ClosableResultSet) {
+	            ((ClosableResultSet)rs).close();
+	        }
+	        throw e;
+	    }
 	}
 }

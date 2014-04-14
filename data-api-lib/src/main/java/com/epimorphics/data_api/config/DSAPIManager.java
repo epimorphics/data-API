@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.epimorphics.appbase.core.ComponentBase;
-import com.epimorphics.appbase.data.ClosableResultSet;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
