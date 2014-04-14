@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.ClosableResultSet;
 import com.epimorphics.appbase.data.SparqlSource;
+import com.epimorphics.appbase.data.impl.RemoteSparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
@@ -375,7 +376,12 @@ public class DSAPIManager extends ComponentBase {
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
 //                so = q.getWriter(api, api.getSource().select(sq));
-                so = q.getWriter(api, api.getSource().streamableSelect(sq));
+                // so = q.getWriter(api, api.getSource().streamableSelect(sq));
+                SparqlSource source = api.getSource();
+                if (source instanceof RemoteSparqlSource) {
+                	((RemoteSparqlSource) source).setContentType("tsv");
+                }
+				so = q.getWriter(api, source.streamableSelect(sq));
             }
 
         } catch (Exception e) {
