@@ -81,7 +81,7 @@ public class Context  {
             }
 		} else {
 	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
-	        for (Aspect x: ordered) out.append(" ").append( x.asVar() );
+	        for (Aspect x: ordered) out.append("\n  ").append( x.asVar() );
 		}
 		out.append("\n");
 	}
