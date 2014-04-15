@@ -34,11 +34,13 @@ public abstract class Constraint {
 	
 	public static Constraint and(List<Constraint> operands) {
 		if (operands.size() == 1) return operands.get(0);
+		if (operands.size() == 0) return EMPTY;
 		return new And(operands);
 	}
 	
 	public static Constraint or(List<Constraint> operands) {
 		if (operands.size() == 1) return operands.get(0);
+		if (operands.size() == 0) return EMPTY;
 		return new Or(operands);
 	}
 	
