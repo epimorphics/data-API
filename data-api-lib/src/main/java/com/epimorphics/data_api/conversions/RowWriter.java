@@ -45,6 +45,7 @@ public final class RowWriter implements JSONWritable {
     		};
     		ResultsToRows.convert(aspects, stream, rs);
     		jw.finishArray();
+    		jw.finishOutput();
 	    } catch (Exception e) {
 	        if (rs instanceof ClosableResultSet) {
 	            ((ClosableResultSet)rs).close();
