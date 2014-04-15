@@ -374,8 +374,6 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 log.info("Issuing query: " + sq);
-//                so = q.getWriter(api, api.getSource().select(sq));
-                // so = q.getWriter(api, api.getSource().streamableSelect(sq));
                 SparqlSource source = api.getSource();
                 if (source instanceof RemoteSparqlSource) {
                 	((RemoteSparqlSource) source).setContentType("tsv");
