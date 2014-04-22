@@ -64,9 +64,9 @@ public class TestQueriesGetExpectedResults {
 		String objectified = "{'array': " + results + "}\n";
 		JsonObject jo = JSON.parse(objectified);
 		JsonValue jv = jo.get("array");
-		for (JsonValue row: jv.getAsArray()) {
-			System.err.println( ">> " + row );
-		}
+//		for (JsonValue row: jv.getAsArray()) {
+//			System.err.println( ">> " + row );
+//		}
 		assertEquals(result, jv);
 	}
 	
