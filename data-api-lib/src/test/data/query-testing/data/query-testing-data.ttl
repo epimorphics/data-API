@@ -1,0 +1,18 @@
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix qb:     <http://purl.org/linked-data/cube#> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+@prefix dsapi:  <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+
+@prefix eg:     <http://www.epimorphics.com/test/dsapi/sprint3/search/> .
+@prefix data:   <http://www.epimorphics.com/test/dsapi/sprint3/search/data> .
+
+eg:A
+	eg:label "A-one", "A1", "A"@cy
+	; eg:resource eg:A-resource
+	; eg:value 17
+	; eg:values	17, 18, 19
+	.
