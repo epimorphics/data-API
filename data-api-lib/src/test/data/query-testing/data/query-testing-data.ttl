@@ -16,3 +16,10 @@ eg:A
 	; eg:value 17
 	; eg:values	17, 18, 19
 	.
+	
+eg:B
+	eg:label "B-one", "B1"
+	; eg:resource eg:B-resource
+	; eg:value 42
+	; eg:values	42, 43
+	.	
