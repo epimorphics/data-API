@@ -23,3 +23,32 @@ eg:B
 	; eg:value 42
 	; eg:values	42, 43
 	.	
+	
+eg:C
+	eg:label "C-one", "C1"
+	; eg:resource eg:C-resource
+	; eg:value 99
+	; eg:values	99
+	.	
+	
+eg:D
+	eg:label "D-two", "D2"
+	; eg:resource eg:DE-resource
+	; eg:value 1001
+	; eg:values	42, 43
+	.	
+	
+eg:E
+	eg:label "E", "e"
+	; eg:resource eg:DE-resource
+	; eg:value 99
+	; eg:values	42, 99
+	.	
+	
+eg:F
+	eg:label "F", "eff", "F"@cy, "f"@fr
+	; eg:resource eg:F-resource
+	; eg:value 42
+	; eg:values	42, 43
+	.	
+	

@@ -8,12 +8,8 @@ package com.epimorphics.data_api.end2end.tests;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,7 +27,6 @@ import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public class TestQueriesGetExpectedResults {
 
@@ -43,28 +38,57 @@ public class TestQueriesGetExpectedResults {
         man = testapp.getComponentAs("dsapi", DSAPIManager.class);
     }
     
+    String allExpected = BunchLib.join
+		( "["
+		, "  {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+		, "  , 'eg:value': 17"
+		, "  , 'eg:values': [17, 18, 19]"
+		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
+		, "  , 'eg:value': 42"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['B-one', 'B1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+		, "  , 'eg:value': 99"
+		, "  , 'eg:values': [99]"
+		, "  , 'eg:label': ['C-one', 'C1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+		, "  , 'eg:value': 1001"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['D-two', 'D2']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+		, "  , 'eg:value': 99"
+		, "  , 'eg:values': [42, 99]"
+		, "  , 'eg:label': ['E', 'e']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+		, "  , 'eg:value': 42"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+		, "  }"
+		, "]"
+		);
+    
     @Test public void test0() {
     	
-    	String expected = BunchLib.join
-    		( "["
-    		, "  {"
-    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
-    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
-    		, "  , 'eg:value': 17"
-    		, "  , 'eg:values': [17, 18, 19]"
-    		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
-    		, "  }"
-    		, ", {"
-    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
-    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
-    		, "  , 'eg:value': 42"
-    		, "  , 'eg:values': [42, 43]"
-    		, "  , 'eg:label': ['B-one', 'B1']"
-    		, "  }"
-    		, "]"
-    		);
     	
-    	testQuery( "{}", expected );
+    	testQuery( "{}", allExpected );
     	
     }
     
