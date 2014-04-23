@@ -8,8 +8,10 @@ package com.epimorphics.data_api.end2end.tests;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -123,10 +125,48 @@ public class TestQueriesGetExpectedResults {
     	testQuery( "{'eg:value': {'@eq': 21}}", expectOnlyA );
     }
     
+    @Test public void testExtractValues42() {    	
+    	
+    	String expectBDEandF = BunchLib.join
+    		( "["
+			, "  {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
+			, "  , 'eg:value': 18"
+			, "  , 'eg:values': [42]"
+			, "  , 'eg:label': ['B-one', 'B1']"
+			, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 20"
+    		, "  , 'eg:values': [42]"
+    		, "  , 'eg:label': ['D-two', 'D2']"
+    		, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 21"
+    		, "  , 'eg:values': [42]"
+    		, "  , 'eg:label': ['E', 'e']"
+    		, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+    		, "  , 'eg:value': 22"
+    		, "  , 'eg:values': [42]"
+    		, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+    		, "  }"
+    		, "]"
+    		);
+    	
+    	testQuery( "{'eg:values': {'@eq': 42}}", expectBDEandF );
+    }
     
-	public void testQuery(String queryString, String resultString) {
+    
+	public void testQuery(String queryString, String expectString) {
 		JsonObject query = JSON.parse(queryString);
-		JsonValue result = JSON.parse("{'array': " + resultString + " }").getAsObject().get("array");
+		JsonValue expectJSON = JSON.parse("{'array': " + expectString + " }").getAsObject().get("array");
 		
 		JSONWritable response = man.datasetDataEndpoint(null, "query-testing-dataset", query);
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -138,12 +178,33 @@ public class TestQueriesGetExpectedResults {
 		JsonObject jo = JSON.parse(objectified);
 		JsonValue jv = jo.get("array");
 		
-		Object result_2 = quasiCopyWithArraysAsSets(result);
-		Object jv_2 = quasiCopyWithArraysAsSets(jv);
-				
-		assertEquals(result_2, jv_2);
+//		JsonArray expectArray = expectJSON.getAsArray();
+//		System.err.println( ">> got " + expectArray.size() + " results." );
+//		for (JsonValue v: expectArray) {
+//			System.err.println( ">>  " + v );
+//		}
+		
+		Object expectObject = quasiCopyWithArraysAsSets(expectJSON);
+		Object resultObject = quasiCopyWithArraysAsSets(jv);
+		
+//		System.err.println( ">> expectObject: " + expectObject );
+//		System.err.println( ">> resultObject: " + resultObject );
+		
+//		System.err.println( ">> EXPECTED" );
+		
+//		for (Object x: ((HashSet<Object>) expectObject)) {
+//			System.err.println( "->> " + x );
+//		}
+//		
+//		System.err.println( ">> DERIVED" );
+//		
+//		for (Object x: ((HashSet<Object>) resultObject)) {
+//			System.err.println( "->> " + x );
+//		}
+					
+		assertEquals(expectObject, resultObject);
 	}
-	
+
 	/**
 	    Copy the JSON into a similar tree structure where JSONObjects
 	    become maps and JSONArrays become sets. This allows the equality
