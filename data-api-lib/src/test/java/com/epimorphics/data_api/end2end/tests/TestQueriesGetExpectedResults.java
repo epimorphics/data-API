@@ -50,47 +50,79 @@ public class TestQueriesGetExpectedResults {
 		, ", {"
 		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
 		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
-		, "  , 'eg:value': 42"
+		, "  , 'eg:value': 18"
 		, "  , 'eg:values': [42, 43]"
 		, "  , 'eg:label': ['B-one', 'B1']"
 		, "  }"
 		, ", {"
 		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
 		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
-		, "  , 'eg:value': 99"
+		, "  , 'eg:value': 19"
 		, "  , 'eg:values': [99]"
 		, "  , 'eg:label': ['C-one', 'C1']"
 		, "  }"
 		, ", {"
 		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
 		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
-		, "  , 'eg:value': 1001"
+		, "  , 'eg:value': 20"
 		, "  , 'eg:values': [42, 43]"
 		, "  , 'eg:label': ['D-two', 'D2']"
 		, "  }"
 		, ", {"
 		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
 		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
-		, "  , 'eg:value': 99"
+		, "  , 'eg:value': 21"
 		, "  , 'eg:values': [42, 99]"
 		, "  , 'eg:label': ['E', 'e']"
 		, "  }"
 		, ", {"
 		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
 		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
-		, "  , 'eg:value': 42"
+		, "  , 'eg:value': 22"
 		, "  , 'eg:values': [42, 43]"
 		, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
 		, "  }"
 		, "]"
 		);
     
-    @Test public void test0() {
-    	
-    	
+    @Test public void testExpectAll() {    	
     	testQuery( "{}", allExpected );
-    	
     }
+    
+    @Test public void testExtractA() {    	
+    	
+    	String expectOnlyA = BunchLib.join
+    		( "["
+    		, "  {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+    		, "  , 'eg:value': 17"
+    		, "  , 'eg:values': [17, 18, 19]"
+    		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+    		, "  }"
+    		, "]"
+    		);
+    	
+    	testQuery( "{'eg:value': {'@eq': 17}}", expectOnlyA );
+    }
+    
+    @Test public void testExtractE() {    	
+    	
+    	String expectOnlyA = BunchLib.join
+    		( "["
+    		, "  {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 21"
+    		, "  , 'eg:values': [42, 99]"
+    		, "  , 'eg:label': ['E', 'e']"
+    		, "  }"
+    		, "]"
+    		);
+    	
+    	testQuery( "{'eg:value': {'@eq': 21}}", expectOnlyA );
+    }
+    
     
 	public void testQuery(String queryString, String resultString) {
 		JsonObject query = JSON.parse(queryString);
