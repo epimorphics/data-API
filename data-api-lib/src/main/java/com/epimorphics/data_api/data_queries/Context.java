@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -136,6 +137,8 @@ public class Context  {
 	//
 		Map<Shortname, Term> equalities = new HashMap<Shortname, Term>();
 		Constraint adjusted = findEqualities(equalities, c);
+		Set<Aspect> required = new HashSet<Aspect>();
+		findRequiredAspects(required, c);
 	//
 		for (Aspect x: ordered) {
 			String fVar = x.asVar();
@@ -144,14 +147,15 @@ public class Context  {
 		//
 			out.append("  ");
 		//
-			if (x.getIsOptional()) out.append( " OPTIONAL {" );
+			boolean isOptional = x.getIsOptional() && !required.contains(x);
+			if (isOptional) out.append( " OPTIONAL {" );
 			out
 				.append("?item")
 				.append(" ").append(x.asProperty())
 				.append(" ").append(stringEquals == null ? fVar : stringEquals)
 				.append(" .")
 				;
-			if (x.getIsOptional()) out.append( " }" );
+			if (isOptional) out.append( " }" );
 			if (stringEquals != null) {
 				out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
 			}
@@ -160,10 +164,20 @@ public class Context  {
 		return adjusted;
 	}
 	
+	private void findRequiredAspects(Set<Aspect> required, Constraint c) {
+		if (c instanceof Filter) {
+			required.add( ((Filter) c).a );
+		} else if (c instanceof And) {
+			for (Constraint x: ((And) c).operands) findRequiredAspects(required, x);
+		} else {
+			// TODO consider if there are other cases to go here
+		}
+	}
+
 	private Constraint findEqualities(Map<Shortname, Term> result, Constraint c) {
 		if (c instanceof Filter) {
 			Filter f = ((Filter) c);
-			if (f.range.op.equals(Operator.EQ)) {
+			if (f.range.op.equals(Operator.EQ)) {				
 				result.put(f.a.getName(), f.range.operands.get(0));
 				return Constraint.EMPTY;
 			} else {
