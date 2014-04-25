@@ -18,6 +18,7 @@ import org.apache.jena.atlas.json.JsonArray;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -303,6 +304,73 @@ public class TestQueriesGetExpectedResults {
 	    		, "]"
 	    		);
     	testQuery("{'eg:resource': {'@eq': {'@id': 'eg:DE-resource'}}, 'eg:values': {'@eq': 43}}", expectD);
+    }
+    
+    @Test public void testNegatesSimpleFilter() {
+    	String expectA = BunchLib.join
+    		( "["
+			, "  {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+			, "  , 'eg:value': 17"
+			, "  , 'eg:values': [17, 18, 19]"
+			, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+			, "  }"
+    		, "]"
+    		);
+    	testQuery( "{'@not': [{'eg:value': {'@gt': 17}}]}", expectA );
+    }
+    
+    @Test public void testNegatesTwoSimpleFilters() {
+    	String expectC = BunchLib.join
+    		( "["
+    		, "  {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+			, "  , 'eg:value': 19"
+			, "  , 'eg:values': [99]"
+			, "  , 'eg:label': ['C-one', 'C1']"
+			, "  }"
+    		, "]"
+    		);
+    	testQuery( "{'@not': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}", expectC );
+    }
+    
+    @Test public void testNegatesOrOfTwoSimpleFilters() {
+    	String expectC = BunchLib.join
+    		( "["
+    		, "  {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+			, "  , 'eg:value': 19"
+			, "  , 'eg:values': [99]"
+			, "  , 'eg:label': ['C-one', 'C1']"
+			, "  }"
+    		, "]"
+    		);
+    	testQuery( "{'@not': [{'@or': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}]}", expectC );
+    }
+    
+    @Test @Ignore public void testNegatesAndOfTwoDifferentFilters() {
+        String expectAE = BunchLib.join
+    		( "["
+    		, "  {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+    		, "  , 'eg:value': 17"
+    		, "  , 'eg:values': [17, 18, 19]"
+    		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+    		, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 21"
+    		, "  , 'eg:values': [42, 99]"
+    		, "  , 'eg:label': ['E', 'e']"
+    		, "  }"
+    		, "]"
+    		);
+        testQuery("{'@not': [{'@and': [{'eg:value': {'@ge': 18}}, {'eg:label': {'@ne': 'E'}}]}]}", expectAE);
     }
     
 	public void testQuery(String queryString, String expectString) {

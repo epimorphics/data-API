@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class Bool extends Constraint {
 	
-	final List<Constraint> operands;
+	public final List<Constraint> operands;
 
 	public Bool(List<Constraint> operands ) {
 		this.operands = operands;

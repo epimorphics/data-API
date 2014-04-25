@@ -248,27 +248,35 @@ public abstract class Constraint {
 	public static Constraint negate(List<Constraint> nots) {
 		List<Constraint> x = new ArrayList<Constraint>();
 		for (Constraint n: nots) x.add(negate(n));
-		return x.size() == 1 ? x.get(0) : or(x);
+		return x.size() == 1 ? x.get(0) : and(x);
 	}
 
-	private static Constraint negate(Constraint x) {
-		if (x instanceof And) {
-			throw new UnsupportedOperationException("cannot negate AND yet");
-		} else if (x instanceof Or) {
-			throw new UnsupportedOperationException("cannot negate OR yet");			
-		} else if (x instanceof Not) {
+	private static Constraint negate(Constraint c) {
+		if (c instanceof And) {
+			And and = (And) c;
+			List<Constraint> newOperands = new ArrayList<Constraint>();
+			for (Constraint y: and.operands) newOperands.add(negate(y));
+			return or(newOperands);
+		} else if (c instanceof Or) {
+			Or or = (Or) c;
+			List<Constraint> newOperands = new ArrayList<Constraint>();
+			for (Constraint y: or.operands) newOperands.add(negate(y));
+			return and(newOperands);
+		} else if (c instanceof Not) {
 			throw new UnsupportedOperationException("cannot negate NOT yet");			
-		} else if (x instanceof Filter) {
-			Filter f = (Filter) x;
+		} else if (c instanceof Filter) {
+			Filter f = (Filter) c;
 			return negate(f);
 		} 
-		throw new BrokenException("Unhandled negate: " + x);
+		throw new BrokenException("Unhandled negate: " + c);
 	}
 
 	private static Constraint negate(Filter f) {
 		Aspect a = f.a;
 		if (a.getIsMultiValued()) {
+			
 			throw new BrokenException("Unhandled multi-valued negate: " + f);
+			
 		} else if (a.getIsOptional()) {
 			Range notR = new Range(f.range.op.negate(), f.range.operands);
 			Constraint notF = new Filter(a, notR);
