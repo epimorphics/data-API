@@ -70,5 +70,9 @@ public class Setup {
 		testapp = new App("testapp", new File("src/test/data/query-testing/test.conf"));
         man = testapp.getComponentAs("dsapi", DSAPIManager.class);
     }
+    
+	public void testQueryReturnsExpectedResults(String queryString, String expectString) {
+		QueryTestSupport.testQueryReturnsExpectedResults(man, queryString, expectString);
+	}
 }
 
