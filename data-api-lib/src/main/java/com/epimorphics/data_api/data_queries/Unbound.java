@@ -16,7 +16,7 @@ public class Unbound extends Constraint {
 		this.a = a;
 	}
 	
-	@Override public void toSparql(Context cx) {
+	@Override public void toSparql(Context cx, String varSuffix) {
 		throw new BrokenException("UNBOUND as SPARQL");		
 	}
 
@@ -28,7 +28,7 @@ public class Unbound extends Constraint {
 		return a.equals(((Unbound) other).a);
 	}
 
-	@Override public void toFilterBody(Context cx) {
+	@Override public void toFilterBody(Context cx, String varSuffix) {
 		cx.out.append(" !BOUND(");
 		cx.out.append(a.asVar());
 		cx.out.append(")");	

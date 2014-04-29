@@ -27,6 +27,7 @@ public class Context  {
 	final API_Dataset api;
 	final StringBuilder out;
 	
+	
 	final List<Aspect> ordered = new ArrayList<Aspect>();
 	final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 	
@@ -49,6 +50,26 @@ public class Context  {
 		out.append("WHERE {\n");
 		return queryCore(c);
 	}
+	
+	public void addMinus(Filter negated) {
+		String varSuffix = "_" + ++varCount;
+		out
+			.append( "  FILTER(NOT EXISTS {" )
+			.append( " ?item" )
+			.append( " " )
+			.append( negated.a.asProperty() )
+			.append( " " )
+			.append( negated.a.asVar() + varSuffix )
+			.append( " .\n")
+			;
+		negated.toSparql(this, varSuffix);
+		out
+			.append( "})" )
+			.append( "\n" )
+			;		
+	}
+	
+	int varCount = 0;
 	
 	public void end() {
 		comment("end a SELECT query");

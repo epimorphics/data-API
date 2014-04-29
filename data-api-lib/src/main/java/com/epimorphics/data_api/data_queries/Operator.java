@@ -106,6 +106,7 @@ public abstract class Operator {
 		( Filter newParam
 		, StringBuilder sb
 		, API_Dataset api
+		, String varSuffix
 		);
 	
 	static class InfixOperator extends Operator {
@@ -121,12 +122,13 @@ public abstract class Operator {
 			( Filter filter
 			, StringBuilder sb
 			, API_Dataset api
+			, String varSuffix
 			) {
 			String fVar = filter.a.asVar();
 			PrefixMapping pm = api.getPrefixes();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
-				.append(fVar)
+				.append(fVar).append(varSuffix)
 				.append(" ")
 				.append(sparqlOp)
 				.append(" ")
@@ -150,6 +152,7 @@ public abstract class Operator {
 			( Filter filter
 			, StringBuilder sb
 			, API_Dataset api
+			, String varSuffix
 		) {	
 			PrefixMapping pm = api.getPrefixes();
 			List<Term> operands = filter.range.operands;
@@ -159,7 +162,7 @@ public abstract class Operator {
 				.append( needsNot ? "!" : "")
 				.append( functionName )
 				.append("(")
-				.append(fVar)
+				.append(fVar).append(varSuffix)
 				.append(", ")
 				.append(value)
 				.append(operands.size() == 2 ? ", " + operands.get(1).asSparqlTerm(pm) : "")
@@ -181,13 +184,19 @@ public abstract class Operator {
 			( Filter filter
 			, StringBuilder sb
 			, API_Dataset api
+			, String varSuffix
 			) {
 			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.a.asVar();
 			String orOp = "";
 			sb.append(" ");
 			for (Term v: filter.range.operands) {
-				sb.append(orOp).append(fVar).append( " = ").append(v.asSparqlTerm(pm));
+				sb
+					.append(orOp)
+					.append(fVar).append(varSuffix)
+					.append( " = ")
+					.append(v.asSparqlTerm(pm))
+					;
 				orOp = " || ";
 			}
 		}
@@ -206,12 +215,13 @@ public abstract class Operator {
 			( Filter filter
 			, StringBuilder sb
 			, API_Dataset api
+			, String varSuffix
 			) {
 			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.a.asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb.append(" ")
-				.append(fVar)
+				.append(fVar).append(varSuffix)
 				.append(" ")
 				.append("=")
 				.append(" ")
@@ -233,6 +243,7 @@ public abstract class Operator {
 			( Filter filter
 			, StringBuilder sb
 			, API_Dataset api
+			, String varSuffix
 			) {
 			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.a.asVar();
@@ -243,7 +254,7 @@ public abstract class Operator {
 				.append(" ")
 				.append(below)
 				.append("* ")
-				.append(fVar)
+				.append(fVar).append(varSuffix)
 				.append(" .")
 				.append("\n")
 				;		
@@ -263,11 +274,13 @@ public abstract class Operator {
 			( Filter filter
 			, StringBuilder sb
 			, API_Dataset api
+			, String varSuffix
 			) {	
 			PrefixMapping pm = api.getPrefixes();
 			String fVar = filter.a.getName().asVar();
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			sb.append(fVar)
+			sb
+				.append(fVar).append(varSuffix)
 				.append(" <http://jena.apache.org/text#query> ")
 				.append(value)
 				.append(" .")

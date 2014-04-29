@@ -19,7 +19,7 @@ public class Below extends Constraint {
 		this.v = v;
 	}
 
-	@Override public void toSparql(Context cx) {
+	@Override public void toSparql(Context cx, String varSuffix) {
 		cx.generateBelow(this);			
 	}
 
@@ -35,7 +35,7 @@ public class Below extends Constraint {
 		return a.getName().equals(other.a.getName()) && v.equals(other.v);
 	}
 
-	@Override public void toFilterBody(Context cx) {
+	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("Below as FilterBody");
 	}	
 }

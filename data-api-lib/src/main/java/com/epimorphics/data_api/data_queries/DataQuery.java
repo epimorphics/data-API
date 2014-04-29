@@ -104,7 +104,7 @@ public class DataQuery {
 			Context rx = new Context( out, this, p, api );
 			
 			Constraint adjusted = rx.begin(c);
-			adjusted.toSparql(rx);
+			adjusted.toSparql(rx, "");
 			rx.end();
 			
 			querySort(out);		

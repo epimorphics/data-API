@@ -174,11 +174,11 @@ public class SearchSpec extends Constraint {
 		return new ArrayList<SearchSpec>();
 	}
 
-	@Override public void toSparql(Context cx) {
+	@Override public void toSparql(Context cx, String varSuffix) {
 		cx.generateSearch(this);
 	}
 
-	@Override public void toFilterBody(Context cx) {
+	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("Search as FilterBody");
 	}
 }

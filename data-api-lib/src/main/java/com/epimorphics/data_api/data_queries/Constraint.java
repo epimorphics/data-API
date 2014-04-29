@@ -15,9 +15,9 @@ import com.hp.hpl.jena.shared.BrokenException;
 
 public abstract class Constraint {
 
-	public abstract void toSparql(Context cx);
+	public abstract void toSparql(Context cx, String varSuffix);
 	
-	public abstract void toFilterBody(Context cx);
+	public abstract void toFilterBody(Context cx, String varSuffix);
 
 	public abstract String toString();
 	
@@ -158,11 +158,11 @@ public abstract class Constraint {
 			return result;
 		}
 
-		@Override public void toSparql(Context cx) {
-			for (Constraint x: operands) x.toSparql(cx); 
+		@Override public void toSparql(Context cx, String varSuffix) {
+			for (Constraint x: operands) x.toSparql(cx, varSuffix); 
 		}
 
-		@Override public void toFilterBody(Context cx) {
+		@Override public void toFilterBody(Context cx, String varSuffix) {
 			throw new BrokenException("AND as a filter body");
 		}
 	}
@@ -173,20 +173,20 @@ public abstract class Constraint {
 			super(operands);
 		}
 
-		@Override public void toSparql(Context cx) {
+		@Override public void toSparql(Context cx, String varSuffix) {
 			cx.nest();
 			int counter = 0;
 			for (Constraint x: operands) {
 				if (counter > 0) cx.union();
 				cx.begin(this);
-				x.toSparql(cx);
+				x.toSparql(cx, varSuffix);
 				cx.end();
 				counter += 1;
 			}
 			cx.unNest();
 		}
 
-		@Override public void toFilterBody(Context cx) {
+		@Override public void toFilterBody(Context cx, String varSuffix) {
 			throw new BrokenException("OR as a filter body");			
 		}
 	}
@@ -197,11 +197,11 @@ public abstract class Constraint {
 			super(operands);
 		}
 
-		@Override public void toSparql(Context cx) {			
+		@Override public void toSparql(Context cx, String varSuffix) {			
 			cx.notImplemented(this);
 		}
 
-		@Override public void toFilterBody(Context cx) {
+		@Override public void toFilterBody(Context cx, String varSuffix) {
 			throw new BrokenException("NOT as a filter body");			
 		}
 	}
@@ -270,13 +270,37 @@ public abstract class Constraint {
 		} 
 		throw new BrokenException("Unhandled negate: " + c);
 	}
+	
+	public static class NotFilter extends Constraint {
+		
+		final Filter basis;
+		
+		public NotFilter(Filter basis) {
+			this.basis = basis;			
+		}
+
+		@Override public void toSparql(Context cx, String varSuffix) {
+			cx.comment("NotFilter toSparql", this);
+			cx.addMinus(basis);
+		}
+
+		@Override public void toFilterBody(Context cx, String varSuffix) {
+			cx.comment("NotFilter toFilterBody", this);
+		}
+
+		@Override public String toString() {
+			return "@not(" + basis + ")";
+		}
+
+		@Override protected boolean same(Constraint other) {
+			return basis.equals(((NotFilter) other).basis);
+		}
+	}
 
 	private static Constraint negate(Filter f) {
 		Aspect a = f.a;
 		if (a.getIsMultiValued()) {
-			
-			throw new BrokenException("Unhandled multi-valued negate: " + f);
-			
+			return new NotFilter(f);			
 		} else if (a.getIsOptional()) {
 			Range notR = new Range(f.range.op.negate(), f.range.operands);
 			Constraint notF = new Filter(a, notR);

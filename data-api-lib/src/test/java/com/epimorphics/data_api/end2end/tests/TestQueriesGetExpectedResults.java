@@ -351,7 +351,7 @@ public class TestQueriesGetExpectedResults {
     	testQuery( "{'@not': [{'@or': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}]}", expectC );
     }
     
-    @Test @Ignore public void testNegatesAndOfTwoDifferentFilters() {
+    @Test public void testNegatesAndOfTwoDifferentFilters_Not_Andxy() {
         String expectAE = BunchLib.join
     		( "["
     		, "  {"
@@ -362,15 +362,58 @@ public class TestQueriesGetExpectedResults {
     		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
     		, "  }"
     		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+    		, "  , 'eg:value': 19"
+    		, "  , 'eg:values': [99]"
+    		, "  , 'eg:label': ['C-one', 'C1']"
+    		, "  }"
+    		, "]"
+    		);        
+         testQuery("{'@not': [{'@and': [{'eg:value': {'@ge': 18}}, {'eg:values': {'@eq': 42}}]}]}", expectAE);
+    }
+    
+    @Test public void testNegatesAndOfTwoDifferentFilters_NotAndx() {
+        String expectBCDEF = BunchLib.join( 
+    		"["
+    		, "  {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
+    		, "  , 'eg:value': 18"
+    		, "  , 'eg:values': [42, 43]"
+    		, "  , 'eg:label': ['B-one', 'B1']"
+    		, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+    		, "  , 'eg:value': 19"
+    		, "  , 'eg:values': [99]"
+    		, "  , 'eg:label': ['C-one', 'C1']"
+    		, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 20"
+    		, "  , 'eg:values': [42, 43]"
+    		, "  , 'eg:label': ['D-two', 'D2']"
+    		, "  }"
+    		, ", {"
     		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
     		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
     		, "  , 'eg:value': 21"
     		, "  , 'eg:values': [42, 99]"
     		, "  , 'eg:label': ['E', 'e']"
     		, "  }"
+    		, ", {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+    		, "  , 'eg:value': 22"
+    		, "  , 'eg:values': [42, 43]"
+    		, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+    		, "  }"
     		, "]"
-    		);
-        testQuery("{'@not': [{'@and': [{'eg:value': {'@ge': 18}}, {'eg:label': {'@ne': 'E'}}]}]}", expectAE);
+    		);        
+        testQuery("{'@not': [{'eg:values': {'@lt': 19}}]}", expectBCDEF);
     }
     
 	public void testQuery(String queryString, String expectString) {
@@ -387,33 +430,25 @@ public class TestQueriesGetExpectedResults {
 		JsonObject jo = JSON.parse(objectified);
 		JsonValue jv = jo.get("array");
 		
-//		System.err.println(">> GOT:\n" + jv);
-		
-//		JsonArray expectArray = expectJSON.getAsArray();
-//		System.err.println( ">> got " + expectArray.size() + " results." );
-//		for (JsonValue v: expectArray) {
-//			System.err.println( ">>  " + v );
-//		}
-		
 		Object expectObject = quasiCopyConvertingArraysToSets(expectJSON);
 		Object resultObject = quasiCopyConvertingArraysToSets(jv);
 		
-//		System.err.println( ">> expectObject: " + expectObject );
-//		System.err.println( ">> resultObject: " + resultObject );
-		
-//		System.err.println( ">> EXPECTED" );
-		
-//		for (Object x: ((HashSet<Object>) expectObject)) {
-//			System.err.println( "->> " + x );
-//		}
-//		
-//		System.err.println( ">> DERIVED" );
-//		
-//		for (Object x: ((HashSet<Object>) resultObject)) {
-//			System.err.println( "->> " + x );
-//		}
+//		System.err.println( ">> expectObject:\n" + nicely(expectObject).replaceAll( "http://www.epimorphics.com/test/dsapi/sprint3/", "s3:" ) );
+//		System.err.println( ">> resultObject:\n" + nicely(resultObject ).replaceAll( "http://www.epimorphics.com/test/dsapi/sprint3/", "s3:" ) );
 					
 		assertEquals(expectObject, resultObject);
+	}
+	
+	String nicely(Object x) {
+		if (x instanceof Set) {
+			StringBuilder result = new StringBuilder();
+			for (Object element: ((Set<Object>) x)) {
+				result.append( nicely( element ) ).append("\n");
+			}
+			return result.toString();
+		} else {
+			return x.toString();
+		}
 	}
 
 	/**

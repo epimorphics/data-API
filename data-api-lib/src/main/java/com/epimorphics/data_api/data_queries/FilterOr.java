@@ -16,12 +16,12 @@ public final class FilterOr extends Constraint {
 		this.B = B;
 	}
 	
-	@Override public void toSparql(Context cx) {
+	@Override public void toSparql(Context cx, String varSuffix) {
 		cx.comment("SmallOr", A, B);
 		cx.out.append( "  FILTER(" );
-		A.toFilterBody(cx);
+		A.toFilterBody(cx, varSuffix);
 		cx.out.append(" || ");
-		B.toFilterBody(cx);
+		B.toFilterBody(cx, varSuffix);
 		cx.out.append(")\n");
 	}
 
@@ -34,7 +34,7 @@ public final class FilterOr extends Constraint {
 		return A.equals(o.A) && B.equals(o.B);
 	}
 
-	@Override public void toFilterBody(Context cx) {
+	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("SnallOr as a filter body");
 	}
 }

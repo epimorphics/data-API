@@ -12,7 +12,7 @@ public class True extends Constraint {
 	public True() {
 	}
 	
-	@Override public void toSparql(Context cx) {
+	@Override public void toSparql(Context cx, String varSuffix) {
 		cx.comment("True");
 	}
 
@@ -24,7 +24,7 @@ public class True extends Constraint {
 		return true;
 	}
 
-	@Override public void toFilterBody(Context cx) {
+	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("FilterBody of True");
 	}
 }
