@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Constraint.And;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;

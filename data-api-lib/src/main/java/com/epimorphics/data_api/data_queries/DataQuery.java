@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
-import com.epimorphics.data_api.data_queries.Constraint.And;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSONWritable;
