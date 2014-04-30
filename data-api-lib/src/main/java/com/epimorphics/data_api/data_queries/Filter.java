@@ -5,7 +5,10 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import java.util.List;
+
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.terms.Term;
 
 public class Filter extends Constraint {
 	
@@ -15,6 +18,31 @@ public class Filter extends Constraint {
 	public Filter(Aspect a, Range range) {
 		this.a = a;
 		this.range = range;
+	}
+
+	@Override public void toSparql(Context cx, String varSuffix) {
+		cx.comment("@" + this.range.op.JSONname, this);
+		cx.out.append("  FILTER(");
+		toFilterBody(cx, varSuffix);
+		cx.out.append(")\n");
+	}
+
+	@Override public void toFilterBody(Context cx, String varSuffix) {
+		this.range.op.asConstraint( this, cx.out, cx.api, varSuffix );
+	}
+	
+	@Override public Constraint negate() {
+		List<Term> operands = range.operands;
+		Operator negatedOp = range.op.negate();
+	//
+		if (a.getIsMultiValued()) {
+			return new NegatedMultivaluedFilter(this);			
+		} else if (a.getIsOptional()) {
+			Range notR = new Range(negatedOp, operands);
+			return new NegatedOptionalAspect(new Filter(a, notR));			
+		} else {
+			return new Filter(a, new Range(negatedOp, operands));		
+		}
 	}
 	
 	@Override public String toString() {
@@ -42,16 +70,5 @@ public class Filter extends Constraint {
 
 	public Operator getRangeOp() {
 		return range.op;
-	}
-
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.comment("@" + this.range.op.JSONname, this);
-		cx.out.append("  FILTER(");
-		toFilterBody(cx, varSuffix);
-		cx.out.append(")\n");
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		this.range.op.asConstraint( this, cx.out, cx.api, varSuffix );
 	}
 }

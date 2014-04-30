@@ -37,5 +37,9 @@ public class Below extends Constraint {
 
 	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("Below as FilterBody");
+	}
+
+	@Override public Constraint negate() {
+		throw new BrokenException("cannot negate Below(" + a + ", " + v + ")");
 	}	
 }

@@ -50,7 +50,7 @@ public class Context  {
 		return queryCore(c);
 	}
 	
-	public void addMinus(Filter negated) {
+	public void negateFilter(Filter negated) {
 		String varSuffix = "_" + ++varCount;
 		out
 			.append( "  FILTER(NOT EXISTS {" )
@@ -220,8 +220,6 @@ public class Context  {
 	public void generateBelow(Below b) {
 		
 		comment("@below", b);
-//			f.range.op.asConstraint( f, out, api );
-//			out.append("\n");	
 		
 		PrefixMapping pm = api.getPrefixes();
 		String fVar = b.a.asVar(); 

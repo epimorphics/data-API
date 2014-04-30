@@ -5,6 +5,7 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.hp.hpl.jena.shared.BrokenException;
@@ -30,5 +31,11 @@ public class Or extends Bool {
 
 	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("OR as a filter body");			
+	}
+	
+	@Override public Constraint negate() {
+		List<Constraint> newOperands = new ArrayList<Constraint>();
+		for (Constraint y: operands) newOperands.add(y.negate());
+		return and(newOperands);
 	}
 }

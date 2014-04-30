@@ -9,6 +9,8 @@ import com.hp.hpl.jena.shared.BrokenException;
 
 public class True extends Constraint {
 	
+	public static True value = new True();
+	
 	public True() {
 	}
 	
@@ -26,5 +28,9 @@ public class True extends Constraint {
 
 	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("FilterBody of True");
+	}
+
+	@Override public Constraint negate() {
+		return False.value;
 	}
 }

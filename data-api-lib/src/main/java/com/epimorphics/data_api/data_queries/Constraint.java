@@ -9,14 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.epimorphics.data_api.aspects.Aspect;
-import com.hp.hpl.jena.shared.BrokenException;
-
 public abstract class Constraint {
 
 	public abstract void toSparql(Context cx, String varSuffix);
 	
 	public abstract void toFilterBody(Context cx, String varSuffix);
+	
+	public abstract Constraint negate();
 
 	public abstract String toString();
 	
@@ -32,14 +31,14 @@ public abstract class Constraint {
 	public static final Constraint EMPTY = new True();
 	
 	public static Constraint and(List<Constraint> operands) {
-		if (operands.size() == 1) return operands.get(0);
 		if (operands.size() == 0) return EMPTY;
+		if (operands.size() == 1) return operands.get(0);
 		return new And(operands);
 	}
 	
 	public static Constraint or(List<Constraint> operands) {
-		if (operands.size() == 1) return operands.get(0);
 		if (operands.size() == 0) return EMPTY;
+		if (operands.size() == 1) return operands.get(0);
 		return new Or(operands);
 	}
 	
@@ -54,10 +53,6 @@ public abstract class Constraint {
 		return and(operands);
 	}
 
-	public static Constraint smallOr( Constraint A, Constraint B ) {
-		return new FilterOr(A, B);		
-	}
-	
 	public static Constraint build(List<Constraint> constraints, Map<String, List<Constraint>> compositions) {
 		
 //		System.err.println( ">> build: filters  " + filters );
@@ -94,40 +89,8 @@ public abstract class Constraint {
 
 	public static Constraint negate(List<Constraint> nots) {
 		List<Constraint> x = new ArrayList<Constraint>();
-		for (Constraint n: nots) x.add(negate(n));
+		for (Constraint n: nots) x.add(n.negate());
 		return x.size() == 1 ? x.get(0) : and(x);
-	}
-
-	private static Constraint negate(Constraint c) {
-		if (c instanceof And) {
-			And and = (And) c;
-			List<Constraint> newOperands = new ArrayList<Constraint>();
-			for (Constraint y: and.operands) newOperands.add(negate(y));
-			return or(newOperands);
-		} else if (c instanceof Or) {
-			Or or = (Or) c;
-			List<Constraint> newOperands = new ArrayList<Constraint>();
-			for (Constraint y: or.operands) newOperands.add(negate(y));
-			return and(newOperands);			
-		} else if (c instanceof Filter) {
-			Filter f = (Filter) c;
-			return negate(f);
-		} 
-		throw new BrokenException("Unhandled negate: " + c);
-	}
-	
-	private static Constraint negate(Filter f) {
-		Aspect a = f.a;
-		if (a.getIsMultiValued()) {
-			return new NotFilter(f);			
-		} else if (a.getIsOptional()) {
-			Range notR = new Range(f.range.op.negate(), f.range.operands);
-			Constraint notF = new Filter(a, notR);
-			Constraint unboundA = new Unbound(a);			
-			return smallOr(notF, unboundA);			
-		} else {
-			return new Filter(a, new Range(f.range.op.negate(), f.range.operands));		
-		}
 	}	
 
 }

@@ -65,6 +65,18 @@ public class Setup {
 		, "  }"
 		, "]"
 		);
+	
+	public static final String expectC = BunchLib.join
+			( "["
+			, "  {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+			, "  , 'eg:value': 19"
+			, "  , 'eg:values': [99]"
+			, "  , 'eg:label': ['C-one', 'C1']"
+			, "  }"
+			, "]"
+			);
     
     @Before public void startup() throws IOException  {
 		testapp = new App("testapp", new File("src/test/data/query-testing/test.conf"));

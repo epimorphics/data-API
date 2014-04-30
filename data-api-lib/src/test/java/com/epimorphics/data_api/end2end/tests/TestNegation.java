@@ -5,11 +5,14 @@
 */
 package com.epimorphics.data_api.end2end.tests;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.epimorphics.data_api.libs.BunchLib;
 
 public class TestNegation extends Setup {
+	
     @Test public void testNegatesSimpleFilter() {
     	String expectA = BunchLib.join
     		( "["
@@ -26,35 +29,55 @@ public class TestNegation extends Setup {
     }
     
     @Test public void testNegatesTwoSimpleFilters() {
-    	String expectC = BunchLib.join
-    		( "["
-    		, "  {"
-			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
-			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
-			, "  , 'eg:value': 19"
-			, "  , 'eg:values': [99]"
-			, "  , 'eg:label': ['C-one', 'C1']"
-			, "  }"
-    		, "]"
-    		);
     	testQueryReturnsExpectedResults( "{'@not': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}", expectC );
     }
     
     @Test public void testNegatesOrOfTwoSimpleFilters() {
-    	String expectC = BunchLib.join
-    		( "["
-    		, "  {"
-			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
-			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
-			, "  , 'eg:value': 19"
-			, "  , 'eg:values': [99]"
-			, "  , 'eg:label': ['C-one', 'C1']"
-			, "  }"
-    		, "]"
-    		);
     	testQueryReturnsExpectedResults( "{'@not': [{'@or': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}]}", expectC );
     }
     
+    @Test public void testNegateSearch() {
+    	testQueryReturnsExpectedResults("{'@search': 'notfound'}}", "[]" );
+    	testQueryReturnsExpectedResults("{'@not': [{'@search': 'notfound'}]}", allExpected );
+    }
+    
+    @Test public void testNegateNegatedOptionalAspect() {
+    	fail("test for @not NegatedOptionalFilter not implemented");
+    }
+    
+    @Test public void testNegateBelow() {
+    	fail("test for @not Below not implemented");
+
+    }
+    
+    @Test public void testNegateNotFilter() {    	
+    	String expectAB = BunchLib.join
+        	( "["
+        	, "  {"
+        	, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+			, "  , 'eg:value': 17"
+			, "  , 'eg:values': [17, 18, 19]"
+			, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+			, "  }"
+			, ", {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
+			, "  , 'eg:value': 18"
+			, "  , 'eg:values': [42, 43]"
+			, "  , 'eg:label': ['B-one', 'B1']"
+			, "  }"
+			, "]"
+			);
+    	
+    	testQueryReturnsExpectedResults( "{'@not': [{'@not': [{'eg:value': {'@lt': 19}}]}]}", expectAB );
+    }
+
+    // Unbounds are only generated from negations
+    @Test public void testNegateUnbound() {
+    	testQueryReturnsExpectedResults( "{'@not': [{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}]}", expectC );
+    }
+       
     @Test public void testNegatesAndOfTwoDifferentFilters_Not_Andxy() {
         String expectAE = BunchLib.join
     		( "["

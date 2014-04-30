@@ -18,6 +18,20 @@ public class And extends Bool {
 			super(rearrange(operands));
 		}
 
+		@Override public void toSparql(Context cx, String varSuffix) {
+			for (Constraint x: operands) x.toSparql(cx, varSuffix); 
+		}
+
+		@Override public void toFilterBody(Context cx, String varSuffix) {
+			throw new BrokenException("AND as a filter body");
+		}
+		
+		@Override public Constraint negate() {
+			List<Constraint> newOperands = new ArrayList<Constraint>();
+			for (Constraint y: operands) newOperands.add(y.negate());
+			return or(newOperands);
+		}
+
 		// flatten ANDs. Move searches to the front. TODO efficient!
 		private static List<Constraint> rearrange(List<Constraint> operands) {
 			List<Constraint> A = new ArrayList<Constraint>();
@@ -107,13 +121,5 @@ public class And extends Bool {
 				}
 			}
 			return result;
-		}
-
-		@Override public void toSparql(Context cx, String varSuffix) {
-			for (Constraint x: operands) x.toSparql(cx, varSuffix); 
-		}
-
-		@Override public void toFilterBody(Context cx, String varSuffix) {
-			throw new BrokenException("AND as a filter body");
 		}
 	}

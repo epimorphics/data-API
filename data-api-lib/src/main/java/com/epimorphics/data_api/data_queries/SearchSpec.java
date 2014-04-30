@@ -22,6 +22,7 @@ public class SearchSpec extends Constraint {
 	final Integer limit;
 	private final Shortname aspectName;
 	final Shortname property;
+	final boolean negated;
 	
 	public SearchSpec(String pattern) {
 		this(pattern, null);
@@ -36,10 +37,27 @@ public class SearchSpec extends Constraint {
 	}
 
 	public SearchSpec(String pattern, Shortname aspectName, Shortname property, Integer limit) {
+		this(pattern, aspectName, property, limit, false);
+	}
+
+	public SearchSpec(String pattern, Shortname aspectName, Shortname property, Integer limit, boolean negated) {
 		this.pattern = pattern;
 		this.property = property;
 		this.aspectName = aspectName;
 		this.limit = limit;
+		this.negated = negated;
+	}
+
+	@Override public Constraint negate() {
+		return new SearchSpec(pattern, aspectName, property, limit, true);
+	}
+
+	@Override public void toSparql(Context cx, String varSuffix) {
+		cx.generateSearch(this);
+	}
+
+	@Override public void toFilterBody(Context cx, String varSuffix) {
+		throw new BrokenException("Search as FilterBody");
 	}
 	
 	public Shortname getAspectName() {
@@ -47,6 +65,7 @@ public class SearchSpec extends Constraint {
 	}
 
 	public String toSearchTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		if (negated) throw new BrokenException("Not done @not search: " + this );
 		if (aspectName == null) {
 			return
 				"?item"
@@ -59,6 +78,7 @@ public class SearchSpec extends Constraint {
 	}
 
 	private String asSparqlTerm(PrefixMapping pm) {
+		if (negated) throw new BrokenException("Not done @not search: " + this );
 		String quoted = Term.quote(pattern);
 		String limitString = (limit == null ? "" : " " + limit);
 		if (property == null && limit == null) {
@@ -74,6 +94,8 @@ public class SearchSpec extends Constraint {
 	}
 
 	private String toSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		if (negated) throw new BrokenException("Not done @not search: " + this );
+		
 		Aspect a = aspects.get(aspectName);
 		
 //		System.err.println( ">> toSearchApsectTriple of " + aspectName );
@@ -134,8 +156,9 @@ public class SearchSpec extends Constraint {
 		if (pattern == null) return "absent @search";
 		String match = Term.quote(pattern) + (property == null ? "" : ", " + property);
 		String limitString = (limit == null ? "" : ", limit: " + limit );
-		return 
-			"@search" 
+		return
+			(negated ? "@not " : "")
+			+ "@search" 
 			+ (aspectName == null ? "[global]" : "[" + aspectName + "]") 
 			+ " (" + match + limitString + ")"
 			;
@@ -172,13 +195,5 @@ public class SearchSpec extends Constraint {
 
 	public static List<SearchSpec> none() {
 		return new ArrayList<SearchSpec>();
-	}
-
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.generateSearch(this);
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		throw new BrokenException("Search as FilterBody");
 	}
 }

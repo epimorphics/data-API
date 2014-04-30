@@ -16,9 +16,9 @@ import com.epimorphics.data_api.data_queries.Constraint;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
+import com.epimorphics.data_api.data_queries.NegatedOptionalAspect;
 import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
-import com.epimorphics.data_api.data_queries.Unbound;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
@@ -75,10 +75,9 @@ public class TestNegation {
 //		System.err.println( ">> c = " + c );
 		
 		Range notR = new Range(Operator.GT, BunchLib.list(v));
-		Constraint notF = new Filter(A, notR );
+		Filter notF = new Filter(A, notR );
 		
-		Constraint unboundA = new Unbound(A);
-		Constraint expected = Constraint.smallOr( notF, unboundA );
+		Constraint expected = new NegatedOptionalAspect(notF);
 		assertEquals(expected, Constraint.negate(BunchLib.list(c)));
 	}
 	
