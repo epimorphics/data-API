@@ -26,7 +26,7 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
-public class TestNegation {
+public class TestNegationByConstructedSPARQL {
 
 	static final PrefixMapping pm = PrefixMapping.Factory.create()
 		.setNsPrefix("spoo", "eh:/namespace/")

@@ -6,11 +6,9 @@
 package com.epimorphics.data_api.terms.tests;
 
 import static org.junit.Assert.*;
-
-import java.io.ByteArrayOutputStream;
-
 import org.junit.Test;
 
+import java.io.ByteArrayOutputStream;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.json.JSFullWriter;

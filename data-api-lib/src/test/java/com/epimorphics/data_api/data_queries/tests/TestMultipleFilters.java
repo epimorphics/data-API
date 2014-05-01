@@ -6,7 +6,6 @@
 package com.epimorphics.data_api.data_queries.tests;
 
 import java.util.List;
-
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;

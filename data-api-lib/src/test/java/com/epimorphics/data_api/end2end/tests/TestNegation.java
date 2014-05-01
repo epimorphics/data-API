@@ -6,7 +6,6 @@
 package com.epimorphics.data_api.end2end.tests;
 
 import static org.junit.Assert.*;
-
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -37,7 +36,7 @@ public class TestNegation extends Setup {
     	testQueryReturnsExpectedResults( "{'@not': [{'@or': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}]}", expectC );
     }
     
-    @Test @Ignore public void testNegateSearch() {
+    @Test public void testNegateSearch() {
     	testQueryReturnsExpectedResults("{'@search': 'notfound'}}", "[]" );
     	testQueryReturnsExpectedResults("{'@not': [{'@search': 'notfound'}]}", allExpected );
     }

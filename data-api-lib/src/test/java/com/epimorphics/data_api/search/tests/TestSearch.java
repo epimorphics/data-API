@@ -28,14 +28,13 @@ import com.hp.hpl.jena.rdf.model.Resource;
 public class TestSearch {
     App testapp;
     
-    @Before
-    public void startup() throws IOException {
+    @Before public void startup() throws IOException {
         testapp = new App("testapp", new File("src/test/data/searchTest/test.conf"));
     }
+    
 
-    @Test
-    public void testBasicConfig() {
-        DSAPIManager man = testapp.getComponentAs("dsapi", DSAPIManager.class);
+    @Test public void testBasicConfig() {
+    	DSAPIManager man = testapp.getComponentAs("dsapi", DSAPIManager.class);
         API_Dataset dataset = man.getDataset("search-dataset");
         assertNotNull(dataset);
         

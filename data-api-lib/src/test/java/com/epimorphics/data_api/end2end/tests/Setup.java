@@ -19,6 +19,11 @@ public class Setup {
 	App testapp;
     DSAPIManager man;
     
+    @Before public void startup() throws IOException  {
+		testapp = new App("testapp", new File("src/test/data/query-testing/test.conf"));
+        man = testapp.getComponentAs("dsapi", DSAPIManager.class);
+    }
+    
 	static final String allExpected = BunchLib.join
 		( "["
 		, "  {"
@@ -77,11 +82,6 @@ public class Setup {
 			, "  }"
 			, "]"
 			);
-    
-    @Before public void startup() throws IOException  {
-		testapp = new App("testapp", new File("src/test/data/query-testing/test.conf"));
-        man = testapp.getComponentAs("dsapi", DSAPIManager.class);
-    }
     
 	public void testQueryReturnsExpectedResults(String queryString, String expectString) {
 		QueryTestSupport.testQueryReturnsExpectedResults(man, queryString, expectString);

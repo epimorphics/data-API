@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.conversions.tests;
 
 import java.math.BigDecimal;
+
 import org.junit.Test;
 
 import com.epimorphics.data_api.data_queries.terms.Term;

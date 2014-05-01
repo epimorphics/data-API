@@ -65,20 +65,23 @@ public class SearchSpec extends Constraint {
 	}
 
 	public String toSearchTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		if (negated) throw new BrokenException("Not done @not search: " + this );
 		if (aspectName == null) {
-			return
-				"?item"
-				+ " <http://jena.apache.org/text#query> "
-				+ asSparqlTerm(pm)
-				;			
+			if (negated) {
+				return
+					"FILTER(NOT EXISTS{?item  <http://jena.apache.org/text#query> " + asSparqlTerm(pm) + "})";				
+			} else {
+				return
+					"?item"
+					+ " <http://jena.apache.org/text#query> "
+					+ asSparqlTerm(pm)
+					;			
+			}
 		} else {
 			return toSearchAspectTriple(aspects, pm);
 		}
 	}
 
 	private String asSparqlTerm(PrefixMapping pm) {
-		if (negated) throw new BrokenException("Not done @not search: " + this );
 		String quoted = Term.quote(pattern);
 		String limitString = (limit == null ? "" : " " + limit);
 		if (property == null && limit == null) {
@@ -94,8 +97,15 @@ public class SearchSpec extends Constraint {
 	}
 
 	private String toSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		if (negated) throw new BrokenException("Not done @not search: " + this );
-		
+		String positive = toPositiveSearchAspectTriple(aspects, pm);
+		if (negated) {
+			return " FILTER(NOT EXISTS{" + positive + "})"; 
+		} else {
+			return positive;
+		}
+	}
+
+	private String toPositiveSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		Aspect a = aspects.get(aspectName);
 		
 //		System.err.println( ">> toSearchApsectTriple of " + aspectName );

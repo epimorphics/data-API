@@ -7,7 +7,6 @@
 package com.epimorphics.data_api.data_queries.tests;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 import com.epimorphics.data_api.data_queries.terms.Term;

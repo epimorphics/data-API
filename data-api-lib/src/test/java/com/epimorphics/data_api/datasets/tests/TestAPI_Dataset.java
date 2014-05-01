@@ -6,7 +6,6 @@
 package com.epimorphics.data_api.datasets.tests;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
