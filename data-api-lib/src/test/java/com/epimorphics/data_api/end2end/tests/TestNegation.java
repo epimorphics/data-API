@@ -48,7 +48,6 @@ public class TestNegation extends Setup {
     
     @Test @Ignore public void testNegateBelow() {
     	fail("test for @not Below not implemented");
-
     }
     
     @Test public void testNegateNotFilter() {    	
@@ -72,11 +71,6 @@ public class TestNegation extends Setup {
 			);
     	
     	testQueryReturnsExpectedResults( "{'@not': [{'@not': [{'eg:value': {'@lt': 19}}]}]}", expectAB );
-    }
-
-    // Unbounds are only generated from negations
-    @Test public void testNegateUnbound() {
-    	testQueryReturnsExpectedResults( "{'@not': [{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}]}", expectC );
     }
        
     @Test public void testNegatesAndOfTwoDifferentFilters_Not_Andxy() {
