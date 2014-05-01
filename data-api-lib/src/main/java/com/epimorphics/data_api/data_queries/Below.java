@@ -8,19 +8,43 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.hp.hpl.jena.shared.BrokenException;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Below extends Constraint {
 	
 	final Aspect a;
 	final Term v;
+	final boolean negated;
 	
 	public Below(Aspect a, Term v) {
+		this(a, v, false);
+	}
+	
+	public Below(Aspect a, Term v, boolean negated) {
 		this.a = a;
 		this.v = v;
+		this.negated = negated;
 	}
 
 	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.generateBelow(this);			
+		cx.comment("@below", this);
+		PrefixMapping pm = cx.api.getPrefixes();
+	//
+		String fVar = this.a.asVar(); 
+		String value = this.v.asSparqlTerm(pm);			
+		Aspect x = this.a;
+		String below = x.getBelowPredicate(cx.api);
+	//
+		if (negated) cx.out.append("  FILTER(NOT EXISTS{");
+		cx.out.append(value)
+			.append(" ")
+			.append(below)
+			.append("* ")
+			.append(fVar)
+			.append(" .")
+			;			
+		if (negated) cx.out.append("})");
+		cx.out.append("\n");
 	}
 
 	@Override public String toString() {
@@ -40,6 +64,6 @@ public class Below extends Constraint {
 	}
 
 	@Override public Constraint negate() {
-		throw new BrokenException("cannot negate Below(" + a + ", " + v + ")");
+		return new Below(a, v, !negated);
 	}	
 }

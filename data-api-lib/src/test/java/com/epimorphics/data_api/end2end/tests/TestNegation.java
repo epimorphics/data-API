@@ -12,6 +12,46 @@ import org.junit.Test;
 import com.epimorphics.data_api.libs.BunchLib;
 
 public class TestNegation extends Setup {
+
+	static final String expectABDEF = BunchLib.join
+		( "["
+		, "  {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+		, "  , 'eg:value': 17"
+		, "  , 'eg:values': [17, 18, 19]"
+		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
+		, "  , 'eg:value': 18"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['B-one', 'B1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+		, "  , 'eg:value': 20"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['D-two', 'D2']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+		, "  , 'eg:value': 21"
+		, "  , 'eg:values': [42, 99]"
+		, "  , 'eg:label': ['E', 'e']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+		, "  , 'eg:value': 22"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+		, "  }"
+		, "]"
+		);
 	
     @Test public void testNegatesSimpleFilter() {
     	String expectA = BunchLib.join
@@ -41,12 +81,16 @@ public class TestNegation extends Setup {
     	testQueryReturnsExpectedResults("{'@not': [{'@search': 'notfound'}]}", allExpected );
     }
     
-    @Test @Ignore public void testNegateNegatedOptionalAspect() {
-    	fail("test for @not NegatedOptionalFilter not implemented");
+    @Test public void testNegateNegatedOptionalAspect() {
+    	testQueryReturnsExpectedResults("{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}", expectC);
+    	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}", expectABDEF);
+    	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}]}", expectC);
     }
     
-    @Test @Ignore public void testNegateBelow() {
-    	fail("test for @not Below not implemented");
+    @Test public void testNegateBelow() {
+    	testQueryReturnsExpectedResults("{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}", "[]");
+    	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}", allExpected);
+    	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}]}", "[]");
     }
     
     @Test public void testNegateNotFilter() {    	

@@ -23,8 +23,7 @@ public class Setup {
 		testapp = new App("testapp", new File("src/test/data/query-testing/test.conf"));
         man = testapp.getComponentAs("dsapi", DSAPIManager.class);
     }
-    
-	static final String allExpected = BunchLib.join
+    	static final String allExpected = BunchLib.join
 		( "["
 		, "  {"
 		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"

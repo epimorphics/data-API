@@ -217,24 +217,24 @@ public class Context  {
 		comment("not implemented: " + c.toString());
 	}
 
-	public void generateBelow(Below b) {
-		
-		comment("@below", b);
-		
-		PrefixMapping pm = api.getPrefixes();
-		String fVar = b.a.asVar(); 
-		String value = b.v.asSparqlTerm(pm);			
-		Aspect x = b.a;
-		String below = x.getBelowPredicate(api);
-		out.append(value)
-			.append(" ")
-			.append(below)
-			.append("* ")
-			.append(fVar)
-			.append(" .")
-			.append("\n")
-			;
-	}
+//	public void generateBelow(Below b) {
+//		
+//		comment("@below", b);
+//		
+//		PrefixMapping pm = api.getPrefixes();
+//		String fVar = b.a.asVar(); 
+//		String value = b.v.asSparqlTerm(pm);			
+//		Aspect x = b.a;
+//		String below = x.getBelowPredicate(api);
+//		out.append(value)
+//			.append(" ")
+//			.append(below)
+//			.append("* ")
+//			.append(fVar)
+//			.append(" .")
+//			.append("\n")
+//			;
+//	}
 
 	public void generateSearch(SearchSpec s) {
 		comment("@search", s);
