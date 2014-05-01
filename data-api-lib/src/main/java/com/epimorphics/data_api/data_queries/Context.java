@@ -5,19 +5,12 @@
 */
 package com.epimorphics.data_api.data_queries;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
 
@@ -211,30 +204,6 @@ public class Context  {
 			return c;
 		}
 	}
-
-	public void notImplemented(Constraint c) {
-		System.err.println( ">> not implemented: " + c );
-		comment("not implemented: " + c.toString());
-	}
-
-//	public void generateBelow(Below b) {
-//		
-//		comment("@below", b);
-//		
-//		PrefixMapping pm = api.getPrefixes();
-//		String fVar = b.a.asVar(); 
-//		String value = b.v.asSparqlTerm(pm);			
-//		Aspect x = b.a;
-//		String below = x.getBelowPredicate(api);
-//		out.append(value)
-//			.append(" ")
-//			.append(below)
-//			.append("* ")
-//			.append(fVar)
-//			.append(" .")
-//			.append("\n")
-//			;
-//	}
 
 	public void generateSearch(SearchSpec s) {
 		comment("@search", s);
