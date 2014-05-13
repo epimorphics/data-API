@@ -11,6 +11,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
 
@@ -143,38 +144,76 @@ public class Context  {
         	return c;
         }
 	}
+	
+	public static class Equalities  {
+		
+		private Map<Shortname, List<Term>> map = new HashMap<Shortname, List<Term>>();
+
+		final Problems p;
+		
+		public Equalities(Problems p) {
+			this.p = p;
+		}
+		
+		public void put(Aspect a, Shortname name, Term value) {
+			List<Term> terms = map.get(name);
+			if (terms == null) {
+				map.put(name,  terms = new ArrayList<Term>());
+			} else {
+				// TODO p.add("Warning: multiple values given for equality on aspect " + a);
+			}
+			terms.add(value);
+		}
+		
+		static final List<Term> NO_TERMS = new ArrayList<Term>();
+
+		public List<Term> get(Shortname name) {
+			List<Term> terms = map.get(name);
+			return terms == null ? NO_TERMS : terms;
+		}		
+	}
 
 	private Constraint declareAspectVars(Constraint c) {
 		int nb = ordered.size();
 		comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
 	//
-		Map<Shortname, Term> equalities = new HashMap<Shortname, Term>();
+		Equalities equalities = new Equalities(p);
 		Constraint adjusted = findEqualities(equalities, c);
 		Set<Aspect> required = new HashSet<Aspect>();
 		findRequiredAspects(required, c);
 	//
 		for (Aspect x: ordered) {
 			String fVar = x.asVar();
-			Term equals = equalities.get(x.getName());
-			String stringEquals = equals == null ? null : equals.asSparqlTerm(api.getPrefixes());
-		//
-			out.append("  ");
-		//
 			boolean isOptional = x.getIsOptional() && !required.contains(x);
-			if (isOptional) out.append( " OPTIONAL {" );
-			out
-				.append("?item")
-				.append(" ").append(x.asProperty())
-				.append(" ").append(stringEquals == null ? fVar : stringEquals)
-				.append(" .")
-				;
-			if (isOptional) out.append( " }" );
-			if (stringEquals != null) {
-				out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
+			List<Term> allEquals = equalities.get(x.getName());
+			if (allEquals.isEmpty()) {
+				declareOneBinding(x, isOptional, 0, fVar, null);
+			} else {
+				PrefixMapping prefixes = api.getPrefixes();
+				int countBindings = 0;
+				for (Term equals: allEquals) {
+					declareOneBinding(x, isOptional, countBindings, fVar, equals.asSparqlTerm(prefixes));
+					countBindings += 1;
+				}
 			}
-			out.append( "\n" );
 		}
 		return adjusted;
+	}
+
+	private void declareOneBinding(Aspect x, boolean isOptional, int countBindings, String fVar, String stringEquals) {
+		out.append("  ");
+		if (isOptional) out.append( " OPTIONAL {" );
+		out
+			.append("?item")
+			.append(" ").append(x.asProperty())
+			.append(" ").append(stringEquals == null ? fVar : stringEquals)
+			.append(" .")
+			;
+		if (isOptional) out.append( " }" );
+		if (stringEquals != null && countBindings == 0) {
+			out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
+		}
+		out.append( "\n" );
 	}
 	
 	private void findRequiredAspects(Set<Aspect> required, Constraint c) {
@@ -187,18 +226,26 @@ public class Context  {
 		}
 	}
 
-	private Constraint findEqualities(Map<Shortname, Term> result, Constraint c) {
+	/**
+	    Explore the @and operands of the constraint c looking for
+	    aspects equal to some value. Return the tree with such aspects
+	    stripped out and put into the Equalities table. 
+	*/
+	private Constraint findEqualities(Equalities eq, Constraint c) {
 		if (c instanceof Filter) {
 			Filter f = ((Filter) c);
-			if (f.range.op.equals(Operator.EQ)) {				
-				result.put(f.a.getName(), f.range.operands.get(0));
+			if (f.range.op.equals(Operator.EQ)) {	
+				
+				Term value = f.range.operands.get(0);
+				eq.put(f.a, f.a.getName(), value);				
+				
 				return Constraint.EMPTY;
 			} else {
 				return c;
 			}
 		} else if (c instanceof And) {
 			List<Constraint> operands = new ArrayList<Constraint>();
-			for (Constraint x: ((And) c).operands) operands.add( findEqualities(result, x) );
+			for (Constraint x: ((And) c).operands) operands.add( findEqualities(eq, x) );
 			return Constraint.and(operands);
 		} else {
 			return c;
