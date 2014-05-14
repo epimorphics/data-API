@@ -173,6 +173,14 @@ public class TestQueriesGetExpectedResults extends Setup {
     	testQueryReturnsExpectedResults( "{'eg:value': {'@ge': 20, '@lt': 19}}", expectNone );
     }
     
+    // Constraining a single non-multi-valued aspect to two different equality values
+    // should return no results, but the equality optimiser accidentally dropped one of
+    // the values on the floor and generated queries that /would/ return results. This test
+    // ensures that the conflicting constraints make it into the SPARQL query.
+    @Test public void testConflictingEQconstraints() {
+    	testQueryReturnsExpectedResults("{'@and': [{'eg:value': {'@eq': 20}}, {'eg:value': {'@eq': 21}}]}", "[]");
+    }
+    
     @Test public void testExtractByTwoProperties() {
     	String expectD = BunchLib.join
         		( "["
@@ -187,4 +195,9 @@ public class TestQueriesGetExpectedResults extends Setup {
 	    		);
     	testQueryReturnsExpectedResults("{'eg:resource': {'@eq': {'@id': 'eg:DE-resource'}}, 'eg:values': {'@eq': 43}}", expectD);
     }	
+    
+    
+    
+    
+    
 }

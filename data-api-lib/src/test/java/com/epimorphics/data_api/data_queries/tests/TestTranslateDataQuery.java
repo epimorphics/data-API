@@ -12,6 +12,8 @@ import static com.epimorphics.data_api.test_support.Asserts.assertSameSelect;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
@@ -96,6 +98,19 @@ public class TestTranslateDataQuery {
 		assertSameSelect( expected, sq );
 	}	
 	
+	@Test public void testMultipleConflictingEqualities() {
+		Problems p = new Problems();
+		JsonObject query = JSON.parse("{'@and': [{'pre:X': {'@eq': 1}}, {'pre:X': {'@eq': 2}}]}");
+		DataQuery dq = DataQueryParser.Do(p, dsXY, query);
+		String sq = dq.toSparql(p, dsXY);
+		assertContains("?item pre:X 1 . BIND(1 AS ?pre_X)", sq);
+	}
+	
+	private void assertContains(String string, String sq) {
+		if (sq.contains(string)) return;
+		Assert.fail("generated sparql should contain '" + string + "' but does not: " + sq);
+	}
+
 	@Test public void testMultipleSorts() {
 		Problems p = new Problems();
 		List<Constraint> filters = BunchLib.list();
