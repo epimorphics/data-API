@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
+import com.epimorphics.data_api.data_queries.Context.Equalities;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSONWritable;
@@ -96,9 +97,37 @@ public class DataQuery {
 		if (c instanceof Below) result.add( ((Below) c) );
 		return result;
 	}
-    
+	
     public String toSparql(Problems p, API_Dataset api) {
-        try {
+    	if (useOldWay()) return oldWay(p, api);
+    	else return newWay(p, api);
+    }
+
+	private boolean useOldWay() {
+		// if suitable case for new way return false
+		return false;
+	}
+
+	private String newWay(Problems p, API_Dataset api) {
+		try {
+			StringBuilder out = new StringBuilder();
+			Context rx = new Context( out, this, p, api );
+			
+			c.topLevelSparql(p, rx);	
+			
+			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
+			System.err.println( ">> RENDERED QUERY:\n" + query );
+			return query; 
+		}
+        catch (Exception e) { 
+        	p.add("exception generating SPARQL query: " + e.getMessage()); 
+        	e.printStackTrace(System.err); 
+        	return null; 
+        }
+	}
+	
+	private String oldWay(Problems p, API_Dataset api) {
+		try {
 			StringBuilder out = new StringBuilder();
 			Context rx = new Context( out, this, p, api );
 			
@@ -114,7 +143,7 @@ public class DataQuery {
 			
 			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
 			
-//			System.err.println( ">> RENDERED QUERY:\n" + query );
+			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
         catch (Exception e) { 
@@ -122,7 +151,7 @@ public class DataQuery {
         	e.printStackTrace(System.err); 
         	return null; 
         }
-    }
+	}
 	    
     @Override public String toString() {
     	return 
@@ -141,7 +170,7 @@ public class DataQuery {
     		;
     }
     	
-	private void querySort(StringBuilder sb) {
+	protected void querySort(StringBuilder sb) {
 		if (sortby.size() > 0) {
 			sb.append(" ORDER BY");
 			for (Sort s: sortby) {

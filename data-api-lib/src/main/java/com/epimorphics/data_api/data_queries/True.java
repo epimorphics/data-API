@@ -30,6 +30,10 @@ public class True extends Constraint {
 		throw new BrokenException("FilterBody of True");
 	}
 
+	public void tripleFiltering(Context cx) {
+		// Nothing needs doing.
+	}
+
 	@Override public Constraint negate() {
 		return False.value;
 	}

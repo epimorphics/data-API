@@ -26,6 +26,10 @@ public final class NegatedOptionalAspect extends Constraint {
 		cx.out.append(" !BOUND(").append(negated.a.asVar()).append(")");
 		cx.out.append(")\n");
 	}
+	
+	public void tripleFiltering(Context cx) {
+		toSparql(cx, "");
+	}
 
 	@Override public String toString() {
 		return "(" + negated + " | UNBOUND(" + negated.a + ")" + ")";
@@ -37,7 +41,7 @@ public final class NegatedOptionalAspect extends Constraint {
 	}
 
 	@Override public void toFilterBody(Context cx, String varSuffix) {
-		throw new BrokenException("SnallOr as a filter body");
+		throw new BrokenException("SmallOr as a filter body");
 	}
 
 	@Override public Constraint negate() {

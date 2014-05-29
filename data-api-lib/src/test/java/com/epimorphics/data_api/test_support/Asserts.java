@@ -33,8 +33,8 @@ public class Asserts {
 	public static void assertSameSelect(String expected, String toTest) {
 		Query t = null, e = null;
 		try {
-			e = QueryFactory.create(expected);
-			t = QueryFactory.create(toTest);
+			if (expected != null) e = QueryFactory.create(expected);
+			if (toTest != null) t = QueryFactory.create(toTest);
 			
 //			System.err.println(">> EXPECTED:\n" + e.toString() );
 //			System.err.println(">> OBTAINED:\n" + t.toString() );

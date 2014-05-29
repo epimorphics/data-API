@@ -6,8 +6,14 @@
 package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.Context.Equalities;
+import com.epimorphics.data_api.reporting.Problems;
 
 public abstract class Constraint {
 
@@ -18,6 +24,86 @@ public abstract class Constraint {
 	public abstract Constraint negate();
 
 	public abstract String toString();
+	
+	// NEW BITS /////////////////////////////////////////////////////
+	
+	static final String nl = "\n";
+
+	/** 
+	 	Translate this constraint at the top level of SPARQL. Many constraints 
+	 	can be handled by this default method because they're just ANDed 
+	 	sub-constraints.
+	 * @param p TODO
+	*/
+	public void topLevelSparql(Problems p, Context cx) {    	
+
+		List<Guard> guards = cx.dq.guards;
+		boolean needsDistinct = false;
+		for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
+		
+		if (cx.dq.isCountQuery()) {
+			cx.out.append("SELECT")
+				.append(" (COUNT(")
+				.append(needsDistinct ? " DISTINCT" : "")
+				.append("?item")
+				.append(") AS ?_count)")
+				.append(nl)
+				;
+			if (cx.dq.isNestedCountQuery()) {
+            	cx.comment("this is a nested count query, so:");
+            	cx.out.append("  { SELECT ?item").append("\n");
+            }
+		} else {
+			cx.out.append("SELECT")
+			.append(needsDistinct ? " DISTINCT" : "")
+			.append("?item")
+			.append(nl)
+			;
+			
+			for (Aspect a: cx.ordered) {
+				cx.out.append("  ").append(a.asVar()).append(nl);
+			}			
+		}
+		cx.out.append("WHERE {").append(nl);        
+
+        boolean baseQueryNeeded = true;  
+        
+        for (Guard guard : guards) {
+            if (guard.supplantsBaseQuery()) {
+                baseQueryNeeded = false;
+            }
+        }
+        
+		String baseQuery = cx.api.getBaseQuery();
+		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+			cx.comment("base query");
+		    cx.out.append( "  ").append(baseQuery).append( "\n");
+		} else {
+			cx.comment("no base query");
+		}
+	//
+		int ng = guards.size();
+        cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+        for (Guard guard : guards)
+        	cx.out.append(guard.queryFragment(cx.api));
+    // 
+		
+		Constraint unEquals = cx.declareAspectVars(cx.earlySearches(this));
+		
+		unEquals.tripleFiltering(cx);
+		cx.out.append("}");
+		cx.dq.querySort(cx.out);
+		if (cx.dq.slice.length != null) cx.out.append( " LIMIT " ).append(cx.dq.slice.length);
+		if (cx.dq.slice.offset != null) cx.out.append( " OFFSET " ).append(cx.dq.slice.offset);
+
+		if (cx.dq.isNestedCountQuery()) cx.out.append("}");
+		}
+
+	public void tripleFiltering(Context cx) {
+		throw new UnsupportedOperationException("cannot triple-filter this " + getClass().getSimpleName() + ": " + this);
+	}
+	
+	// END OF NEW BITS //////////////////////////////////////////////
 	
 	@Override public boolean equals(Object other) {
 		return this.getClass() == other.getClass() && same((Constraint) other);

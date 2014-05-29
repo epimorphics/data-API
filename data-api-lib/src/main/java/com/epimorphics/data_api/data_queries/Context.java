@@ -126,14 +126,14 @@ public class Context  {
         return declareAspectVars(earlySearches(c));
 	}
 
-	private Constraint earlySearches(Constraint c) {
-		if (c instanceof SearchSpec) {
+	public Constraint earlySearches(Constraint c) {
+		if (isItemSearch(c)) {
         	generateSearch( (SearchSpec) c);
         	return Constraint.EMPTY;
         } else if (c instanceof And) {
         	List<Constraint> nonSearches = new ArrayList<Constraint>();
         	for (Constraint x: ((And) c).operands) {
-        		if (x instanceof SearchSpec) {
+        		if (isItemSearch(x)) {
         			generateSearch((SearchSpec) x);        			
         		} else {
         			nonSearches.add(x);
@@ -143,6 +143,15 @@ public class Context  {
         } else {
         	return c;
         }
+	}
+	
+	public boolean isItemSearch(Constraint c) {
+		if (c instanceof SearchSpec) {
+			SearchSpec s = (SearchSpec) c;
+			Aspect a = namesToAspects.get(s.getAspectName());
+			if (s.hasLiteralRange(a)) return true;
+		}
+		return false;
 	}
 	
 	public static class Equalities  {
@@ -173,7 +182,7 @@ public class Context  {
 		}		
 	}
 
-	private Constraint declareAspectVars(Constraint c) {
+	public Constraint declareAspectVars(Constraint c) {
 		int nb = ordered.size();
 		comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
 	//
@@ -216,7 +225,7 @@ public class Context  {
 		out.append( "\n" );
 	}
 	
-	private void findRequiredAspects(Set<Aspect> required, Constraint c) {
+	public void findRequiredAspects(Set<Aspect> required, Constraint c) {
 		if (c instanceof Filter) {
 			required.add( ((Filter) c).a );
 		} else if (c instanceof And) {
@@ -231,7 +240,7 @@ public class Context  {
 	    aspects equal to some value. Return the tree with such aspects
 	    stripped out and put into the Equalities table. 
 	*/
-	private Constraint findEqualities(Equalities eq, Constraint c) {
+	public Constraint findEqualities(Equalities eq, Constraint c) {
 		if (c instanceof Filter) {
 			Filter f = ((Filter) c);
 			if (f.range.op.equals(Operator.EQ)) {	

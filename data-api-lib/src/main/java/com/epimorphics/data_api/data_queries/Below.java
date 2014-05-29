@@ -47,6 +47,10 @@ public class Below extends Constraint {
 		cx.out.append("\n");
 	}
 
+	public void tripleFiltering(Context cx) {
+		toSparql(cx, "");
+	}
+
 	@Override public String toString() {
 		return a + " @below " + v;
 	}

@@ -22,6 +22,10 @@ public class NegatedMultivaluedFilter extends Constraint {
 		cx.comment("NotFilter toFilterBody", this);
 	}
 
+	public void tripleFiltering(Context cx) {
+		cx.negateFilter(basis);
+	}
+
 	@Override public String toString() {
 		return "@not(" + basis + ")";
 	}

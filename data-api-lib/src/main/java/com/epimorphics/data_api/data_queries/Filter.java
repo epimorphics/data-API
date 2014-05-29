@@ -30,6 +30,12 @@ public class Filter extends Constraint {
 	@Override public void toFilterBody(Context cx, String varSuffix) {
 		this.range.op.asConstraint( this, cx.out, cx.api, varSuffix );
 	}
+
+	@Override public void tripleFiltering(Context cx) {
+		cx.out.append(" FILTER(" );
+		toFilterBody(cx, "");
+		cx.out.append(")").append(nl);
+	}
 	
 	@Override public Constraint negate() {
 		List<Term> operands = range.operands;

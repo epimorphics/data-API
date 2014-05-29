@@ -334,8 +334,8 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, " ?pre_local <http://jena.apache.org/text#query> 'look for me' ."
 			, " ?item pre:local ?pre_local ."
+			, " ?pre_local <http://jena.apache.org/text#query> 'look for me' ."
 			, "}"
 			);
 		

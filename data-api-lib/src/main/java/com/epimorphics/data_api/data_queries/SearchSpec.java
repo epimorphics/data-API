@@ -59,6 +59,10 @@ public class SearchSpec extends Constraint {
 	@Override public void toFilterBody(Context cx, String varSuffix) {
 		throw new BrokenException("Search as FilterBody");
 	}
+
+	public void tripleFiltering(Context cx) {
+		cx.generateSearch(this);
+	}
 	
 	public Shortname getAspectName() {
 		return aspectName;
@@ -154,8 +158,11 @@ public class SearchSpec extends Constraint {
 		}
 	}
 
-	private boolean hasLiteralRange(Aspect a) {
-		return isLiteralType(a.getRangeType());
+	public boolean hasLiteralRange(Aspect a) {
+		if (a == null) return true;
+		Resource rangeType = a.getRangeType();
+		if (rangeType == null) return false;
+		return isLiteralType(rangeType);
 	}
 
 	private boolean isLiteralType(Resource type) {

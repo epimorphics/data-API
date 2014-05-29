@@ -42,6 +42,9 @@ public class TestJSONtoSPARQL {
 		File sparqlFile = new File(dataDir, name + ".rq" );
 		File configFile = new File(dataDir, shorten(name) + ".ttl" );
 		
+		System.err.println(">> sparqlFile: " + sparqlFile);
+		
+		
 		Model configModel= FileManager.get().loadModel(configFile.getPath());
 		
 		Resource config = configModel.listSubjectsWithProperty(RDF.type, Dsapi.Dataset)
@@ -60,7 +63,7 @@ public class TestJSONtoSPARQL {
 		
 		String json = FileManager.get().readWholeFileAsUTF8( jsonFile.getPath());
 		String sparql = FileManager.get().readWholeFileAsUTF8(sparqlFile.getPath());
-		
+				
 		JsonObject jo = JSON.parse(json);
 		Problems p = new Problems();
 		DataQuery dq = DataQueryParser.Do(p, ds, jo);
