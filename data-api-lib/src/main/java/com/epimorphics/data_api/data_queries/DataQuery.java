@@ -14,6 +14,7 @@ import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.data_queries.Context.Equalities;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.query.ResultSet;
@@ -110,12 +111,14 @@ public class DataQuery {
 
 	private String newWay(Problems p, API_Dataset api) {
 		try {
+			SQ sq = new SQ();
 			StringBuilder out = new StringBuilder();
-			Context rx = new Context( out, this, p, api );
+			Context rx = new Context( sq, out, this, p, api );
 			
-			c.topLevelSparql(p, rx);	
+			c.translate(p, rx);
+			String unprefixedQuery = sq.toString();
 			
-			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
+			String query = PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
 			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
@@ -129,7 +132,7 @@ public class DataQuery {
 	private String oldWay(Problems p, API_Dataset api) {
 		try {
 			StringBuilder out = new StringBuilder();
-			Context rx = new Context( out, this, p, api );
+			Context rx = new Context( new SQ(), out, this, p, api );
 			
 			Constraint adjusted = rx.begin(c);
 			adjusted.toSparql(rx, "");

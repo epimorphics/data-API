@@ -11,20 +11,22 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.sparql.SQ;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
 
+	final SQ sq;
 	final Problems p;
 	final DataQuery dq;
 	final API_Dataset api;
 	final StringBuilder out;
 	
-	
 	final List<Aspect> ordered = new ArrayList<Aspect>();
 	final Map<Shortname, Aspect> namesToAspects = new HashMap<Shortname, Aspect>();
 	
-	public Context( StringBuilder out, DataQuery dq, Problems p, API_Dataset api) {
+	public Context( SQ sq, StringBuilder out, DataQuery dq, Problems p, API_Dataset api) {
+		this.sq = sq;
 		this.out = out;		
 		this.dq = dq;
 		this.p = p;

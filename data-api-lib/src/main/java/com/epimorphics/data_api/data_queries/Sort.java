@@ -28,4 +28,10 @@ public class Sort {
 		return (upwards ? "UP(" : "DOWN(") + by + ")";
 	}
 	
+	public void toString(StringBuilder sb) {
+		if (!upwards) sb.append("DESC(");
+		sb.append(by.asVar());
+		if (!upwards)sb.append(")"); 
+	}
+	
 }

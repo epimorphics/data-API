@@ -5,12 +5,15 @@
 */
 package scratch;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
-import scratch.TestSparqlPrecursor.SQ.OpFilter;
+import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.data_queries.Sort;
+import com.epimorphics.data_api.libs.BunchLib;
+import com.epimorphics.data_api.sparql.SQ;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestSparqlPrecursor {
 	
@@ -55,187 +58,21 @@ public class TestSparqlPrecursor {
 
 	}
 	
-	public static class SQ {
+	@Test public void testing4() {
+		SQ q = new SQ();
+		
+		q.setLimit(17);
+		q.setOffset(42);
+		
+		System.err.println(">>\n" + q.toString());
+	}
 	
-		final List<Variable> variables = new ArrayList<Variable>();
-		
-		final Where whereClause = new Where();
-		
-		public SQ() {
-			
-		}
-
-		@Override public String toString() {
-			return toString("");
-		}
-		
-		public String toString(String indent) {
-			StringBuilder sb = new StringBuilder();
-			toString(sb, indent);
-			return sb.toString();
-		}
-		
-		public void toString(StringBuilder sb, String indent) {
-			sb.append(indent).append("SELECT").append(nl);
-			for (Variable v: variables) sb.append(indent).append("  ").append(v.name()).append(nl);
-			sb.append(indent).append("WHERE").append(nl);
-			sb.append(indent).append("{").append(nl);
-			whereClause.toString(sb, indent + "  ");
-			sb.append(indent).append("}").append(nl);
-		}
-		
-		public void addOutput(Variable v) {
-			variables.add(v);
-		}
-		
-		public void addTriple(Triple t) {
-			whereClause.addTriple(t);
-		}
-		
-		public void addFilter(OpFilter f) {
-			whereClause.addFilter(f);
-		}
-		
-	/////////////////////////////////////////////////////////////////
-
-		static final String nl = "\n";
-					
-		public interface Node {
-			public void toString(StringBuilder sb);
-		}
-		
-		public static class Resource implements Node, Expr {
-
-			final String uri;
-			
-			public Resource(String uri) {
-				this.uri = uri;
-			}
-			
-			public String uri() {
-				return uri;
-			}
-			
-			@Override public void toString(StringBuilder sb) {
-				sb.append("<").append(uri()).append(">").append(" ");
-			}
-			
-		} 
-		
-		public static class Literal implements Node, Expr {
-
-			final String spelling;
-			final String type;
-			
-			public Literal(String spelling, String type) {
-				this.spelling = spelling;
-				this.type = type;
-			}
-			
-			public String spelling() {
-				return spelling;
-			}
-			
-			public String type() {
-				return type;
-			}
-			
-			@Override public void toString(StringBuilder sb) {
-				sb
-					.append("\"").append(spelling()).append("\"")
-					.append("^^").append(type).append(" ")
-					;
-			}
-			
-		}
-		
-		public static class Variable implements Node, Expr {
-			
-			final String name;
-			
-			public Variable(String name) {
-				this.name = name;
-			}
-			
-			public String name() {
-				return name;
-			}
-
-			@Override public void toString(StringBuilder sb) {
-				sb.append("?").append(name()).append(" ");
-			}
-			
-		}
-		
-		public static class Triple implements WhereElement {
-			final Node S, P, O;
-			
-			public Triple(Node S, Node P, Node O) { 
-				this.S = S; this.P = P; this.O = O; 
-			}
-
-			@Override public void toString(StringBuilder sb, String indent) {
-				sb.append(indent);
-				S.toString(sb);
-				P.toString(sb);
-				O.toString(sb);
-				sb.append(" .");
-				sb.append(nl);
-			}
-		}
-		
-		public interface Expr {
-			public void toString(StringBuilder sb);
-		}
-		
-		public static class OpFilter implements WhereElement {
-			
-			final Expr L;
-			final String op;
-			final Expr R;
-			
-			public OpFilter(Expr L, String op, Expr R) {
-				this.L = L;
-				this.op = op;
-				this.R = R;
-			}
-
-			@Override public void toString(StringBuilder sb, String indent) {
-				sb.append(indent);
-				sb.append("FILTER(");
-				L.toString(sb);
-				sb.append(" ").append(op).append(" ");
-				R.toString(sb);
-				sb.append(")");
-				sb.append(nl);
-			}
-		}
-		
-		public interface WhereElement {
-
-			public void toString(StringBuilder sb, String indent);
-			
-		}
-		
-		public static class Where {
-
-			final List<WhereElement> elements = new ArrayList<WhereElement>();
-			
-			public void toString(StringBuilder sb, String indent) {
-				for (WhereElement e: elements)
-					e.toString(sb, indent);
-			}
-
-			public void addTriple(Triple t) {
-				elements.add(t);
-			}
-
-			public void addFilter(OpFilter f) {
-				elements.add(f);
-			}
-			
-		}
-		
+	@Test public void testing5() {
+		SQ q = new SQ();
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("a", "eh:/A");
+		List<Sort> sorts = BunchLib.list(new Sort(new Shortname(pm, "a:b"), true));
+		q.addSorts(sorts);
+		System.err.println(">>\n" + q.toString());
 	}
 
 }

@@ -14,6 +14,8 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Context.Equalities;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Variable;
 
 public abstract class Constraint {
 
@@ -35,6 +37,51 @@ public abstract class Constraint {
 	 	sub-constraints.
 	 * @param p TODO
 	*/
+	
+	public void translate(Problems p, Context cx) {
+		cx.sq.addOutput(new SQ.Variable("item"));
+		
+		for (Aspect a: cx.ordered) {
+			cx.sq.addOutput(new SQ.Variable(a.asVarName()));
+		}
+		
+		List<Guard> guards = cx.dq.guards;
+		boolean needsDistinct = false;
+		boolean baseQueryNeeded = true;  
+		
+		for (Guard guard : guards) {
+			if (guard.needsDistinct()) needsDistinct = true;
+			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
+		}
+		
+		if (cx.dq.isCountQuery()) {
+			System.err.println(">> IGNORING count queries for now.");
+		}
+        
+		String baseQuery = cx.api.getBaseQuery();
+		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded)
+			cx.sq.addBaseQuery(baseQuery);
+	//
+		
+		int ng = guards.size();
+        cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+        if (ng > 0) System.err.println( ">> IGNORING guards for now.");
+//        for (Guard guard : guards)
+//        	cx.out.append(guard.queryFragment(cx.api));
+    // 
+		
+		Constraint unEquals = cx.declareAspectVars(cx.earlySearches(this));
+		
+		unEquals.tripleFiltering(cx);
+		cx.out.append("}");
+		cx.dq.querySort(cx.out);
+		
+		if (cx.dq.slice.length != null) cx.sq.setLimit(cx.dq.slice.length);
+		if (cx.dq.slice.offset != null) cx.sq.setOffset(cx.dq.slice.offset);
+
+		// if (cx.dq.isNestedCountQuery()) cx.out.append("}");
+	}
+	
 	public void topLevelSparql(Problems p, Context cx) {    	
 
 		List<Guard> guards = cx.dq.guards;
