@@ -146,6 +146,25 @@ public class Context  {
         	return c;
         }
 	}
+
+	public Constraint earlySearchesSQ(Constraint c) {
+		if (isItemSearch(c)) {
+        	generateSearchSQ( (SearchSpec) c);
+        	return Constraint.EMPTY;
+        } else if (c instanceof And) {
+        	List<Constraint> nonSearches = new ArrayList<Constraint>();
+        	for (Constraint x: ((And) c).operands) {
+        		if (isItemSearch(x)) {
+        			generateSearchSQ((SearchSpec) x);        			
+        		} else {
+        			nonSearches.add(x);
+        		}
+        	}
+        	return Constraint.and(nonSearches);
+        } else {
+        	return c;
+        }
+	}
 	
 	public boolean isItemSearch(Constraint c) {
 		if (c instanceof SearchSpec) {
@@ -182,6 +201,33 @@ public class Context  {
 			List<Term> terms = map.get(name);
 			return terms == null ? NO_TERMS : terms;
 		}		
+	}
+
+	public Constraint declareAspectVarsSQ(Constraint c) {
+		int nb = ordered.size();
+		// comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
+	//
+		Equalities equalities = new Equalities(p);
+		Constraint adjusted = findEqualities(equalities, c);
+		Set<Aspect> required = new HashSet<Aspect>();
+		findRequiredAspects(required, c);
+	//
+		for (Aspect x: ordered) {
+			String fVar = x.asVar();
+			boolean isOptional = x.getIsOptional() && !required.contains(x);
+			List<Term> allEquals = equalities.get(x.getName());
+			if (allEquals.isEmpty()) {
+				declareOneBindingSQ(x, isOptional, 0, fVar, null);
+			} else {
+				PrefixMapping prefixes = api.getPrefixes();
+				int countBindings = 0;
+				for (Term equals: allEquals) {
+					declareOneBindingSQ(x, isOptional, countBindings, fVar, equals.asSparqlTerm(prefixes));
+					countBindings += 1;
+				}
+			}
+		}
+		return adjusted;
 	}
 
 	public Constraint declareAspectVars(Constraint c) {
@@ -226,6 +272,39 @@ public class Context  {
 		}
 		out.append( "\n" );
 	}
+
+	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, String fVar, String stringEquals) {
+//		if (isOptional) out.append( " OPTIONAL {" );
+		SQ.Node item = new SQ.Variable("item");
+		
+		System.err.println( ">> x.asProperty(): " + x.asProperty());
+		
+		SQ.Resource property = new SQ.Resource(x.asProperty());
+		
+		if (stringEquals != null) throw new RuntimeException("TBD");
+		
+		SQ.Node value = new SQ.Variable(fVar.substring(1));
+		SQ.Triple t = new SQ.Triple(item, property, value);
+		
+		
+//		out
+//			.append("?item")
+//			.append(" ").append(x.asProperty())
+//			.append(" ").append(stringEquals == null ? fVar : stringEquals)
+//			.append(" .")
+//			;
+		
+		
+//		if (isOptional) out.append( " }" );
+		
+		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
+		
+		if (stringEquals != null && countBindings == 0) {
+			// out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
+			throw new RuntimeException("TBD");
+		
+		}
+	}
 	
 	public void findRequiredAspects(Set<Aspect> required, Constraint c) {
 		if (c instanceof Filter) {
@@ -263,6 +342,10 @@ public class Context  {
 		}
 	}
 
+	public void generateSearchSQ(SearchSpec s) {
+		s.toSearchTripleSQ(this, namesToAspects, api.getPrefixes());
+	}
+	
 	public void generateSearch(SearchSpec s) {
 		comment("@search", s);
 		out.append("  ");

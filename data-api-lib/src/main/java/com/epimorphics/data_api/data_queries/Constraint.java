@@ -70,7 +70,7 @@ public abstract class Constraint {
 //        	cx.out.append(guard.queryFragment(cx.api));
     // 
 		
-		Constraint unEquals = cx.declareAspectVars(cx.earlySearches(this));
+		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
 		
 		unEquals.tripleFiltering(cx);
 		cx.out.append("}");

@@ -11,6 +11,8 @@ import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Node;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -66,6 +68,45 @@ public class SearchSpec extends Constraint {
 	
 	public Shortname getAspectName() {
 		return aspectName;
+	}
+
+	public void toSearchTripleSQ(Context cx, Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		if (aspectName == null) {
+			if (negated) {
+				// "FILTER(NOT EXISTS{?item  <http://jena.apache.org/text#query> " + asSparqlTerm(pm) + "})";
+				throw new RuntimeException("TBD");
+			} else {
+				SQ.Node item = new SQ.Variable("item");
+				SQ.Node textQuery = new SQ.Resource("http://jena.apache.org/text#query");
+				SQ.Node O = asSQNode(pm);
+				cx.sq.addTriple(new SQ.Triple(item, textQuery, O));
+				
+//				return
+//					"?item"
+//					+ " <http://jena.apache.org/text#query> "
+//					+ asSparqlTerm(pm)
+//					;			
+			}
+		} else {
+			throw new RuntimeException("TBD");
+			// return toSearchAspectTriple(aspects, pm);
+		}
+	}
+	
+	private Node asSQNode(PrefixMapping pm) {
+		String limitString = (limit == null ? "" : " " + limit);
+		if (property == null && limit == null) {
+			return new SQ.Literal(pattern, "");		
+		} else if (property == null) {
+			throw new RuntimeException("TBD");
+			// return "(" + quoted + limitString + ")";
+		} else {
+//			String expanded = pm.expandPrefix(property.URI);
+//			String contracted = pm.qnameFor(expanded);
+//			String use = contracted == null ? "<" + property.URI + ">" : contracted;
+//			return "(" + use + " " + quoted + limitString + ")";
+			throw new RuntimeException("TBD");
+		}
 	}
 
 	public String toSearchTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {

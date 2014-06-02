@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Sort;
+import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 public class SQ {
 
@@ -74,6 +75,10 @@ public class SQ {
 		whereClause.addTriple(t);
 	}
 	
+	public void addOptionalTriple(SQ.Triple t) {
+		whereClause.addOptionalTriple(t);
+	}
+	
 	public void addFilter(SQ.OpFilter f) {
 		whereClause.addFilter(f);
 	}
@@ -111,7 +116,7 @@ public class SQ {
 		}
 		
 		@Override public void toString(StringBuilder sb) {
-			sb.append("<").append(uri()).append(">").append(" ");
+			sb.append("").append(uri()).append("").append(" ");
 		}
 		
 	} 
@@ -134,11 +139,14 @@ public class SQ {
 			return type;
 		}
 		
+		protected String safeSpelling() {
+			return FmtUtils.stringEsc(spelling, true);
+		}
+		
 		@Override public void toString(StringBuilder sb) {
-			sb
-				.append("\"").append(spelling()).append("\"")
-				.append("^^").append(type).append(" ")
-				;
+			sb.append("\"").append(safeSpelling()).append("\"");
+			if (!type.isEmpty()) sb.append("^^").append(type);
+			sb.append(" ");
 		}
 		
 	}
@@ -179,6 +187,18 @@ public class SQ {
 			O.toString(sb);
 			sb.append(" .");
 			sb.append(nl);
+		}
+
+		public WhereElement optional() {
+			final Triple it = this;
+			return new WhereElement() {
+
+				@Override public void toString(StringBuilder sb, String indent) {
+					sb.append(indent);
+					sb.append("OPTIONAL {");
+					it.toString(sb, indent + "  ");
+					sb.append("}").append(nl);
+				}};
 		}
 	}
 	
@@ -226,6 +246,10 @@ public class SQ {
 
 		public void addTriple(SQ.Triple t) {
 			elements.add(t);
+		}
+
+		public void addOptionalTriple(SQ.Triple t) {
+			elements.add(t.optional());
 		}
 
 		public void addFilter(SQ.OpFilter f) {
