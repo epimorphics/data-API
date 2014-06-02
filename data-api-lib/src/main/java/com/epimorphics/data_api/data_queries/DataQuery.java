@@ -115,6 +115,8 @@ public class DataQuery {
 			Context rx = new Context( sq, out, this, p, api );
 			
 			c.translate(p, rx);
+			sq.addSorts(sortby);			
+			
 			String unprefixedQuery = sq.toString();
 			
 			String query = PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
