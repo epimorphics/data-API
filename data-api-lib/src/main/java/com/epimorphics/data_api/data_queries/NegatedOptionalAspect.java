@@ -39,7 +39,6 @@ public final class NegatedOptionalAspect extends Constraint  {
 			
 			sb.append(indent).append("FILTER(" );
 			
-			sb.append("!");
 			f.toStringNoFILTER(sb);
 			
 			sb.append(" || ");

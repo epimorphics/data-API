@@ -13,6 +13,8 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ.Node;
+import com.epimorphics.data_api.sparql.SQ.Triple;
+import com.epimorphics.data_api.sparql.SQ.WhereElement;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -63,7 +65,7 @@ public class SearchSpec extends Constraint {
 	}
 
 	public void tripleFiltering(Context cx) {
-		cx.generateSearch(this);
+		cx.generateSearchSQ(this);
 	}
 	
 	public Shortname getAspectName() {
@@ -79,17 +81,10 @@ public class SearchSpec extends Constraint {
 				SQ.Node item = new SQ.Variable("item");
 				SQ.Node textQuery = new SQ.Resource("http://jena.apache.org/text#query");
 				SQ.Node O = asSQNode(pm);
-				cx.sq.addTriple(new SQ.Triple(item, textQuery, O));
-				
-//				return
-//					"?item"
-//					+ " <http://jena.apache.org/text#query> "
-//					+ asSparqlTerm(pm)
-//					;			
+				cx.sq.addTriple(new SQ.Triple(item, textQuery, O));			
 			}
 		} else {
-			throw new RuntimeException("TBD");
-			// return toSearchAspectTriple(aspects, pm);
+			cx.sq.addWhereElement(toSearchAspectTripleSQ(aspects, pm));
 		}
 	}
 	
@@ -141,6 +136,16 @@ public class SearchSpec extends Constraint {
 		}
 	}
 
+	private WhereElement toSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		WhereElement positive = toPositiveSearchAspectTripleSQ(aspects, pm);
+		if (negated) {
+			throw new RuntimeException("TBD");
+			// return " FILTER(NOT EXISTS{" + positive + "})"; 
+		} else {
+			return positive;
+		}
+	}
+
 	private String toSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		String positive = toPositiveSearchAspectTriple(aspects, pm);
 		if (negated) {
@@ -149,6 +154,48 @@ public class SearchSpec extends Constraint {
 			return positive;
 		}
 	}
+	
+	private WhereElement toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		Aspect a = aspects.get(aspectName);
+		
+//		System.err.println( ">> toSearchApsectTriple of " + aspectName );
+//		System.err.println( ">>   aspect is " + a );
+//		System.err.println( ">>   .pattern = " + pattern );
+//		System.err.println( ">>   .aspectName = " + aspectName );
+//		System.err.println( ">>   .property = " + property );
+		
+		SQ.Variable item = new SQ.Variable("item");
+		SQ.Resource textQuery = new SQ.Resource("http://jena.apache.org/text#query");
+		SQ.Variable aVar = new SQ.Variable(aspectName.asVar().substring(1));
+		boolean hasLiteralRange = hasLiteralRange(a);
+		
+		if (property == null) {
+			
+			if (hasLiteralRange) {
+
+				return new SQ.Triple( item, textQuery, asSQNode(pm) );
+				
+			} else {
+				
+				return new SQ.Triple( aVar, textQuery, asSQNode(pm) );
+				
+			}
+			
+		} else {
+			
+			if (hasLiteralRange) {
+
+				throw new UnsupportedOperationException
+					("@search on aspect " + a + " has @property " + property + " -- should have been detected earlier" );
+				
+			} else {
+				
+				return new SQ.Triple(aVar, textQuery, asSQNode(pm));
+			}
+			
+		}
+	}
+
 
 	private String toPositiveSearchAspectTriple(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		Aspect a = aspects.get(aspectName);

@@ -359,7 +359,7 @@ public abstract class Operator {
 		@Override public void asExpression
 			(StringBuilder sb, Variable x, List<Expr> operands) {			
 			x.toString(sb);
-			sb.append( "<http://jena.apache.org/text#query>" );
+			sb.append( " <http://jena.apache.org/text#query> " );
 			operands.get(0).toString(sb);
 			sb.append(" .");
 		}
