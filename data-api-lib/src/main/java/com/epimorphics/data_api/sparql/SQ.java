@@ -9,7 +9,10 @@ package com.epimorphics.data_api.sparql;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.data_queries.Operator;
+import com.epimorphics.data_api.data_queries.Operator.EqOperator;
 import com.epimorphics.data_api.data_queries.Sort;
+import com.epimorphics.data_api.data_queries.Operator.FunctionOperator;
 import com.epimorphics.data_api.sparql.SQ.Expr;
 import com.epimorphics.data_api.sparql.SQ.Node;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
@@ -80,8 +83,12 @@ public class SQ {
 	public void addOptionalTriple(SQ.Triple t) {
 		whereClause.addOptionalTriple(t);
 	}
+
+	public void addWhereElement(WhereElement e) {
+		whereClause.add(e);
+	}
 	
-	public void addFilter(SQ.OpFilter f) {
+	public void addFilter(SQ.FilterSQ f) {
 		whereClause.addFilter(f);
 	}
 	
@@ -212,7 +219,15 @@ public class SQ {
 		public void toString(StringBuilder sb);
 	}
 	
-	public static class OpFilter implements WhereElement {
+	public abstract static class FilterSQ implements WhereElement {
+
+		@Override public abstract void toString(StringBuilder sb, String indent);
+		
+		public abstract void toStringNoFILTER(StringBuilder sb);
+		
+	}	
+	
+	public static class OpFilter extends FilterSQ {
 		
 		final Expr L;
 		final String op;
@@ -227,11 +242,61 @@ public class SQ {
 		@Override public void toString(StringBuilder sb, String indent) {
 			sb.append(indent);
 			sb.append("FILTER(");
+			toStringNoFILTER(sb);
+			sb.append(")");
+			sb.append(nl);
+		}
+
+		/* @Override */ public void toStringNoFILTER(StringBuilder sb) {
+			
 			L.toString(sb);
 			sb.append(" ").append(op).append(" ");
 			R.toString(sb);
+		}
+	}
+	
+	public static class FunFilter extends FilterSQ {
+		
+		final Expr L;
+		final Operator op;
+		final Expr R;
+		
+		public FunFilter(Expr L, Operator op, Expr R) {
+			this.L = L;
+			this.op = op;
+			this.R = R;
+		}
+
+		@Override public void toString(StringBuilder sb, String indent) {
+			sb.append(indent);
+			sb.append("FILTER(");
+			toStringNoFILTER(sb);
 			sb.append(")");
 			sb.append(nl);
+		}
+
+		/* @Override */ public void toStringNoFILTER(StringBuilder sb) {
+			
+//			L.toString(sb);
+//			sb.append(" ").append(op).append(" ");
+//			R.toString(sb);
+			
+			if (op instanceof FunctionOperator) {
+				String name = ((FunctionOperator) op).functionName;
+				sb.append(name);
+				sb.append("(");
+				L.toString(sb);
+				sb.append(", ");
+				R.toString(sb);
+				sb.append(")");	
+			} else if (op instanceof EqOperator) {
+				String name = ((EqOperator) op).asInfix();
+				L.toString(sb);
+				sb.append(" = ");
+				R.toString(sb);				
+			} else {
+				throw new RuntimeException("" + op.getClass().getSimpleName());
+			}
 		}
 	}
 	
@@ -270,6 +335,10 @@ public class SQ {
 				e.toString(sb, indent);
 		}
 
+		public void add(WhereElement e) {
+			elements.add(e);
+		}
+
 		public void addBind(Expr value, Variable var) {
 			elements.add(new Bind(value, var));
 		}
@@ -282,7 +351,7 @@ public class SQ {
 			elements.add(t.optional());
 		}
 
-		public void addFilter(SQ.OpFilter f) {
+		public void addFilter(SQ.FilterSQ f) {
 			elements.add(f);
 		}
 		

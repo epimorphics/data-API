@@ -137,10 +137,10 @@ public abstract class Operator {
 		}
 	}
 	
-	static class FunctionOperator extends Operator {
+	static public class FunctionOperator extends Operator {
 		
 		final boolean needsNot;
-		final String functionName;
+		public final String functionName;
 		
 		public FunctionOperator(String name, String functionName, boolean negated) {
 			super(name);
@@ -202,7 +202,7 @@ public abstract class Operator {
 		}
 	}
 	
-	static class EqOperator extends Operator {
+	public static class EqOperator extends Operator {
 		
 		final String opName;
 		

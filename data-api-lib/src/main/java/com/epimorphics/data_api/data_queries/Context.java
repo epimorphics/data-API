@@ -12,9 +12,6 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Expr;
-import com.epimorphics.data_api.sparql.SQ.Literal;
-import com.epimorphics.data_api.sparql.SQ.Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
