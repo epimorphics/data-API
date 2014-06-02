@@ -33,14 +33,7 @@ public class Filter extends Constraint {
 	}
 
 	@Override public void tripleFiltering(Context cx) {
-		
-		System.err.println(">> Filter.tripleFiltering: " + this );
-		
 		cx.sq.addFilter(range.asFilterSQ(a));
-		
-//		cx.out.append(" FILTER(" );
-//		toFilterBody(cx, "");
-//		cx.out.append(")").append(nl);
 	}
 	
 	@Override public Constraint negate() {

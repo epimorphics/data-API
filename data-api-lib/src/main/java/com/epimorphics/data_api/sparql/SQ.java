@@ -175,7 +175,6 @@ public class SQ {
 		
 	}
 	
-	// WARE HACKERY with URI vs QNames here for the moment.
 	public static class Resource implements Node, Expr {
 
 		final String uri;
@@ -189,7 +188,8 @@ public class SQ {
 		}
 		
 		@Override public void toString(StringBuilder sb) {
-			if (uri.contains("/")) {
+			if (uri.startsWith("http:") || uri.startsWith("eh:")) {
+				System.err.println(">> TODO: fix this fragile absolute-uri test.");
 				sb.append("<").append(uri()).append(">").append(" ");
 			} else {
 				sb.append("").append(uri()).append("").append(" ");
