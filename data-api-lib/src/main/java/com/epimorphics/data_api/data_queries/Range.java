@@ -8,9 +8,16 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.List;
 
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.Operator.InfixOperator;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Expr;
+import com.epimorphics.data_api.sparql.SQ.OpFilter;
+import com.epimorphics.data_api.sparql.SQ.Variable;
 import com.hp.hpl.jena.shared.BrokenException;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Range {
 	
@@ -49,6 +56,26 @@ public class Range {
 			comma = ", ";
 		}
 		return sb.toString();
+	}
+
+	public OpFilter asFilterSQ(Aspect a) {
+		SQ.Expr l = new SQ.Variable(a.asVarName());
+		SQ.Expr r = termAsExpr(operands.get(0));
+		
+		System.err.println( ">> Operator: " + op );
+		String infix = ((InfixOperator) op).sparqlOp;
+		System.err.println( ">> Operator (infix): " + infix );
+		
+		return new SQ.OpFilter(l, infix, r);
+	}
+
+	private Expr termAsExpr(final Term term) {
+		final PrefixMapping pm = PrefixMapping.Factory.create();
+		return new Expr() {
+
+			@Override public void toString(StringBuilder sb) {
+				sb.append(term.asSparqlTerm(pm));
+			}};
 	}
 	
 }

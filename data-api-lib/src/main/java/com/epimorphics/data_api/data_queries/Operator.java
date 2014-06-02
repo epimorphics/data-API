@@ -111,7 +111,7 @@ public abstract class Operator {
 	
 	static class InfixOperator extends Operator {
 		
-		final String sparqlOp;
+		public final String sparqlOp;
 		
 		public InfixOperator(String name, String sparqlOp) {
 			super(name);

@@ -39,12 +39,12 @@ public class Context  {
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
 	
-	public Constraint begin(Constraint c) {
-		comment("begin a SELECT query");
-		generateSelect();
-		out.append("WHERE {\n");
-		return queryCore(c);
-	}
+//	public Constraint begin(Constraint c) {
+//		comment("begin a SELECT query");
+//		generateSelect();
+//		out.append("WHERE {\n");
+//		return queryCore(c);
+//	}
 	
 	public void negateFilter(Filter negated) {
 		String varSuffix = "_" + ++varCount;
@@ -77,75 +77,75 @@ public class Context  {
 		out.append(".\n");
 	}
 
-	private void generateSelect() {		
-		
-		List<Guard> guards = dq.guards;
-		boolean needsDistinct = false;
-    	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
-    	
-    	out.append( "SELECT " );
-		if (dq.isCountQuery()) {
-		    for (Aspect as : api.getAspects()) {
-		        if (as.getIsMultiValued()) {
-		            needsDistinct = true;
-		            break;
-		        }
-		    }
-            out.append(" (COUNT (" + (needsDistinct ? "DISTINCT " : "") + "?item) AS ?_count)\n");
-            if (dq.isNestedCountQuery()) {
-            	comment("this is a nested count query, so:");
-            	out.append("  { SELECT ?item").append("\n");
-            }
-		} else {
-	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
-	        for (Aspect x: ordered) out.append("\n  ").append( x.asVar() );
-		}
-		out.append("\n");
-	}
+//	private void generateSelect() {		
+//		
+//		List<Guard> guards = dq.guards;
+//		boolean needsDistinct = false;
+//    	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
+//    	
+//    	out.append( "SELECT " );
+//		if (dq.isCountQuery()) {
+//		    for (Aspect as : api.getAspects()) {
+//		        if (as.getIsMultiValued()) {
+//		            needsDistinct = true;
+//		            break;
+//		        }
+//		    }
+//            out.append(" (COUNT (" + (needsDistinct ? "DISTINCT " : "") + "?item) AS ?_count)\n");
+//            if (dq.isNestedCountQuery()) {
+//            	comment("this is a nested count query, so:");
+//            	out.append("  { SELECT ?item").append("\n");
+//            }
+//		} else {
+//	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
+//	        for (Aspect x: ordered) out.append("\n  ").append( x.asVar() );
+//		}
+//		out.append("\n");
+//	}
 	
-	public Constraint queryCore(Constraint c) {
-		List<Guard> guards = dq.guards;
-        boolean baseQueryNeeded = true;  
-        for (Guard guard : guards) {
-            if (guard.supplantsBaseQuery()) {
-                baseQueryNeeded = false;
-            }
-        }
-    //
-        String baseQuery = api.getBaseQuery();
-		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-			comment("base query");
-		    out.append( "  ").append(baseQuery).append( "\n");
-		} else {
-			comment("no base query");
-		}
-	//
-		int ng = guards.size();
-        comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
-        for (Guard guard : guards)
-        	out.append(guard.queryFragment(api));
-    // 
-        return declareAspectVars(earlySearches(c));
-	}
-
-	public Constraint earlySearches(Constraint c) {
-		if (isItemSearch(c)) {
-        	generateSearch( (SearchSpec) c);
-        	return Constraint.EMPTY;
-        } else if (c instanceof And) {
-        	List<Constraint> nonSearches = new ArrayList<Constraint>();
-        	for (Constraint x: ((And) c).operands) {
-        		if (isItemSearch(x)) {
-        			generateSearch((SearchSpec) x);        			
-        		} else {
-        			nonSearches.add(x);
-        		}
-        	}
-        	return Constraint.and(nonSearches);
-        } else {
-        	return c;
-        }
-	}
+//	public Constraint queryCore(Constraint c) {
+//		List<Guard> guards = dq.guards;
+//        boolean baseQueryNeeded = true;  
+//        for (Guard guard : guards) {
+//            if (guard.supplantsBaseQuery()) {
+//                baseQueryNeeded = false;
+//            }
+//        }
+//    //
+//        String baseQuery = api.getBaseQuery();
+//		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+//			comment("base query");
+//		    out.append( "  ").append(baseQuery).append( "\n");
+//		} else {
+//			comment("no base query");
+//		}
+//	//
+//		int ng = guards.size();
+//        comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+//        for (Guard guard : guards)
+//        	out.append(guard.queryFragment(api));
+//    // 
+//        return declareAspectVars(earlySearches(c));
+//	}
+//
+//	public Constraint earlySearches(Constraint c) {
+//		if (isItemSearch(c)) {
+//        	generateSearch( (SearchSpec) c);
+//        	return Constraint.EMPTY;
+//        } else if (c instanceof And) {
+//        	List<Constraint> nonSearches = new ArrayList<Constraint>();
+//        	for (Constraint x: ((And) c).operands) {
+//        		if (isItemSearch(x)) {
+//        			generateSearch((SearchSpec) x);        			
+//        		} else {
+//        			nonSearches.add(x);
+//        		}
+//        	}
+//        	return Constraint.and(nonSearches);
+//        } else {
+//        	return c;
+//        }
+//	}
 
 	public Constraint earlySearchesSQ(Constraint c) {
 		if (isItemSearch(c)) {
@@ -230,48 +230,6 @@ public class Context  {
 		return adjusted;
 	}
 
-	public Constraint declareAspectVars(Constraint c) {
-		int nb = ordered.size();
-		comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
-	//
-		Equalities equalities = new Equalities(p);
-		Constraint adjusted = findEqualities(equalities, c);
-		Set<Aspect> required = new HashSet<Aspect>();
-		findRequiredAspects(required, c);
-	//
-		for (Aspect x: ordered) {
-			String fVar = x.asVar();
-			boolean isOptional = x.getIsOptional() && !required.contains(x);
-			List<Term> allEquals = equalities.get(x.getName());
-			if (allEquals.isEmpty()) {
-				declareOneBinding(x, isOptional, 0, fVar, null);
-			} else {
-				PrefixMapping prefixes = api.getPrefixes();
-				int countBindings = 0;
-				for (Term equals: allEquals) {
-					declareOneBinding(x, isOptional, countBindings, fVar, equals.asSparqlTerm(prefixes));
-					countBindings += 1;
-				}
-			}
-		}
-		return adjusted;
-	}
-
-	private void declareOneBinding(Aspect x, boolean isOptional, int countBindings, String fVar, String stringEquals) {
-		out.append("  ");
-		if (isOptional) out.append( " OPTIONAL {" );
-		out
-			.append("?item")
-			.append(" ").append(x.asProperty())
-			.append(" ").append(stringEquals == null ? fVar : stringEquals)
-			.append(" .")
-			;
-		if (isOptional) out.append( " }" );
-		if (stringEquals != null && countBindings == 0) {
-			out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
-		}
-		out.append( "\n" );
-	}
 
 	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, String fVar, String stringEquals) {
 //		if (isOptional) out.append( " OPTIONAL {" );

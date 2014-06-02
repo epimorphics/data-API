@@ -100,8 +100,7 @@ public class DataQuery {
 	}
 	
     public String toSparql(Problems p, API_Dataset api) {
-    	if (useOldWay()) return oldWay(p, api);
-    	else return newWay(p, api);
+    	return newWay(p, api);
     }
 
 	private boolean useOldWay() {
@@ -129,32 +128,32 @@ public class DataQuery {
         }
 	}
 	
-	private String oldWay(Problems p, API_Dataset api) {
-		try {
-			StringBuilder out = new StringBuilder();
-			Context rx = new Context( new SQ(), out, this, p, api );
-			
-			Constraint adjusted = rx.begin(c);
-			adjusted.toSparql(rx, "");
-			rx.end();
-			
-			querySort(out);		
-			if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
-			if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
-			
-			if (isNestedCountQuery()) out.append("}");
-			
-			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
-			
-			System.err.println( ">> RENDERED QUERY:\n" + query );
-			return query; 
-		}
-        catch (Exception e) { 
-        	p.add("exception generating SPARQL query: " + e.getMessage()); 
-        	e.printStackTrace(System.err); 
-        	return null; 
-        }
-	}
+//	private String oldWay(Problems p, API_Dataset api) {
+//		try {
+//			StringBuilder out = new StringBuilder();
+//			Context rx = new Context( new SQ(), out, this, p, api );
+//			
+//			Constraint adjusted = rx.begin(c);
+//			adjusted.toSparql(rx, "");
+//			rx.end();
+//			
+//			querySort(out);		
+//			if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
+//			if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
+//			
+//			if (isNestedCountQuery()) out.append("}");
+//			
+//			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
+//			
+//			System.err.println( ">> RENDERED QUERY:\n" + query );
+//			return query; 
+//		}
+//        catch (Exception e) { 
+//        	p.add("exception generating SPARQL query: " + e.getMessage()); 
+//        	e.printStackTrace(System.err); 
+//        	return null; 
+//        }
+//	}
 	    
     @Override public String toString() {
     	return 

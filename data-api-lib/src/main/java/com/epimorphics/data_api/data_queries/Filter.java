@@ -9,6 +9,7 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.sparql.SQ;
 
 public class Filter extends Constraint {
 	
@@ -32,9 +33,14 @@ public class Filter extends Constraint {
 	}
 
 	@Override public void tripleFiltering(Context cx) {
-		cx.out.append(" FILTER(" );
-		toFilterBody(cx, "");
-		cx.out.append(")").append(nl);
+		
+		System.err.println(">> Filter.tripleFiltering: " + this );
+		
+		cx.sq.addFilter(range.asFilterSQ(a));
+		
+//		cx.out.append(" FILTER(" );
+//		toFilterBody(cx, "");
+//		cx.out.append(")").append(nl);
 	}
 	
 	@Override public Constraint negate() {

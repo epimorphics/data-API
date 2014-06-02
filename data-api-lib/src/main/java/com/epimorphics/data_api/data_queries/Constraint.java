@@ -72,7 +72,12 @@ public abstract class Constraint {
 		
 		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
 		
+		System.err.println( ">> translate now has constraints: " + unEquals );
+		
 		unEquals.tripleFiltering(cx);
+		
+		
+		
 		cx.out.append("}");
 		cx.dq.querySort(cx.out);
 		
@@ -82,69 +87,69 @@ public abstract class Constraint {
 		// if (cx.dq.isNestedCountQuery()) cx.out.append("}");
 	}
 	
-	public void topLevelSparql(Problems p, Context cx) {    	
-
-		List<Guard> guards = cx.dq.guards;
-		boolean needsDistinct = false;
-		for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
-		
-		if (cx.dq.isCountQuery()) {
-			cx.out.append("SELECT")
-				.append(" (COUNT(")
-				.append(needsDistinct ? " DISTINCT" : "")
-				.append("?item")
-				.append(") AS ?_count)")
-				.append(nl)
-				;
-			if (cx.dq.isNestedCountQuery()) {
-            	cx.comment("this is a nested count query, so:");
-            	cx.out.append("  { SELECT ?item").append("\n");
-            }
-		} else {
-			cx.out.append("SELECT")
-			.append(needsDistinct ? " DISTINCT" : "")
-			.append("?item")
-			.append(nl)
-			;
-			
-			for (Aspect a: cx.ordered) {
-				cx.out.append("  ").append(a.asVar()).append(nl);
-			}			
-		}
-		cx.out.append("WHERE {").append(nl);        
-
-        boolean baseQueryNeeded = true;  
-        
-        for (Guard guard : guards) {
-            if (guard.supplantsBaseQuery()) {
-                baseQueryNeeded = false;
-            }
-        }
-        
-		String baseQuery = cx.api.getBaseQuery();
-		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-			cx.comment("base query");
-		    cx.out.append( "  ").append(baseQuery).append( "\n");
-		} else {
-			cx.comment("no base query");
-		}
-	//
-		int ng = guards.size();
-        cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
-        for (Guard guard : guards)
-        	cx.out.append(guard.queryFragment(cx.api));
-    // 
-		
-		Constraint unEquals = cx.declareAspectVars(cx.earlySearches(this));
-		
-		unEquals.tripleFiltering(cx);
-		cx.out.append("}");
-		cx.dq.querySort(cx.out);
-		if (cx.dq.slice.length != null) cx.out.append( " LIMIT " ).append(cx.dq.slice.length);
-		if (cx.dq.slice.offset != null) cx.out.append( " OFFSET " ).append(cx.dq.slice.offset);
-
-		if (cx.dq.isNestedCountQuery()) cx.out.append("}");
-		}
+//	public void topLevelSparql(Problems p, Context cx) {    	
+//
+//		List<Guard> guards = cx.dq.guards;
+//		boolean needsDistinct = false;
+//		for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
+//		
+//		if (cx.dq.isCountQuery()) {
+//			cx.out.append("SELECT")
+//				.append(" (COUNT(")
+//				.append(needsDistinct ? " DISTINCT" : "")
+//				.append("?item")
+//				.append(") AS ?_count)")
+//				.append(nl)
+//				;
+//			if (cx.dq.isNestedCountQuery()) {
+//            	cx.comment("this is a nested count query, so:");
+//            	cx.out.append("  { SELECT ?item").append("\n");
+//            }
+//		} else {
+//			cx.out.append("SELECT")
+//			.append(needsDistinct ? " DISTINCT" : "")
+//			.append("?item")
+//			.append(nl)
+//			;
+//			
+//			for (Aspect a: cx.ordered) {
+//				cx.out.append("  ").append(a.asVar()).append(nl);
+//			}			
+//		}
+//		cx.out.append("WHERE {").append(nl);        
+//
+//        boolean baseQueryNeeded = true;  
+//        
+//        for (Guard guard : guards) {
+//            if (guard.supplantsBaseQuery()) {
+//                baseQueryNeeded = false;
+//            }
+//        }
+//        
+//		String baseQuery = cx.api.getBaseQuery();
+//		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+//			cx.comment("base query");
+//		    cx.out.append( "  ").append(baseQuery).append( "\n");
+//		} else {
+//			cx.comment("no base query");
+//		}
+//	//
+//		int ng = guards.size();
+//        cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+//        for (Guard guard : guards)
+//        	cx.out.append(guard.queryFragment(cx.api));
+//    // 
+//		
+//		Constraint unEquals = cx.declareAspectVars(cx.earlySearches(this));
+//		
+//		unEquals.tripleFiltering(cx);
+//		cx.out.append("}");
+//		cx.dq.querySort(cx.out);
+//		if (cx.dq.slice.length != null) cx.out.append( " LIMIT " ).append(cx.dq.slice.length);
+//		if (cx.dq.slice.offset != null) cx.out.append( " OFFSET " ).append(cx.dq.slice.offset);
+//
+//		if (cx.dq.isNestedCountQuery()) cx.out.append("}");
+//		}
 
 	public void tripleFiltering(Context cx) {
 		throw new UnsupportedOperationException("cannot triple-filter this " + getClass().getSimpleName() + ": " + this);
