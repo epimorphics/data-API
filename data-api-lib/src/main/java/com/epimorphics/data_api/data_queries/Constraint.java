@@ -12,6 +12,7 @@ import java.util.Map;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Const;
 
 public abstract class Constraint {
 
@@ -35,7 +36,7 @@ public abstract class Constraint {
 	*/
 	
 	public void translate(Problems p, Context cx) {
-		cx.sq.addOutput(new SQ.Variable("item"));
+		cx.sq.addOutput(Const.item);
 		
 		for (Aspect a: cx.ordered) {
 			cx.sq.addOutput(new SQ.Variable(a.asVarName()));

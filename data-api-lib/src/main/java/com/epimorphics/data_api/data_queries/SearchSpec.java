@@ -12,6 +12,7 @@ import java.util.Map;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Const;
 import com.epimorphics.data_api.sparql.SQ.Node;
 import com.epimorphics.data_api.sparql.SQ.Triple;
 import com.epimorphics.data_api.sparql.SQ.WhereElement;
@@ -74,14 +75,12 @@ public class SearchSpec extends Constraint {
 
 	public void toSearchTripleSQ(Context cx, Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		if (aspectName == null) {
+			SQ.Node O = asSQNode(pm);
+			Triple t = new Triple(Const.item, Const.textQuery, O);
 			if (negated) {
-				// "FILTER(NOT EXISTS{?item  <http://jena.apache.org/text#query> " + asSparqlTerm(pm) + "})";
-				throw new RuntimeException("TBD");
+				cx.sq.addNotExists(t);
 			} else {
-				SQ.Node item = new SQ.Variable("item");
-				SQ.Node textQuery = new SQ.Resource("http://jena.apache.org/text#query");
-				SQ.Node O = asSQNode(pm);
-				cx.sq.addTriple(new SQ.Triple(item, textQuery, O));			
+				cx.sq.addTriple(t);			
 			}
 		} else {
 			cx.sq.addWhereElement(toSearchAspectTripleSQ(aspects, pm));
@@ -89,18 +88,21 @@ public class SearchSpec extends Constraint {
 	}
 	
 	private Node asSQNode(PrefixMapping pm) {
-		String limitString = (limit == null ? "" : " " + limit);
 		SQ.Literal literal = new SQ.Literal(pattern, "");
 		if (property == null && limit == null) {
 			return literal;		
 		} else if (property == null) {
 			return SQ.list(literal, SQ.integer(limit));
 		} else {
+// WAS:
 //			String expanded = pm.expandPrefix(property.URI);
 //			String contracted = pm.qnameFor(expanded);
 //			String use = contracted == null ? "<" + property.URI + ">" : contracted;
 //			return "(" + use + " " + quoted + limitString + ")";
-			throw new RuntimeException("TBD");
+
+			SQ.Resource useProperty = new SQ.Resource(property.URI);
+			if (limit == null) return SQ.list(useProperty, literal);
+			else return SQ.list(useProperty, literal, SQ.integer(limit));
 		}
 	}
 
@@ -164,8 +166,6 @@ public class SearchSpec extends Constraint {
 //		System.err.println( ">>   .aspectName = " + aspectName );
 //		System.err.println( ">>   .property = " + property );
 		
-		SQ.Variable item = new SQ.Variable("item");
-		SQ.Resource textQuery = new SQ.Resource("http://jena.apache.org/text#query");
 		SQ.Variable aVar = new SQ.Variable(aspectName.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(a);
 		
@@ -173,11 +173,11 @@ public class SearchSpec extends Constraint {
 			
 			if (hasLiteralRange) {
 
-				return new SQ.Triple( item, textQuery, asSQNode(pm) );
+				return new SQ.Triple( Const.item, Const.textQuery, asSQNode(pm) );
 				
 			} else {
 				
-				return new SQ.Triple( aVar, textQuery, asSQNode(pm) );
+				return new SQ.Triple( aVar, Const.textQuery, asSQNode(pm) );
 				
 			}
 			
@@ -190,7 +190,7 @@ public class SearchSpec extends Constraint {
 				
 			} else {
 				
-				return new SQ.Triple(aVar, textQuery, asSQNode(pm));
+				return new SQ.Triple(aVar, Const.textQuery, asSQNode(pm));
 			}
 			
 		}

@@ -12,6 +12,7 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Const;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
@@ -231,12 +232,10 @@ public class Context  {
 		return adjusted;
 	}
 
-	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ.Variable var, Term equalTo) {
-		SQ.Node item = new SQ.Variable("item");
-		
+	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ.Variable var, Term equalTo) {		
 		SQ.Resource property = new SQ.Resource(x.asProperty());
 		
-		SQ.Triple t = new SQ.Triple(item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+		SQ.Triple t = new SQ.Triple(Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
 		
 //		out
 //			.append("?item")

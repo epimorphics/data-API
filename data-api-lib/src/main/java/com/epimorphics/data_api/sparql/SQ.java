@@ -15,10 +15,17 @@ import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.Operator.FunctionOperator;
 import com.epimorphics.data_api.sparql.SQ.Expr;
 import com.epimorphics.data_api.sparql.SQ.Node;
+import com.epimorphics.data_api.sparql.SQ.Triple;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SQ {
+	
+	public static class Const {
+		public static final Variable item = new Variable("item");
+		public static final Node textQuery = new Resource("http://jena.apache.org/text#query");
+		
+	}
 
 	final List<SQ.Variable> variables = new ArrayList<SQ.Variable>();
 	
@@ -79,6 +86,11 @@ public class SQ {
 	
 	public void addTriple(SQ.Triple t) {
 		whereClause.addTriple(t);
+	}
+
+
+	public void addNotExists(Triple t) {
+		whereClause.add(new NotExists(t));
 	}
 	
 	public void addOptionalTriple(SQ.Triple t) {
@@ -143,6 +155,22 @@ public class SQ {
 				e.toString(sb);
 			}
 			sb.append(")");
+		}
+		
+	}
+	
+	public static class NotExists implements WhereElement {
+		
+		final Triple t;
+		
+		public NotExists(Triple t) {
+			this.t = t;
+		}
+
+		@Override public void toString(StringBuilder sb, String indent) {
+			sb.append(indent).append("FILTER(NOT EXISTS {");
+			t.toString(sb, "");
+			sb.append("})").append(nl);
 		}
 		
 	}
