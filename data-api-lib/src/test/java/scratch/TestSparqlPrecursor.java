@@ -9,10 +9,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Expr;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestSparqlPrecursor {
@@ -47,12 +49,13 @@ public class TestSparqlPrecursor {
 		System.err.println(">>\n" + q.toString());
 	}
 	
+	// Operator op, Variable x, List<Expr> operands
 	@Test public void testing3() {
 		SQ q = new SQ();
 		SQ.Variable A = new SQ.Variable("?A");
 		SQ.Node P = new SQ.Resource("eh:/P");
 		SQ.Literal V = new SQ.Literal("17", "xsd:integer");
-		q.addFilter(new SQ.OpFilter(A, "==", V));		
+		q.addFilter(new SQ.FilterSQ(Operator.EQ, A, BunchLib.list((Expr) V)));		
 		q.addTriple(new SQ.Triple(A, P, V));
 		System.err.println(">>\n" + q.toString());
 

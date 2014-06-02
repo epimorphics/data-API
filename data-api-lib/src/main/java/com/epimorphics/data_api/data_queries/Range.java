@@ -6,6 +6,7 @@
 
 package com.epimorphics.data_api.data_queries;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
@@ -15,7 +16,6 @@ import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ.Expr;
 import com.epimorphics.data_api.sparql.SQ.FilterSQ;
-import com.epimorphics.data_api.sparql.SQ.OpFilter;
 import com.epimorphics.data_api.sparql.SQ.Variable;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -60,17 +60,10 @@ public class Range {
 	}
 
 	public FilterSQ asFilterSQ(Aspect a) {
-		SQ.Expr l = new SQ.Variable(a.asVarName());
-		SQ.Expr r = termAsExpr(operands.get(0));
-		
-		if (op instanceof InfixOperator) {
-			String infix = ((InfixOperator) op).sparqlOp;	
-			return new SQ.OpFilter(l, infix, r);
-		} else {
-			return new SQ.FunFilter(l, op, r);
-		}
-		
-		
+		SQ.Variable l = new SQ.Variable(a.asVarName());
+		List<Expr> operands = new ArrayList<Expr>(this.operands.size());		
+		for (Term t: this.operands) operands.add(termAsExpr(t));
+		return new FilterSQ(op, l, operands);		
 	}
 
 	public static Expr termAsExpr(final Term term) {

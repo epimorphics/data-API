@@ -255,86 +255,104 @@ public class SQ {
 		public void toString(StringBuilder sb);
 	}
 	
-	public abstract static class FilterSQ implements WhereElement {
+	public static class FilterSQ implements WhereElement {
+		
+		final List<Expr> operands;
+		final Variable x;
+		final Operator op;
+		
+		public FilterSQ(Operator op, Variable x, List<Expr> operands) {
+			this.op = op;
+			this.x = x;
+			this.operands = operands;
+		}
+				
+		@Override public void toString(StringBuilder sb, String indent) {
+			sb.append(indent);
+			sb.append("FILTER(");
+			toStringNoFILTER(sb);
+			sb.append(")");
+			sb.append(nl);
+		}		
+		
+		public void toStringNoFILTER(StringBuilder sb) {
+			op.asExpression(sb, x, operands);
+		}
 
-		@Override public abstract void toString(StringBuilder sb, String indent);
-		
-		public abstract void toStringNoFILTER(StringBuilder sb);
-		
 	}	
 	
-	public static class OpFilter extends FilterSQ {
-		
-		final Expr L;
-		final String op;
-		final Expr R;
-		
-		public OpFilter(Expr L, String op, Expr R) {
-			this.L = L;
-			this.op = op;
-			this.R = R;
-		}
-
-		@Override public void toString(StringBuilder sb, String indent) {
-			sb.append(indent);
-			sb.append("FILTER(");
-			toStringNoFILTER(sb);
-			sb.append(")");
-			sb.append(nl);
-		}
-
-		/* @Override */ public void toStringNoFILTER(StringBuilder sb) {
-			
-			L.toString(sb);
-			sb.append(" ").append(op).append(" ");
-			R.toString(sb);
-		}
-	}
-	
-	public static class FunFilter extends FilterSQ {
-		
-		final Expr L;
-		final Operator op;
-		final Expr R;
-		
-		public FunFilter(Expr L, Operator op, Expr R) {
-			this.L = L;
-			this.op = op;
-			this.R = R;
-		}
-
-		@Override public void toString(StringBuilder sb, String indent) {
-			sb.append(indent);
-			sb.append("FILTER(");
-			toStringNoFILTER(sb);
-			sb.append(")");
-			sb.append(nl);
-		}
-
-		/* @Override */ public void toStringNoFILTER(StringBuilder sb) {
-			
+//	public static class OpFilter extends FilterSQ {
+//		
+//		final Expr L;
+//		final String op;
+//		final Expr R;
+//		
+//		public OpFilter(Expr L, String op, Expr R) {
+//			this.L = L;
+//			this.op = op;
+//			this.R = R;
+//		}
+//
+//		@Override public void toString(StringBuilder sb, String indent) {
+//			sb.append(indent);
+//			sb.append("FILTER(");
+//			toStringNoFILTER(sb);
+//			sb.append(")");
+//			sb.append(nl);
+//		}
+//
+//		/* @Override */ public void toStringNoFILTER(StringBuilder sb) {
+//			
 //			L.toString(sb);
 //			sb.append(" ").append(op).append(" ");
 //			R.toString(sb);
-			
-			if (op instanceof FunctionOperator) {
-				String name = ((FunctionOperator) op).functionName;
-				sb.append(name);
-				sb.append("(");
-				L.toString(sb);
-				sb.append(", ");
-				R.toString(sb);
-				sb.append(")");	
-			} else if (op instanceof EqOperator) {
-				String name = ((EqOperator) op).asInfix();
-				L.toString(sb);
-				sb.append(" = ");
-				R.toString(sb);				
-			} else {
-				throw new RuntimeException("" + op.getClass().getSimpleName());
-			}
-		}
-	}
+//		}
+//	}
+//	
+//	public static class FunFilter extends FilterSQ {
+//		
+//		final Expr L;
+//		final Operator op;
+//		final Expr R;
+//		
+//		public FunFilter(Expr L, Operator op, Expr R) {
+//			this.L = L;
+//			this.op = op;
+//			this.R = R;
+//		}
+//
+//		@Override public void toString(StringBuilder sb, String indent) {
+//			sb.append(indent);
+//			sb.append("FILTER(");
+//			toStringNoFILTER(sb);
+//			sb.append(")");
+//			sb.append(nl);
+//		}
+//
+//		/* @Override */ public void toStringNoFILTER(StringBuilder sb) {
+//			
+////			L.toString(sb);
+////			sb.append(" ").append(op).append(" ");
+////			R.toString(sb);
+//			
+//			if (op instanceof FunctionOperator) {
+//				String name = ((FunctionOperator) op).functionName;
+//				sb.append(name);
+//				sb.append("(");
+//				L.toString(sb);
+//				sb.append(", ");
+//				R.toString(sb);
+//				sb.append(")");	
+//			} else if (op instanceof EqOperator) {
+//				String name = ((EqOperator) op).asInfix();
+//				L.toString(sb);
+//				sb.append(" = ");
+//				R.toString(sb);				
+//			} else {
+//				throw new RuntimeException("" + op.getClass().getSimpleName());
+//			}
+//		}
+//	}
 	
 	public interface WhereElement {
 

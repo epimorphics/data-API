@@ -12,6 +12,9 @@ import java.util.Map;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Expr;
+import com.epimorphics.data_api.sparql.SQ.Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public abstract class Operator {
@@ -102,6 +105,9 @@ public abstract class Operator {
 		return result;
 	}
 
+	public abstract void asExpression
+		(StringBuilder sb, SQ.Variable x, List<SQ.Expr>operands);
+	
 	public abstract void asConstraint
 		( Filter newParam
 		, StringBuilder sb
@@ -134,6 +140,13 @@ public abstract class Operator {
 				.append(" ")
 				.append(value)
 				;	
+		}
+
+		@Override public void asExpression
+			(StringBuilder sb, Variable x, List<Expr> operands) {
+			x.toString(sb);
+			sb.append(" ").append(sparqlOp).append(" ");
+			operands.get(0).toString(sb);
 		}
 	}
 	
@@ -169,6 +182,21 @@ public abstract class Operator {
 				.append(")")
 				;
 		}
+
+		@Override public void asExpression
+			(StringBuilder sb, Variable x, List<Expr> operands) {
+			sb.append(" ")
+				.append( needsNot ? "!" : "")
+				.append( functionName )
+				.append("(")
+				;
+			x.toString(sb);
+			for (Expr e: operands) {
+				sb.append(", ");
+				e.toString(sb);
+			}
+			sb.append(")");
+		}
 	}
 	
 	static class OneofOperator extends Operator {
@@ -200,6 +228,17 @@ public abstract class Operator {
 				orOp = " || ";
 			}
 		}
+
+		@Override public void asExpression
+			(StringBuilder sb, Variable x, List<Expr> operands) {
+			String orOp = "";
+			for (Expr e: operands) {
+				sb.append(orOp); orOp = " || ";
+				x.toString(sb);
+				sb.append(" = ");
+				e.toString(sb);
+			}
+		}
 	}
 	
 	public static class EqOperator extends Operator {
@@ -227,6 +266,13 @@ public abstract class Operator {
 				.append(" ")
 				.append(value)
 				;
+		}
+
+		@Override public void asExpression
+			(StringBuilder sb, Variable x, List<Expr> operands) {
+			x.toString(sb);
+			sb.append(" = ");
+			operands.get(0).toString(sb);
 		}
 	}		
 	
@@ -259,6 +305,29 @@ public abstract class Operator {
 				.append("\n")
 				;		
 		}
+
+		@Override public void asExpression
+			(StringBuilder sb, Variable x, List<Expr> operands) {
+//			PrefixMapping pm = api.getPrefixes();
+//			String fVar = filter.a.asVar();
+//			Expr value = operands.get(0);			
+//			Aspect x = api.getAspectNamed(filter.a.getName());
+//			
+//			String below = x.getBelowPredicate(api);
+//			
+//			value.toString(sb);
+//			sb.append(" ");
+//			sb.append(below);
+//			sb.append("* ");
+//			x.toString(sb);
+//			sb.append(" .")
+//				.append(fVar).append(varSuffix)
+//				.append(" .")
+//				.append("\n")
+//				;	
+			throw new RuntimeException("TBD");
+			
+		}
 	}
 	
 	static class SearchOperator extends Operator {
@@ -285,6 +354,14 @@ public abstract class Operator {
 				.append(value)
 				.append(" .")
 				;
+		}
+
+		@Override public void asExpression
+			(StringBuilder sb, Variable x, List<Expr> operands) {			
+			x.toString(sb);
+			sb.append( "<http://jena.apache.org/text#query>" );
+			operands.get(0).toString(sb);
+			sb.append(" .");
 		}
 	}
 	

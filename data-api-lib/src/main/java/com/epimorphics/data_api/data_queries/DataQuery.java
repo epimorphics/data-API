@@ -11,7 +11,6 @@ import java.util.List;
 
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
-import com.epimorphics.data_api.data_queries.Context.Equalities;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
@@ -103,11 +102,6 @@ public class DataQuery {
     	return newWay(p, api);
     }
 
-	private boolean useOldWay() {
-		// if suitable case for new way return false
-		return false;
-	}
-
 	private String newWay(Problems p, API_Dataset api) {
 		try {
 			SQ sq = new SQ();
@@ -173,16 +167,4 @@ public class DataQuery {
     		: new RowWriter(api.getAspects(), resultSet)
     		;
     }
-    	
-	protected void querySort(StringBuilder sb) {
-		if (sortby.size() > 0) {
-			sb.append(" ORDER BY");
-			for (Sort s: sortby) {
-				sb.append(" ");
-				if (!s.upwards) sb.append("DESC(");
-				sb.append(s.by.asVar());
-				if (!s.upwards)sb.append(")"); 
-			}
-		}
-	}
 }

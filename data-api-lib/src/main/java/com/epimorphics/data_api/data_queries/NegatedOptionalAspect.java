@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.epimorphics.data_api.sparql.SQ.FilterSQ;
-import com.epimorphics.data_api.sparql.SQ.OpFilter;
 import com.epimorphics.data_api.sparql.SQ.WhereElement;
 import com.hp.hpl.jena.shared.BrokenException;
 
@@ -38,8 +37,6 @@ public final class NegatedOptionalAspect extends Constraint  {
 		@Override public void toString(StringBuilder sb, String indent) {
 			FilterSQ f = negated.range.asFilterSQ(negated.a);
 			
-			String varSuffix = "";
-//			cx.comment("NegatedOptionalAspect", negated);
 			sb.append(indent).append("FILTER(" );
 			
 			sb.append("!");

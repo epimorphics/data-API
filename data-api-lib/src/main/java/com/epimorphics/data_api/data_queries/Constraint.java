@@ -6,16 +6,12 @@
 package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Context.Equalities;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Variable;
 
 public abstract class Constraint {
 
@@ -75,11 +71,6 @@ public abstract class Constraint {
 		System.err.println( ">> translate now has constraints: " + unEquals );
 		
 		unEquals.tripleFiltering(cx);
-		
-		
-		
-		cx.out.append("}");
-		cx.dq.querySort(cx.out);
 		
 		if (cx.dq.slice.length != null) cx.sq.setLimit(cx.dq.slice.length);
 		if (cx.dq.slice.offset != null) cx.sq.setOffset(cx.dq.slice.offset);
