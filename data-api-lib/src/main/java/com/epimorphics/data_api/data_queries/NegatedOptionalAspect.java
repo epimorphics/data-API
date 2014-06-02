@@ -10,7 +10,6 @@ import java.util.List;
 
 import com.epimorphics.data_api.sparql.SQ.FilterSQ;
 import com.epimorphics.data_api.sparql.SQ.WhereElement;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public final class NegatedOptionalAspect extends Constraint  {
 	
@@ -18,10 +17,6 @@ public final class NegatedOptionalAspect extends Constraint  {
 	
 	public NegatedOptionalAspect(Filter negated) {
 		this.negated = negated;
-	}
-	
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.sq.addWhereElement(new Element(cx, negated));
 	}
 	
 	public static class Element implements WhereElement {
@@ -48,7 +43,7 @@ public final class NegatedOptionalAspect extends Constraint  {
 	}
 	
 	public void tripleFiltering(Context cx) {
-		toSparql(cx, "");
+		cx.sq.addWhereElement(new Element(cx, negated));
 	}
 
 	@Override public String toString() {
@@ -58,10 +53,6 @@ public final class NegatedOptionalAspect extends Constraint  {
 	@Override protected boolean same(Constraint other) {
 		NegatedOptionalAspect o = (NegatedOptionalAspect) other;
 		return negated.equals(o.negated);
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		throw new BrokenException("SmallOr as a filter body");
 	}
 
 	@Override public Constraint negate() {

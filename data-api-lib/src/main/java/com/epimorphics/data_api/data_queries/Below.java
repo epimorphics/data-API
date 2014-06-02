@@ -7,7 +7,6 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Below extends Constraint {
@@ -26,29 +25,25 @@ public class Below extends Constraint {
 		this.negated = negated;
 	}
 
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.comment("@below", this);
-		PrefixMapping pm = cx.api.getPrefixes();
-	//
-		String fVar = this.a.asVar(); 
-		String value = this.v.asSparqlTerm(pm);			
-		Aspect x = this.a;
-		String below = x.getBelowPredicate(cx.api);
-	//
-		if (negated) cx.out.append("  FILTER(NOT EXISTS{");
-		cx.out.append(value)
-			.append(" ")
-			.append(below)
-			.append("* ")
-			.append(fVar)
-			.append(" .")
-			;			
-		if (negated) cx.out.append("})");
-		cx.out.append("\n");
-	}
-
 	public void tripleFiltering(Context cx) {
-		toSparql(cx, "");
+		cx.comment("@below", this);
+			PrefixMapping pm = cx.api.getPrefixes();
+		//
+			String fVar = this.a.asVar(); 
+			String value = this.v.asSparqlTerm(pm);			
+			Aspect x = this.a;
+			String below = x.getBelowPredicate(cx.api);
+		//
+			if (negated) cx.out.append("  FILTER(NOT EXISTS{");
+			cx.out.append(value)
+				.append(" ")
+				.append(below)
+				.append("* ")
+				.append(fVar)
+				.append(" .")
+				;			
+			if (negated) cx.out.append("})");
+			cx.out.append("\n");
 	}
 
 	@Override public String toString() {
@@ -61,10 +56,6 @@ public class Below extends Constraint {
 
 	protected boolean same(Below other) {
 		return a.getName().equals(other.a.getName()) && v.equals(other.v);
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		throw new BrokenException("Below as FilterBody");
 	}
 
 	@Override public Constraint negate() {

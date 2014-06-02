@@ -40,37 +40,26 @@ public class Context  {
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
 	
-//	public Constraint begin(Constraint c) {
-//		comment("begin a SELECT query");
-//		generateSelect();
-//		out.append("WHERE {\n");
-//		return queryCore(c);
-//	}
-	
 	public void negateFilter(Filter negated) {
-		String varSuffix = "_" + ++varCount;
-		out
-			.append( "  FILTER(NOT EXISTS {" )
-			.append( " ?item" )
-			.append( " " )
-			.append( negated.a.asProperty() )
-			.append( " " )
-			.append( negated.a.asVar() + varSuffix )
-			.append( " .\n")
-			;
-		negated.toSparql(this, varSuffix);
-		out
-			.append( "})" )
-			.append( "\n" )
-			;		
+//		String varSuffix = "_" + ++varCount;
+//		out
+//			.append( "  FILTER(NOT EXISTS {" )
+//			.append( " ?item" )
+//			.append( " " )
+//			.append( negated.a.asProperty() )
+//			.append( " " )
+//			.append( negated.a.asVar() + varSuffix )
+//			.append( " .\n")
+//			;
+//		negated.toSparql(this, varSuffix);
+//		out
+//			.append( "})" )
+//			.append( "\n" )
+//			;		
+		throw new RuntimeException("TBD");
 	}
 	
 	int varCount = 0;
-	
-	public void end() {
-		comment("end a SELECT query");
-		out.append("}").append("\n");
-	}
 	
 	public void comment(String message, Object... values) {
 		out.append( "# ").append(message);
@@ -236,14 +225,7 @@ public class Context  {
 		SQ.Resource property = new SQ.Resource(x.asProperty());
 		
 		SQ.Triple t = new SQ.Triple(Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
-		
-//		out
-//			.append("?item")
-//			.append(" ").append(x.asProperty())
-//			.append(" ").append(stringEquals == null ? fVar : stringEquals)
-//			.append(" .")
-//			;
-		
+			
 		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
 		
 		if (equalTo != null && countBindings == 0) {
@@ -300,26 +282,5 @@ public class Context  {
 
 	public void generateSearchSQ(SearchSpec s) {
 		s.toSearchTripleSQ(this, namesToAspects, api.getPrefixes());
-	}
-	
-	public void generateSearch(SearchSpec s) {
-		comment("@search", s);
-		out.append("  ");
-		out.append(s.toSearchTriple(namesToAspects, api.getPrefixes()));
-		out.append(" .\n");
-	}
-
-	public void nest() {
-		comment("nest for @or");
-		out.append("{{\n");
-	}
-
-	public void unNest() {
-		comment("un-nest for @or");
-		out.append("}}\n");
-	}
-
-	public void union() {
-		out.append( "}} UNION {{\n" );
 	}
 }

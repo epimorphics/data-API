@@ -11,22 +11,13 @@ public class False extends Constraint {
 	
 	public False() {
 	}
-	
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.comment("False");
-		cx.out.append("  FILTER(false)\n" );
-	}
 
 	@Override public String toString() {
-		return "True";
+		return "False";
 	}
 
 	@Override protected boolean same(Constraint other) {
 		return true;
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		cx.out.append("false");
 	}
 
 	@Override public Constraint negate() {

@@ -99,11 +99,7 @@ public class DataQuery {
 	}
 	
     public String toSparql(Problems p, API_Dataset api) {
-    	return newWay(p, api);
-    }
-
-	private String newWay(Problems p, API_Dataset api) {
-		try {
+    	try {
 			SQ sq = new SQ();
 			StringBuilder out = new StringBuilder();
 			Context rx = new Context( sq, out, this, p, api );
@@ -117,12 +113,12 @@ public class DataQuery {
 			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
-        catch (Exception e) { 
-        	p.add("exception generating SPARQL query: " + e.getMessage()); 
-        	e.printStackTrace(System.err); 
-        	return null; 
-        }
-	}
+		catch (Exception e) { 
+			p.add("exception generating SPARQL query: " + e.getMessage()); 
+			e.printStackTrace(System.err); 
+			return null; 
+		}
+    }
 	
 //	private String oldWay(Problems p, API_Dataset api) {
 //		try {

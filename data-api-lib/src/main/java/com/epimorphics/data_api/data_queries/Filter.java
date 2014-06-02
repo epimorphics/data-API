@@ -9,7 +9,6 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.epimorphics.data_api.sparql.SQ;
 
 public class Filter extends Constraint {
 	
@@ -19,17 +18,6 @@ public class Filter extends Constraint {
 	public Filter(Aspect a, Range range) {
 		this.a = a;
 		this.range = range;
-	}
-
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.comment("@" + this.range.op.JSONname, this);
-		cx.out.append("  FILTER(");
-		toFilterBody(cx, varSuffix);
-		cx.out.append(")\n");
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		this.range.op.asConstraint( this, cx.out, cx.api, varSuffix );
 	}
 
 	@Override public void tripleFiltering(Context cx) {
@@ -71,9 +59,5 @@ public class Filter extends Constraint {
 			this.a.getName().equals(other.a.getName()) 
 			&& this.range.equals(other.range)
 			;
-	}
-
-	public Operator getRangeOp() {
-		return range.op;
 	}
 }

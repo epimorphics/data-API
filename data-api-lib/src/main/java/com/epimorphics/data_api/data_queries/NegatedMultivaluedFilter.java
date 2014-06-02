@@ -13,15 +13,6 @@ public class NegatedMultivaluedFilter extends Constraint {
 		this.basis = basis;			
 	}
 
-	@Override public void toSparql(Context cx, String varSuffix) {
-		cx.comment("NotFilter toSparql", this);
-		cx.negateFilter(basis);
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		cx.comment("NotFilter toFilterBody", this);
-	}
-
 	public void tripleFiltering(Context cx) {
 		cx.negateFilter(basis);
 	}

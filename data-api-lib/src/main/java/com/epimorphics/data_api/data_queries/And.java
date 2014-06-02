@@ -10,20 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.hp.hpl.jena.shared.BrokenException;
-
 public class And extends Bool {
 
 	public And(List<Constraint> operands) {
 		super(rearrange(operands));
-	}
-
-	@Override public void toSparql(Context cx, String varSuffix) {
-		for (Constraint x: operands) x.toSparql(cx, varSuffix); 
-	}
-
-	@Override public void toFilterBody(Context cx, String varSuffix) {
-		throw new BrokenException("AND as a filter body");
 	}
 	
 	@Override public Constraint negate() {

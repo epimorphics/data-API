@@ -15,11 +15,7 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ.Const;
 
 public abstract class Constraint {
-
-	public abstract void toSparql(Context cx, String varSuffix);
-	
-	public abstract void toFilterBody(Context cx, String varSuffix);
-	
+		
 	public abstract Constraint negate();
 
 	public abstract String toString();

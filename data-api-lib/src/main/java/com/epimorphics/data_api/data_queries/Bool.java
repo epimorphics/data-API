@@ -15,8 +15,6 @@ public abstract class Bool extends Constraint {
 		this.operands = operands;
 	}
 	
-	@Override public abstract void toSparql(Context cx, String varSuffix);
-	
 	@Override protected boolean same(Constraint other) {
 		List<Constraint> otherOperands = ((Bool) other).operands;
 		return operands.equals(otherOperands);
