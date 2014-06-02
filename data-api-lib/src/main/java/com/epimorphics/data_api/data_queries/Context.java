@@ -12,6 +12,9 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ.Expr;
+import com.epimorphics.data_api.sparql.SQ.Literal;
+import com.epimorphics.data_api.sparql.SQ.Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
@@ -214,15 +217,16 @@ public class Context  {
 	//
 		for (Aspect x: ordered) {
 			String fVar = x.asVar();
+			SQ.Variable var = new SQ.Variable(fVar.substring(1));
 			boolean isOptional = x.getIsOptional() && !required.contains(x);
 			List<Term> allEquals = equalities.get(x.getName());
 			if (allEquals.isEmpty()) {
-				declareOneBindingSQ(x, isOptional, 0, fVar, null);
+				declareOneBindingSQ(x, isOptional, 0, var, null);
 			} else {
 				PrefixMapping prefixes = api.getPrefixes();
 				int countBindings = 0;
 				for (Term equals: allEquals) {
-					declareOneBindingSQ(x, isOptional, countBindings, fVar, equals.asSparqlTerm(prefixes));
+					declareOneBindingSQ(x, isOptional, countBindings, var, equals);
 					countBindings += 1;
 				}
 			}
@@ -230,20 +234,12 @@ public class Context  {
 		return adjusted;
 	}
 
-
-	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, String fVar, String stringEquals) {
-//		if (isOptional) out.append( " OPTIONAL {" );
+	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ.Variable var, Term equalTo) {
 		SQ.Node item = new SQ.Variable("item");
-		
-		System.err.println( ">> x.asProperty(): " + x.asProperty());
 		
 		SQ.Resource property = new SQ.Resource(x.asProperty());
 		
-		if (stringEquals != null) throw new RuntimeException("TBD");
-		
-		SQ.Node value = new SQ.Variable(fVar.substring(1));
-		SQ.Triple t = new SQ.Triple(item, property, value);
-		
+		SQ.Triple t = new SQ.Triple(item, property, (equalTo == null ? var : termAsNode(equalTo)) );
 		
 //		out
 //			.append("?item")
@@ -252,18 +248,24 @@ public class Context  {
 //			.append(" .")
 //			;
 		
-		
-//		if (isOptional) out.append( " }" );
-		
 		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
 		
-		if (stringEquals != null && countBindings == 0) {
-			// out.append(" BIND(").append(stringEquals).append(" AS ").append(fVar).append(")");
-			throw new RuntimeException("TBD");
-		
+		if (equalTo != null && countBindings == 0) {
+			sq.addBind(Range.termAsExpr(equalTo), var);		
 		}
 	}
 	
+	private SQ.Node termAsNode(final Term equalTo) {		
+		final PrefixMapping pm = PrefixMapping.Factory.create();
+
+		return new SQ.Node() {
+
+			@Override public void toString(StringBuilder sb) {
+				sb.append(equalTo.asSparqlTerm(pm));
+
+			}};
+	}
+
 	public void findRequiredAspects(Set<Aspect> required, Constraint c) {
 		if (c instanceof Filter) {
 			required.add( ((Filter) c).a );

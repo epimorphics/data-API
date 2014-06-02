@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Sort;
+import com.epimorphics.data_api.sparql.SQ.Expr;
+import com.epimorphics.data_api.sparql.SQ.Node;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 public class SQ {
@@ -90,6 +92,10 @@ public class SQ {
 	public void setOffset(int offset) {
 		this.offset = offset;
 	}
+
+	public void addBind(Expr value, Variable var) {
+		whereClause.addBind(value, var);
+	}
 	
 	public void addSorts(List<Sort> sorts) {
 		this.sorts.addAll(sorts);
@@ -99,7 +105,7 @@ public class SQ {
 
 	static final String nl = "\n";
 				
-	public interface Node {
+	public interface Node extends Expr {
 		public void toString(StringBuilder sb);
 	}
 	
@@ -196,7 +202,7 @@ public class SQ {
 				@Override public void toString(StringBuilder sb, String indent) {
 					sb.append(indent);
 					sb.append("OPTIONAL {");
-					it.toString(sb, indent + "  ");
+					it.toString(sb, "");
 					sb.append("}").append(nl);
 				}};
 		}
@@ -235,6 +241,26 @@ public class SQ {
 		
 	}
 	
+	public static class Bind implements WhereElement {
+
+		final Expr value;
+		final Variable var;
+		
+		public Bind(Expr value, Variable var) {
+			this.value = value;
+			this.var = var;
+		}
+		
+		@Override public void toString(StringBuilder sb, String indent) {
+			sb.append(indent).append("BIND(");
+			value.toString(sb);		
+			sb.append(" AS  ");
+			var.toString(sb);
+			sb.append(")").append(nl);
+		}
+		
+	}
+	
 	public static class Where {
 
 		final List<WhereElement> elements = new ArrayList<WhereElement>();
@@ -242,6 +268,10 @@ public class SQ {
 		public void toString(StringBuilder sb, String indent) {
 			for (WhereElement e: elements)
 				e.toString(sb, indent);
+		}
+
+		public void addBind(Expr value, Variable var) {
+			elements.add(new Bind(value, var));
 		}
 
 		public void addTriple(SQ.Triple t) {

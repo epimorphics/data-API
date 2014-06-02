@@ -69,7 +69,7 @@ public class Range {
 		return new SQ.OpFilter(l, infix, r);
 	}
 
-	private Expr termAsExpr(final Term term) {
+	public static Expr termAsExpr(final Term term) {
 		final PrefixMapping pm = PrefixMapping.Factory.create();
 		return new Expr() {
 
