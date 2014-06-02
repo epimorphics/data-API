@@ -16,6 +16,7 @@ import com.epimorphics.data_api.data_queries.Operator.FunctionOperator;
 import com.epimorphics.data_api.sparql.SQ.Expr;
 import com.epimorphics.data_api.sparql.SQ.Node;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SQ {
 
@@ -107,6 +108,16 @@ public class SQ {
 	public void addSorts(List<Sort> sorts) {
 		this.sorts.addAll(sorts);
 	}
+
+	static final String XSD_integer = XSD.getURI() + "integer";
+	
+	public static Literal integer(int n) {
+		return new Literal("" + n, XSD_integer); // TODO
+	}
+
+	public static TermList list(Node ...elements) {
+		return new TermList(elements);
+	}
 	
 /////////////////////////////////////////////////////////////////
 
@@ -116,6 +127,27 @@ public class SQ {
 		public void toString(StringBuilder sb);
 	}
 	
+	public static class TermList implements Node, Expr {
+
+		final Node[] elements;
+		
+		public TermList(Node ...elements) {
+			this.elements = elements;
+		}
+		
+		@Override public void toString(StringBuilder sb) {
+			String gap = "";
+			sb.append("(");
+			for (Node e: elements) {
+				sb.append(gap);	gap = " ";
+				e.toString(sb);
+			}
+			sb.append(")");
+		}
+		
+	}
+	
+	// WARE HACKERY with URI vs QNames here for the moment.
 	public static class Resource implements Node, Expr {
 
 		final String uri;
@@ -129,7 +161,11 @@ public class SQ {
 		}
 		
 		@Override public void toString(StringBuilder sb) {
-			sb.append("").append(uri()).append("").append(" ");
+			if (uri.contains("/")) {
+				sb.append("<").append(uri()).append(">").append(" ");
+			} else {
+				sb.append("").append(uri()).append("").append(" ");
+			}
 		}
 		
 	} 
@@ -158,7 +194,7 @@ public class SQ {
 		
 		@Override public void toString(StringBuilder sb) {
 			sb.append("\"").append(safeSpelling()).append("\"");
-			if (!type.isEmpty()) sb.append("^^").append(type);
+			if (!type.isEmpty()) sb.append("^^<").append(type).append(">");
 			sb.append(" ");
 		}
 		

@@ -95,11 +95,11 @@ public class SearchSpec extends Constraint {
 	
 	private Node asSQNode(PrefixMapping pm) {
 		String limitString = (limit == null ? "" : " " + limit);
+		SQ.Literal literal = new SQ.Literal(pattern, "");
 		if (property == null && limit == null) {
-			return new SQ.Literal(pattern, "");		
+			return literal;		
 		} else if (property == null) {
-			throw new RuntimeException("TBD");
-			// return "(" + quoted + limitString + ")";
+			return SQ.list(literal, SQ.integer(limit));
 		} else {
 //			String expanded = pm.expandPrefix(property.URI);
 //			String contracted = pm.qnameFor(expanded);
