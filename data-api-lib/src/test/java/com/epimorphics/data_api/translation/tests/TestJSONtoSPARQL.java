@@ -72,6 +72,10 @@ public class TestJSONtoSPARQL {
 		String generated = dq.toSparql(p, ds);
 //		System.err.println( ">> GENERATED:\n" + generated );
 		
+		System.err.println(">> EXPECTED:\n" + sparql);
+		System.err.println(">> OBTAINED:\n" + generated);
+		
+		
 		String expected = sparql;
 		Asserts.assertSameSelect(expected, generated);
 	}
