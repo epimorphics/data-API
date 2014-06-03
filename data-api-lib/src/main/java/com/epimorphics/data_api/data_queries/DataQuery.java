@@ -98,6 +98,11 @@ public class DataQuery {
 		return result;
 	}
 	
+	/*
+		Also to handle LIMIT in the presence of multi-valued aspects.
+		Inner select = SELECT DISTINCT ?item WHERE constraints
+		Outer select = SELECT vars WHERE {{Inner select} aspect bindings}
+	*/
     public String toSparql(Problems p, API_Dataset api) {
     	try {
 			SQ sq = new SQ();

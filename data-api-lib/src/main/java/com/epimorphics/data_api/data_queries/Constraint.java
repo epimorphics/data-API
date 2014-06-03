@@ -17,12 +17,9 @@ import com.epimorphics.data_api.sparql.SQ_Variable;
 public abstract class Constraint {
 		
 	public abstract Constraint negate();
-
-	public abstract String toString();
-
 	public abstract void tripleFiltering(Context cx);
 	
-	// NEW BITS /////////////////////////////////////////////////////
+	public static final Constraint EMPTY = new True();
 	
 	static final String nl = "\n";
 
@@ -34,6 +31,14 @@ public abstract class Constraint {
 	*/
 	
 	public void translate(Problems p, Context cx) {
+		
+		boolean fullyGeneral = true;
+		
+		if (fullyGeneral && (cx.dq.slice.length != null || cx.dq.slice.offset != null)) {
+			
+			
+			
+		}
 		
 		List<Guard> guards = cx.dq.guards;
 		boolean needsDistinct = false;
@@ -66,8 +71,6 @@ public abstract class Constraint {
 		if (cx.dq.slice.offset != null) cx.sq.setOffset(cx.dq.slice.offset);
 	}
 	
-	// END OF NEW BITS //////////////////////////////////////////////
-	
 	@Override public boolean equals(Object other) {
 		return this.getClass() == other.getClass() && same((Constraint) other);
 	}
@@ -76,8 +79,6 @@ public abstract class Constraint {
 
 	public Constraint() {
 	}
-	
-	public static final Constraint EMPTY = new True();
 	
 	public static Constraint and(List<Constraint> operands) {
 		if (operands.size() == 0) return EMPTY;
