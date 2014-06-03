@@ -40,33 +40,6 @@ public class Context  {
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
 	
-	public void negateFilter(Filter negated) {
-//		String varSuffix = "_" + ++varCount;
-//		out
-//			.append( "  FILTER(NOT EXISTS {" )
-//			.append( " ?item" )
-//			.append( " " )
-//			.append( negated.a.asProperty() )
-//			.append( " " )
-//			.append( negated.a.asVar() + varSuffix )
-//			.append( " .\n")
-//			;
-//		negated.toSparql(this, varSuffix);
-//		out
-//			.append( "})" )
-//			.append( "\n" )
-//			;		
-		throw new RuntimeException("TBD");
-	}
-	
-	int varCount = 0;
-	
-	public void comment(String message, Object... values) {
-		out.append( "# ").append(message);
-		for (Object v: values) out.append(" ").append(v);
-		out.append(".\n");
-	}
-
 //	private void generateSelect() {		
 //		
 //		List<Guard> guards = dq.guards;
@@ -238,7 +211,7 @@ public class Context  {
 
 		return new SQ.Node() {
 
-			@Override public void toString(StringBuilder sb) {
+			@Override public void toSparqlExpr(StringBuilder sb) {
 				sb.append(equalTo.asSparqlTerm(pm));
 
 			}};

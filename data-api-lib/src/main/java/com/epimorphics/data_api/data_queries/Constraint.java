@@ -57,7 +57,7 @@ public abstract class Constraint {
 	//
 		
 		int ng = guards.size();
-        cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+        // cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
         if (ng > 0) System.err.println( ">> IGNORING guards for now.");
 //        for (Guard guard : guards)
 //        	cx.out.append(guard.queryFragment(cx.api));

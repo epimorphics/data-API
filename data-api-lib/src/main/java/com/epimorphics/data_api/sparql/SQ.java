@@ -7,15 +7,11 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Operator;
-import com.epimorphics.data_api.data_queries.Operator.EqOperator;
 import com.epimorphics.data_api.data_queries.Sort;
-import com.epimorphics.data_api.data_queries.Operator.FunctionOperator;
-import com.epimorphics.data_api.sparql.SQ.Expr;
-import com.epimorphics.data_api.sparql.SQ.Node;
-import com.epimorphics.data_api.sparql.SQ.Triple;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -24,6 +20,7 @@ public class SQ {
 	public static class Const {
 		public static final Variable item = new Variable("item");
 		public static final Node textQuery = new Resource("http://jena.apache.org/text#query");
+		public static final List<Expr> NONE = Collections.<Expr>emptyList();
 		
 	}
 
@@ -135,11 +132,23 @@ public class SQ {
 
 	static final String nl = "\n";
 				
-	public interface Node extends Expr {
-		public void toString(StringBuilder sb);
+	public static abstract class Node implements Expr {
+
+		@Override public List<Expr> operands() {
+			return Const.NONE;
+		}
+		
 	}
 	
-	public static class TermList implements Node, Expr {
+	// TODO add operator slot of some kind (NOT a String, 
+	// maybe the existing Operator
+	public interface Expr {
+		public void toSparqlExpr(StringBuilder sb);
+		
+		public List<Expr> operands();
+	}
+	
+	public static class TermList extends Node {
 
 		final Node[] elements;
 		
@@ -147,12 +156,12 @@ public class SQ {
 			this.elements = elements;
 		}
 		
-		@Override public void toString(StringBuilder sb) {
+		@Override public void toSparqlExpr(StringBuilder sb) {
 			String gap = "";
 			sb.append("(");
 			for (Node e: elements) {
 				sb.append(gap);	gap = " ";
-				e.toString(sb);
+				e.toSparqlExpr(sb);
 			}
 			sb.append(")");
 		}
@@ -175,7 +184,7 @@ public class SQ {
 		
 	}
 	
-	public static class Resource implements Node, Expr {
+	public static class Resource extends Node {
 
 		final String uri;
 		
@@ -187,7 +196,7 @@ public class SQ {
 			return uri;
 		}
 		
-		@Override public void toString(StringBuilder sb) {
+		@Override public void toSparqlExpr(StringBuilder sb) {
 			if (uri.startsWith("http:") || uri.startsWith("eh:")) {
 				System.err.println(">> TODO: fix this fragile absolute-uri test.");
 				sb.append("<").append(uri()).append(">").append(" ");
@@ -198,7 +207,7 @@ public class SQ {
 		
 	} 
 	
-	public static class Literal implements Node, Expr {
+	public static class Literal extends Node {
 
 		final String spelling;
 		final String type;
@@ -220,15 +229,14 @@ public class SQ {
 			return FmtUtils.stringEsc(spelling, true);
 		}
 		
-		@Override public void toString(StringBuilder sb) {
+		@Override public void toSparqlExpr(StringBuilder sb) {
 			sb.append("\"").append(safeSpelling()).append("\"");
 			if (!type.isEmpty()) sb.append("^^<").append(type).append(">");
 			sb.append(" ");
 		}
-		
 	}
 	
-	public static class Variable implements Node, Expr {
+	public static class Variable extends Node {
 		
 		final String name;
 		
@@ -244,7 +252,7 @@ public class SQ {
 			return "?" + name;
 		}
 
-		@Override public void toString(StringBuilder sb) {
+		@Override public void toSparqlExpr(StringBuilder sb) {
 			sb.append("?").append(name()).append(" ");
 		}
 		
@@ -259,9 +267,9 @@ public class SQ {
 
 		@Override public void toString(StringBuilder sb, String indent) {
 			sb.append(indent);
-			S.toString(sb);
-			P.toString(sb);
-			O.toString(sb);
+			S.toSparqlExpr(sb);
+			P.toSparqlExpr(sb);
+			O.toSparqlExpr(sb);
 			sb.append(" .");
 			sb.append(nl);
 		}
@@ -277,10 +285,6 @@ public class SQ {
 					sb.append("}").append(nl);
 				}};
 		}
-	}
-	
-	public interface Expr {
-		public void toString(StringBuilder sb);
 	}
 	
 	public static class FilterSQ implements WhereElement {
@@ -400,9 +404,9 @@ public class SQ {
 		
 		@Override public void toString(StringBuilder sb, String indent) {
 			sb.append(indent).append("BIND(");
-			value.toString(sb);		
+			value.toSparqlExpr(sb);		
 			sb.append(" AS  ");
-			var.toString(sb);
+			var.toSparqlExpr(sb);
 			sb.append(")").append(nl);
 		}
 		

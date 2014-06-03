@@ -68,9 +68,9 @@ public class Range {
 
 	public static Expr termAsExpr(final Term term) {
 		final PrefixMapping pm = PrefixMapping.Factory.create();
-		return new Expr() {
+		return new SQ.Node() {
 
-			@Override public void toString(StringBuilder sb) {
+			@Override public void toSparqlExpr(StringBuilder sb) {
 				sb.append(term.asSparqlTerm(pm));
 			}};
 	}

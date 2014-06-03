@@ -13,7 +13,7 @@ import com.epimorphics.json.JSFullWriter;
 */
 public abstract class TermComposite extends Term {
 
-	final String value;
+	public final String value;
 	
 	public TermComposite(String value) {
 		this.value = value;

@@ -7,7 +7,8 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import com.epimorphics.data_api.data_queries.terms.TermComposite;
+import com.epimorphics.data_api.sparql.SQ;
 
 public class Below extends Constraint {
 	
@@ -26,24 +27,15 @@ public class Below extends Constraint {
 	}
 
 	public void tripleFiltering(Context cx) {
-		cx.comment("@below", this);
-			PrefixMapping pm = cx.api.getPrefixes();
-		//
-			String fVar = this.a.asVar(); 
-			String value = this.v.asSparqlTerm(pm);			
-			Aspect x = this.a;
-			String below = x.getBelowPredicate(cx.api);
-		//
-			if (negated) cx.out.append("  FILTER(NOT EXISTS{");
-			cx.out.append(value)
-				.append(" ")
-				.append(below)
-				.append("* ")
-				.append(fVar)
-				.append(" .")
-				;			
-			if (negated) cx.out.append("})");
-			cx.out.append("\n");
+		String below = a.getBelowPredicate(cx.api);
+		
+		SQ.Node S = new SQ.Resource(((TermComposite) v).value);
+		SQ.Node P = new SQ.Resource(below + "*");
+		SQ.Node O = new SQ.Variable(a.asVarName());
+		SQ.Triple t = new SQ.Triple(S, P, O);
+		
+		if (negated) cx.sq.addNotExists(t);
+		else cx.sq.addTriple(t);
 	}
 
 	@Override public String toString() {

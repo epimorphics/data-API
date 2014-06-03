@@ -144,9 +144,9 @@ public abstract class Operator {
 
 		@Override public void asExpression
 			(StringBuilder sb, Variable x, List<Expr> operands) {
-			x.toString(sb);
+			x.toSparqlExpr(sb);
 			sb.append(" ").append(sparqlOp).append(" ");
-			operands.get(0).toString(sb);
+			operands.get(0).toSparqlExpr(sb);
 		}
 	}
 	
@@ -190,10 +190,10 @@ public abstract class Operator {
 				.append( functionName )
 				.append("(")
 				;
-			x.toString(sb);
+			x.toSparqlExpr(sb);
 			for (Expr e: operands) {
 				sb.append(", ");
-				e.toString(sb);
+				e.toSparqlExpr(sb);
 			}
 			sb.append(")");
 		}
@@ -234,9 +234,9 @@ public abstract class Operator {
 			String orOp = "";
 			for (Expr e: operands) {
 				sb.append(orOp); orOp = " || ";
-				x.toString(sb);
+				x.toSparqlExpr(sb);
 				sb.append(" = ");
-				e.toString(sb);
+				e.toSparqlExpr(sb);
 			}
 		}
 	}
@@ -270,9 +270,9 @@ public abstract class Operator {
 
 		@Override public void asExpression
 			(StringBuilder sb, Variable x, List<Expr> operands) {
-			x.toString(sb);
+			x.toSparqlExpr(sb);
 			sb.append(" = ");
-			operands.get(0).toString(sb);
+			operands.get(0).toSparqlExpr(sb);
 		}
 	}		
 	
@@ -358,9 +358,9 @@ public abstract class Operator {
 
 		@Override public void asExpression
 			(StringBuilder sb, Variable x, List<Expr> operands) {			
-			x.toString(sb);
+			x.toSparqlExpr(sb);
 			sb.append( " <http://jena.apache.org/text#query> " );
-			operands.get(0).toString(sb);
+			operands.get(0).toSparqlExpr(sb);
 			sb.append(" .");
 		}
 	}
