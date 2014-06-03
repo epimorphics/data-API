@@ -72,7 +72,7 @@ public class SQ {
 		
 		sb.append(indent).append("WHERE").append(nl);
 		sb.append(indent).append("{").append(nl);
-		if (baseQuery != null) sb.append(indent).append(baseQuery);
+		if (baseQuery != null) sb.append(indent).append(baseQuery).append(nl);
 		whereClause.toString(sb, indent + "  ");
 		sb.append(indent).append("}").append(nl);
 		querySort(sb, indent, sorts);
@@ -443,7 +443,7 @@ public class SQ {
 		@Override public void toString(StringBuilder sb, String indent) {
 			sb.append(indent).append("BIND(");
 			value.toSparqlExpr(sb);		
-			sb.append(" AS  ");
+			sb.append(" AS ");
 			var.toSparqlExpr(sb);
 			sb.append(")").append(nl);
 		}

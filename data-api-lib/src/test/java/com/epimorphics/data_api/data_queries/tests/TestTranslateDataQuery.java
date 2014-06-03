@@ -103,7 +103,14 @@ public class TestTranslateDataQuery {
 		JsonObject query = JSON.parse("{'@and': [{'pre:X': {'@eq': 1}}, {'pre:X': {'@eq': 2}}]}");
 		DataQuery dq = DataQueryParser.Do(p, dsXY, query);
 		String sq = dq.toSparql(p, dsXY);
-		assertContains("?item pre:X 1 . BIND(1 AS ?pre_X)", sq);
+		
+		sq = sq.replaceAll("[ \n]+", " ");
+
+		// WARNING fragile against layout changes. TODO fix this fragility.
+//		System.err.println( ">> ?item pre:X 1 . BIND(1 AS ?pre_X)");
+//		System.err.println( ">> " + sq.substring(65).replaceAll("[ \n]+", " "));
+		
+		assertContains("?item pre:X 1 . BIND(1 AS ?pre_X )", sq);
 	}
 	
 	private void assertContains(String string, String sq) {
