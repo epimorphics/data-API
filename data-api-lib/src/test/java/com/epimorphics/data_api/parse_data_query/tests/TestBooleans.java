@@ -80,7 +80,7 @@ public class TestBooleans {
 	}
 	
 	@Test public void testNonTrivialOR() {
-		String incoming = "{'@or': [{'pre:local': {'@lt': 1}}, {'pre:local': {'@below': {'@id': 'fake:uri'}}}]}";
+		String incoming = "{'@or': [{'pre:local': {'@lt': 1}}, {'pre:local': {'@below': {'@id': 'eh:fake-uri'}}}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
@@ -91,6 +91,7 @@ public class TestBooleans {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
 			, "SELECT ?item ?pre_local {"
+			, "    ?item pre:local ?pre_local"
 			, "    {"
 			, "    SELECT ?item ?pre_local WHERE"
 			, "    { ?item pre:local ?pre_local FILTER(?pre_local < 1) }"
@@ -98,7 +99,7 @@ public class TestBooleans {
 			, "UNION"
 			, "    {"
 			, "    SELECT ?item ?pre_local WHERE" 
-			, "    { ?item pre:local ?pre_local . <fake:uri> (skos:narrower)* ?pre_local" 
+			, "    { ?item pre:local ?pre_local . <eh:fake-uri> (skos:narrower)* ?pre_local" 
 			, "   }"
 			, "}}"
 			);
