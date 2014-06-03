@@ -5,8 +5,6 @@
 */
 package com.epimorphics.data_api.end2end.tests;
 
-import static org.junit.Assert.*;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.epimorphics.data_api.libs.BunchLib;

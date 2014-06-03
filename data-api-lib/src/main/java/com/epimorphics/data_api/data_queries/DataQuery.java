@@ -109,8 +109,21 @@ public class DataQuery {
 			
 			String unprefixedQuery = sq.toString();
 			
+			if (isCountQuery()) {
+				
+				unprefixedQuery =
+					"SELECT (COUNT (?item) AS ?_count)"
+					+ "\n WHERE {"
+					+ "\n{SELECT ?item {"
+					+ "\n" + unprefixedQuery
+					+ "\n}"
+					+ "\n}"
+					+ "\n}"
+					;
+			}
+			
 			String query = PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
-			System.err.println( ">> RENDERED QUERY:\n" + query );
+//			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
 		catch (Exception e) { 
