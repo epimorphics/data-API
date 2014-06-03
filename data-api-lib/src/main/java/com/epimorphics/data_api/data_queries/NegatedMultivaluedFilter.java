@@ -19,11 +19,14 @@ public class NegatedMultivaluedFilter extends Constraint {
 	// old form generated FILTER NOT EXISTS{t, basis filter}
 	// and used varSuffix to disambiguate when multi-valued
 	public void tripleFiltering(Context cx) {
+		
+		SQ.FilterSQ f = basis.range.asFilterSQ(basis.a); // TODO expose less
+		
 		SQ.Resource P = new SQ.Resource(basis.a.asProperty());
 		SQ.Variable V = new SQ.Variable(basis.a.asVarName());
 		SQ.Triple t = new SQ.Triple(Const.item, P, V);
-		System.err.println( ">> TODO: nest in the negated filter");
-		cx.sq.addNotExists(t);
+		
+		cx.sq.addNotExists(t, f);
 	}
 
 	@Override public String toString() {

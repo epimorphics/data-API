@@ -110,6 +110,9 @@ public class SQ {
 		whereClause.addTriple(t);
 	}
 
+	public void addNotExists(Triple t, FilterSQ f) {
+		whereClause.add(new NotExists(t, f));
+	}
 
 	public void addNotExists(Triple t) {
 		whereClause.add(new NotExists(t));
@@ -209,14 +212,21 @@ public class SQ {
 	public static class NotExists implements WhereElement {
 		
 		final Triple t;
+		final FilterSQ f;
 		
 		public NotExists(Triple t) {
+			this(t, null);
+		}
+		
+		public NotExists(Triple t, FilterSQ f) {
 			this.t = t;
+			this.f = f;
 		}
 
 		@Override public void toString(StringBuilder sb, String indent) {
 			sb.append(indent).append("FILTER(NOT EXISTS {");
-			t.toString(sb, "");
+			t.renderRawCoreTriple(sb);
+			if (f != null) f.toString(sb, "");
 			sb.append("})").append(nl);
 		}
 		
@@ -305,11 +315,15 @@ public class SQ {
 
 		@Override public void toString(StringBuilder sb, String indent) {
 			sb.append(indent);
+			renderRawCoreTriple(sb);
+			sb.append(" .");
+			sb.append(nl);
+		}
+
+		private void renderRawCoreTriple(StringBuilder sb) {
 			S.toSparqlExpr(sb);
 			P.toSparqlExpr(sb);
 			O.toSparqlExpr(sb);
-			sb.append(" .");
-			sb.append(nl);
 		}
 
 		public WhereElement optional() {
@@ -318,8 +332,8 @@ public class SQ {
 
 				@Override public void toString(StringBuilder sb, String indent) {
 					sb.append(indent);
-					sb.append("OPTIONAL {");
-					it.toString(sb, "");
+					sb.append("OPTIONAL { ");
+					it.renderRawCoreTriple(sb);
 					sb.append("}").append(nl);
 				}};
 		}
