@@ -24,7 +24,18 @@ public class SQ {
 		
 	}
 
-	final List<SQ.Variable> variables = new ArrayList<SQ.Variable>();
+	public static class Output {
+	
+		public final SQ.Variable var;
+		public final boolean needsDistinct;
+		
+		public Output(SQ.Variable var, boolean needsDistinct) {
+			this.var = var;
+			this.needsDistinct = needsDistinct;
+		}
+	}
+	
+	final List<Output> variables = new ArrayList<Output>();
 	
 	final SQ.Where whereClause = new Where();
 	
@@ -52,7 +63,13 @@ public class SQ {
 	
 	public void toString(StringBuilder sb, String indent) {
 		sb.append(indent).append("SELECT").append(nl);
-		for (SQ.Variable v: variables) sb.append(indent).append("  ").append(v.asVar()).append(nl);
+		
+		for (Output v: variables) {
+			sb.append(indent).append("  ");
+			if (v.needsDistinct) sb.append("DISTINCT ");
+			sb.append(v.var.asVar()).append(nl);
+		}
+		
 		sb.append(indent).append("WHERE").append(nl);
 		sb.append(indent).append("{").append(nl);
 		if (baseQuery != null) sb.append(indent).append(baseQuery);
@@ -74,11 +91,19 @@ public class SQ {
 	}
 	
 	public void addOutput(SQ.Variable v) {
-		variables.add(v);
+		addOutput(v, false);
+	}
+	
+	public void addOutput(SQ.Variable v, boolean needsDistinct) {
+		variables.add(new Output(v, needsDistinct));
 	}
 	
 	public void addBaseQuery(String baseQuery) {
 		this.baseQuery = baseQuery;
+	}
+
+	public void addQueryFragment(String queryFragment) {
+		whereClause.add(new Fragment(queryFragment));
 	}
 	
 	public void addTriple(SQ.Triple t) {
@@ -164,6 +189,19 @@ public class SQ {
 				e.toSparqlExpr(sb);
 			}
 			sb.append(")");
+		}
+	}
+	
+	public static class Fragment implements WhereElement {
+
+		final String content;
+		
+		public Fragment(String content) {
+			this.content = content;
+		}
+		
+		@Override public void toString(StringBuilder sb, String indent) {
+			sb.append(indent).append(content).append(nl);
 		}
 		
 	}

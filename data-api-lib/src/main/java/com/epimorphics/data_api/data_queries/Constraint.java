@@ -32,11 +32,6 @@ public abstract class Constraint {
 	*/
 	
 	public void translate(Problems p, Context cx) {
-		cx.sq.addOutput(Const.item);
-		
-		for (Aspect a: cx.ordered) {
-			cx.sq.addOutput(new SQ.Variable(a.asVarName()));
-		}
 		
 		List<Guard> guards = cx.dq.guards;
 		boolean needsDistinct = false;
@@ -46,6 +41,12 @@ public abstract class Constraint {
 			if (guard.needsDistinct()) needsDistinct = true;
 			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
 		}
+		
+		cx.sq.addOutput(Const.item, needsDistinct);
+		
+		for (Aspect a: cx.ordered) {
+			cx.sq.addOutput(new SQ.Variable(a.asVarName()));
+		}		
 		
 		if (cx.dq.isCountQuery()) {
 			System.err.println(">> IGNORING count queries for now.");
@@ -58,11 +59,8 @@ public abstract class Constraint {
 		
 		int ng = guards.size();
         // cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
-        if (ng > 0) System.err.println( ">> IGNORING guards for now.");
-//        for (Guard guard : guards)
-//        	cx.out.append(guard.queryFragment(cx.api));
-    // 
-		
+        for (Guard g: guards) cx.sq.addQueryFragment(g.queryFragment(cx.api));
+        
 		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
 		
 		System.err.println( ">> translate now has constraints: " + unEquals );
