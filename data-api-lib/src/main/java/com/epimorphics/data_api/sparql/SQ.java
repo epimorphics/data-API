@@ -71,11 +71,11 @@ public class SQ {
 		}
 	}
 	
-	public void addOutput(SQ_Variable v) {
-		addOutput(v, false);
+	public void addSelectedVar(SQ_Variable v) {
+		addSelectedVar(v, false);
 	}
 	
-	public void addOutput(SQ_Variable v, boolean needsDistinct) {
+	public void addSelectedVar(SQ_Variable v, boolean needsDistinct) {
 		selected.add(new SQ_SelectedVar(v, needsDistinct));
 	}
 	

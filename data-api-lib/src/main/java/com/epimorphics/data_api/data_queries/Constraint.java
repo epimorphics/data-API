@@ -44,10 +44,10 @@ public abstract class Constraint {
 			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
 		}
 		
-		cx.sq.addOutput(SQ_Const.item, needsDistinct);
+		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
 		
 		for (Aspect a: cx.ordered) {
-			cx.sq.addOutput(new SQ_Variable(a.asVarName()));
+			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
 		}
         
 		String baseQuery = cx.api.getBaseQuery();
