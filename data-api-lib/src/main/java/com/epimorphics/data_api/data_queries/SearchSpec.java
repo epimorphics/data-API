@@ -11,11 +11,14 @@ import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.sparql.SQ_Const;
+import com.epimorphics.data_api.sparql.SQ_Literal;
+import com.epimorphics.data_api.sparql.SQ_Node;
+import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Const;
-import com.epimorphics.data_api.sparql.SQ.Node;
-import com.epimorphics.data_api.sparql.SQ.Triple;
-import com.epimorphics.data_api.sparql.SQ.WhereElement;
+import com.epimorphics.data_api.sparql.SQ_Triple;
+import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.epimorphics.data_api.sparql.SQ_WhereElement;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
@@ -66,8 +69,8 @@ public class SearchSpec extends Constraint {
 
 	public void toSearchTripleSQ(Context cx, Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		if (aspectName == null) {
-			SQ.Node O = asSQNode(pm);
-			Triple t = new Triple(Const.item, Const.textQuery, O);
+			SQ_Node O = asSQNode(pm);
+			SQ_Triple t = new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, O);
 			if (negated) {
 				cx.sq.addNotExists(t);
 			} else {
@@ -78,8 +81,8 @@ public class SearchSpec extends Constraint {
 		}
 	}
 	
-	private Node asSQNode(PrefixMapping pm) {
-		SQ.Literal literal = new SQ.Literal(pattern, "");
+	private SQ_Node asSQNode(PrefixMapping pm) {
+		SQ_Literal literal = new SQ_Literal(pattern, "");
 		if (property == null && limit == null) {
 			return literal;		
 		} else if (property == null) {
@@ -91,14 +94,14 @@ public class SearchSpec extends Constraint {
 //			String use = contracted == null ? "<" + property.URI + ">" : contracted;
 //			return "(" + use + " " + quoted + limitString + ")";
 
-			SQ.Resource useProperty = new SQ.Resource(property.URI);
+			SQ_Resource useProperty = new SQ_Resource(property.URI);
 			if (limit == null) return SQ.list(useProperty, literal);
 			else return SQ.list(useProperty, literal, SQ.integer(limit));
 		}
 	}
 
-	private WhereElement toSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		WhereElement positive = toPositiveSearchAspectTripleSQ(aspects, pm);
+	private SQ_WhereElement toSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		SQ_WhereElement positive = toPositiveSearchAspectTripleSQ(aspects, pm);
 		if (negated) {
 			throw new RuntimeException("TBD");
 			// return " FILTER(NOT EXISTS{" + positive + "})"; 
@@ -107,7 +110,7 @@ public class SearchSpec extends Constraint {
 		}
 	}
 	
-	private WhereElement toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+	private SQ_WhereElement toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		Aspect a = aspects.get(aspectName);
 		
 //		System.err.println( ">> toSearchApsectTriple of " + aspectName );
@@ -116,18 +119,18 @@ public class SearchSpec extends Constraint {
 //		System.err.println( ">>   .aspectName = " + aspectName );
 //		System.err.println( ">>   .property = " + property );
 		
-		SQ.Variable aVar = new SQ.Variable(aspectName.asVar().substring(1));
+		SQ_Variable aVar = new SQ_Variable(aspectName.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(a);
 		
 		if (property == null) {
 			
 			if (hasLiteralRange) {
 
-				return new SQ.Triple( Const.item, Const.textQuery, asSQNode(pm) );
+				return new SQ_Triple( SQ_Const.item, SQ_Const.textQuery, asSQNode(pm) );
 				
 			} else {
 				
-				return new SQ.Triple( aVar, Const.textQuery, asSQNode(pm) );
+				return new SQ_Triple( aVar, SQ_Const.textQuery, asSQNode(pm) );
 				
 			}
 			
@@ -140,7 +143,7 @@ public class SearchSpec extends Constraint {
 				
 			} else {
 				
-				return new SQ.Triple(aVar, Const.textQuery, asSQNode(pm));
+				return new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode(pm));
 			}
 			
 		}

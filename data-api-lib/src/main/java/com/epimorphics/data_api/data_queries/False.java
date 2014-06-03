@@ -23,4 +23,8 @@ public class False extends Constraint {
 	@Override public Constraint negate() {
 		return True.value;
 	}
+
+	@Override public void tripleFiltering(Context cx) {
+		cx.sq.addFalse();
+	}
 }

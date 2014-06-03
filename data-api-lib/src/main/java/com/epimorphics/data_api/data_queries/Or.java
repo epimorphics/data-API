@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.WhereElement;
+import com.epimorphics.data_api.sparql.SQ_WhereElement;
 
 public class Or extends Bool {
 	
@@ -28,9 +28,9 @@ public class Or extends Bool {
 			x.translate(inner_cx.p, inner_cx);
 			new_operands.add(sq);
 		}
-		WhereElement e = new WhereElement() {
+		SQ_WhereElement e = new SQ_WhereElement() {
 
-			@Override public void toString(StringBuilder sb, String indent) {
+			@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 				String gap = "";
 				for (SQ o: new_operands) {
 					sb.append(indent).append(gap).append(nl); 

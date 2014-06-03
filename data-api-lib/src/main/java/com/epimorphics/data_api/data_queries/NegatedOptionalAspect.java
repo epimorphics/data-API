@@ -8,8 +8,8 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.epimorphics.data_api.sparql.SQ.FilterSQ;
-import com.epimorphics.data_api.sparql.SQ.WhereElement;
+import com.epimorphics.data_api.sparql.SQ_Filter;
+import com.epimorphics.data_api.sparql.SQ_WhereElement;
 
 public final class NegatedOptionalAspect extends Constraint  {
 	
@@ -19,7 +19,7 @@ public final class NegatedOptionalAspect extends Constraint  {
 		this.negated = negated;
 	}
 	
-	public static class Element implements WhereElement {
+	public static class Element implements SQ_WhereElement {
 
 		final Filter negated;
 		final Context cx;
@@ -29,8 +29,8 @@ public final class NegatedOptionalAspect extends Constraint  {
 			this.negated = negated;
 		}
 		
-		@Override public void toString(StringBuilder sb, String indent) {
-			FilterSQ f = negated.range.asFilterSQ(negated.a);
+		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
+			SQ_Filter f = negated.range.asFilterSQ(negated.a);
 			
 			sb.append(indent).append("FILTER(" );
 			

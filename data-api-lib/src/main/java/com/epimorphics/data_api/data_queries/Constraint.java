@@ -11,14 +11,16 @@ import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.reporting.Problems;
-import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Const;
+import com.epimorphics.data_api.sparql.SQ_Const;
+import com.epimorphics.data_api.sparql.SQ_Variable;
 
 public abstract class Constraint {
 		
 	public abstract Constraint negate();
 
 	public abstract String toString();
+
+	public abstract void tripleFiltering(Context cx);
 	
 	// NEW BITS /////////////////////////////////////////////////////
 	
@@ -42,10 +44,10 @@ public abstract class Constraint {
 			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
 		}
 		
-		cx.sq.addOutput(Const.item, needsDistinct);
+		cx.sq.addOutput(SQ_Const.item, needsDistinct);
 		
 		for (Aspect a: cx.ordered) {
-			cx.sq.addOutput(new SQ.Variable(a.asVarName()));
+			cx.sq.addOutput(new SQ_Variable(a.asVarName()));
 		}
         
 		String baseQuery = cx.api.getBaseQuery();
@@ -62,11 +64,6 @@ public abstract class Constraint {
 		
 		if (cx.dq.slice.length != null) cx.sq.setLimit(cx.dq.slice.length);
 		if (cx.dq.slice.offset != null) cx.sq.setOffset(cx.dq.slice.offset);
-	}
-	
-
-	public void tripleFiltering(Context cx) {
-		throw new UnsupportedOperationException("cannot triple-filter this " + getClass().getSimpleName() + ": " + this);
 	}
 	
 	// END OF NEW BITS //////////////////////////////////////////////

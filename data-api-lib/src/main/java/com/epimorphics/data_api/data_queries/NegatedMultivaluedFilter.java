@@ -5,8 +5,11 @@
 */
 package com.epimorphics.data_api.data_queries;
 
-import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Const;
+import com.epimorphics.data_api.sparql.SQ_Const;
+import com.epimorphics.data_api.sparql.SQ_Filter;
+import com.epimorphics.data_api.sparql.SQ_Resource;
+import com.epimorphics.data_api.sparql.SQ_Triple;
+import com.epimorphics.data_api.sparql.SQ_Variable;
 
 public class NegatedMultivaluedFilter extends Constraint {
 	
@@ -20,11 +23,11 @@ public class NegatedMultivaluedFilter extends Constraint {
 	// and used varSuffix to disambiguate when multi-valued
 	public void tripleFiltering(Context cx) {
 		
-		SQ.FilterSQ f = basis.range.asFilterSQ(basis.a); // TODO expose less
+		SQ_Filter f = basis.range.asFilterSQ(basis.a); // TODO expose less
 		
-		SQ.Resource P = new SQ.Resource(basis.a.asProperty());
-		SQ.Variable V = new SQ.Variable(basis.a.asVarName());
-		SQ.Triple t = new SQ.Triple(Const.item, P, V);
+		SQ_Resource P = new SQ_Resource(basis.a.asProperty());
+		SQ_Variable V = new SQ_Variable(basis.a.asVarName());
+		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, V);
 		
 		cx.sq.addNotExists(t, f);
 	}

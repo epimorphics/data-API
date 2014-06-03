@@ -11,8 +11,12 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.sparql.SQ_Const;
+import com.epimorphics.data_api.sparql.SQ_Node;
+import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Const;
+import com.epimorphics.data_api.sparql.SQ_Triple;
+import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
@@ -39,76 +43,6 @@ public class Context  {
 	//
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
-	
-//	private void generateSelect() {		
-//		
-//		List<Guard> guards = dq.guards;
-//		boolean needsDistinct = false;
-//    	for (Guard guard : guards) if (guard.needsDistinct()) needsDistinct = true;
-//    	
-//    	out.append( "SELECT " );
-//		if (dq.isCountQuery()) {
-//		    for (Aspect as : api.getAspects()) {
-//		        if (as.getIsMultiValued()) {
-//		            needsDistinct = true;
-//		            break;
-//		        }
-//		    }
-//            out.append(" (COUNT (" + (needsDistinct ? "DISTINCT " : "") + "?item) AS ?_count)\n");
-//            if (dq.isNestedCountQuery()) {
-//            	comment("this is a nested count query, so:");
-//            	out.append("  { SELECT ?item").append("\n");
-//            }
-//		} else {
-//	        out.append( (needsDistinct ? "DISTINCT " : "") + "?item" );
-//	        for (Aspect x: ordered) out.append("\n  ").append( x.asVar() );
-//		}
-//		out.append("\n");
-//	}
-	
-//	public Constraint queryCore(Constraint c) {
-//		List<Guard> guards = dq.guards;
-//        boolean baseQueryNeeded = true;  
-//        for (Guard guard : guards) {
-//            if (guard.supplantsBaseQuery()) {
-//                baseQueryNeeded = false;
-//            }
-//        }
-//    //
-//        String baseQuery = api.getBaseQuery();
-//		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
-//			comment("base query");
-//		    out.append( "  ").append(baseQuery).append( "\n");
-//		} else {
-//			comment("no base query");
-//		}
-//	//
-//		int ng = guards.size();
-//        comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
-//        for (Guard guard : guards)
-//        	out.append(guard.queryFragment(api));
-//    // 
-//        return declareAspectVars(earlySearches(c));
-//	}
-//
-//	public Constraint earlySearches(Constraint c) {
-//		if (isItemSearch(c)) {
-//        	generateSearch( (SearchSpec) c);
-//        	return Constraint.EMPTY;
-//        } else if (c instanceof And) {
-//        	List<Constraint> nonSearches = new ArrayList<Constraint>();
-//        	for (Constraint x: ((And) c).operands) {
-//        		if (isItemSearch(x)) {
-//        			generateSearch((SearchSpec) x);        			
-//        		} else {
-//        			nonSearches.add(x);
-//        		}
-//        	}
-//        	return Constraint.and(nonSearches);
-//        } else {
-//        	return c;
-//        }
-//	}
 
 	public Constraint earlySearchesSQ(Constraint c) {
 		if (isItemSearch(c)) {
@@ -177,7 +111,7 @@ public class Context  {
 	//
 		for (Aspect x: ordered) {
 			String fVar = x.asVar();
-			SQ.Variable var = new SQ.Variable(fVar.substring(1));
+			SQ_Variable var = new SQ_Variable(fVar.substring(1));
 			boolean isOptional = x.getIsOptional() && !required.contains(x);
 			List<Term> allEquals = equalities.get(x.getName());
 			if (allEquals.isEmpty()) {
@@ -194,10 +128,10 @@ public class Context  {
 		return adjusted;
 	}
 
-	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ.Variable var, Term equalTo) {		
-		SQ.Resource property = new SQ.Resource(x.asProperty());
+	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
+		SQ_Resource property = new SQ_Resource(x.asProperty());
 		
-		SQ.Triple t = new SQ.Triple(Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+		SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
 			
 		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
 		
@@ -206,10 +140,10 @@ public class Context  {
 		}
 	}
 	
-	private SQ.Node termAsNode(final Term equalTo) {		
+	private SQ_Node termAsNode(final Term equalTo) {		
 		final PrefixMapping pm = PrefixMapping.Factory.create();
 
-		return new SQ.Node() {
+		return new SQ_Node() {
 
 			@Override public void toSparqlExpr(StringBuilder sb) {
 				sb.append(equalTo.asSparqlTerm(pm));

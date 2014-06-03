@@ -12,9 +12,8 @@ import java.util.Map;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Expr;
-import com.epimorphics.data_api.sparql.SQ.Variable;
+import com.epimorphics.data_api.sparql.SQ_Expr;
+import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public abstract class Operator {
@@ -106,7 +105,7 @@ public abstract class Operator {
 	}
 
 	public abstract void asExpression
-		(StringBuilder sb, SQ.Variable x, List<SQ.Expr>operands);
+		(StringBuilder sb, SQ_Variable x, List<SQ_Expr>operands);
 	
 	public abstract void asConstraint
 		( Filter newParam
@@ -143,7 +142,7 @@ public abstract class Operator {
 		}
 
 		@Override public void asExpression
-			(StringBuilder sb, Variable x, List<Expr> operands) {
+			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 			x.toSparqlExpr(sb);
 			sb.append(" ").append(sparqlOp).append(" ");
 			operands.get(0).toSparqlExpr(sb);
@@ -184,14 +183,14 @@ public abstract class Operator {
 		}
 
 		@Override public void asExpression
-			(StringBuilder sb, Variable x, List<Expr> operands) {
+			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 			sb.append(" ")
 				.append( needsNot ? "!" : "")
 				.append( functionName )
 				.append("(")
 				;
 			x.toSparqlExpr(sb);
-			for (Expr e: operands) {
+			for (SQ_Expr e: operands) {
 				sb.append(", ");
 				e.toSparqlExpr(sb);
 			}
@@ -230,9 +229,9 @@ public abstract class Operator {
 		}
 
 		@Override public void asExpression
-			(StringBuilder sb, Variable x, List<Expr> operands) {
+			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 			String orOp = "";
-			for (Expr e: operands) {
+			for (SQ_Expr e: operands) {
 				sb.append(orOp); orOp = " || ";
 				x.toSparqlExpr(sb);
 				sb.append(" = ");
@@ -269,7 +268,7 @@ public abstract class Operator {
 		}
 
 		@Override public void asExpression
-			(StringBuilder sb, Variable x, List<Expr> operands) {
+			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 			x.toSparqlExpr(sb);
 			sb.append(" = ");
 			operands.get(0).toSparqlExpr(sb);
@@ -307,7 +306,7 @@ public abstract class Operator {
 		}
 
 		@Override public void asExpression
-			(StringBuilder sb, Variable x, List<Expr> operands) {
+			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 //			PrefixMapping pm = api.getPrefixes();
 //			String fVar = filter.a.asVar();
 //			Expr value = operands.get(0);			
@@ -357,7 +356,7 @@ public abstract class Operator {
 		}
 
 		@Override public void asExpression
-			(StringBuilder sb, Variable x, List<Expr> operands) {			
+			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {			
 			x.toSparqlExpr(sb);
 			sb.append( " <http://jena.apache.org/text#query> " );
 			operands.get(0).toSparqlExpr(sb);

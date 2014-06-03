@@ -13,10 +13,10 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Operator.InfixOperator;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ.Expr;
-import com.epimorphics.data_api.sparql.SQ.FilterSQ;
-import com.epimorphics.data_api.sparql.SQ.Variable;
+import com.epimorphics.data_api.sparql.SQ_Expr;
+import com.epimorphics.data_api.sparql.SQ_Filter;
+import com.epimorphics.data_api.sparql.SQ_Node;
+import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
@@ -59,16 +59,16 @@ public class Range {
 		return sb.toString();
 	}
 
-	public FilterSQ asFilterSQ(Aspect a) {
-		SQ.Variable l = new SQ.Variable(a.asVarName());
-		List<Expr> operands = new ArrayList<Expr>(this.operands.size());		
+	public SQ_Filter asFilterSQ(Aspect a) {
+		SQ_Variable l = new SQ_Variable(a.asVarName());
+		List<SQ_Expr> operands = new ArrayList<SQ_Expr>(this.operands.size());		
 		for (Term t: this.operands) operands.add(termAsExpr(t));
-		return new FilterSQ(op, l, operands);		
+		return new SQ_Filter(op, l, operands);		
 	}
 
-	public static Expr termAsExpr(final Term term) {
+	public static SQ_Expr termAsExpr(final Term term) {
 		final PrefixMapping pm = PrefixMapping.Factory.create();
-		return new SQ.Node() {
+		return new SQ_Node() {
 
 			@Override public void toSparqlExpr(StringBuilder sb) {
 				sb.append(term.asSparqlTerm(pm));
