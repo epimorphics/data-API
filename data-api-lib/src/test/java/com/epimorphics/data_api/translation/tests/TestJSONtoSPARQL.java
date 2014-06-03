@@ -42,8 +42,7 @@ public class TestJSONtoSPARQL {
 		File sparqlFile = new File(dataDir, name + ".rq" );
 		File configFile = new File(dataDir, shorten(name) + ".ttl" );
 		
-		System.err.println(">> sparqlFile: " + sparqlFile);
-		
+//		System.err.println(">> sparqlFile: " + sparqlFile);
 		
 		Model configModel= FileManager.get().loadModel(configFile.getPath());
 		
@@ -72,9 +71,8 @@ public class TestJSONtoSPARQL {
 		String generated = dq.toSparql(p, ds);
 //		System.err.println( ">> GENERATED:\n" + generated );
 		
-		System.err.println(">> EXPECTED:\n" + sparql);
-		System.err.println(">> OBTAINED:\n" + generated);
-		
+//		System.err.println(">> EXPECTED:\n" + sparql);
+//		System.err.println(">> OBTAINED:\n" + generated);
 		
 		String expected = sparql;
 		Asserts.assertSameSelect(expected, generated);
