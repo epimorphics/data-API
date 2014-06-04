@@ -183,20 +183,44 @@ public class TestQueriesGetExpectedResults extends Setup {
     
     @Test public void testExtractByTwoProperties() {
     	String expectD = BunchLib.join
-        		( "["
-				, "  {"
-	    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
-	    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
-	    		, "  , 'eg:value': 20"
-	    		, "  , 'eg:values': [43]"
-	    		, "  , 'eg:label': ['D-two', 'D2']"
-	    		, "  }"
-	    		, "]"
-	    		);
+    		( "["
+			, "  {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 20"
+    		, "  , 'eg:values': [43]"
+    		, "  , 'eg:label': ['D-two', 'D2']"
+    		, "  }"
+    		, "]"
+    		);
     	testQueryReturnsExpectedResults("{'eg:resource': {'@eq': {'@id': 'eg:DE-resource'}}, 'eg:values': {'@eq': 43}}", expectD);
     }	
-    
-    
+
+    /**
+        Exactly two values should be returned. 
+    */
+    @Test public void testCCC() {    	
+    	 final String expectFA = BunchLib.join
+    		( "["
+			, "  {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+			, "  , 'eg:value': 17"
+			, "  , 'eg:values': [17, 18, 19]"
+			, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+			, "  }"
+			, ", {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+			, "  , 'eg:value': 22"
+			, "  , 'eg:values': [42, 43]"
+			, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+			, "  }"
+			, "]"
+			);
+
+    	testQueryReturnsExpectedResults( "{'@limit': 2, 'eg:values': {'@le': 42}}", expectFA );
+    }
     
     
     
