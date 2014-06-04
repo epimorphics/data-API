@@ -18,6 +18,7 @@ import com.epimorphics.data_api.sparql.SQ_Variable;
 public abstract class Constraint {
 		
 	public abstract Constraint negate();
+	
 	public abstract void tripleFiltering(Context cx);
 	
 	public static final Constraint EMPTY = new True();

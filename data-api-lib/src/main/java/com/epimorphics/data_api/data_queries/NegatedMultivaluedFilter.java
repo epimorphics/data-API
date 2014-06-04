@@ -20,14 +20,12 @@ public class NegatedMultivaluedFilter extends Constraint {
 		this.basis = basis;			
 	}
 
-	// old form generated FILTER NOT EXISTS{t, basis filter}
-	// and used varSuffix to disambiguate when multi-valued
 	public void tripleFiltering(Context cx) {
-		
-		SQ_Filter f = basis.range.asFilterSQ(basis.a); // TODO expose less
+
+		SQ_Variable V = new SQ_Variable(basis.a.asVarName() + "_A");
+		SQ_Filter f = basis.range.asFilterSQ(V); // TODO expose less
 		
 		SQ_Resource P = new SQ_Resource(basis.a.asProperty());
-		SQ_Variable V = new SQ_Variable(basis.a.asVarName());
 		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, V);
 		
 		cx.sq.addNotExists(t, f);

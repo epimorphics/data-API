@@ -59,8 +59,8 @@ public class Range {
 		return sb.toString();
 	}
 
-	public SQ_Filter asFilterSQ(Aspect a) {
-		SQ_Variable l = new SQ_Variable(a.asVarName());
+	public SQ_Filter asFilterSQ(SQ_Variable l) { // Aspect a) {
+//		SQ_Variable l = new SQ_Variable(a.asVarName());
 		List<SQ_Expr> operands = new ArrayList<SQ_Expr>(this.operands.size());		
 		for (Term t: this.operands) operands.add(termAsExpr(t));
 		return new SQ_Filter(op, l, operands);		
