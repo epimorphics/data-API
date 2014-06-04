@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.reporting.Problems;
+import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 
@@ -21,54 +22,90 @@ public abstract class Constraint {
 	
 	public static final Constraint EMPTY = new True();
 	
-	static final String nl = "\n";
+	public static final String nl = "\n";
+	
+	/**
+	     Returns true iff this constraint binds aspect a, ie if there's a
+	     filter in the constraint tree that mentions it.
+	*/
+	protected abstract boolean constrains(Aspect a);
 
 	/** 
-	 	Translate this constraint at the top level of SPARQL. Many constraints 
-	 	can be handled by this default method because they're just ANDed 
-	 	sub-constraints.
-	 * @param p TODO
+	 	Translate this constraint at the top level of SPARQL. 
 	*/
-	
 	public void translate(Problems p, Context cx) {
 		
-		boolean fullyGeneral = true;
-		
-		if (fullyGeneral && (cx.dq.slice.length != null || cx.dq.slice.offset != null)) {
-			
-			
-			
-		}
-		
+		String baseQuery = cx.api.getBaseQuery();
 		List<Guard> guards = cx.dq.guards;
 		boolean needsDistinct = false;
 		boolean baseQueryNeeded = true;  
+		Integer length = cx.dq.slice.length,  offset = cx.dq.slice.offset;
 		
 		for (Guard guard : guards) {
 			if (guard.needsDistinct()) needsDistinct = true;
 			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
 		}
-		
+
+		cx.sq.comment(cx.ordered.size() + " aspect variables");	
 		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
-		
+
 		for (Aspect a: cx.ordered) {
 			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
 		}
-        
-		String baseQuery = cx.api.getBaseQuery();
-		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded)
-			cx.sq.addBaseQuery(baseQuery);
+
+		boolean fullyGeneral = constrainsMultivaluedAspect(cx.ordered);
+		
+		if (fullyGeneral && (length != null || offset != null)) {
+						
+			SQ nested = new SQ();
+			Context rx = new Context( nested, cx.out, cx.dq, p, cx.api );
+			
+			nested.addSelectedVar(SQ_Const.item, true);
+			
+			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, nested);
+	        
+	        cx.declareAspectVarsSQ(EMPTY);
+			Constraint unEquals = rx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+			unEquals.tripleFiltering(rx);
+			addLengthAndOffset(nested, length, offset);
+			cx.sq.comment("fully general case because constraints with multi-valued aspects.");
+			cx.sq.addSubquery(nested);
+						
+		} else {
+			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
+			Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+			unEquals.tripleFiltering(cx);
+			addLengthAndOffset(cx.sq, length, offset);
+		}
+	}
+	
+	private void baseQueryAndGuards(Context cx, String baseQuery, List<Guard> guards, boolean baseQueryNeeded, SQ sq) {
+		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
+			sq.comment("base query");
+			sq.addBaseQuery(baseQuery);
+		} else {
+			sq.comment("no base query");
+		}
 	//
-		
 		int ng = guards.size();
-        // cx.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
-        for (Guard g: guards) cx.sq.addQueryFragment(g.queryFragment(cx.api));
-        
-		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
-		unEquals.tripleFiltering(cx);
-		
-		if (cx.dq.slice.length != null) cx.sq.setLimit(cx.dq.slice.length);
-		if (cx.dq.slice.offset != null) cx.sq.setOffset(cx.dq.slice.offset);
+		sq.comment(ng == 0 ? "no guards" : ng == 1 ? "one guard" : ng + " guards");
+		for (Guard g: guards) sq.addQueryFragment(g.queryFragment(cx.api));
+	}
+	
+	private void addLengthAndOffset(SQ sq, Integer length, Integer offset) {
+		if (length != null) sq.setLimit(length);
+		if (offset != null) sq.setOffset(offset);
+	}
+	
+	/**
+	    Returns true iff there is a bound multi-valued aspect in the
+	    collection.
+	*/
+	private boolean constrainsMultivaluedAspect(List<Aspect> ordered) {
+		for (Aspect a: ordered)
+			if (a.getIsMultiValued())
+				if (constrains(a)) return true;
+		return false;
 	}
 	
 	@Override public boolean equals(Object other) {

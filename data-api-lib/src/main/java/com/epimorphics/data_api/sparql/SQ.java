@@ -7,6 +7,7 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Sort;
@@ -127,8 +128,16 @@ public class SQ {
 		whereClause.addBind(value, var);
 	}
 	
+	public void comment(String message, Object... values) {
+		whereClause.addComment(values.length == 0 ? message : Arrays.asList(values).toString());
+	}
+	
 	public void addSorts(List<Sort> sorts) {
 		this.sorts.addAll(sorts);
+	}
+
+	public void addSubquery(SQ nested) {
+		whereClause.addSubquery(nested);
 	}
 
 	static final String XSD_integer = XSD.getURI() + "integer";

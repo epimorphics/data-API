@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import com.epimorphics.data_api.aspects.Aspect;
+
 public class False extends Constraint {
 
 	public static False value = new False();
@@ -26,5 +28,9 @@ public class False extends Constraint {
 
 	@Override public void tripleFiltering(Context cx) {
 		cx.sq.addFalse();
+	}
+
+	@Override protected boolean constrains(Aspect a) {
+		return false;
 	}
 }

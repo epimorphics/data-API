@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
 
@@ -60,4 +61,8 @@ public final class NegatedOptionalAspect extends Constraint  {
 		operands.add(negated.negate());
 		return and(operands);
 	}
+
+	@Override protected boolean constrains(Aspect a) {
+		return negated.constrains(a);
+	}	
 }

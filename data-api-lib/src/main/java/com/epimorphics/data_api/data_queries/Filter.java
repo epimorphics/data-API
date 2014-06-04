@@ -60,4 +60,8 @@ public class Filter extends Constraint {
 			&& this.range.equals(other.range)
 			;
 	}
+
+	@Override protected boolean constrains(Aspect a) {
+		return this.a.equals(a);
+	}	
 }

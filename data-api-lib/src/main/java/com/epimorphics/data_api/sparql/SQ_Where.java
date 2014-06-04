@@ -38,4 +38,28 @@ public class SQ_Where {
 		elements.add(f);
 	}
 	
+	public void addComment(String c) {
+		elements.add(new SQ_Comment(c));
+	}
+
+	static class SubQuery implements SQ_WhereElement {
+
+		final SQ subQuery;
+		
+		public SubQuery(SQ subQuery) {
+			this.subQuery = subQuery;
+		}
+		
+		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
+			sb.append(indent).append("{").append("\n");
+			subQuery.toString(sb, indent + "  ");
+			sb.append(indent).append("}").append("\n");
+		}
+		
+	}
+	
+	public void addSubquery(SQ nested) {
+		elements.add(new SubQuery(nested));
+	}
+	
 }

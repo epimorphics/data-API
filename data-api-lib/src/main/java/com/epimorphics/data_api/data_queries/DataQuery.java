@@ -98,11 +98,6 @@ public class DataQuery {
 		return result;
 	}
 	
-	/*
-		Also to handle LIMIT in the presence of multi-valued aspects.
-		Inner select = SELECT DISTINCT ?item WHERE constraints
-		Outer select = SELECT vars WHERE {{Inner select} aspect bindings}
-	*/
     public String toSparql(Problems p, API_Dataset api) {
     	try {
 			SQ sq = new SQ();
@@ -110,6 +105,7 @@ public class DataQuery {
 			Context rx = new Context( sq, out, this, p, api );
 			
 			c.translate(p, rx);
+			if (sortby.size() > 0) sq.comment(sortby.size() + " sort specifications");
 			sq.addSorts(sortby);			
 			
 			String unprefixedQuery = sq.toString();
@@ -128,7 +124,7 @@ public class DataQuery {
 			}
 			
 			String query = PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
-//			System.err.println( ">> RENDERED QUERY:\n" + query );
+			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
 		catch (Exception e) { 
@@ -137,33 +133,6 @@ public class DataQuery {
 			return null; 
 		}
     }
-	
-//	private String oldWay(Problems p, API_Dataset api) {
-//		try {
-//			StringBuilder out = new StringBuilder();
-//			Context rx = new Context( new SQ(), out, this, p, api );
-//			
-//			Constraint adjusted = rx.begin(c);
-//			adjusted.toSparql(rx, "");
-//			rx.end();
-//			
-//			querySort(out);		
-//			if (slice.length != null) out.append( " LIMIT " ).append(slice.length);
-//			if (slice.offset != null) out.append( " OFFSET " ).append(slice.offset);
-//			
-//			if (isNestedCountQuery()) out.append("}");
-//			
-//			String query = PrefixUtils.expandQuery(out.toString(), api.getPrefixes());
-//			
-//			System.err.println( ">> RENDERED QUERY:\n" + query );
-//			return query; 
-//		}
-//        catch (Exception e) { 
-//        	p.add("exception generating SPARQL query: " + e.getMessage()); 
-//        	e.printStackTrace(System.err); 
-//        	return null; 
-//        }
-//	}
 	    
     @Override public String toString() {
     	return 

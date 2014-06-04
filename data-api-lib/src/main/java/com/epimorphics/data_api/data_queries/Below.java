@@ -55,5 +55,9 @@ public class Below extends Constraint {
 
 	@Override public Constraint negate() {
 		return new Below(a, v, !negated);
+	}
+
+	@Override protected boolean constrains(Aspect a) {
+		return this.a.equals(a);
 	}	
 }

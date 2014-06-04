@@ -204,4 +204,8 @@ public class SearchSpec extends Constraint {
 	public static List<SearchSpec> none() {
 		return new ArrayList<SearchSpec>();
 	}
+
+	@Override protected boolean constrains(Aspect a) {
+		return aspectName == null ? false : aspectName.equals(a.getName());
+	}	
 }
