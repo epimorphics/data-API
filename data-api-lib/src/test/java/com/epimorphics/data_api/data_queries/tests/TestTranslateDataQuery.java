@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
+import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.epimorphics.data_api.data_queries.Constraint;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
@@ -44,6 +45,7 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public class TestTranslateDataQuery {
 
     static PrefixMapping pm = PrefixMapping.Factory.create()
+    	.setNsPrefixes(DefaultPrefixes.get())
 		.setNsPrefix("pre", Setup.pm.getNsPrefixURI("pre"))
 		.setNsPrefix("skos", SKOS.getURI())
 		.lock()
@@ -268,12 +270,14 @@ public class TestTranslateDataQuery {
 		assertNoProblems("translation failed", p);
 	//
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			( "PREFIX text: <http://jena.apache.org/text#>"
+			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, "  ?item <http://jena.apache.org/text#query> 'look for me' . "
+			, "  ?item text:query 'look for me' . "
 			, "  ?item pre:X ?pre_X . "
 			, "}"
 			);
+		
 		assertSameSelect( expected, sq	);
 	}
 	
@@ -338,11 +342,12 @@ public class TestTranslateDataQuery {
 		assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			(  "PREFIX text: <http://jena.apache.org/text#>"
+			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
 			, " ?item pre:local ?pre_local ."
-			, " ?pre_local <http://jena.apache.org/text#query> 'look for me' ."
+			, " ?pre_local text:query 'look for me' ."
 			, "}"
 			);
 		
@@ -364,10 +369,11 @@ public class TestTranslateDataQuery {
 		assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			( "PREFIX text: <http://jena.apache.org/text#>"
+			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, " ?item <http://jena.apache.org/text#query> 'look for me'."
+			, " ?item text:query 'look for me'."
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
 			, "}"
@@ -393,10 +399,11 @@ public class TestTranslateDataQuery {
 		Asserts.assertNoProblems("translation failed", p);
 		
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			( "PREFIX text: <http://jena.apache.org/text#>"
+			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "WHERE {"
-			, " ?item <http://jena.apache.org/text#query> (pre:X 'look for me') ."
+			, " ?item text:query (pre:X 'look for me') ."
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
 			, "}"

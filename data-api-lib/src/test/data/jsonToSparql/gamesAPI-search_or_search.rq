@@ -1,4 +1,5 @@
 PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX  text: <http://jena.apache.org/text#>
 PREFIX  egc:  <http://epimorphics.com/public/vocabulary/games.ttl#>
 PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
@@ -32,7 +33,7 @@ WHERE
               { ?item egc:designer-of ?egc_designer2Dof }
             OPTIONAL
               { ?item egc:playTimeMinutes ?egc_playTimeMinutes }
-            ?egc_playTimeMinutes <http://jena.apache.org/text#query> "17"
+            ?egc_playTimeMinutes text:query "17"
           }
       }
     UNION
@@ -50,7 +51,7 @@ WHERE
               { ?item egc:designer-of ?egc_designer2Dof }
             OPTIONAL
               { ?item egc:playTimeMinutes ?egc_playTimeMinutes }
-            ?egc_pubYear <http://jena.apache.org/text#query> "age"
+            ?egc_pubYear text:query "age"
           }
       }
   }

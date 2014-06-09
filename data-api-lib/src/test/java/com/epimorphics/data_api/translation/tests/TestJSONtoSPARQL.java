@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
+import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -45,6 +46,8 @@ public class TestJSONtoSPARQL {
 //		System.err.println(">> sparqlFile: " + sparqlFile);
 		
 		Model configModel= FileManager.get().loadModel(configFile.getPath());
+		
+		configModel.withDefaultMappings(DefaultPrefixes.get());
 		
 		Resource config = configModel.listSubjectsWithProperty(RDF.type, Dsapi.Dataset)
 			.toList()

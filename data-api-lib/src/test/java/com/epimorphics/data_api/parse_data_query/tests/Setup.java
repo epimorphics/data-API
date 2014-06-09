@@ -6,7 +6,7 @@
 package com.epimorphics.data_api.parse_data_query.tests;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.vocabs.SKOS;
+import com.epimorphics.data_api.config.DefaultPrefixes;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -25,7 +25,7 @@ public class Setup {
 	public static Resource pseudoRoot() {
 		Model m = ModelFactory.createDefaultModel();
 		m.setNsPrefixes(pm);
-		m.setNsPrefix("skos", SKOS.NS);
+		m.setNsPrefixes(DefaultPrefixes.get());
 		return m.createResource("eh:/pseudoRoot");
 	}
 	

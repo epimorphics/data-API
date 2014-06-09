@@ -88,12 +88,6 @@ public class SearchSpec extends Constraint {
 		} else if (property == null) {
 			return SQ.list(literal, SQ.integer(limit));
 		} else {
-// WAS:
-//			String expanded = pm.expandPrefix(property.URI);
-//			String contracted = pm.qnameFor(expanded);
-//			String use = contracted == null ? "<" + property.URI + ">" : contracted;
-//			return "(" + use + " " + quoted + limitString + ")";
-
 			SQ_Resource useProperty = new SQ_Resource(property.URI);
 			if (limit == null) return SQ.list(useProperty, literal);
 			else return SQ.list(useProperty, literal, SQ.integer(limit));
@@ -111,14 +105,7 @@ public class SearchSpec extends Constraint {
 	}
 	
 	private SQ_WhereElement toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		Aspect a = aspects.get(aspectName);
-		
-//		System.err.println( ">> toSearchApsectTriple of " + aspectName );
-//		System.err.println( ">>   aspect is " + a );
-//		System.err.println( ">>   .pattern = " + pattern );
-//		System.err.println( ">>   .aspectName = " + aspectName );
-//		System.err.println( ">>   .property = " + property );
-		
+		Aspect a = aspects.get(aspectName);		
 		SQ_Variable aVar = new SQ_Variable(aspectName.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(a);
 		

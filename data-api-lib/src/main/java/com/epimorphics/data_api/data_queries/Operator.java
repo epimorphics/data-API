@@ -349,7 +349,7 @@ public abstract class Operator {
 			String value = filter.range.operands.get(0).asSparqlTerm(pm);
 			sb
 				.append(fVar).append(varSuffix)
-				.append(" <http://jena.apache.org/text#query> ")
+				.append(" text:query ")
 				.append(value)
 				.append(" .")
 				;
@@ -358,7 +358,7 @@ public abstract class Operator {
 		@Override public void asExpression
 			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {			
 			x.toSparqlExpr(sb);
-			sb.append( " <http://jena.apache.org/text#query> " );
+			sb.append( " text:query " );
 			operands.get(0).toSparqlExpr(sb);
 			sb.append(" .");
 		}

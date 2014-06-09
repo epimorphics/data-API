@@ -62,10 +62,11 @@ public class TestTextSearching {
 		String generated = q.toSparql(p, ds);
 	//
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			( "PREFIX text: <http://jena.apache.org/text#>"
+			,  "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, "  ?item <http://jena.apache.org/text#query> ('lookfor' 17) ."
+			, "  ?item text:query ('lookfor' 17) ."
 			, "  ?item pre:local ?pre_local ."
 			, "}"
 			);
@@ -83,10 +84,11 @@ public class TestTextSearching {
 		String generated = q.toSparql(p, ds);
 	//
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			( "PREFIX text: <http://jena.apache.org/text#>"
+			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, "  ?item <http://jena.apache.org/text#query> (<eh:/some.uri/> 'lookfor' 17) ."
+			, "  ?item text:query (<eh:/some.uri/> 'lookfor' 17) ."
 			, "  ?item pre:local ?pre_local ."
 			, "}"
 			);
@@ -126,7 +128,8 @@ public class TestTextSearching {
 		String generated = q.toSparql(p, ds);
 	//
 		String expected = BunchLib.join
-			( "PREFIX pre: <eh:/prefixPart/>"
+			( "PREFIX text: <http://jena.apache.org/text#>"
+			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "{"
 			, "  ?item pre:X ?pre_X ."
@@ -134,12 +137,12 @@ public class TestTextSearching {
 			, "{ SELECT ?item ?pre_X ?pre_Y {"
 			, "  ?item pre:X ?pre_X ."
 			, "  ?item pre:Y ?pre_Y ."
-			, "  ?pre_Y <http://jena.apache.org/text#query> 'B' ."
+			, "  ?pre_Y text:query 'B' ."
 		  	, "}}  UNION  {"
 		  	, "SELECT ?item ?pre_X ?pre_Y {"
 		  	, "  ?item pre:X ?pre_X ."
 		  	, "  ?item pre:Y ?pre_Y ."
-		  	, "  ?pre_X <http://jena.apache.org/text#query> 'A' ."
+		  	, "  ?pre_X text:query 'A' ."
 		  	, "}}"
 		  	, "}"
 			);

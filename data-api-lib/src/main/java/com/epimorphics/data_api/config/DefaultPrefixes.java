@@ -29,6 +29,7 @@ public class DefaultPrefixes {
             .setNsPrefix("skos",  SKOS.getURI())
             .setNsPrefix("qb",    Cube.getURI())
             .setNsPrefix("dsapi", Dsapi.getURI())
+            .setNsPrefix("text",  "http://jena.apache.org/text#" );
             ;
 
     public static PrefixMapping get() {

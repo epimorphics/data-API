@@ -123,6 +123,8 @@ public class DataQuery {
 					;
 			}
 			
+//			System.err.println(">> " + api.getPrefixes().getNsPrefixMap());
+			
 			String query = PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
 //			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
