@@ -109,6 +109,8 @@ public class DataQueryParser {
 					JsonValue operand = rob.get(opKey);
 					if (opKey.equals("@search")) {
 						constraints.add( extractSearchSpec(key, sn, operand) );
+					} else if (opKey.equals("@matches")) {
+						constraints.add( extractMatches(key, a, operand) );
 					} else if (opKey.startsWith("@")) {
 						String opName = opKey.substring(1);
 						List<Term> v = DataQueryParser.jsonToTerms(p, pm, operand);
@@ -154,7 +156,7 @@ public class DataQueryParser {
 			if (value.isArray()) {
 				for (JsonValue element: value.getAsArray()) {
 					DataQuery subQuery = DoQuietly(p, dataset, element);
-					these.add(subQuery.c);
+					these.add(subQuery.constraint());
 			}			
 			} else {
 				p.add("operand of " + key + " must be an array: " + value );
@@ -163,6 +165,49 @@ public class DataQueryParser {
 		} else {
 			p.add("unknown directive '" + key + "' in data query " + jo + ".");
 		}
+	}
+
+	private Filter extractMatches(String key, Aspect a, JsonValue operand) {
+		
+		Operator op = Operator.lookup("matches");
+		List<Term> v = operand.isArray() || operand.isString() 
+			? DataQueryParser.jsonToTerms(p, pm, operand)
+			: extractMatchOperand(operand)
+			;
+		return new Filter(a, new Range(op, v) );
+	}
+	
+	private List<Term> extractMatchOperand(JsonValue operand) {
+		if (operand.isObject()) {
+			JsonObject ob = operand.getAsObject();
+			String pattern = getOptionalString(ob, "@value");
+			String ipattern = getOptionalString(ob, "@case-insensitive-value");
+			String flags = getOptionalString(ob, "@flags");
+		//
+			if (pattern == null && ipattern == null) {
+				p.add("one of @value and @case-insensitive-value should be specified in " + operand);
+			} else if (pattern != null && ipattern != null) {
+				p.add("exactly one of @value and @case-insensitive-value should be specified in " + operand);
+			} else {
+				if (pattern == null) {
+					if (flags == null) {
+						return BunchLib.list(Term.string(ipattern), Term.string("i"));
+					} else {
+						return BunchLib.list(Term.string(ipattern), Term.string(flags + "i"));
+					}
+					
+				} else {
+					if (flags == null) {
+						return BunchLib.list(Term.string(pattern));
+					} else {
+						return BunchLib.list(Term.string(pattern), Term.string(flags));
+					}
+				}
+			}
+		} else {
+			p.add("operand of @matches should be object, not: " + operand);
+		}
+		return null;
 	}
 
 	private SearchSpec extractSearchSpec(String key, Shortname aspectName, JsonValue value) {

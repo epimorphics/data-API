@@ -24,7 +24,7 @@ public class DataQuery {
 	final Slice slice;
 	final List<Guard> guards; 
 	
-	final Constraint c;
+	private final Constraint c;
 	
 	public DataQuery(Constraint c) {
 		this(c, new ArrayList<Sort>() );
@@ -59,6 +59,10 @@ public class DataQuery {
 	
 	public Slice slice() {
 		return slice;
+	}
+	
+	public Constraint constraint() {
+		return c;
 	}
     
     public boolean isCountQuery() {
