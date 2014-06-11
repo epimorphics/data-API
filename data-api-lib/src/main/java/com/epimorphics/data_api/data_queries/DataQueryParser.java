@@ -189,20 +189,15 @@ public class DataQueryParser {
 			} else if (pattern != null && ipattern != null) {
 				p.add("exactly one of @value and @case-insensitive-value should be specified in " + operand);
 			} else {
+				List<Term> terms = new ArrayList<Term>(2);
 				if (pattern == null) {
-					if (flags == null) {
-						return BunchLib.list(Term.string(ipattern), Term.string("i"));
-					} else {
-						return BunchLib.list(Term.string(ipattern), Term.string(flags + "i"));
-					}
-					
+					terms.add(Term.string(ipattern));
+					terms.add(Term.string(flags == null ? "i" : flags + "i"));					
 				} else {
-					if (flags == null) {
-						return BunchLib.list(Term.string(pattern));
-					} else {
-						return BunchLib.list(Term.string(pattern), Term.string(flags));
-					}
+					terms.add(Term.string(pattern));
+					if (flags != null) terms.add(Term.string(flags));
 				}
+				return terms;
 			}
 		} else {
 			p.add("operand of @matches should be object, not: " + operand);
