@@ -28,7 +28,7 @@ public class SQ_Triple implements SQ_WhereElement {
 	
 	private boolean same(SQ_Triple other) {
 		boolean result = S.equals(other.S) && P.equals(other.P) && O.equals(other.O);
-		System.err.println(">> " + this + ".equals(" + other + "): " + result);
+//		System.err.println(">> " + this + ".equals(" + other + "): " + result);
 		return result;
 	}
 

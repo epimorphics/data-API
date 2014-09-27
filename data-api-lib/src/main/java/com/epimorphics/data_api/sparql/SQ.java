@@ -105,12 +105,12 @@ public class SQ {
 	}
 	
 	public void addTriple(SQ_Triple t) {
-		System.err.println(">> adding triple: " + t);
+		// System.err.println(">> adding triple: " + t);
 		whereClause.addTriple(t);
 	}
 	
 	public void addTriples(List<SQ_Triple> ts) {
-		System.err.println(">> adding triples: " + ts);
+		// System.err.println(">> adding triples: " + ts);
 		for (SQ_Triple t: ts) whereClause.addTriple(t);
 	}
 

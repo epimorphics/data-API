@@ -26,14 +26,15 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestUnpacking {
 
+	static final PrefixMapping pm = PrefixMapping.Factory.create()
+		.setNsPrefix("space", "dsapi:space/")
+		.lock()
+		;
+
 	static final API_Dataset ds = createDataset();
 
 	private static API_Dataset createDataset() {
 		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null);
-		PrefixMapping pm = PrefixMapping.Factory.create()
-			.setNsPrefix("space", "dsapi:space/")
-			.lock()
-			;
 		Aspect A = new Aspect(pm, "space:A");
 		Aspect B = new Aspect(pm, "space:B").setPropertyPath("space:A/space:D");
 		// Aspect C = new Aspect(pm, "space:C");
@@ -41,14 +42,46 @@ public class TestUnpacking {
 		return ds;
 	}
 	
+	static final API_Dataset makeDataset(String... items) {
+		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null);
+		for (String item: items) {
+			String [] parts = item.split("=");
+			Aspect a = makeAspect(parts[0]);
+			if (parts.length > 1) {
+				a.setPropertyPath( makePath(parts[1]) );
+			}
+			ds.add(a);
+		}
+		return ds;
+	}
+	
+	private static String makePath(String slashed) {
+		StringBuilder result = new StringBuilder();
+		String slash = "";
+		for (String element: slashed.split("/")) {
+			result.append(slash).append("space:").append(element);
+			slash = "/";
+		}
+		return result.toString();
+	}
+
+	private static Aspect makeAspect(String d) {
+		return new Aspect(pm, "space:" + d);
+	}
+
 	@Test public void testEmptyQuery() {
 
-		String incoming = "{}";
+		String query = makeQuery(makeDataset("A", "B=A/D"), "{}");
+		
+		assertContains("?item space:A ?space_A  .", query);
+		assertContains("?space_A space:D ?space_B  .", query);
+	}
+
+	private String makeQuery(API_Dataset ds, String incoming) {
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
-		String query = q.toSparql(p, ds);
-		System.err.println(">> query: " + query);
+		return q.toSparql(p, ds);
 	}
 	
 	// TODO these below move to SQ testing when ready
@@ -79,6 +112,11 @@ public class TestUnpacking {
 	private void assertDiffer(Object a, Object b) {
 		if (a.equals(b)) 
 			fail("expected values to be different but both " + a);
+	}
+
+	private void assertContains(String wanted, String subject) {
+		if (subject.contains(wanted)) return;
+		fail("the fragment `" + wanted + "` did not appear in the subject:\n" + subject);
 	}
 
 }

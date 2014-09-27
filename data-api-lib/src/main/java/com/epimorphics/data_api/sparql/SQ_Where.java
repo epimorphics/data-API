@@ -35,7 +35,12 @@ public class SQ_Where {
 	}
 	
 	public void addOptionalTriples(List<SQ_Triple> ts) {
-		addUnlessPresent(SQ_Triple.optionals(ts));
+		List<SQ_Triple> pruned = new ArrayList<SQ_Triple>();
+		for (SQ_Triple t: ts) 
+			if (!elements.contains(t))
+				pruned.add(t);
+		if (pruned.size() > 0)
+			addUnlessPresent(SQ_Triple.optionals(pruned));
 	}
 
 	public void addFilter(SQ_Filter f) {
@@ -46,25 +51,22 @@ public class SQ_Where {
 		elements.add(new SQ_Comment(c));
 	}
 	
+	/**
+		add an element e to elements unless it's already present.
+	*/
 	private void addUnlessPresent(SQ_WhereElement e) {
-		System.err.println(">> addUnlessPresent: " + e );
-		for (SQ_WhereElement el: elements) {
-			if (el.equals(e)) {
-				System.err.println(">> YAY it is here alreadies, we're done." );
-				return;
-			} else {
-				System.err.println(">> not " + el);
-			}
-		}
-		System.err.println(">> not already in, adding." );
-		elements.add(e);
-		
-//		if (elements.contains(e)) {
-//			System.err.println(">> Noting: element " + e + " is already installed.");
-//		} else {
-//			System.err.println(">> note: " + e + " not already in " + elements);
-//			elements.add(e);
-//		}	
+//		System.err.println(">> addUnlessPresent: " + e );
+//		for (SQ_WhereElement el: elements) {
+//			if (el.equals(e)) {
+//				System.err.println(">> YAY it is here alreadies, we're done." );
+//				return;
+//			} else {
+//				System.err.println(">> not " + el);
+//			}
+//		}
+//		System.err.println(">> not already in, adding." );
+//		elements.add(e);	
+		if (!elements.contains(e)) elements.add(e);
 	}
 
 	static class SubQuery implements SQ_WhereElement {

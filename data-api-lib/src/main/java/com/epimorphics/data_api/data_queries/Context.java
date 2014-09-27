@@ -10,6 +10,7 @@ import java.util.*;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Node;
@@ -137,7 +138,11 @@ public class Context  {
 			
 			SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
 				
-			if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
+			if (isOptional) {
+				sq.addOptionalTriples(BunchLib.list(t)); 
+			} else {
+				sq.addTriple(t);
+			}
 			
 			if (equalTo != null && countBindings == 0) {
 				sq.addBind(Range.termAsExpr(equalTo), var);		
@@ -148,7 +153,7 @@ public class Context  {
 		// System.err.println(">> declareOneBinding, for " + x + (isOptional ? " (optional)" : ""));
 		
 		String rawProperty = x.asProperty();
-		SQ_Resource property = new SQ_Resource(rawProperty);
+		// SQ_Resource property = new SQ_Resource(rawProperty);
 		
 		List<SQ_Triple> triples = new ArrayList<SQ_Triple>(); 
 		
@@ -185,6 +190,7 @@ public class Context  {
 			firstElement = false;
 			
 		}
+				
 		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
 		
 		if (equalTo != null && countBindings == 0) {
