@@ -439,6 +439,7 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
+            	System.err.println( ">> Issuing query: " + sq);
                 boolean legal = isLegalSPARQL(p, sq);
 				comments.put(
                 	"sparql" 

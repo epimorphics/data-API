@@ -17,7 +17,7 @@ public class SQ_Bind implements SQ_WhereElement {
 	
 	@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 		sb.append(indent).append("BIND(");
-		value.toSparqlExpr(sb);		
+		value.toSparqlExpr(sb);	
 		sb.append(" AS ");
 		var.toSparqlExpr(sb);
 		sb.append(")").append(SQ.nl);

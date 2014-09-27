@@ -128,16 +128,79 @@ public class Context  {
 		return adjusted;
 	}
 
+	static final boolean oldWay = false;
+	
 	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
-		SQ_Resource property = new SQ_Resource(x.asProperty());
 		
-		SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+		if (oldWay) {
+			SQ_Resource property = new SQ_Resource(x.asProperty());
 			
-		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
+			SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+				
+			if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
+			
+			if (equalTo != null && countBindings == 0) {
+				sq.addBind(Range.termAsExpr(equalTo), var);		
+			}
+			return;
+		}
+		
+		// System.err.println(">> declareOneBinding, for " + x + (isOptional ? " (optional)" : ""));
+		
+		String rawProperty = x.asProperty();
+		SQ_Resource property = new SQ_Resource(rawProperty);
+		
+		List<SQ_Triple> triples = new ArrayList<SQ_Triple>(); 
+		
+		SQ_Node currentVariable = SQ_Const.item;
+		
+		String[] elements = rawProperty.split("/");
+		int remainingElements = elements.length;
+		boolean firstElement = true;
+		
+		// sq.comment("declaring binding for", x, "property", rawProperty);
+		
+		for (String element: elements) {
+			remainingElements -= 1;
+			
+			// sq.comment("element", element);
+
+			SQ_Resource currentPredicate = new SQ_Resource(element);
+			
+			String thisElementName = Shortname.asVarName(element);
+			String nextVariableName = firstElement 
+					? thisElementName
+					: ((SQ_Variable) currentVariable).name() + "__" + thisElementName
+					;
+			
+			SQ_Node nextObject = remainingElements == 0 
+				? (equalTo == null ? var : var) //  termAsNode(equalTo))
+				: new SQ_Variable(nextVariableName)
+				;
+			
+			triples.add(new SQ_Triple(currentVariable, currentPredicate, nextObject));
+			
+			currentVariable = nextObject;
+			
+			firstElement = false;
+			
+		}
+		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
 		
 		if (equalTo != null && countBindings == 0) {
 			sq.addBind(Range.termAsExpr(equalTo), var);		
 		}
+		
+//		System.err.println(">> plain property name, equalTo = " + equalTo);
+//		
+//		SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+//			
+//		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
+//		
+//		if (equalTo != null && countBindings == 0) {
+//			sq.addBind(Range.termAsExpr(equalTo), var);		
+//		}
+		
 	}
 	
 	private SQ_Node termAsNode(final Term equalTo) {		

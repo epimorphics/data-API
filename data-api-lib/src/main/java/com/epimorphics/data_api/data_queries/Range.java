@@ -9,8 +9,6 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Operator.InfixOperator;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.sparql.SQ_Expr;
@@ -38,7 +36,7 @@ public class Range {
 	}
 	
 	@Override public String toString() {
-		return "<" + op + " " + joinStrings(operands) + ">";
+		return "{" + op + " " + joinStrings(operands) + "}";
 	}
 	
 	@Override public boolean equals(Object other) {
@@ -70,6 +68,10 @@ public class Range {
 		final PrefixMapping pm = PrefixMapping.Factory.create();
 		return new SQ_Node() {
 
+			@Override public String toString() {
+				return "(Expr " + term + " [" + term.getClass().getSimpleName() + "])";
+			}
+			
 			@Override public void toSparqlExpr(StringBuilder sb) {
 				sb.append(term.asSparqlTerm(pm));
 			}};

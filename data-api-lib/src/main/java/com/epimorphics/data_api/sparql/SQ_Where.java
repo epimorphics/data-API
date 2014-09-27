@@ -27,11 +27,15 @@ public class SQ_Where {
 	}
 
 	public void addTriple(SQ_Triple t) {
-		elements.add(t);
+		addUnlessPresent(t);
 	}
 
 	public void addOptionalTriple(SQ_Triple t) {
-		elements.add(t.optional());
+		addUnlessPresent(t.optional());
+	}
+	
+	public void addOptionalTriples(List<SQ_Triple> ts) {
+		addUnlessPresent(SQ_Triple.optionals(ts));
 	}
 
 	public void addFilter(SQ_Filter f) {
@@ -40,6 +44,27 @@ public class SQ_Where {
 	
 	public void addComment(String c) {
 		elements.add(new SQ_Comment(c));
+	}
+	
+	private void addUnlessPresent(SQ_WhereElement e) {
+		System.err.println(">> addUnlessPresent: " + e );
+		for (SQ_WhereElement el: elements) {
+			if (el.equals(e)) {
+				System.err.println(">> YAY it is here alreadies, we're done." );
+				return;
+			} else {
+				System.err.println(">> not " + el);
+			}
+		}
+		System.err.println(">> not already in, adding." );
+		elements.add(e);
+		
+//		if (elements.contains(e)) {
+//			System.err.println(">> Noting: element " + e + " is already installed.");
+//		} else {
+//			System.err.println(">> note: " + e + " not already in " + elements);
+//			elements.add(e);
+//		}	
 	}
 
 	static class SubQuery implements SQ_WhereElement {

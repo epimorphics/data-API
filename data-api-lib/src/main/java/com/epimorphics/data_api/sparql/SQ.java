@@ -84,14 +84,6 @@ public class SQ {
 		this.baseQuery = baseQuery;
 	}
 
-	public void addQueryFragment(String queryFragment) {
-		whereClause.add(new SQ_Fragment(queryFragment));
-	}
-	
-	public void addTriple(SQ_Triple t) {
-		whereClause.addTriple(t);
-	}
-
 	public void addNotExists(SQ_Triple t, SQ_Filter f) {
 		whereClause.add(new SQ_NotExists(t, f));
 	}
@@ -99,9 +91,27 @@ public class SQ {
 	public void addNotExists(SQ_Triple t) {
 		whereClause.add(new SQ_NotExists(t));
 	}
+
+	public void addQueryFragment(String queryFragment) {
+		whereClause.add(new SQ_Fragment(queryFragment));
+	}
 	
 	public void addOptionalTriple(SQ_Triple t) {
 		whereClause.addOptionalTriple(t);
+	}
+	
+	public void addOptionalTriples(List<SQ_Triple> ts) {
+		whereClause.addOptionalTriples(ts);
+	}
+	
+	public void addTriple(SQ_Triple t) {
+		System.err.println(">> adding triple: " + t);
+		whereClause.addTriple(t);
+	}
+	
+	public void addTriples(List<SQ_Triple> ts) {
+		System.err.println(">> adding triples: " + ts);
+		for (SQ_Triple t: ts) whereClause.addTriple(t);
 	}
 
 	public void addWhereElement(SQ_WhereElement e) {
@@ -129,7 +139,11 @@ public class SQ {
 	}
 	
 	public void comment(String message, Object... values) {
-		whereClause.addComment(values.length == 0 ? message : Arrays.asList(values).toString());
+		whereClause.addComment
+			( values.length == 0 
+			? message 
+			: message + " " + Arrays.asList(values).toString()
+			);
 	}
 	
 	public void addSorts(List<Sort> sorts) {
