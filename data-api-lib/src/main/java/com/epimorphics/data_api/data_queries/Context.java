@@ -41,8 +41,6 @@ public class Context  {
 		Set<Aspect> aspects = api.getAspects();
 		this.ordered.addAll(aspects);
 		Collections.sort(this.ordered, Aspect.compareAspects);
-	//
-		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
 
 	public Constraint earlySearchesSQ(Constraint c) {
@@ -162,6 +160,9 @@ public class Context  {
 		String[] elements = rawProperty.split("/");
 		int remainingElements = elements.length;
 		boolean firstElement = true;
+		
+		if (elements.length > 1) 
+			sq.comment("dealing with property path " + rawProperty + " for aspect " + x);
 		
 		// sq.comment("declaring binding for", x, "property", rawProperty);
 		

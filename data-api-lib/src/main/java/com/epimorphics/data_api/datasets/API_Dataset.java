@@ -103,7 +103,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	}
 	
 	public Aspect getAspectNamed(Shortname name) {
-		return nameToAspect.get(name);
+		return nameToAspect.get(name);		
 	}
 	
 	public boolean isHierarchy() {

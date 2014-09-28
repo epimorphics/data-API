@@ -23,6 +23,10 @@ public class Setup {
 	    create a resource that is in a model with the tests's standard
 	*/
 	public static Resource pseudoRoot() {
+		return pseudoRoot(pm);
+	}
+	
+	public static Resource pseudoRoot(PrefixMapping pm) {
 		Model m = ModelFactory.createDefaultModel();
 		m.setNsPrefixes(pm);
 		m.setNsPrefixes(DefaultPrefixes.get());

@@ -57,7 +57,7 @@ public class Shortname {
 	}
 	
 	@Override public String toString() {
-		return prefixed;
+		return prefixed + " [" + URI + "]";
 	}
 	
 	@Override public boolean equals(Object other) {
