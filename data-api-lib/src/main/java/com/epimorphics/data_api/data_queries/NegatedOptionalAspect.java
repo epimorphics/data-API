@@ -12,6 +12,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public final class NegatedOptionalAspect extends Constraint  {
 	
@@ -31,9 +32,11 @@ public final class NegatedOptionalAspect extends Constraint  {
 			this.negated = negated;
 		}
 		
+		static final PrefixMapping tobefixed = PrefixMapping.Factory.create();
+		
 		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 			SQ_Variable v = new SQ_Variable(negated.a.asVarName());
-			SQ_Filter f = negated.range.asFilterSQ(v);
+			SQ_Filter f = negated.range.asFilterSQ(tobefixed, v);
 			
 			sb.append(indent).append("FILTER(" );
 			

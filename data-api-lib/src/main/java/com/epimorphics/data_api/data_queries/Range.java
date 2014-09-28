@@ -57,15 +57,13 @@ public class Range {
 		return sb.toString();
 	}
 
-	public SQ_Filter asFilterSQ(SQ_Variable l) { // Aspect a) {
-//		SQ_Variable l = new SQ_Variable(a.asVarName());
+	public SQ_Filter asFilterSQ(PrefixMapping pm, SQ_Variable l) {
 		List<SQ_Expr> operands = new ArrayList<SQ_Expr>(this.operands.size());		
-		for (Term t: this.operands) operands.add(termAsExpr(t));
+		for (Term t: this.operands) operands.add(termAsExpr(pm, t));
 		return new SQ_Filter(op, l, operands);		
 	}
 
-	public static SQ_Expr termAsExpr(final Term term) {
-		final PrefixMapping pm = PrefixMapping.Factory.create();
+	public static SQ_Expr termAsExpr(final PrefixMapping pm, final Term term) {
 		return new SQ_Node() {
 
 			@Override public String toString() {

@@ -143,7 +143,7 @@ public class Context  {
 			}
 			
 			if (equalTo != null && countBindings == 0) {
-				sq.addBind(Range.termAsExpr(equalTo), var);		
+				sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
 			}
 			return;
 		}
@@ -194,12 +194,12 @@ public class Context  {
 		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
 		
 		if (equalTo != null && countBindings == 0) {
-			sq.addBind(Range.termAsExpr(equalTo), var);		
+			sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
 		}		
 	}
 	
 	private SQ_Node termAsNode(final Term equalTo) {		
-		final PrefixMapping pm = PrefixMapping.Factory.create();
+		final PrefixMapping pm = api.getPrefixes();
 		return new SQ_TermAsNode(pm, equalTo);
 	}
 

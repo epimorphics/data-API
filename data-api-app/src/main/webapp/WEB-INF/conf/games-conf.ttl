@@ -28,12 +28,12 @@
 		[ dsapi:property egc:co-designed; 
 			rdfs:label "co-designed"; 
 			dsapi:propertyPath "egc:designed-by/egc:designer-of"; 
-			dsapi:optional false # true 
+			dsapi:optional true 
 		],
 		[ dsapi:property egc:designer-name;
 			rdfs:label "designer name";
 			dsapi:propertyPath "egc:designed-by/rdfs:label";
-			dsapi:optional false # true
+			dsapi:optional true
 
 		]
 	.
