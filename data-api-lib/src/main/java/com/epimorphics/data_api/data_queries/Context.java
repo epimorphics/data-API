@@ -16,6 +16,7 @@ import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ_TermAsNode;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -116,7 +117,6 @@ public class Context  {
 			if (allEquals.isEmpty()) {
 				declareOneBindingSQ(x, isOptional, 0, var, null);
 			} else {
-				PrefixMapping prefixes = api.getPrefixes();
 				int countBindings = 0;
 				for (Term equals: allEquals) {
 					declareOneBindingSQ(x, isOptional, countBindings, var, equals);
@@ -175,12 +175,12 @@ public class Context  {
 			
 			String thisElementName = Shortname.asVarName(element);
 			String nextVariableName = firstElement 
-					? thisElementName
-					: ((SQ_Variable) currentVariable).name() + "__" + thisElementName
-					;
+				? thisElementName
+				: ((SQ_Variable) currentVariable).name() + "__" + thisElementName
+				;
 			
 			SQ_Node nextObject = remainingElements == 0 
-				? (equalTo == null ? var : var) //  termAsNode(equalTo))
+				? (equalTo == null ? var : termAsNode(equalTo))
 				: new SQ_Variable(nextVariableName)
 				;
 			
@@ -189,7 +189,6 @@ public class Context  {
 			currentVariable = nextObject;
 			
 			firstElement = false;
-			
 		}
 				
 		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
@@ -212,13 +211,7 @@ public class Context  {
 	
 	private SQ_Node termAsNode(final Term equalTo) {		
 		final PrefixMapping pm = PrefixMapping.Factory.create();
-
-		return new SQ_Node() {
-
-			@Override public void toSparqlExpr(StringBuilder sb) {
-				sb.append(equalTo.asSparqlTerm(pm));
-
-			}};
+		return new SQ_TermAsNode(pm, equalTo);
 	}
 
 	public void findRequiredAspects(Set<Aspect> required, Constraint c) {

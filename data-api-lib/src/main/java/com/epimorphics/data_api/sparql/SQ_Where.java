@@ -65,8 +65,29 @@ public class SQ_Where {
 //			}
 //		}
 //		System.err.println(">> not already in, adding." );
-//		elements.add(e);	
-		if (!elements.contains(e)) elements.add(e);
+		
+		// if (!elements.contains(e)) elements.add(e);
+		for (SQ_WhereElement el: elements) {
+			if (el.equals(e) || SPLiteralAlreadyExistsForThisSPVariable(el, e)) return;
+		}
+		elements.add(e);	
+	}
+
+	private boolean SPLiteralAlreadyExistsForThisSPVariable(SQ_WhereElement present, SQ_WhereElement toInsert) {
+		if (present instanceof SQ_Triple && toInsert instanceof SQ_Triple) {
+			SQ_Triple pt = (SQ_Triple) present;
+			SQ_Triple it = (SQ_Triple) toInsert;
+			if (pt.S.equals(it.S) && pt.P.equals(it.P)) {
+				if (isLiteral(pt.O) && it.O instanceof SQ_Variable) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isLiteral(SQ_Node o) {
+		return o instanceof SQ_Literal || o instanceof SQ_TermAsNode;
 	}
 
 	static class SubQuery implements SQ_WhereElement {
