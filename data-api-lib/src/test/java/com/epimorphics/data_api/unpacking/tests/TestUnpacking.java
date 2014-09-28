@@ -23,6 +23,7 @@ import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestUnpacking {
@@ -32,6 +33,14 @@ public class TestUnpacking {
 		.lock()
 		;
 
+	/**
+	    Make a dataset containing the specified items. Each item
+	    is of the form [?]L[=Path]. L is the local name of the
+	    item with prefix "space". If "?" is present the item is
+	    optional. If =Path is present then Path is the property
+	    path of the item, a series of local names separated by
+	    "/"; if absent it is as though it were L.
+	*/
 	static final API_Dataset makeDataset(String... items) {
 		API_Dataset ds = new API_Dataset(Setup.pseudoRoot(pm), null);
 		for (String item: items) {
@@ -66,11 +75,29 @@ public class TestUnpacking {
 		return a;
 	}
 
-	@Test public void testEmptyQueryWithPropertyPath() {
+	@Test public void testEmptyQueryWithPropertyPathWithSharing() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{}");
 		denyContains("OPTIONAL", query);
 		assertContains("?item space:A ?space_A  .", query);
 		assertContains("?space_A space:D ?space_B  .", query);
+	}
+
+	@Test public void testEmptyQueryWithPropertyPathWithoutSharing() {
+		String query = makeQuery(makeDataset("A", "B=C/D"), "{}");
+//		System.err.println(">>\n" + query);
+		denyContains("OPTIONAL", query);
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?item space:C ?space_C  .", query);
+		assertContainsOnce("?space_C space:D ?space_B  .", query);
+	}
+
+	@Test public void testEmptyQueryWithOptionalPropertyPathWithoutSharing() {
+		String query = makeQuery(makeDataset("A", "?B=C/D"), "{}");
+		// System.err.println(">>\n" + query);
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?item space:C ?space_C  .", query);
+		assertContainsOnce("?space_C space:D ?space_B  .", query);
+		assertContainsOnce("OPTIONAL { ?item space:C ?space_C  . ?space_C space:D ?space_B  . }", query);
 	}
 
 	@Test public void testEmptyQueryWithOptionalPropertyPath() {
@@ -87,7 +114,7 @@ public class TestUnpacking {
 		assertContains("?space_A space:E ?space_C  .", query);
 	}
 
-	@Test public void testQueryWithNonEQFilter() {
+	@Test public void testQueryWithNonEQFilterOnRequiredPlainAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@lt': 17}}");
 		// System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
@@ -96,12 +123,47 @@ public class TestUnpacking {
 		assertContains("FILTER(?space_A  < 17)", query);
 	}	
 
+	@Test public void testQueryWithNonEQFilterOnRequiredPathedAspect() {
+		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:B': {'@lt': 17}}");
+		System.err.println(">>\n" + query);
+		denyContains("OPTIONAL", query);
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?space_A space:D ?space_B  .", query);
+		assertContains("FILTER(?space_B  < 17)", query);
+	}	
+
+	@Test public void testQueryWithNonEQFilterOnRequiredLongerPathedAspect() {
+		String query = makeQuery(makeDataset("A", "B=A/C/D"), "{'space:B': {'@lt': 17}}");
+		System.err.println(">>\n" + query);
+		denyContains("OPTIONAL", query);
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?space_A space:C ?space_A__space_C  .", query);
+		assertContainsOnce("?space_A__space_C space:D ?space_B  .", query);
+		assertContains("FILTER(?space_B  < 17)", query);
+	}	
+
+	@Test public void testQueryWithNonEQFilterOnOptionalPathedAspect() {
+		String query = makeQuery(makeDataset("A", "?B=A/C/D"), "{'space:B': {'@lt': 17}}");
+		System.err.println(">>\n" + query);
+		denyContains("OPTIONAL", query);
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?space_A space:C ?space_A__space_C  .", query);
+		assertContainsOnce("?space_A__space_C space:D ?space_B  .", query);
+		assertContains("FILTER(?space_B  < 17)", query);
+	}	
+
 	private String makeQuery(API_Dataset ds, String incoming) {
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		if (!p.isOK()) fail(p.getProblemStrings());
-		return q.toSparql(p, ds);
+		String sparql = q.toSparql(p, ds);
+        try {
+        		QueryFactory.create(sparql);
+            } catch (Exception e) {
+            	fail("Bad generated SPARQL:\n" + sparql + "\n" + e.getMessage());
+            }
+		return sparql;
 	}
 	
 	// TODO these below move to SQ testing when ready
