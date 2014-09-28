@@ -132,7 +132,7 @@ public class TestUnpacking {
 		assertContains("FILTER(?space_B  < 17)", query);
 	}	
 
-	@Test public void testQueryWithEQFilterOnRequiredPathedAspect() {
+	@Test public void testQueryWithEQFilterOnRequiredPathAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@eq': 17}}");
 		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
@@ -144,6 +144,28 @@ public class TestUnpacking {
 		assertContainsOnce("?space_A space:D ?space_B  .", query);
 	}
 
+	@Test public void testQueryWithEQFilterOnRequiredPathedAspect() {
+		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:B': {'@eq': 17}}");
+//		System.err.println(">>\n" + query);
+		denyContains("OPTIONAL", query);
+		denyContains("FILTER", query);
+	//
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?space_A space:D 17 .", query);
+		assertContainsOnce("BIND(17 AS ?space_B )", query);
+	}
+
+	@Test public void testQueryWithEQFilterOnOptionalPathedAspect() {
+		String query = makeQuery(makeDataset("A", "?B=A/D"), "{'space:B': {'@eq': 17}}");
+//		System.err.println(">>\n" + query);
+		denyContains("OPTIONAL", query);
+		denyContains("FILTER", query);
+	//
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?space_A space:D 17 .", query);
+		assertContainsOnce("BIND(17 AS ?space_B )", query);
+	}
+
 	@Test public void testQueryWithNonEQFilterOnRequiredLongerPathedAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/C/D"), "{'space:B': {'@lt': 17}}");
 		// System.err.println(">>\n" + query);
@@ -152,6 +174,15 @@ public class TestUnpacking {
 		assertContainsOnce("?space_A space:C ?space_A__space_C  .", query);
 		assertContainsOnce("?space_A__space_C space:D ?space_B  .", query);
 		assertContains("FILTER(?space_B  < 17)", query);
+	}	
+
+	@Test public void testQueryWithMultipleOptionalPathsAndSharingWithPlainTerm() {
+		String query = makeQuery(makeDataset("A", "?B=A/R", "?C=A/S"), "{}");
+		// System.err.println(">>\n" + query);
+		denyContains("FILTER", query);
+		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("OPTIONAL { ?space_A space:R ?space_B  . }", query);
+		assertContainsOnce("OPTIONAL { ?space_A space:S ?space_C  . }", query);
 	}	
 
 	@Test public void testQueryWithNonEQFilterOnOptionalPathedAspect() {
@@ -170,11 +201,8 @@ public class TestUnpacking {
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		if (!p.isOK()) fail(p.getProblemStrings());
 		String sparql = q.toSparql(p, ds);
-        try {
-        		QueryFactory.create(sparql);
-            } catch (Exception e) {
-            	fail("Bad generated SPARQL:\n" + sparql + "\n" + e.getMessage());
-            }
+        try { QueryFactory.create(sparql); }
+        catch (Exception e) { fail("Bad generated SPARQL:\n" + sparql + "\n" + e.getMessage()); }
 		return sparql;
 	}
 	

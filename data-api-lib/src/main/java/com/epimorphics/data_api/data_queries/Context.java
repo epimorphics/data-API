@@ -195,18 +195,7 @@ public class Context  {
 		
 		if (equalTo != null && countBindings == 0) {
 			sq.addBind(Range.termAsExpr(equalTo), var);		
-		}
-		
-//		System.err.println(">> plain property name, equalTo = " + equalTo);
-//		
-//		SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
-//			
-//		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
-//		
-//		if (equalTo != null && countBindings == 0) {
-//			sq.addBind(Range.termAsExpr(equalTo), var);		
-//		}
-		
+		}		
 	}
 	
 	private SQ_Node termAsNode(final Term equalTo) {		
