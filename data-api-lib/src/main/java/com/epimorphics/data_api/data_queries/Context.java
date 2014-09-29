@@ -41,7 +41,9 @@ public class Context  {
 	//
 		Set<Aspect> aspects = api.getAspects();
 		this.ordered.addAll(aspects);
-		Collections.sort(this.ordered, Aspect.compareAspects);
+		Collections.sort(this.ordered, Aspect.compareAspects);	
+	//
+		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
 
 	public Constraint earlySearchesSQ(Constraint c) {
