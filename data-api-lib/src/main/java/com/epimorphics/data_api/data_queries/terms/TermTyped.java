@@ -44,7 +44,7 @@ public class TermTyped extends TermComposite {
 		String contracted = pm.qnameFor(expanded);
 		return 
 			quote(value) + "^^" 
-			+ (contracted.equals(expanded) ? "<" + expanded + ">" : contracted)
+			+ (contracted == null ? "<" + expanded + ">" : contracted)
 			;
 	}
 
