@@ -57,7 +57,6 @@ public abstract class Constraint {
 		boolean fullyGeneral = constrainsMultivaluedAspect(cx.ordered);
 		
 		if (fullyGeneral && (length != null || offset != null)) {
-						
 			SQ nested = new SQ();
 			Context rx = new Context( nested, cx.out, cx.dq, p, cx.api );
 			

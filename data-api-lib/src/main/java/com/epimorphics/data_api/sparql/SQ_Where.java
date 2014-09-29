@@ -26,8 +26,13 @@ public class SQ_Where {
 		elements.add(new SQ_Bind(value, var));
 	}
 
+	// special-case a text-query triple to go at the front
 	public void addTriple(SQ_Triple t) {
-		addUnlessPresent(t);
+		if (t.P.equals(SQ_Const.textQuery)) {
+			elements.add(0, t);
+		} else {
+			addUnlessPresent(t);
+		}
 	}
 
 	public void addOptionalTriple(SQ_Triple t) {
