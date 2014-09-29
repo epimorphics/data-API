@@ -126,7 +126,7 @@ public class SearchSpec extends Constraint {
 			if (hasLiteralRange) {
 
 				throw new UnsupportedOperationException
-					("@search on aspect " + a + " has @property " + property + " -- should have been detected earlier" );
+					("@search on aspect " + (a == null ? aspectName : a) + " has @property " + property + " -- should have been detected earlier" );
 				
 			} else {
 				
