@@ -41,7 +41,13 @@ public class Context  {
 	//
 		Set<Aspect> aspects = api.getAspects();
 		this.ordered.addAll(aspects);
-		Collections.sort(this.ordered, Aspect.compareAspects);	
+	//
+		Set<Aspect> constrained = new HashSet<Aspect>();
+		for (Aspect a: ordered)
+			if (dq.constraint().constrains(a))
+				constrained.add(a);
+	//
+		Collections.sort(this.ordered, Aspect.compareAspects); // (constrained));	
 	//
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}

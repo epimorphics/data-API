@@ -8,6 +8,7 @@ package com.epimorphics.data_api.aspects;
 import static com.epimorphics.data_api.config.JSONConstants.*;
 
 import java.util.Comparator;
+import java.util.Set;
 
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
@@ -30,6 +31,37 @@ public class Aspect extends ResourceBasedConfig {
 			return a.getIsOptional() ? +1 : -1;
 		}
 	};
+	
+	/**
+	 	Compare two aspects, taking into account whether they are optional or
+	 	have some constraint on their value.
+	 	
+	 	[Constraint check suppressed, it causes mysterious test failures.
+	 	TODO find out what's happening and sort it.]
+	 	
+	 	Non-optionals come before optionals. Constrained aspects come before
+	 	non-constrained aspects. Otherwise, they are ordered by their IDs spelling.
+	*/
+	public static final Comparator<? super Aspect> compareAspects(final Set<Aspect> constrained) {
+		return new Comparator<Aspect>() {
+		
+			static final boolean checkConstraints = false;
+			
+			@Override public int compare(Aspect a, Aspect b) {
+				boolean aIsOptional = a.getIsOptional();
+
+				if (checkConstraints == true) {
+					if (aIsOptional == b.getIsOptional()) return a.getID().compareTo(b.getID());
+					return aIsOptional ? +1 : -1;				
+				} else {
+					if (aIsOptional != b.getIsOptional()) return aIsOptional ? +1 : -1;
+					boolean aIsConstrained = constrained.contains(a);
+					if (aIsConstrained != constrained.contains(b)) return aIsConstrained ? -1 : +1;
+					return a.getID().compareTo(b.getID());
+				}
+			}
+		};
+	}
 	
 	String ID;
 	final Shortname name;
