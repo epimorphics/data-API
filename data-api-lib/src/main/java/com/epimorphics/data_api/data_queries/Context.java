@@ -47,7 +47,7 @@ public class Context  {
 			if (dq.constraint().constrains(a))
 				constrained.add(a);
 	//
-		Collections.sort(this.ordered, Aspect.compareAspects); // (constrained));	
+		Collections.sort(this.ordered, Aspect.compareConstrainedAspects(constrained));	
 	//
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}

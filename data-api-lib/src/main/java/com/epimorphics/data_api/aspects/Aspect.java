@@ -32,33 +32,37 @@ public class Aspect extends ResourceBasedConfig {
 		}
 	};
 	
+	// debugging toggle to switch between compare modes
+	static boolean checkConstraints = true;
+
 	/**
 	 	Compare two aspects, taking into account whether they are optional or
 	 	have some constraint on their value.
 	 	
 	 	[Constraint check suppressed, it causes mysterious test failures.
-	 	TODO find out what's happening and sort it.]
+	 	TODO find out what's happening and sort it.
+	 	
+	 	Hmm, we believe it's to do with multi-valued properties. It's not
+	 	clear /why/ reordering them breaks the tests. For the moment, if
+	 	either property is multivalued, we shan't take constraints into
+	 	account.
+	 	]
 	 	
 	 	Non-optionals come before optionals. Constrained aspects come before
 	 	non-constrained aspects. Otherwise, they are ordered by their IDs spelling.
 	*/
-	public static final Comparator<? super Aspect> compareAspects(final Set<Aspect> constrained) {
-		return new Comparator<Aspect>() {
-		
-			static final boolean checkConstraints = false;
+	public static final Comparator<? super Aspect> compareConstrainedAspects(final Set<Aspect> constrained) {
+		if (checkConstraints == false) return compareAspects;
+		return new Comparator<Aspect>() {		
 			
 			@Override public int compare(Aspect a, Aspect b) {
 				boolean aIsOptional = a.getIsOptional();
 
-				if (checkConstraints == true) {
-					if (aIsOptional == b.getIsOptional()) return a.getID().compareTo(b.getID());
-					return aIsOptional ? +1 : -1;				
-				} else {
-					if (aIsOptional != b.getIsOptional()) return aIsOptional ? +1 : -1;
-					boolean aIsConstrained = constrained.contains(a);
-					if (aIsConstrained != constrained.contains(b)) return aIsConstrained ? -1 : +1;
-					return a.getID().compareTo(b.getID());
-				}
+				if (aIsOptional != b.getIsOptional()) return aIsOptional ? +1 : -1;
+				boolean aIsConstrained = constrained.contains(a) && !a.getIsMultiValued();
+				boolean bIsConstrained = constrained.contains(b) && !b.getIsMultiValued();
+				if (aIsConstrained != bIsConstrained) return aIsConstrained ? -1 : +1;
+				return a.getID().compareTo(b.getID());
 			}
 		};
 	}
