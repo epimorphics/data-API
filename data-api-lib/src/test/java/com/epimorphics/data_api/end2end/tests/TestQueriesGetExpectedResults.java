@@ -5,7 +5,9 @@
 */
 package com.epimorphics.data_api.end2end.tests;
 
+import org.junit.Ignore;
 import org.junit.Test;
+
 import com.epimorphics.data_api.libs.BunchLib;
 
 //
@@ -199,7 +201,7 @@ public class TestQueriesGetExpectedResults extends Setup {
     /**
         Exactly two values should be returned. 
     */
-    @Test public void testCCC() {    	
+    @Test @Ignore public void testCCC() {    	
     	 final String expectFA = BunchLib.join
     		( "["
 			, "  {"
