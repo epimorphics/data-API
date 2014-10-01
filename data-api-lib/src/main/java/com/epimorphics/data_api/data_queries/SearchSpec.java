@@ -77,7 +77,8 @@ public class SearchSpec extends Constraint {
 				cx.sq.addTriple(t);			
 			}
 		} else {
-			cx.sq.addWhereElement(toSearchAspectTripleSQ(aspects, pm));
+			// TODO have an "early" triple.
+			cx.sq.addTriple(toSearchAspectTripleSQ(aspects, pm));
 		}
 	}
 	
@@ -94,8 +95,8 @@ public class SearchSpec extends Constraint {
 		}
 	}
 
-	private SQ_WhereElement toSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		SQ_WhereElement positive = toPositiveSearchAspectTripleSQ(aspects, pm);
+	private SQ_Triple toSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		SQ_Triple positive = toPositiveSearchAspectTripleSQ(aspects, pm);
 		if (negated) {
 			throw new RuntimeException("TBD");
 			// return " FILTER(NOT EXISTS{" + positive + "})"; 
@@ -104,8 +105,9 @@ public class SearchSpec extends Constraint {
 		}
 	}
 	
-	private SQ_WhereElement toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		Aspect a = aspects.get(aspectName);		
+	private SQ_Triple toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+		Aspect a = aspects.get(aspectName);	
+		
 		SQ_Variable aVar = new SQ_Variable(aspectName.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(a);
 		
@@ -126,7 +128,7 @@ public class SearchSpec extends Constraint {
 			if (hasLiteralRange) {
 
 				throw new UnsupportedOperationException
-					("@search on aspect " + a + " has @property " + property + " -- should have been detected earlier" );
+					("@search on aspect " + (a == null ? aspectName : a) + " has @property " + property + " -- should have been detected earlier" );
 				
 			} else {
 				

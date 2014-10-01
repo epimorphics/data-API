@@ -23,7 +23,7 @@ public class NegatedMultivaluedFilter extends Constraint {
 	public void tripleFiltering(Context cx) {
 
 		SQ_Variable V = new SQ_Variable(basis.a.asVarName() + "_A");
-		SQ_Filter f = basis.range.asFilterSQ(V); // TODO expose less
+		SQ_Filter f = basis.range.asFilterSQ(cx.api.getPrefixes(), V); // TODO expose less
 		
 		SQ_Resource P = new SQ_Resource(basis.a.asProperty());
 		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, V);

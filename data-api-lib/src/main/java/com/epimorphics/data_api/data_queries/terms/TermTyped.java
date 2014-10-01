@@ -42,6 +42,7 @@ public class TermTyped extends TermComposite {
 	@Override public String asSparqlTerm(PrefixMapping pm) {
 		String expanded = pm.expandPrefix(type);
 		String contracted = pm.qnameFor(expanded);
+		if (contracted == null) throw new RuntimeException(">> OH BOTHER, involving " + type);
 		return 
 			quote(value) + "^^" 
 			+ (contracted == null ? "<" + expanded + ">" : contracted)

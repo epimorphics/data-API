@@ -20,6 +20,21 @@ public class SQ_Variable extends SQ_Node {
 	public String asVar() {
 		return "?" + name;
 	}
+	
+	@Override public String toString() {
+		return asVar();
+	}
+	
+	@Override public boolean equals(Object other) {
+		return other instanceof SQ_Variable && same( (SQ_Variable) other );
+	}
+	private boolean same(SQ_Variable other) {
+		return name.equals(other.name);
+	}
+
+	@Override public int hashCode() {
+		return name.hashCode();
+	}
 
 	@Override public void toSparqlExpr(StringBuilder sb) {
 		sb.append("?").append(name()).append(" ");

@@ -10,11 +10,13 @@ import java.util.*;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ_TermAsNode;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.PrefixMapping;
@@ -39,7 +41,13 @@ public class Context  {
 	//
 		Set<Aspect> aspects = api.getAspects();
 		this.ordered.addAll(aspects);
-		Collections.sort(this.ordered, Aspect.compareAspects);
+	//
+		Set<Aspect> constrained = new HashSet<Aspect>();
+		for (Aspect a: ordered)
+			if (dq.constraint().constrains(a))
+				constrained.add(a);
+	//
+		Collections.sort(this.ordered, Aspect.compareConstrainedAspects(constrained));	
 	//
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}
@@ -117,7 +125,6 @@ public class Context  {
 			if (allEquals.isEmpty()) {
 				declareOneBindingSQ(x, isOptional, 0, var, null);
 			} else {
-				PrefixMapping prefixes = api.getPrefixes();
 				int countBindings = 0;
 				for (Term equals: allEquals) {
 					declareOneBindingSQ(x, isOptional, countBindings, var, equals);
@@ -128,27 +135,80 @@ public class Context  {
 		return adjusted;
 	}
 
+	static final boolean oldWay = false;
+	
 	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
-		SQ_Resource property = new SQ_Resource(x.asProperty());
 		
-		SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+		if (oldWay) {
+			SQ_Resource property = new SQ_Resource(x.asProperty());
 			
-		if (isOptional) sq.addOptionalTriple(t); else sq.addTriple(t);
+			SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
+				
+			if (isOptional) {
+				sq.addOptionalTriples(BunchLib.list(t)); 
+			} else {
+				sq.addTriple(t);
+			}
+			
+			if (equalTo != null && countBindings == 0) {
+				sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
+			}
+			return;
+		}
+		
+		// System.err.println(">> declareOneBinding, for " + x + (isOptional ? " (optional)" : ""));
+		
+		String rawProperty = x.asProperty();
+		// SQ_Resource property = new SQ_Resource(rawProperty);
+		
+		List<SQ_Triple> triples = new ArrayList<SQ_Triple>(); 
+		
+		SQ_Node currentVariable = SQ_Const.item;
+		
+		String[] elements = rawProperty.split("/");
+		int remainingElements = elements.length;
+		boolean firstElement = true;
+		
+		if (elements.length > 1) 
+			sq.comment("dealing with property path " + rawProperty + " for aspect " + x);
+		
+		// sq.comment("declaring binding for", x, "property", rawProperty);
+		
+		for (String element: elements) {
+			remainingElements -= 1;
+			
+			// sq.comment("element", element);
+
+			SQ_Resource currentPredicate = new SQ_Resource(element);
+			
+			String thisElementName = Shortname.asVarName(element);
+			String nextVariableName = firstElement 
+				? thisElementName
+				: ((SQ_Variable) currentVariable).name() + "__" + thisElementName
+				;
+			
+			SQ_Node nextObject = remainingElements == 0 
+				? (equalTo == null ? var : termAsNode(equalTo))
+				: new SQ_Variable(nextVariableName)
+				;
+			
+			triples.add(new SQ_Triple(currentVariable, currentPredicate, nextObject));
+			
+			currentVariable = nextObject;
+			
+			firstElement = false;
+		}
+				
+		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
 		
 		if (equalTo != null && countBindings == 0) {
-			sq.addBind(Range.termAsExpr(equalTo), var);		
-		}
+			sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
+		}		
 	}
 	
 	private SQ_Node termAsNode(final Term equalTo) {		
-		final PrefixMapping pm = PrefixMapping.Factory.create();
-
-		return new SQ_Node() {
-
-			@Override public void toSparqlExpr(StringBuilder sb) {
-				sb.append(equalTo.asSparqlTerm(pm));
-
-			}};
+		final PrefixMapping pm = api.getPrefixes();
+		return new SQ_TermAsNode(pm, equalTo);
 	}
 
 	public void findRequiredAspects(Set<Aspect> required, Constraint c) {

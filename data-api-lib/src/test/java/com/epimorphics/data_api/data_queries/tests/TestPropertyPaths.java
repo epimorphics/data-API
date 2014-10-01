@@ -30,7 +30,7 @@ public class TestPropertyPaths {
 		.setPropertyPath("pre:A/pre:B")
 		;
 
-	@Test public void testQueryUsesAspectPropertyPath() {
+	@Test public void testQueryExpandsAspectPropertyPath() {
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
 		Constraint f = new Filter(sn, new Range(Operator.GT, BunchLib.list(Term.number(17))));
@@ -48,7 +48,8 @@ public class TestPropertyPaths {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, " ?item pre:A/pre:B ?pre_X ."
+			, " ?item pre:A ?pre_A ."
+			, " ?pre_A pre:B ?pre_X ."
 			, "FILTER(?pre_X " + ">" + " 17)"
 			, "}"
 			);

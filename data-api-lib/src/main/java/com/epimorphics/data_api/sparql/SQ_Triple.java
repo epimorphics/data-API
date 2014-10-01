@@ -5,8 +5,10 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.List;
 
 public class SQ_Triple implements SQ_WhereElement {
+
 	final SQ_Node S, P, O;
 	
 	public SQ_Triple(SQ_Node S, SQ_Node P, SQ_Node O) { 
@@ -19,6 +21,29 @@ public class SQ_Triple implements SQ_WhereElement {
 		sb.append(" .");
 		sb.append(SQ.nl);
 	}
+	
+	@Override public boolean equals(Object other) {
+		return other instanceof SQ_Triple && same( (SQ_Triple) other );
+	}
+	
+	private boolean same(SQ_Triple other) {
+		boolean result = S.equals(other.S) && P.equals(other.P) && O.equals(other.O);
+//		System.err.println(">> " + this + ".equals(" + other + "): " + result);
+		return result;
+	}
+
+	@Override public int hashCode() {
+		// a better hashcode probably isn't required for this context
+		return S.hashCode() + P.hashCode() + O.hashCode();
+	}
+	
+	@Override public String toString() {
+		StringBuilder result = new StringBuilder();
+		result.append("(");
+		renderRawCoreTriple(result);
+		result.append(")");
+		return result.toString();
+	}
 
 	void renderRawCoreTriple(StringBuilder sb) {
 		S.toSparqlExpr(sb);
@@ -27,14 +52,67 @@ public class SQ_Triple implements SQ_WhereElement {
 	}
 
 	public SQ_WhereElement optional() {
-		final SQ_Triple it = this;
-		return new SQ_WhereElement() {
+		return new OptionalTriple(this);
+	}
 
-			@Override public void toSparqlStatement(StringBuilder sb, String indent) {
-				sb.append(indent);
-				sb.append("OPTIONAL { ");
-				it.renderRawCoreTriple(sb);
-				sb.append("}").append(SQ.nl);
-			}};
+	public static SQ_WhereElement optionals(final List<SQ_Triple> ts) {
+		return new OptionalTriples(ts);
+	}
+	
+	private static final class OptionalTriples implements SQ_WhereElement {
+		private final List<SQ_Triple> ts;
+
+		private OptionalTriples(List<SQ_Triple> ts) {
+			this.ts = ts;
+		}
+		
+		@Override public int hashCode() {
+			return ts.hashCode();
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof OptionalTriples && same((OptionalTriples) other);
+		}
+
+		private boolean same(OptionalTriples other) {
+			return ts.equals(other.ts);
+		}
+
+		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
+			sb.append(indent);
+			sb.append("OPTIONAL { ");
+			for (SQ_Triple t: ts) { 
+				t.renderRawCoreTriple(sb); sb.append( " . "); 
+			}
+			sb.append("}").append(SQ.nl);
+		}
+	}
+
+	private final class OptionalTriple implements SQ_WhereElement {
+		
+		private final SQ_Triple t;
+
+		private OptionalTriple(SQ_Triple t) {
+			this.t = t;
+		}
+		
+		@Override public int hashCode() {
+			return t.hashCode();
+		}
+		
+		@Override public boolean equals(Object other) {
+			return other instanceof OptionalTriple && same((OptionalTriple) other);
+		}
+
+		private boolean same(OptionalTriple other) {
+			return t.equals(other.t);
+		}
+
+		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
+			sb.append(indent);
+			sb.append("OPTIONAL { ");
+			t.renderRawCoreTriple(sb);
+			sb.append("}").append(SQ.nl);
+		}
 	}
 }

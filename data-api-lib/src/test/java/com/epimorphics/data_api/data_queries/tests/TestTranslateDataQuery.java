@@ -346,8 +346,8 @@ public class TestTranslateDataQuery {
 			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, " ?item pre:local ?pre_local ."
 			, " ?pre_local text:query 'look for me' ."
+			, " ?item pre:local ?pre_local ."
 			, "}"
 			);
 		

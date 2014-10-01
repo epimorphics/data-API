@@ -373,7 +373,7 @@ public class DSAPIManager extends ComponentBase {
             }
 
             if (p.isOK()) {
-            	log.info("Issuing query: " + sq);
+            	log.info("issuing query:\n" + sq);
                 SparqlSource source = api.getSource();
                 if (source instanceof RemoteSparqlSource) {
                 	((RemoteSparqlSource) source).setContentType("tsv");
@@ -439,6 +439,7 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
+            	// System.err.println( ">> issuing query:\n" + sq);
                 boolean legal = isLegalSPARQL(p, sq);
 				comments.put(
                 	"sparql" 

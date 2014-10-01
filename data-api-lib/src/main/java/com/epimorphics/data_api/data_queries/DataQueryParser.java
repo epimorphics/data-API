@@ -91,7 +91,7 @@ public class DataQueryParser {
 	}
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
-		Shortname sn = new Shortname(pm, key);		
+		Shortname sn = new Shortname(pm, key);	
 		Aspect a = dataset.getAspectNamed(sn);
 		
 //		System.err.println( ">> parseAspectMember: key = " + key );
@@ -102,6 +102,7 @@ public class DataQueryParser {
 		
 		if (a == null || !aspectURIs.contains(sn.URI)) {
 			p.add("Unknown shortname '" + key + "' in " + jo );
+			// p.add("(URI is " + sn.URI + ", aspectURIs are " + aspectURIs + ")");
 		} else {			
 			if (range.isObject()) {
 				JsonObject rob = range.getAsObject();
@@ -118,8 +119,9 @@ public class DataQueryParser {
 							Operator op = Operator.lookup(opName);
 							if (op == Operator.BELOW)
 								constraints.add( new Below(a, v.get(0)) );
-							else
-								constraints.add( new Filter(a, new Range(op, v) ) );
+							else {
+								constraints.add( new Filter(a, new Range(op, v) ) );								
+							}
 						} else {
 							p.add("unknown operator '" + opName + "' in data query.");
 						}

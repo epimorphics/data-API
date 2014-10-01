@@ -15,6 +15,10 @@ public final class SQ_Comment implements SQ_WhereElement {
 		this.comment = comment.replaceAll("\n", " ");
 	}
 	
+	@Override public String toString() {
+		return "#(" + comment + ")";
+	}
+	
 	@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 		sb.append(indent).append("# ").append(comment).append(".").append(Constraint.nl);
 	}

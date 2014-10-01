@@ -30,7 +30,7 @@ public class Shortname {
 	
 	static final char[] digit = "0123456789ABCDEF".toCharArray();
 	
-	private String asVarName(String s) {
+	public static String asVarName(String s) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < s.length(); i += 1) {
 			char ch = s.charAt(i);
@@ -57,7 +57,7 @@ public class Shortname {
 	}
 	
 	@Override public String toString() {
-		return prefixed;
+		return prefixed + " [" + URI + "]";
 	}
 	
 	@Override public boolean equals(Object other) {
