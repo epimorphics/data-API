@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.3</version>
   <name>data-api</name>
   <description>data query API for cubish RDF data</description>
   
@@ -153,6 +153,7 @@
   </build>
   
   <distributionManagement>
+	  <!--
       <repository>  
          <id>epi-public-s3-release</id>  
          <name>Epimorphics S3 release repository</name>  
@@ -163,13 +164,14 @@
          <id>epi-public-s3-snapshot</id>  
          <name>Epimorphics S3 snapshot repository</name>  
          <url>s3://epi-repository/snapshot</url>  
-     </snapshotRepository>
+	 </snapshotRepository>
+    -->
 
-    <!--    
     <repository> 
       <id>ftp-repo-epi</id>
       <url>ftp://ftp.epimorphics.org/</url>
     </repository>
+    <!--    
     <repository>
       <id>epi-public-repo</id>
       <url>ftp://epimorphics.com</url>
