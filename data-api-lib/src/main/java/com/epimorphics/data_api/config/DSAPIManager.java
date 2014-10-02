@@ -71,6 +71,8 @@ import com.sun.jersey.api.NotFoundException;
  */
 public class DSAPIManager extends ComponentBase {
     static Logger log = LoggerFactory.getLogger(DSAPIManager.class);
+    
+    static { log.info(DataQuery.DSAPI_Info); }
 
     static final String JSON_LD = RDFLanguages.strLangJSONLD;    
 

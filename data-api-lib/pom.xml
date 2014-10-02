@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api-lib</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.3</version>
+  <version>0.0.4-SNAPSHOT</version>
   <name>data-api-lib</name>
   <description>data query API for cubish RDF data</description>
   
@@ -27,11 +27,42 @@
     </dependency>
 
   </dependencies>
+  
+  <build>
+  <plugins>
+	<plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                  <execution>
+                    <id>copy-version</id>
+                    <!-- here the phase you need -->
+                    <phase>generate-sources</phase>
+                    <goals>
+                      <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                      <outputDirectory>${basedir}/src/main/java/com/epimorphics/data_api</outputDirectory>
+                      <resources>
+                        <resource>
+                          <directory>src/pre</directory>
+                          <includes>
+                              <include>Version.java</include>
+                          </includes>
+                          <filtering>true</filtering>
+                        </resource>
+                      </resources>
+                    </configuration>
+                  </execution>
+                </executions>
+          </plugin>
+  </plugins>
+</build>
 
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4-SNAPSHOT</version>
   </parent>
 
 </project>

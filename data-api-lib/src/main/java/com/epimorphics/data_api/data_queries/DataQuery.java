@@ -9,6 +9,7 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.Version;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -101,6 +102,9 @@ public class DataQuery {
 		if (c instanceof Below) result.add( ((Below) c) );
 		return result;
 	}
+
+	public static final String DSAPI_Info = "DSAPI " + Version.string + Version.tagname;
+	public static final String DSAPI_Header = "# " + DSAPI_Info + "\n";
 	
     public String toSparql(Problems p, API_Dataset api) {
     	try {
@@ -129,7 +133,7 @@ public class DataQuery {
 			
 //			System.err.println(">> " + api.getPrefixes().getNsPrefixMap());
 			
-			String query = PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
+			String query = DSAPI_Header + PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
 //			System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}

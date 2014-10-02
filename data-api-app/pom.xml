@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api-app</artifactId>
   <packaging>war</packaging>
-  <version>0.0.3</version>
+  <version>0.0.4-SNAPSHOT</version>
   <name>data-api-app</name>
   <description>server for data API</description>
   
@@ -23,7 +23,7 @@
     <dependency>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api-lib</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -91,13 +91,14 @@
 	      <path>/data-api</path>
           </configuration>
       </plugin>
+
   </plugins>
   </build>
 
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.4-SNAPSHOT</version>
   </parent>
 
 </project>
