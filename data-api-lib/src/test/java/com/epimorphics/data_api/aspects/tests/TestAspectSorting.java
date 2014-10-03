@@ -28,18 +28,48 @@ public class TestAspectSorting {
 		return m.createResource(u);
 	}
 	
-	@Test public void testSorting() {
+	@Test public void testSortingWithoutOptionals() {
 		
 		Aspect a = new Aspect(r("eh:/A"));
 		Aspect b = new Aspect(r("eh:/B"));
 		Aspect c = new Aspect(r("eh:/C"));
 		Aspect d = new Aspect(r("eh:/D"));
 		
-		Set<Aspect> constrained = set(a, b);
+		Set<Aspect> AB = set(a, b);
 		
-		checkSorted(list(a, c), constrained, list(c, a));
-		checkSorted(list(a, b), constrained, list(b, a));
-		checkSorted(list(a, b, c, d), constrained, list(d, c, b, a));
+		checkSorted(list(a, c), AB, list(c, a));
+		checkSorted(list(a, b), AB, list(b, a));
+		checkSorted(list(a, b, c, d), AB, list(d, c, b, a));
+		checkSorted(list(c, d, a, b), set(c, d), list(a, b, c, d));
+	}
+	
+	@Test public void testSortingWithOptionals() {
+		
+		Aspect a = new Aspect(r("eh:/A"));
+		Aspect b = new Aspect(r("eh:/B"));
+		Aspect c = new Aspect(r("eh:/C")).setIsOptional(true);
+		Aspect d = new Aspect(r("eh:/D")).setIsOptional(true);
+		
+		Set<Aspect> AB = set(a, b);
+		
+		checkSorted(list(a, c), AB, list(c, a));
+		checkSorted(list(a, b), AB, list(b, a));
+		checkSorted(list(a, b, c, d), AB, list(d, c, b, a));
+		checkSorted(list(c, d, a, b), set(c, d), list(a, b, c, d));
+	}
+	
+	@Test public void testUnconstrainedSortingWithOptionals() {
+		
+		Aspect a = new Aspect(r("eh:/A"));
+		Aspect b = new Aspect(r("eh:/B"));
+		Aspect c = new Aspect(r("eh:/C")).setIsOptional(true);
+		Aspect d = new Aspect(r("eh:/D")).setIsOptional(true);
+		
+		Set<Aspect> none = set();
+		
+		checkSorted(list(a, c), none, list(c, a));
+		checkSorted(list(a, b), none, list(b, a));
+		checkSorted(list(a, b, c, d), none, list(d, c, b, a));
 		checkSorted(list(c, d, a, b), set(c, d), list(a, b, c, d));
 	}
 

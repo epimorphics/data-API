@@ -48,6 +48,12 @@ public class Context  {
 				constrained.add(a);
 	//
 		Collections.sort(this.ordered, Aspect.compareConstrainedAspects(constrained));	
+		
+//		System.err.println(">> constrained aspects:");
+//		for (Aspect a: constrained) System.err.println(">>  " + a);
+//		System.err.println(">> ordered aspects:");
+//		for (Aspect a: ordered) System.err.println(">>  " + a);
+				
 	//
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
 	}

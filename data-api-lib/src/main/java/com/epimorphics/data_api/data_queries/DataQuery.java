@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.epimorphics.data_api.Version;
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -103,7 +104,13 @@ public class DataQuery {
 		return result;
 	}
 
-	public static final String DSAPI_Info = "DSAPI " + Version.string + Version.tagname;
+	public static final String DSAPI_Info = 
+		"DSAPI " 
+		+ Version.string 
+		+ Version.tagname
+		+ (Aspect.checkConstraints ? " [checking constraints in aspect ordering]" : " [not checking constraints in aspect ordering]")
+		;
+	
 	public static final String DSAPI_Header = "# " + DSAPI_Info + "\n";
 	
     public String toSparql(Problems p, API_Dataset api) {
@@ -132,9 +139,8 @@ public class DataQuery {
 			}
 			
 //			System.err.println(">> " + api.getPrefixes().getNsPrefixMap());
-			
 			String query = DSAPI_Header + PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
-//			System.err.println( ">> RENDERED QUERY:\n" + query );
+			// System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
 		catch (Exception e) { 

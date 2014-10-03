@@ -33,7 +33,7 @@ public class Aspect extends ResourceBasedConfig {
 	};
 	
 	// debugging toggle to switch between compare modes
-	static boolean checkConstraints = true;
+	public static boolean checkConstraints = true;
 
 	/**
 	 	Compare two aspects, taking into account whether they are optional or
@@ -50,19 +50,22 @@ public class Aspect extends ResourceBasedConfig {
 	 	
 	 	Non-optionals come before optionals. Constrained aspects come before
 	 	non-constrained aspects. Otherwise, they are ordered by their IDs spelling.
+	 	
+	 	[Tricker than that. May have to disable some optimisations until
+	 	the framework can cope with them.]
 	*/
 	public static final Comparator<? super Aspect> compareConstrainedAspects(final Set<Aspect> constrained) {
 		if (checkConstraints == false) return compareAspects;
 		return new Comparator<Aspect>() {		
 			
 			@Override public int compare(Aspect a, Aspect b) {
+				boolean aIsConstrained = constrained.contains(a) && !a.getIsMultiValued();
+				boolean bIsConstrained = constrained.contains(b) && !b.getIsMultiValued();
+				if (aIsConstrained != bIsConstrained) return aIsConstrained ? -1 : +1;
+			
 				boolean aIsOptional = a.getIsOptional();
 				if (aIsOptional != b.getIsOptional()) return aIsOptional ? +1 : -1;
 				
-				boolean aIsConstrained = constrained.contains(a) && !a.getIsMultiValued();
-				boolean bIsConstrained = constrained.contains(b) && !b.getIsMultiValued();
-				
-				if (aIsConstrained != bIsConstrained) return aIsConstrained ? -1 : +1;
 				return a.getID().compareTo(b.getID());
 			}
 		};

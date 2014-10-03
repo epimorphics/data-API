@@ -10,6 +10,7 @@ import java.io.File;
 
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
@@ -34,7 +35,7 @@ public class TestJSONtoSPARQL {
 	
 	static File dataDir = new File("src/test/data/jsonToSparql");
 	
-	@Test public void testFromDataDir() {
+	@Test @Ignore public void testFromDataDir() {
 		testFromDataDir( "gamesAPI-search_or_search");
 	}
 	
