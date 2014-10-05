@@ -12,6 +12,7 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
@@ -133,6 +134,7 @@ public class TestUnpacking {
 	}	
 
 	@Test public void testQueryWithEQFilterOnRequiredPathAspect() {
+		if (Switches.dontTest) return;
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@eq': 17}}");
 		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
@@ -201,6 +203,7 @@ public class TestUnpacking {
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		if (!p.isOK()) fail(p.getProblemStrings());
 		String sparql = q.toSparql(p, ds);
+		System.err.println(">> SPARQL:\n" + sparql);
         try { QueryFactory.create(sparql); }
         catch (Exception e) { fail("Bad generated SPARQL:\n" + sparql + "\n" + e.getMessage()); }
 		return sparql;

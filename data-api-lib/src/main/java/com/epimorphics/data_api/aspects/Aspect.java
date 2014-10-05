@@ -10,6 +10,7 @@ import static com.epimorphics.data_api.config.JSONConstants.*;
 import java.util.Comparator;
 import java.util.Set;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -32,9 +33,6 @@ public class Aspect extends ResourceBasedConfig {
 		}
 	};
 	
-	// debugging toggle to switch between compare modes
-	public static boolean checkConstraints = true;
-
 	/**
 	 	Compare two aspects, taking into account whether they are optional or
 	 	have some constraint on their value.
@@ -54,11 +52,18 @@ public class Aspect extends ResourceBasedConfig {
 	 	[Tricker than that. May have to disable some optimisations until
 	 	the framework can cope with them.]
 	*/
-	public static final Comparator<? super Aspect> compareConstrainedAspects(final Set<Aspect> constrained) {
-		if (checkConstraints == false) return compareAspects;
+	public static final Comparator<? super Aspect> compareConstrainedAspects
+		(final Shortname searchProperty, final Set<Aspect> constrained) {
+		if (Switches.checkConstraints == false) return compareAspects;
 		return new Comparator<Aspect>() {		
 			
 			@Override public int compare(Aspect a, Aspect b) {
+				
+				if (searchProperty != null && Switches.forceSearchProperty) {
+					if (a.name.equals(searchProperty)) return -1;
+					if (b.name.equals(searchProperty)) return +1;
+				}
+				
 				boolean aIsConstrained = constrained.contains(a) && !a.getIsMultiValued();
 				boolean bIsConstrained = constrained.contains(b) && !b.getIsMultiValued();
 				if (aIsConstrained != bIsConstrained) return aIsConstrained ? -1 : +1;

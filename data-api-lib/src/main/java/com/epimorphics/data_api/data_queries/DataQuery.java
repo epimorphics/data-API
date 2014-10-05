@@ -9,8 +9,8 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.Version;
-import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -108,7 +108,7 @@ public class DataQuery {
 		"DSAPI " 
 		+ Version.string 
 		+ Version.tagname
-		+ (Aspect.checkConstraints ? " [checking constraints in aspect ordering]" : " [not checking constraints in aspect ordering]")
+		+ (Switches.reportSettings())
 		;
 	
 	public static final String DSAPI_Header = "# " + DSAPI_Info + "\n";
@@ -140,7 +140,7 @@ public class DataQuery {
 			
 //			System.err.println(">> " + api.getPrefixes().getNsPrefixMap());
 			String query = DSAPI_Header + PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
-			// System.err.println( ">> RENDERED QUERY:\n" + query );
+//			 System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
 		catch (Exception e) { 

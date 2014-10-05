@@ -18,6 +18,7 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.config.DefaultPrefixes;
@@ -101,6 +102,7 @@ public class TestTranslateDataQuery {
 	}	
 	
 	@Test public void testMultipleConflictingEqualities() {
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		JsonObject query = JSON.parse("{'@and': [{'pre:X': {'@eq': 1}}, {'pre:X': {'@eq': 2}}]}");
 		DataQuery dq = DataQueryParser.Do(p, dsXY, query);
@@ -310,6 +312,7 @@ public class TestTranslateDataQuery {
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
 		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
@@ -413,6 +416,7 @@ public class TestTranslateDataQuery {
 	}		
 	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
 		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
@@ -433,6 +437,7 @@ public class TestTranslateDataQuery {
 	}		
 
 	@Test public void testLengthCopied() {
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
@@ -456,6 +461,7 @@ public class TestTranslateDataQuery {
 	}
 	
 	@Test public void testOffsetCopied() {
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
@@ -479,6 +485,7 @@ public class TestTranslateDataQuery {
 	}
 	
 	@Test public void testLengthAndOffsetCopied() {
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
@@ -502,6 +509,7 @@ public class TestTranslateDataQuery {
 	}	
 	
 	@Test public void testDoubleEqualityFilter() {
+		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect(pm, "pre:X");

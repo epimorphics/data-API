@@ -7,6 +7,7 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.*;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -42,12 +43,14 @@ public class Context  {
 		Set<Aspect> aspects = api.getAspects();
 		this.ordered.addAll(aspects);
 	//
+		Shortname searchProperty = getSearchProperty();
+	//
 		Set<Aspect> constrained = new HashSet<Aspect>();
 		for (Aspect a: ordered)
 			if (dq.constraint().constrains(a))
 				constrained.add(a);
 	//
-		Collections.sort(this.ordered, Aspect.compareConstrainedAspects(constrained));	
+		Collections.sort(this.ordered, Aspect.compareConstrainedAspects(searchProperty, constrained));	
 		
 //		System.err.println(">> constrained aspects:");
 //		for (Aspect a: constrained) System.err.println(">>  " + a);
@@ -56,6 +59,24 @@ public class Context  {
 				
 	//
 		for (Aspect x: aspects) namesToAspects.put(x.getName(), x);
+	}
+
+	private Shortname getSearchProperty() {
+		return getSearchProperty(dq.constraint());
+	}
+
+	private Shortname getSearchProperty(Constraint c) {
+		if (c instanceof And) {
+			for (Constraint x: ((And) c).operands) {
+				Shortname found = getSearchProperty(x);
+				if (found != null) return found;
+			}
+			return null;
+		} else if (c instanceof SearchSpec) {
+			return ((SearchSpec) c).getAspectName();
+		} else {
+			return null;
+		}
 	}
 
 	public Constraint earlySearchesSQ(Constraint c) {
@@ -141,11 +162,9 @@ public class Context  {
 		return adjusted;
 	}
 
-	static final boolean oldWay = false;
-	
 	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
 		
-		if (oldWay) {
+		if (Switches.onlyImplicityPropertyPathsWay) {
 			SQ_Resource property = new SQ_Resource(x.asProperty());
 			
 			SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );

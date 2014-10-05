@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
@@ -25,8 +26,6 @@ import com.epimorphics.json.JSONWritable;
 public class Row implements JSONWritable {
 
 	Map<String, Term> members = new HashMap<String, Term>();
-	
-	static boolean sorting = false;
 	
 	@Override public void writeTo(JSFullWriter jw) {
 		jw.startObject();
@@ -47,7 +46,7 @@ public class Row implements JSONWritable {
 
 	private Collection<Entry<String, Term>> getPossiblySortedEntries() {
 		Collection<Entry<String, Term>> entries = members.entrySet();
-		if (sorting) {
+		if (Switches.sorting) {
 			List<Entry<String, Term>> es = new ArrayList<Entry<String, Term>>( entries );
 			Collections.sort(es, compare);
 			return es;

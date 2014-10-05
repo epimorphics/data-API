@@ -74,7 +74,7 @@ public class TestAspectSorting {
 	}
 
 	private void checkSorted(List<Aspect> expect, Set<Aspect> constrained,	List<Aspect> toOrder) {
-		Collections.sort(toOrder, Aspect.compareConstrainedAspects(constrained));
+		Collections.sort(toOrder, Aspect.compareConstrainedAspects(null,constrained));
 		assertEquals(expect, toOrder);
 	}
 }

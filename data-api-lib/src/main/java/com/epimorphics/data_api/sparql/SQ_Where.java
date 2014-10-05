@@ -8,14 +8,16 @@ package com.epimorphics.data_api.sparql;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.Switches;
 
 public class SQ_Where {
 
 	final List<SQ_WhereElement> elements = new ArrayList<SQ_WhereElement>();
+	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
 	
 	public void toString(StringBuilder sb, String indent) {
-		for (SQ_WhereElement e: elements)
-			e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: elements) e.toSparqlStatement(sb, indent);
+		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 	}
 
 	public void add(SQ_WhereElement e) {
@@ -23,7 +25,9 @@ public class SQ_Where {
 	}
 
 	public void addBind(SQ_Expr value, SQ_Variable var) {
-		elements.add(new SQ_Bind(value, var));
+		SQ_Bind b = new SQ_Bind(value, var);
+		if (Switches.moveBindsDownwards) bindingElements.add(b);
+		else elements.add(b);
 	}
 
 	// special-case a text-query triple to go at the front
