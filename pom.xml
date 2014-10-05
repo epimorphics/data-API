@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.0.5</version>
   <name>data-api</name>
   <description>data query API for cubish RDF data</description>
   
@@ -13,7 +13,7 @@
   </scm>
 
   <properties>
-	<project.tagname>_(for tests on staging)</project.tagname>
+	<project.tagname>_(exercised on staging)</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

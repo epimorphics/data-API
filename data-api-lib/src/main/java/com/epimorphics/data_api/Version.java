@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "0.0.4";
-	public final String tagname = "_(for tests on staging)";
+	public final String string = "0.0.5";
+	public final String tagname = "_(exercised on staging)";
 }
