@@ -6,9 +6,9 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import com.epimorphics.data_api.Switches;
+import java.util.Map;
 
 public class SQ_Where {
 
@@ -24,14 +24,17 @@ public class SQ_Where {
 		elements.add(e);
 	}
 
-	public void addBind(SQ_Expr value, SQ_Variable var) {
+	private final Map<SQ_Variable, SQ_Node> equals = new HashMap<SQ_Variable, SQ_Node>();
+	
+	public void addBind(SQ_Node value, SQ_Variable var) {
 		SQ_Bind b = new SQ_Bind(value, var);
-		if (Switches.moveBindsDownwards) bindingElements.add(b);
-		else elements.add(b);
+		bindingElements.add(b);
+		equals.put(var, value);
 	}
 
 	// special-case a text-query triple to go at the front
 	public void addTriple(SQ_Triple t) {
+		t = subst(t);
 		if (t.P.equals(SQ_Const.textQuery)) {
 			elements.add(0, t);
 		} else {
@@ -40,16 +43,27 @@ public class SQ_Where {
 	}
 
 	public void addOptionalTriple(SQ_Triple t) {
-		addUnlessPresent(t.optional());
+		addUnlessPresent(subst(t).optional());
 	}
 	
 	public void addOptionalTriples(List<SQ_Triple> ts) {
 		List<SQ_Triple> pruned = new ArrayList<SQ_Triple>();
-		for (SQ_Triple t: ts) 
+		for (SQ_Triple t: ts) {
+			t = subst(t);
 			if (!elements.contains(t))
 				pruned.add(t);
+		}
 		if (pruned.size() > 0)
 			addUnlessPresent(SQ_Triple.optionals(pruned));
+	}
+	
+	private SQ_Triple subst(SQ_Triple t) {
+		return new SQ_Triple(subst(t.S), subst(t.P), subst(t.O));
+	}
+
+	private SQ_Node subst(SQ_Node s) {
+		SQ_Node value = equals.get(s);
+		return value == null ? s : value;
 	}
 
 	public void addFilter(SQ_Filter f) {
@@ -76,7 +90,11 @@ public class SQ_Where {
 //		System.err.println(">> not already in, adding." );
 		
 		// if (!elements.contains(e)) elements.add(e);
+		
+		System.err.println(">> adding unless present: " + e.getClass().getSimpleName() + " " + e);
+		
 		for (SQ_WhereElement el: elements) {
+			// System.err.println(">> " + e + " equals existing " + el.getClass().getSimpleName() + " " + el + ": " + (el.equals(e) ? "yes" : "no"));
 			if (el.equals(e) || SPLiteralAlreadyExistsForThisSPVariable(el, e)) return;
 		}
 		elements.add(e);	

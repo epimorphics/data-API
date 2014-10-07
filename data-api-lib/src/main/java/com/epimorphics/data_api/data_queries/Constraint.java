@@ -67,6 +67,7 @@ public abstract class Constraint {
 	        cx.declareAspectVarsSQ(EMPTY);
 			Constraint unEquals = rx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
 			unEquals.tripleFiltering(rx);
+			cx.sq.comment("variables declared, filters follow.");
 			addLengthAndOffset(nested, length, offset);
 			cx.sq.comment("fully general case because constraints with multi-valued aspects.");
 			cx.sq.addSubquery(nested);
@@ -74,6 +75,7 @@ public abstract class Constraint {
 		} else {
 			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
 			Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+			cx.sq.comment("variables declared, filters follow.");
 			unEquals.tripleFiltering(cx);
 			addLengthAndOffset(cx.sq, length, offset);
 		}

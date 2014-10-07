@@ -109,12 +109,9 @@ public class TestTranslateDataQuery {
 		String sq = dq.toSparql(p, dsXY);
 		
 		sq = sq.replaceAll("[ \n]+", " ");
-
-		// WARNING fragile against layout changes. TODO fix this fragility.
-//		System.err.println( ">> ?item pre:X 1 . BIND(1 AS ?pre_X)");
-//		System.err.println( ">> " + sq.substring(65).replaceAll("[ \n]+", " "));
 		
-		assertContains("?item pre:X 1 . BIND(1 AS ?pre_X )", sq);
+		assertContains("?item pre:X 1 .", sq);
+		assertContains("BIND(1 AS ?pre_X )", sq);
 	}
 	
 	private void assertContains(String string, String sq) {
@@ -324,8 +321,9 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 17 . BIND(17 AS ?pre_X)"
+			, " ?item pre:X 17 ."
 			, " ?item pre:Y ?pre_Y ."
+			, " BIND(17 AS ?pre_X)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -429,8 +427,9 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 17 . BIND(17 AS ?pre_X) "
+			, " ?item pre:X 17 ."
 			, " OPTIONAL {?item pre:Y ?pre_Y .}"
+			, " BIND(17 AS ?pre_X)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -452,8 +451,10 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
-			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
+			, " ?item pre:X 8 ."
+			, " ?item pre:Y 9 ."
+			, " BIND(8 AS ?pre_X)"
+			, " BIND(9 AS ?pre_Y)"
 			, "}"
 			, "LIMIT 17"
 			);
@@ -476,8 +477,10 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
-			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
+			, " ?item pre:X 8 ."
+			, " ?item pre:Y 9 ."
+			, " BIND(8 AS ?pre_X)"
+			, " BIND(9 AS ?pre_Y)"
 			, "}"
 			, "OFFSET 1066"
 			);
@@ -500,8 +503,10 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
-			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
+			, " ?item pre:X 8 ."
+			, " ?item pre:Y 9 ."
+			, " BIND(8 AS ?pre_X)"
+			, " BIND(9 AS ?pre_Y)"
 			, "}"
 			, "LIMIT 17 OFFSET 1829"
 			);
@@ -524,8 +529,10 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE { "
-			, " ?item pre:X 8 . BIND(8 AS ?pre_X)"
-			, " ?item pre:Y 9 . BIND(9 AS ?pre_Y)"
+			, " ?item pre:X 8 ."
+			, " ?item pre:Y 9 ."
+			, " BIND(8 AS ?pre_X)"
+			, " BIND(9 AS ?pre_Y)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );

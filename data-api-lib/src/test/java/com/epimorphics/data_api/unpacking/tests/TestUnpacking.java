@@ -135,15 +135,15 @@ public class TestUnpacking {
 
 	@Test public void testQueryWithEQFilterOnRequiredPathAspect() {
 		if (Switches.dontTest) return;
-		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@eq': 17}}");
+		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@eq': {'@id': 'hello:there'}}}");
 		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
 		denyContains("FILTER", query);
 		denyContains("?item space:A ?space_A  .", query);
 	//
-		assertContainsOnce("BIND(17 AS ?space_A )", query);
-		assertContainsOnce("?item space:A 17 .", query);
-		assertContainsOnce("?space_A space:D ?space_B  .", query);
+		assertContainsOnce("BIND(<hello:there> AS ?space_A )", query);
+		assertContainsOnce("?item space:A <hello:there> .", query);
+		assertContainsOnce("<hello:there>space:D ?space_B  .", query);
 	}
 
 	@Test public void testQueryWithEQFilterOnRequiredPathedAspect() {

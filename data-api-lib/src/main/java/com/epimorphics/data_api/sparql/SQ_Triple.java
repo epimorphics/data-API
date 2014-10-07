@@ -26,9 +26,19 @@ public class SQ_Triple implements SQ_WhereElement {
 		return other instanceof SQ_Triple && same( (SQ_Triple) other );
 	}
 	
+	static int count = 0;
+	
 	private boolean same(SQ_Triple other) {
 		boolean result = S.equals(other.S) && P.equals(other.P) && O.equals(other.O);
-//		System.err.println(">> " + this + ".equals(" + other + "): " + result);
+		System.err.println(">> " + this + ".equals(" + other + "): " + result);
+		if (result == false) {
+			System.err.println(">> S: " + S.equals(other.S));
+			System.err.println(">>  [" + S.getClass().getSimpleName() + ", " + other.S.getClass().getSimpleName() + "]");
+			System.err.println(">> P: " + S.equals(other.P));
+			System.err.println(">>  [" + P.getClass().getSimpleName() + ", " + other.P.getClass().getSimpleName() + "]");
+			System.err.println(">> O: " + S.equals(other.O));
+			System.err.println(">>  [" + O.getClass().getSimpleName() + ", " + other.O.getClass().getSimpleName() + "]");
+		}
 		return result;
 	}
 

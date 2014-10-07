@@ -7,11 +7,9 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.*;
 
-import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Node;
@@ -136,8 +134,6 @@ public class Context  {
 	}
 
 	public Constraint declareAspectVarsSQ(Constraint c) {
-		int nb = ordered.size();
-		// comment(nb == 0 ? "no aspect bindings": nb == 1 ? "one aspect binding" : nb + " aspect bindings");
 	//
 		Equalities equalities = new Equalities(p);
 		Constraint adjusted = findEqualities(equalities, c);
@@ -163,29 +159,8 @@ public class Context  {
 	}
 
 	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
-		
-		if (Switches.onlyImplicityPropertyPathsWay) {
-			SQ_Resource property = new SQ_Resource(x.asProperty());
-			
-			SQ_Triple t = new SQ_Triple(SQ_Const.item, property, (equalTo == null ? var : termAsNode(equalTo)) );
-				
-			if (isOptional) {
-				sq.addOptionalTriples(BunchLib.list(t)); 
-			} else {
-				sq.addTriple(t);
-			}
-			
-			if (equalTo != null && countBindings == 0) {
-				sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
-			}
-			return;
-		}
-		
-		// System.err.println(">> declareOneBinding, for " + x + (isOptional ? " (optional)" : ""));
-		
-		String rawProperty = x.asProperty();
-		// SQ_Resource property = new SQ_Resource(rawProperty);
-		
+						
+		String rawProperty = x.asProperty();		
 		List<SQ_Triple> triples = new ArrayList<SQ_Triple>(); 
 		
 		SQ_Node currentVariable = SQ_Const.item;
@@ -227,7 +202,8 @@ public class Context  {
 		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
 		
 		if (equalTo != null && countBindings == 0) {
-			sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
+			// sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
+			sq.addBind(termAsNode(equalTo), var);
 		}		
 	}
 	

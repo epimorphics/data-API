@@ -17,6 +17,18 @@ public final class SQ_TermAsNode extends SQ_Node {
 		this.pm = pm;
 		this.equalTo = equalTo;
 	}
+	
+	@Override public boolean equals(Object other) {
+		return other instanceof SQ_TermAsNode && same((SQ_TermAsNode) other);
+	}
+	
+	@Override public int hashCode() {
+		return equalTo.hashCode();
+	}
+
+	private boolean same(SQ_TermAsNode other) {
+		return equalTo.equals(other.equalTo);
+	}
 
 	@Override public void toSparqlExpr(StringBuilder sb) {
 		sb.append(equalTo.asSparqlTerm(pm));

@@ -17,7 +17,6 @@ import java.util.Set;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
-import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.data_queries.terms.Term;
@@ -120,7 +119,7 @@ public class DataQueryParser {
 							Operator op = Operator.lookup(opName);
 							if (op == Operator.BELOW) {
 								constraints.add( new Below(a, v.get(0)) );
-							} else if (op == Operator.ONEOF && v.size() == 1 && Switches.optimiseOneof) {
+							} else if (op == Operator.ONEOF && v.size() == 1) {
 								constraints.add( new Filter(a, new Range(Operator.EQ, v)));
 							} else {
 								constraints.add( new Filter(a, new Range(op, v) ) );

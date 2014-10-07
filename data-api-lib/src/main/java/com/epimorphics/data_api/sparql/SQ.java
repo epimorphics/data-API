@@ -134,7 +134,7 @@ public class SQ {
 		this.offset = offset;
 	}
 
-	public void addBind(SQ_Expr value, SQ_Variable var) {
+	public void addBind(SQ_Node value, SQ_Variable var) {
 		whereClause.addBind(value, var);
 	}
 	
