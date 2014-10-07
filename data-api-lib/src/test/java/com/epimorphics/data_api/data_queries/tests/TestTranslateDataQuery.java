@@ -111,7 +111,7 @@ public class TestTranslateDataQuery {
 		sq = sq.replaceAll("[ \n]+", " ");
 		
 		assertContains("?item pre:X 1 .", sq);
-		assertContains("BIND(1 AS ?pre_X )", sq);
+		assertContains("BIND(1 AS ?pre_X)", sq);
 	}
 	
 	private void assertContains(String string, String sq) {

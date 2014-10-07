@@ -23,6 +23,7 @@ public class SQ_NotExists implements SQ_WhereElement {
 	@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 		sb.append(indent).append("FILTER(NOT EXISTS {");
 		t.renderRawCoreTriple(sb);
+		sb.append(" ");
 		if (f != null) f.toSparqlStatement(sb, "");
 		sb.append("})").append(SQ.nl);
 	}

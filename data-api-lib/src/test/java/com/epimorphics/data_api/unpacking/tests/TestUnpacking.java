@@ -79,58 +79,58 @@ public class TestUnpacking {
 	@Test public void testEmptyQueryWithPropertyPathWithSharing() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{}");
 		denyContains("OPTIONAL", query);
-		assertContains("?item space:A ?space_A  .", query);
-		assertContains("?space_A space:D ?space_B  .", query);
+		assertContains("?item space:A ?space_A .", query);
+		assertContains("?space_A space:D ?space_B .", query);
 	}
 
 	@Test public void testEmptyQueryWithPropertyPathWithoutSharing() {
 		String query = makeQuery(makeDataset("A", "B=C/D"), "{}");
 //		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContainsOnce("?item space:C ?space_C  .", query);
-		assertContainsOnce("?space_C space:D ?space_B  .", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContainsOnce("?item space:C ?space_C .", query);
+		assertContainsOnce("?space_C space:D ?space_B .", query);
 	}
 
 	@Test public void testEmptyQueryWithOptionalPropertyPathWithoutSharing() {
 		String query = makeQuery(makeDataset("A", "?B=C/D"), "{}");
 		// System.err.println(">>\n" + query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContainsOnce("?item space:C ?space_C  .", query);
-		assertContainsOnce("?space_C space:D ?space_B  .", query);
-		assertContainsOnce("OPTIONAL { ?item space:C ?space_C  . ?space_C space:D ?space_B  . }", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContainsOnce("?item space:C ?space_C .", query);
+		assertContainsOnce("?space_C space:D ?space_B .", query);
+		assertContainsOnce("OPTIONAL { ?item space:C ?space_C . ?space_C space:D ?space_B . }", query);
 	}
 
 	@Test public void testEmptyQueryWithOptionalPropertyPath() {
 		String query = makeQuery(makeDataset("A", "?B=A/D"), "{}");
-		assertContains("?item space:A ?space_A  .", query);
-		assertContains("OPTIONAL { ?space_A space:D ?space_B  . }", query);
+		assertContains("?item space:A ?space_A .", query);
+		assertContains("OPTIONAL { ?space_A space:D ?space_B . }", query);
 	}
 
 	@Test public void testEmptyQueryWithMultiplePropertyPaths() {
 		String query = makeQuery(makeDataset("A", "B=A/D", "C=A/E"), "{}");
 		denyContains("OPTIONAL", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContains("?space_A space:D ?space_B  .", query);
-		assertContains("?space_A space:E ?space_C  .", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContains("?space_A space:D ?space_B .", query);
+		assertContains("?space_A space:E ?space_C .", query);
 	}
 
 	@Test public void testQueryWithNonEQFilterOnRequiredPlainAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@lt': 17}}");
 		// System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContains("?space_A space:D ?space_B  .", query);
-		assertContains("FILTER(?space_A  < 17)", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContains("?space_A space:D ?space_B .", query);
+		assertContains("FILTER(?space_A < 17)", query);
 	}	
 
 	@Test public void testQueryWithNonEQFilterOnRequiredPathedAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:B': {'@lt': 17}}");
 //		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContainsOnce("?space_A space:D ?space_B  .", query);
-		assertContains("FILTER(?space_B  < 17)", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContainsOnce("?space_A space:D ?space_B .", query);
+		assertContains("FILTER(?space_B < 17)", query);
 	}	
 
 	@Test public void testQueryWithEQFilterOnRequiredPathAspect() {
@@ -139,11 +139,11 @@ public class TestUnpacking {
 		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
 		denyContains("FILTER", query);
-		denyContains("?item space:A ?space_A  .", query);
+		denyContains("?item space:A ?space_A .", query);
 	//
-		assertContainsOnce("BIND(<hello:there> AS ?space_A )", query);
+		assertContainsOnce("BIND(<hello:there> AS ?space_A)", query);
 		assertContainsOnce("?item space:A <hello:there> .", query);
-		assertContainsOnce("<hello:there>space:D ?space_B  .", query);
+		assertContainsOnce("<hello:there> space:D ?space_B .", query);
 	}
 
 	@Test public void testQueryWithEQFilterOnRequiredPathedAspect() {
@@ -152,9 +152,9 @@ public class TestUnpacking {
 		denyContains("OPTIONAL", query);
 		denyContains("FILTER", query);
 	//
-		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
 		assertContainsOnce("?space_A space:D 17 .", query);
-		assertContainsOnce("BIND(17 AS ?space_B )", query);
+		assertContainsOnce("BIND(17 AS ?space_B)", query);
 	}
 
 	@Test public void testQueryWithEQFilterOnOptionalPathedAspect() {
@@ -163,38 +163,38 @@ public class TestUnpacking {
 		denyContains("OPTIONAL", query);
 		denyContains("FILTER", query);
 	//
-		assertContainsOnce("?item space:A ?space_A  .", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
 		assertContainsOnce("?space_A space:D 17 .", query);
-		assertContainsOnce("BIND(17 AS ?space_B )", query);
+		assertContainsOnce("BIND(17 AS ?space_B)", query);
 	}
 
 	@Test public void testQueryWithNonEQFilterOnRequiredLongerPathedAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/C/D"), "{'space:B': {'@lt': 17}}");
 		// System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContainsOnce("?space_A space:C ?space_A__space_C  .", query);
-		assertContainsOnce("?space_A__space_C space:D ?space_B  .", query);
-		assertContains("FILTER(?space_B  < 17)", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContainsOnce("?space_A space:C ?space_A__space_C .", query);
+		assertContainsOnce("?space_A__space_C space:D ?space_B .", query);
+		assertContains("FILTER(?space_B < 17)", query);
 	}	
 
 	@Test public void testQueryWithMultipleOptionalPathsAndSharingWithPlainTerm() {
 		String query = makeQuery(makeDataset("A", "?B=A/R", "?C=A/S"), "{}");
 		// System.err.println(">>\n" + query);
 		denyContains("FILTER", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContainsOnce("OPTIONAL { ?space_A space:R ?space_B  . }", query);
-		assertContainsOnce("OPTIONAL { ?space_A space:S ?space_C  . }", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContainsOnce("OPTIONAL { ?space_A space:R ?space_B . }", query);
+		assertContainsOnce("OPTIONAL { ?space_A space:S ?space_C . }", query);
 	}	
 
 	@Test public void testQueryWithNonEQFilterOnOptionalPathedAspect() {
 		String query = makeQuery(makeDataset("A", "?B=A/C/D"), "{'space:B': {'@lt': 17}}");
 		// System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		assertContainsOnce("?item space:A ?space_A  .", query);
-		assertContainsOnce("?space_A space:C ?space_A__space_C  .", query);
-		assertContainsOnce("?space_A__space_C space:D ?space_B  .", query);
-		assertContains("FILTER(?space_B  < 17)", query);
+		assertContainsOnce("?item space:A ?space_A .", query);
+		assertContainsOnce("?space_A space:C ?space_A__space_C .", query);
+		assertContainsOnce("?space_A__space_C space:D ?space_B .", query);
+		assertContains("FILTER(?space_B < 17)", query);
 	}	
 
 	private String makeQuery(API_Dataset ds, String incoming) {

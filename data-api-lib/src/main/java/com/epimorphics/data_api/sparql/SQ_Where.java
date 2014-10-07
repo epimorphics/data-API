@@ -91,8 +91,6 @@ public class SQ_Where {
 		
 		// if (!elements.contains(e)) elements.add(e);
 		
-		System.err.println(">> adding unless present: " + e.getClass().getSimpleName() + " " + e);
-		
 		for (SQ_WhereElement el: elements) {
 			// System.err.println(">> " + e + " equals existing " + el.getClass().getSimpleName() + " " + el + ": " + (el.equals(e) ? "yes" : "no"));
 			if (el.equals(e) || SPLiteralAlreadyExistsForThisSPVariable(el, e)) return;
