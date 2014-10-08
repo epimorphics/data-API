@@ -203,7 +203,7 @@ public class TestUnpacking {
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		if (!p.isOK()) fail(p.getProblemStrings());
 		String sparql = q.toSparql(p, ds);
-		System.err.println(">> SPARQL:\n" + sparql);
+		// System.err.println(">> SPARQL:\n" + sparql);
         try { QueryFactory.create(sparql); }
         catch (Exception e) { fail("Bad generated SPARQL:\n" + sparql + "\n" + e.getMessage()); }
 		return sparql;

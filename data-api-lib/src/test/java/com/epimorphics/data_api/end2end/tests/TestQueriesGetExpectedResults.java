@@ -199,9 +199,10 @@ public class TestQueriesGetExpectedResults extends Setup {
     }	
 
     /**
-        Exactly two values should be returned. 
+        Exactly two rows should be returned. 
     */
-    @Test @Ignore public void testCCC() {    	
+    @Test public void testExactlyTwoRowsReturned() {    	
+    	
     	 final String expectFA = BunchLib.join
     		( "["
 			, "  {"
@@ -220,8 +221,27 @@ public class TestQueriesGetExpectedResults extends Setup {
 			, "  }"
 			, "]"
 			);
+    	 
+    	 final String expectEF = BunchLib.join
+    		( "["
+			, "  {"
+    		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+    		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+    		, "  , 'eg:value': 21"
+    		, "  , 'eg:values': [42, 99]"
+    		, "  , 'eg:label': ['E', 'e']"
+			, "  }"
+			, ", {"
+			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+			, "  , 'eg:value': 22"
+			, "  , 'eg:values': [42, 43]"
+			, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+			, "  }"
+			, "]"
+			);
 
-    	testQueryReturnsExpectedResults( "{'@limit': 2, 'eg:values': {'@le': 42}}", expectFA );
+    	testQueryReturnsExpectedResults( "{'@limit': 2, 'eg:values': {'@le': 42}}", expectEF );
     }
     
     

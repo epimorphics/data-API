@@ -17,7 +17,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.jena.riot.RDFLanguages;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.epimorphics.appbase.data.SparqlSource;
@@ -29,7 +28,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-@Ignore public class TestDescribe {
+public class TestDescribe {
 
 	static final String preamble = BunchLib.join
 		( "@prefix rdf: 	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
@@ -122,12 +121,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 		return d;
 	}
 
-	private void assertIso(Model expected, Model obtained) {
-		
-//		System.err.println(">> expected:"); expected.write(System.err, RDFLanguages.strLangTurtle);
-//		System.err.println(">> obtained:"); obtained.write(System.err, RDFLanguages.strLangTurtle);
-//		System.err.println(">> isomorphic: " + (expected.isIsomorphicWith(obtained) ? "yes" : "no"));
-		
+	private void assertIso(Model expected, Model obtained) {		
 		if (!expected.isIsomorphicWith(obtained)) {
 			fail( "models were not isomorphic\nexpected:\n" + asString(expected) + "\nobtained:\n" + asString(obtained) + "\n.");
 		} 

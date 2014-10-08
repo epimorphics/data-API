@@ -35,7 +35,7 @@ public class TestJSONtoSPARQL {
 	
 	static File dataDir = new File("src/test/data/jsonToSparql");
 	
-	@Test @Ignore public void testFromDataDir() {
+	@Test public void testFromDataDir() {
 		testFromDataDir( "gamesAPI-search_or_search");
 	}
 	
@@ -73,8 +73,8 @@ public class TestJSONtoSPARQL {
 
 //		Asserts.assertNoProblems("JSON query did not parse", p);
 		String generated = dq.toSparql(p, ds);
-//		System.err.println( ">> GENERATED:\n" + generated );
 		
+//		System.err.println(">> JSON QUERY:\n" + json);
 //		System.err.println(">> EXPECTED:\n" + sparql);
 //		System.err.println(">> OBTAINED:\n" + generated);
 		
