@@ -13,7 +13,7 @@
   </scm>
 
   <properties>
-	<project.tagname>_(paying off technical debt)</project.tagname>
+	<project.tagname>_(paying off technical debt; unit tests all pass.)</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

@@ -17,5 +17,5 @@ package com.epimorphics.data_api;
 */
 public interface Version {
 	public final String string = "0.0.7-SNAPSHOT";
-	public final String tagname = "_(paying off technical debt)";
+	public final String tagname = "_(paying off technical debt; unit tests all pass.)";
 }
