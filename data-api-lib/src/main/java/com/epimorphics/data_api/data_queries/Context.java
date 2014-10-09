@@ -247,23 +247,6 @@ public class Context  {
 		}
 	}
 	
-	public static class Substitution {
-		public final boolean canReplace;
-		public final Aspect aspect;
-		public final Term value;
-		
-		public Substitution(Filter f) {
-			aspect = f.a;
-			if (f.range.op.equals(Operator.EQ)) {
-				value = f.range.operands.get(0);
-				canReplace = true;
-			} else {
-				value = null;
-				canReplace = false;
-			}
-		}
-	}
-
 	public void generateSearchSQ(SearchSpec s) {
 		s.toSearchTripleSQ(this, namesToAspects, api.getPrefixes());
 	}

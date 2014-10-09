@@ -10,10 +10,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.Context.Substitution;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
+import com.epimorphics.data_api.data_queries.Substitution;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.data_queries.terms.TermResource;
 import com.epimorphics.data_api.libs.BunchLib;
