@@ -18,6 +18,7 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_TermAsNode;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
@@ -230,11 +231,9 @@ public class Context  {
 	public Constraint findEqualities(Equalities eq, Constraint c) {
 		if (c instanceof Filter) {
 			Filter f = ((Filter) c);
-			if (f.range.op.equals(Operator.EQ)) {	
-				
-				Term value = f.range.operands.get(0);
-				eq.put(f.a, f.a.getName(), value);				
-				
+			Substitution s = new Substitution(f);
+			if (s.canReplace) {	
+				eq.put(s.aspect, s.aspect.getName(), s.value);				
 				return Constraint.EMPTY;
 			} else {
 				return c;
@@ -245,6 +244,23 @@ public class Context  {
 			return Constraint.and(operands);
 		} else {
 			return c;
+		}
+	}
+	
+	public static class Substitution {
+		public final boolean canReplace;
+		public final Aspect aspect;
+		public final Term value;
+		
+		public Substitution(Filter f) {
+			aspect = f.a;
+			if (f.range.op.equals(Operator.EQ)) {
+				value = f.range.operands.get(0);
+				canReplace = true;
+			} else {
+				value = null;
+				canReplace = false;
+			}
 		}
 	}
 

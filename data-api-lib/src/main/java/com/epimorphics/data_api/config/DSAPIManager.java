@@ -367,7 +367,7 @@ public class DSAPIManager extends ComponentBase {
         final API_Dataset api = getAPI(dataset);
         try {
             DataQuery q = DataQueryParser.Do(p, api, query);
-            log.info("Request: " + query.toString());
+            // log.info("Request: " + query.toString());
             String sq = null;
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
@@ -375,7 +375,7 @@ public class DSAPIManager extends ComponentBase {
             }
 
             if (p.isOK()) {
-            	log.info("issuing query:\n" + sq);
+            	// log.info("issuing query:\n" + sq);
                 SparqlSource source = api.getSource();
                 if (source instanceof RemoteSparqlSource) {
                 	((RemoteSparqlSource) source).setContentType("tsv");
