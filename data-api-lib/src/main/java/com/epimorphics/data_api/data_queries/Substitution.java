@@ -7,6 +7,9 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.data_queries.terms.TermBool;
+import com.epimorphics.data_api.data_queries.terms.TermResource;
+import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  	The default implementation of A @eq V is as a
@@ -30,13 +33,30 @@ public class Substitution {
 	public final Term value;
 	
 	public Substitution(Filter f) {
-		aspect = f.a;
+		Term value = null;
+		Aspect aspect = f.a;
+		boolean canReplace = false;
+		Resource type = aspect.getRangeType();
 		if (f.range.op.equals(Operator.EQ)) {
 			value = f.range.operands.get(0);
-			canReplace = true;
-		} else {
-			value = null;
-			canReplace = false;
+			System.err.println(">> value: " + value);
+			if (type == null) {
+				// rely on suitability of values, ie let through those
+				// values which will be identical with values equal to 
+				// them.
+				if (value instanceof TermResource || value instanceof TermBool) {
+					canReplace = true;
+				} else {
+					value = null;
+				}
+			} else {
+				// make the value fit the type by re-writing it as
+				// necessary.
+				// TODO
+			}
 		}
+		this.value = value;
+		this.canReplace = canReplace;
+		this.aspect = aspect;
 	}
 }

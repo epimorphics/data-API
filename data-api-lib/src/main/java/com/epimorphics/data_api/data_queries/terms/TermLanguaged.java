@@ -12,9 +12,9 @@ public class TermLanguaged extends TermComposite {
 
 	final String lang;
 	
-	public TermLanguaged(String value, String type) {
+	public TermLanguaged(String value, String lang) {
 		super(value);
-		this.lang = type;
+		this.lang = lang;
 	}
 
 	@Override public String toString() {
