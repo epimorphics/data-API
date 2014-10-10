@@ -87,6 +87,6 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery _ignored = DataQueryParser.Do(p, ds, jo);		
 		assertFalse("failed to detect missing-both-property-and-limit error", p.isOK());
-		Asserts.assertContains("neither @property nor @limit", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("neither @property nor @limit", p.getProblemStrings());
 	}
 }

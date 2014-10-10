@@ -15,9 +15,6 @@ package com.epimorphics.data_api;
 */
 public class Switches {
 
-	// if true, various tests are omitted so as to get a testable WAR.
-	public static final boolean dontTest = false;
-
 	// sort the fields of a JS object when Row is generating them
 	public static boolean sorting = false;
 

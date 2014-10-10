@@ -26,8 +26,7 @@ import com.epimorphics.data_api.data_queries.terms.TermResource;
 import com.epimorphics.data_api.data_queries.terms.TermString;
 import com.epimorphics.data_api.data_queries.terms.TermTyped;
 import com.epimorphics.data_api.libs.BunchLib;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.rdf.model.Literal;
+import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 
@@ -44,6 +43,8 @@ public class TestSubstitution {
 	static final TermResource resourceX = new TermResource("eh:/X");
 
 	static final TermArray emptyArray = new TermArray(new ArrayList<Term>());
+	
+	static final TermTyped typedAsInt = new TermTyped("17", "xsd:integer");
 
 	@Test public void testEqResourceSubstitution() {
 		verify(untyped, resourceX, true, resourceX);
@@ -52,12 +53,13 @@ public class TestSubstitution {
 	@Test public void testEqLiteralFailsWithUntyped() {
 		verify(untyped, new TermBool(true), true, new TermBool(true));
 		verify(untyped, new TermBool(false), true, new TermBool(false));
+		verify(untyped, new TermString("lo"), false, null);
+	//
+		verify(untyped, emptyArray, false, null);
+		verify(untyped, typedAsInt, false, null);
 	//
 		verify(untyped, new TermNumber(17), false, null);
-		verify(untyped, new TermString("lo"), false, null);
-		verify(untyped, emptyArray, false, null);
 		verify(untyped, new TermLanguaged("chat","en"), false, null);
-		verify(untyped, new TermTyped("17", "xsd:integer"), false, null);
 	}
 	
 	static final List<Operator> AllOperators = BunchLib.list
@@ -87,7 +89,10 @@ public class TestSubstitution {
 	void verify(Aspect a, Term provided, boolean canReplace, Term value) {
 		for (Operator o: AllOperators) {
 			Filter f = new Filter(a, new Range(o, BunchLib.list(provided)));
-			Substitution est = new Substitution(f);
+			Problems p = new Problems();
+			Substitution est = new Substitution(p, f);
+			if (!p.isOK())
+				fail("problem detected during substitution: " + p.getProblemStrings());
 			if (o == Operator.EQ) {
 				assertSame(a, est.aspect);
 				assertEquals(canReplace, est.canReplace);

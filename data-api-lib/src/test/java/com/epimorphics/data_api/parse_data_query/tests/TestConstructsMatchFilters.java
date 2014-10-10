@@ -89,8 +89,8 @@ public class TestConstructsMatchFilters {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertTrue("should detect missing @value in @matches object argument", p.size() > 0);
-		Asserts.assertContains("one of @value and @case-insensitive-value should be specified", p.getProblemStrings());
-		Asserts.assertContains("{ \"@flags\" : \"flaggy\" }", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("one of @value and @case-insensitive-value should be specified", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("{ \"@flags\" : \"flaggy\" }", p.getProblemStrings());
 	}
 	
 	@Test public void testReportsBothValue() {
@@ -99,8 +99,8 @@ public class TestConstructsMatchFilters {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertTrue("should detect missing @value in @matches object argument", p.size() > 0);
-		Asserts.assertContains("exactly one of @value and @case-insensitive-value should be specified", p.getProblemStrings());
-		Asserts.assertContains("\"@flags\" : \"flaggy\"", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("exactly one of @value and @case-insensitive-value should be specified", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("\"@flags\" : \"flaggy\"", p.getProblemStrings());
 	}
 	
 }

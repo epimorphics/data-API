@@ -7,9 +7,16 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.data_queries.terms.TermArray;
 import com.epimorphics.data_api.data_queries.terms.TermBool;
+import com.epimorphics.data_api.data_queries.terms.TermLanguaged;
+import com.epimorphics.data_api.data_queries.terms.TermNumber;
 import com.epimorphics.data_api.data_queries.terms.TermResource;
+import com.epimorphics.data_api.data_queries.terms.TermString;
+import com.epimorphics.data_api.data_queries.terms.TermTyped;
+import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.BrokenException;
 
 /**
  	The default implementation of A @eq V is as a
@@ -32,27 +39,29 @@ public class Substitution {
 	public final Aspect aspect;
 	public final Term value;
 	
-	public Substitution(Filter f) {
+	public Substitution(Problems p, Filter f) {
 		Term value = null;
 		Aspect aspect = f.a;
 		boolean canReplace = false;
 		Resource type = aspect.getRangeType();
 		if (f.range.op.equals(Operator.EQ)) {
 			value = f.range.operands.get(0);
-			System.err.println(">> value: " + value);
 			if (type == null) {
 				// rely on suitability of values, ie let through those
 				// values which will be identical with values equal to 
 				// them.
 				if (value instanceof TermResource || value instanceof TermBool) {
 					canReplace = true;
+				} else if (value instanceof TermString || value instanceof TermTyped || value instanceof TermLanguaged || value instanceof TermArray) {
+					value = null;
+				} else if (value instanceof TermNumber) {
+					value = null;
 				} else {
+					p.add("Unhandled value " + value);
 					value = null;
 				}
 			} else {
-				// make the value fit the type by re-writing it as
-				// necessary.
-				// TODO
+				throw new BrokenException("value rewriting for typed aspects not implemented yet.");
 			}
 		}
 		this.value = value;

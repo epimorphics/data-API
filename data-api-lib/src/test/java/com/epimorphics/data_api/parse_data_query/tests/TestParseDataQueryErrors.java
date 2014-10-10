@@ -29,8 +29,8 @@ public class TestParseDataQueryErrors {
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertFalse(p.isOK());
 		String messages = p.getProblemStrings();
-		Asserts.assertContains( "aaa:bbb", messages );
-		Asserts.assertContains( "unknown shortname", messages );
+		Asserts.assertInsensitiveContains( "aaa:bbb", messages );
+		Asserts.assertInsensitiveContains( "unknown shortname", messages );
 	}
 	
 	@Test public void testArrayRequiredForBooleans() {
@@ -46,8 +46,8 @@ public class TestParseDataQueryErrors {
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertFalse(p.isOK());
 		String messages = p.getProblemStrings();
-		Asserts.assertContains( key, messages );
-		Asserts.assertContains( "must be an array", messages );
+		Asserts.assertInsensitiveContains( key, messages );
+		Asserts.assertInsensitiveContains( "must be an array", messages );
 	}
 	
 	@Test public void testNestedBooleanChecking() {
@@ -57,7 +57,7 @@ public class TestParseDataQueryErrors {
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertFalse(p.isOK());
 		String messages = p.getProblemStrings();
-		Asserts.assertContains( "must be an array", messages );
+		Asserts.assertInsensitiveContains( "must be an array", messages );
 	}
 	
 	@Test public void testIllegalAspectOperand() {
@@ -70,8 +70,8 @@ public class TestParseDataQueryErrors {
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertFalse(p.isOK());
 		String messages = p.getProblemStrings();
-		Asserts.assertContains( "pre:property", messages );
-		Asserts.assertContains( "should be Object", messages );
+		Asserts.assertInsensitiveContains( "pre:property", messages );
+		Asserts.assertInsensitiveContains( "should be Object", messages );
 	}
 	
 	@Test public void testSearchStringValue() {
@@ -80,7 +80,7 @@ public class TestParseDataQueryErrors {
 		Problems p = new Problems();
 		@SuppressWarnings("unused") DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(1, p.size());
-		Asserts.assertContains("must be string", p.getProblemStrings());
-		Asserts.assertContains("@search", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("must be string", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("@search", p.getProblemStrings());
 	}
 }

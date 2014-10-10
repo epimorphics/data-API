@@ -12,11 +12,11 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
-import com.epimorphics.data_api.Switches;
+import static com.epimorphics.data_api.test_support.Asserts.*;
+
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
-import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
@@ -134,7 +134,6 @@ public class TestUnpacking {
 	}	
 
 	@Test public void testQueryWithEQFilterOnRequiredPathAspect() {
-		if (Switches.dontTest) return;
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@eq': {'@id': 'hello:there'}}}");
 		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
@@ -150,22 +149,22 @@ public class TestUnpacking {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:B': {'@eq': 17}}");
 //		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		denyContains("FILTER", query);
+		denyContains("BIND(17 AS ?space_B)", query);
 	//
 		assertContainsOnce("?item space:A ?space_A .", query);
-		assertContainsOnce("?space_A space:D 17 .", query);
-		assertContainsOnce("BIND(17 AS ?space_B)", query);
+		assertContainsOnce("?space_A space:D ?space_B .", query);
+		assertContains("FILTER(?space_B = 17)", query);
 	}
 
 	@Test public void testQueryWithEQFilterOnOptionalPathedAspect() {
 		String query = makeQuery(makeDataset("A", "?B=A/D"), "{'space:B': {'@eq': 17}}");
 //		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
-		denyContains("FILTER", query);
+		denyContains("BIND(17 AS ?space_B)", query);
 	//
 		assertContainsOnce("?item space:A ?space_A .", query);
-		assertContainsOnce("?space_A space:D 17 .", query);
-		assertContainsOnce("BIND(17 AS ?space_B)", query);
+		assertContainsOnce("?space_A space:D ?space_B .", query);
+		assertContains("FILTER(?space_B = 17)", query);
 	}
 
 	@Test public void testQueryWithNonEQFilterOnRequiredLongerPathedAspect() {
@@ -237,26 +236,4 @@ public class TestUnpacking {
 		if (a.equals(b)) 
 			fail("expected values to be different but both " + a);
 	}
-
-	private void assertContainsOnce(String wanted, String subject) {
-		int first = subject.indexOf(wanted);
-		if (first < 0) {
-			fail("the fragment `" + wanted + "` did not appear in the subject:\n" + subject);
-		} else {
-			int second = subject.indexOf(wanted, first + wanted.length());
-			if (second > -1) 
-				fail("the fragment `" + wanted + "` appeared more than once in the subject:\n" + subject);
-		}
-	}
-
-	private void assertContains(String wanted, String subject) {
-		if (subject.contains(wanted)) return;
-		fail("the fragment `" + wanted + "` did not appear in the subject:\n" + subject);
-	}
-
-	private void denyContains(String unwanted, String subject) {
-		if (subject.contains(unwanted))
-			fail("the unwanted fragment `" + unwanted + "` appeared in the subject:\n" + subject);
-	}
-
 }

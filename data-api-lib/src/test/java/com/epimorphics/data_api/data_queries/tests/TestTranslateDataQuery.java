@@ -6,19 +6,15 @@
 package com.epimorphics.data_api.data_queries.tests;
 
 
-import static com.epimorphics.data_api.test_support.Asserts.assertNoProblems;
-import static com.epimorphics.data_api.test_support.Asserts.assertSameSelect;
+import static com.epimorphics.data_api.test_support.Asserts.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
-import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
 import com.epimorphics.data_api.config.DefaultPrefixes;
@@ -102,21 +98,17 @@ public class TestTranslateDataQuery {
 	}	
 	
 	@Test public void testMultipleConflictingEqualities() {
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		JsonObject query = JSON.parse("{'@and': [{'pre:X': {'@eq': 1}}, {'pre:X': {'@eq': 2}}]}");
 		DataQuery dq = DataQueryParser.Do(p, dsXY, query);
 		String sq = dq.toSparql(p, dsXY);
 		
-		sq = sq.replaceAll("[ \n]+", " ");
+		// sq = sq.replaceAll("[ \n]+", " ");
 		
-		assertContains("?item pre:X 1 .", sq);
-		assertContains("BIND(1 AS ?pre_X)", sq);
-	}
-	
-	private void assertContains(String string, String sq) {
-		if (sq.contains(string)) return;
-		Assert.fail("generated sparql should contain '" + string + "' but does not: " + sq);
+		Asserts.denyContains("BIND", sq);
+		assertContains("?item pre:X ?pre_X .", sq);
+		assertContains("FILTER(?pre_X = 1)", sq);
+		assertContains("FILTER(?pre_X = 2)", sq);
 	}
 
 	@Test public void testMultipleSorts() {
@@ -152,7 +144,8 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " ?item pre:X 17 . BIND(17 AS?pre_X)"
+			, " ?item pre:X ?pre_X ."
+			, "FILTER(?pre_X = 17)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -197,7 +190,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, (op.equals(Operator.EQ) ? " ?item pre:X 17 . BIND(17 AS ?pre_X) " : (" ?item pre:X ?pre_X . FILTER(?pre_X " + opSparql + " 17)"))
+			, " ?item pre:X ?pre_X . FILTER(?pre_X " + opSparql + " 17)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -309,7 +302,6 @@ public class TestTranslateDataQuery {
 	}		
 	
 	@Test public void testSingleEqualityFilterWithUnfilteredAspect() {		
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
 		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
@@ -321,9 +313,9 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 17 ."
+			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
-			, " BIND(17 AS ?pre_X)"
+			, " FILTER(?pre_X = 17)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -414,7 +406,6 @@ public class TestTranslateDataQuery {
 	}		
 	
 	@Test public void testSingleEqualityFilterWithOptionalAspect() {
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		Aspect sn = new Aspect( pm, "pre:X" );
 		Constraint f = new Filter(sn, Range.EQ(Term.number(17)));
@@ -427,16 +418,15 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 17 ."
+			, " ?item pre:X ?pre_X ."
 			, " OPTIONAL {?item pre:Y ?pre_Y .}"
-			, " BIND(17 AS ?pre_X)"
+			, " FILTER(?pre_X = 17)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
 	}		
 
 	@Test public void testLengthCopied() {
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
@@ -451,10 +441,10 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 8 ."
-			, " ?item pre:Y 9 ."
-			, " BIND(8 AS ?pre_X)"
-			, " BIND(9 AS ?pre_Y)"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
+			, " FILTER(?pre_X = 8)"
+			, " FILTER(?pre_Y = 9)"
 			, "}"
 			, "LIMIT 17"
 			);
@@ -462,7 +452,6 @@ public class TestTranslateDataQuery {
 	}
 	
 	@Test public void testOffsetCopied() {
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
@@ -477,10 +466,10 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 8 ."
-			, " ?item pre:Y 9 ."
-			, " BIND(8 AS ?pre_X)"
-			, " BIND(9 AS ?pre_Y)"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
+			, " FILTER(?pre_X = 8)"
+			, " FILTER(?pre_Y = 9)"
 			, "}"
 			, "OFFSET 1066"
 			);
@@ -488,7 +477,6 @@ public class TestTranslateDataQuery {
 	}
 	
 	@Test public void testLengthAndOffsetCopied() {
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect( pm, "pre:X" );
@@ -503,10 +491,10 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X 8 ."
-			, " ?item pre:Y 9 ."
-			, " BIND(8 AS ?pre_X)"
-			, " BIND(9 AS ?pre_Y)"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
+			, " FILTER(?pre_X = 8)"
+			, " FILTER(?pre_Y = 9)"
 			, "}"
 			, "LIMIT 17 OFFSET 1829"
 			);
@@ -514,7 +502,6 @@ public class TestTranslateDataQuery {
 	}	
 	
 	@Test public void testDoubleEqualityFilter() {
-		if (Switches.dontTest) return;
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/").lock();
 		Aspect snA = new Aspect(pm, "pre:X");
@@ -529,10 +516,10 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE { "
-			, " ?item pre:X 8 ."
-			, " ?item pre:Y 9 ."
-			, " BIND(8 AS ?pre_X)"
-			, " BIND(9 AS ?pre_Y)"
+			, " ?item pre:X ?pre_X ."
+			, " ?item pre:Y ?pre_Y ."
+			, " FILTER(?pre_X = 8)"
+			, " FILTER(?pre_Y = 9)"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );

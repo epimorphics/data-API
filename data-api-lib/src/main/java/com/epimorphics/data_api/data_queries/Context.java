@@ -231,7 +231,7 @@ public class Context  {
 	public Constraint findEqualities(Equalities eq, Constraint c) {
 		if (c instanceof Filter) {
 			Filter f = ((Filter) c);
-			Substitution s = new Substitution(f);
+			Substitution s = new Substitution(p, f);
 			if (s.canReplace) {	
 				eq.put(s.aspect, s.aspect.getName(), s.value);				
 				return Constraint.EMPTY;
