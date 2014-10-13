@@ -43,4 +43,8 @@ public class TermLanguaged extends TermComposite {
 		jw.pair("@lang", lang);
 		jw.finishObject();
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitLanguaged(this);
+	}
 }

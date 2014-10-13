@@ -40,4 +40,8 @@ public class TermString extends Primitive {
 	@Override public void writeElement(JSFullWriter jw) {
 		jw.arrayElement(value);
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitString(this);
+	}
 }

@@ -55,4 +55,12 @@ public class TermTyped extends TermComposite {
 		jw.pair("@type", type);
 		jw.finishObject();
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitTyped(this);
+	}
+
+	public String getTypeURI() {
+		return type;
+	}
 }

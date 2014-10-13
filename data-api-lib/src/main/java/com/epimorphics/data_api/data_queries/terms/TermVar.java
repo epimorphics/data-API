@@ -35,4 +35,8 @@ public class TermVar extends Term {
 	@Override public void writeTo(JSFullWriter out) {
 		throw new UnsupportedOperationException("Cannot write variables to JSON.");
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitVar(this);
+	}
 }

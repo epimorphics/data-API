@@ -241,7 +241,7 @@ public class TestQueriesGetExpectedResults extends Setup {
 			, "]"
 			);
 
-    	testQueryReturnsExpectedResults( "{'@limit': 2, 'eg:values': {'@le': 42}}", expectFA );
+    	testQueryReturnsExpectedResults( "{'@limit': 2, 'eg:values': {'@le': 42}}", expectEF );
     }
     
     

@@ -35,4 +35,8 @@ public class TermBad extends Term {
 	@Override public void writeTo(JSFullWriter out) {
 		throw new UnsupportedOperationException("Cannot write bad Term");
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitBad(this);
+	}
 }
