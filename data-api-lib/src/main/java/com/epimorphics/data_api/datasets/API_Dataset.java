@@ -30,6 +30,7 @@ import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
     static Logger log = LoggerFactory.getLogger(API_Dataset.class);
@@ -87,6 +88,12 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isLiteralType(Resource type) {
+		System.err.println(">> type: " + type);
+		System.err.println(">> xsd:  " + XSD.getURI());
+		return type != null && type.getURI().startsWith(XSD.getURI());
 	}
 
 	public Set<Aspect> getAspects() {
