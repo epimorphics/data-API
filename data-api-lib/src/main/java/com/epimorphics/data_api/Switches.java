@@ -15,6 +15,13 @@ package com.epimorphics.data_api;
 */
 public class Switches {
 
+	/**
+    	If true, then log entries showing inbound DSAPI queries and 
+    	the generated SPARQL queries will be on a single line.  It
+    	may be set false when debugging.
+	*/
+	public static final boolean flattening = true;
+
 	// if true, various tests are omitted so as to get a testable WAR.
 	public static final boolean dontTest = true;
 
@@ -46,8 +53,10 @@ public class Switches {
 			+ ", move binds: " + (moveBindsDownwards ? "yes" : "no")
 			+ ", respect constraints: " + (checkConstraints ? "yes" : "no")
 			+ ", push @search item property early: " + (forceSearchProperty ? "yes" : "no")
+			+ ", flatten query log entry: " + (flattening ? "yes" : "no")
 			+ "."
 			;
 	}
+
 
 }

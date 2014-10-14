@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "0.0.5";
-	public final String tagname = "_(exercised on staging)";
+	public final String string = "0.0.7";
+	public final String tagname = "_(flatten log entries, show years in log dates)";
 }
