@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "0.0.7-SNAPSHOT";
-	public final String tagname = "_(paying off technical debt; unit tests all pass.)";
+	public final String string = "0.0.7";
+	public final String tagname = "_(flatten log entries, show years in log dates)";
 }

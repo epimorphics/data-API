@@ -38,6 +38,7 @@ import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.data.impl.RemoteSparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
@@ -75,7 +76,7 @@ public class DSAPIManager extends ComponentBase {
     static { log.info(DataQuery.DSAPI_Info); }
 
     static final String JSON_LD = RDFLanguages.strLangJSONLD;    
-
+    
     protected SparqlSource defaultSource;
     protected Map<String, SparqlSource> sources = new HashMap<String, SparqlSource>();
     protected DatasetMonitor monitoredDatasets;
@@ -367,7 +368,7 @@ public class DSAPIManager extends ComponentBase {
         final API_Dataset api = getAPI(dataset);
         try {
             DataQuery q = DataQueryParser.Do(p, api, query);
-            // log.info("Request: " + query.toString());
+            log.info(flatten("Request: " + query.toString()));
             String sq = null;
             if (p.isOK()) {
                 sq = q.toSparql(p, api);
@@ -376,6 +377,7 @@ public class DSAPIManager extends ComponentBase {
 
             if (p.isOK()) {
             	// log.info("issuing query:\n" + sq);
+            	log.info(flatten("issuing query:\n" + sq));
                 SparqlSource source = api.getSource();
                 if (source instanceof RemoteSparqlSource) {
                 	((RemoteSparqlSource) source).setContentType("tsv");
@@ -384,7 +386,7 @@ public class DSAPIManager extends ComponentBase {
             }
 
         } catch (Exception e) {
-            log.error("BROKEN: " + e, e);
+            log.error(flatten("BROKEN: " + e), e);
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             PrintStream ps = new PrintStream(os);
             e.printStackTrace(ps);
@@ -466,7 +468,7 @@ public class DSAPIManager extends ComponentBase {
             */
 
         } catch (Exception e) {
-            log.error("BROKEN: " + e, e);
+            log.error(flatten("BROKEN: " + e), e);
             p.add("BROKEN: " + e);
         }
         
@@ -474,6 +476,10 @@ public class DSAPIManager extends ComponentBase {
         comments.put("problems", p.getProblemStrings());
         
         return Response.ok(comments.toString()).build();
+    }
+    
+    private String flatten(String toFlatten) {
+    	return Switches.flattening ? toFlatten.replace('\n',  ' ') : toFlatten;
     }
 
     // TODO query explain call - but maybe on the fly rather than via historical store
