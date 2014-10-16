@@ -15,8 +15,14 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
 public class ResultsToRows {
+
+	private final Compactions c;
 	
-	public static void convert(Collection<Aspect> aspects, RowConsumer rc, Iterator<QuerySolution> solutions) {
+	public ResultsToRows(Compactions c) {
+		this.c = c;
+	}
+
+	public void convert(Collection<Aspect> aspects, RowConsumer rc, Iterator<QuerySolution> solutions) {
 				
 		Node current = null;
 		Row pending = null;		
@@ -52,7 +58,7 @@ public class ResultsToRows {
 					e.getValue().clear();
 					String key = e.getKey();
 					RDFNode r = sol.get(key);
-					if (r != null) e.getValue().add( Term.fromNode(r.asNode()));
+					if (r != null) e.getValue().add( Term.fromNode(c, r.asNode()));
 				}
 			}
 		}
@@ -65,7 +71,7 @@ public class ResultsToRows {
 	
 	static final Term none = Term.array(new ArrayList<Term>());
 	
-	public static Row solutionToRow(Collection<Aspect> aspects, QuerySolution qs) {
+	public Row solutionToRow(Collection<Aspect> aspects, QuerySolution qs) {
 		Row result = new Row();
 		for (Aspect a: aspects) {
 			String key = a.getName().getCURIE();		
@@ -75,7 +81,7 @@ public class ResultsToRows {
 				result.put(key, none);				
 			}
 			else {
-				Term v = Term.fromNode(value.asNode());
+				Term v = Term.fromNode(c, value.asNode());
 				boolean ov = a.getIsOptional();
 				if (ov) {
 					result.put(key, Term.array(BunchLib.list(v)));
@@ -98,10 +104,10 @@ public class ResultsToRows {
 
 	// load the appropriate values sets with the JSON values converted from
 	// result-set format.
-	private static void multipleValueFetch(Map<String, List<Term>> valuess, QuerySolution row) {
+	private void multipleValueFetch(Map<String, List<Term>> valuess, QuerySolution row) {
 		for (Map.Entry<String, List<Term>> e: valuess.entrySet()) {
 			RDFNode r = row.get(e.getKey());
-			if (r != null) e.getValue().add( Term.fromNode(r.asNode()));
+			if (r != null) e.getValue().add( Term.fromNode(c, r.asNode()));
 		}
 	}
 
@@ -112,7 +118,7 @@ public class ResultsToRows {
 		return Term.array(result);
 	}
 
-	public static List<Row> convert(List<Aspect> aspects, List<QuerySolution> rows) {
+	public List<Row> convert(List<Aspect> aspects, List<QuerySolution> rows) {
 		final List<Row> result = new ArrayList<Row>();
 		RowConsumer consumeToArray = new RowConsumer() {
 			@Override public void consume(Row jo) { result.add( jo ); }

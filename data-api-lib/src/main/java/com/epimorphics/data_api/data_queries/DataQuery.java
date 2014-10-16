@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.Version;
+import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.data_api.conversions.CountWriter;
 import com.epimorphics.data_api.conversions.RowWriter;
 import com.epimorphics.data_api.datasets.API_Dataset;
@@ -20,11 +21,14 @@ import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
 import com.hp.hpl.jena.query.ResultSet;
 
-public class DataQuery {
+public class DataQuery implements Compactions {
 	
 	final List<Sort> sortby;
 	final Slice slice;
 	final List<Guard> guards; 
+	
+	boolean suppressTypes = false;
+	boolean compactOptionals = false;
 	
 	private final Constraint c;
 	
@@ -163,7 +167,23 @@ public class DataQuery {
     public JSONWritable getWriter(API_Dataset api, ResultSet resultSet) {
     	return isCountQuery()
     		? new CountWriter(resultSet)
-    		: new RowWriter(api.getAspects(), resultSet)
+    		: new RowWriter(api.getAspects(), resultSet, (Compactions) this)
     		;
     }
+
+	@Override public boolean suppressTypes() {
+		return suppressTypes;
+	}
+
+	@Override public boolean squeezeValues() {
+		return compactOptionals;
+	}
+
+	public void setSuppressTypes(boolean suppressTypes) {
+		this.suppressTypes = suppressTypes;
+	}
+
+	public void setCompactOptionals(boolean compactOptionals) {
+		this.compactOptionals = compactOptionals;
+	}
 }

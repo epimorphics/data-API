@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
+import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.data_api.conversions.ResultsToRows;
 import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.data_queries.terms.Term;
@@ -47,6 +48,20 @@ public class TestResultsToRows {
 	QuerySolution B = new TestTranslateQuerySolution.LocalQuerySolution("item", itemA, "pre_multiple", value2);
 	QuerySolution C = new TestTranslateQuerySolution.LocalQuerySolution("item", itemB, "pre_multiple", value3);
 
+	static final Compactions c = new Compactions() {
+
+		@Override public boolean suppressTypes() {
+			return false;
+		}
+
+		@Override public boolean squeezeValues() {
+			return false;
+		}
+		
+	};
+	
+	static final ResultsToRows rr = new ResultsToRows(c);
+	
 	@Test public void testSimpleSolutions() {
 		List<QuerySolution> x = BunchLib.list(A, C);
 		
@@ -54,7 +69,7 @@ public class TestResultsToRows {
 		
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> rows = ResultsToRows.convert(aspects, x);
+		List<Row> rows = rr.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -80,7 +95,7 @@ public class TestResultsToRows {
 		
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> rows = ResultsToRows.convert(aspects, x);
+		List<Row> rows = rr.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -101,7 +116,7 @@ public class TestResultsToRows {
 		Aspect multiple = new TestAspects.MockAspect( "eh:/aspect/multiple" ).setIsMultiValued(true);
 		List<Aspect> aspects = BunchLib.list( multiple );
 				
-		List<Row> rows = ResultsToRows.convert(aspects, x);
+		List<Row> rows = rr.convert(aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -136,7 +151,7 @@ public class TestResultsToRows {
 
 	@Test public void testZomZeroSolutions() {
 		List<QuerySolution> x = BunchLib.list(A0);
-		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
+		List<Row> rows = rr.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -148,7 +163,7 @@ public class TestResultsToRows {
 	
 	@Test public void testZomOneSolution() {
 		List<QuerySolution> x = BunchLib.list(A1);
-		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
+		List<Row> rows = rr.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -160,7 +175,7 @@ public class TestResultsToRows {
 	
 	@Test public void testZomTwoGivenSolutions() {
 		List<QuerySolution> x = BunchLib.list(A1, A2);
-		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
+		List<Row> rows = rr.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -172,7 +187,7 @@ public class TestResultsToRows {
 	
 	@Test public void testZomTwoSolutionsAndAnOmission() {
 		List<QuerySolution> x = BunchLib.list(A0, A1, A2);
-		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
+		List<Row> rows = rr.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				
@@ -184,7 +199,7 @@ public class TestResultsToRows {
 	
 	@Test public void testZomTwoSolutionsAndAnOmissionReordered() {
 		List<QuerySolution> x = BunchLib.list(A1, A0, A2);
-		List<Row> rows = ResultsToRows.convert(zom_aspects, x);
+		List<Row> rows = rr.convert(zom_aspects, x);
 				
 		Row expected_1 = new Row()		
 			.put("@id", itemA_value )				

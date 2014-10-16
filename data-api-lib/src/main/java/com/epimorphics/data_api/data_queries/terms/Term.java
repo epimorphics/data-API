@@ -9,6 +9,7 @@ package com.epimorphics.data_api.data_queries.terms;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
@@ -40,7 +41,7 @@ public abstract class Term implements JSONWritable {
 		writeTo(jw);
 	}
 	
-	public static Term fromNode(Node n) {
+	public static Term fromNode(Compactions c, Node n) {
 		if (n.isURI()) 
 			return Term.URI(n.getURI());
 		if (n.isLiteral()) {
@@ -65,6 +66,8 @@ public abstract class Term implements JSONWritable {
 				return Term.Double(spelling);
 			} else if (type.equals(XSDDatatype.XSDint.getURI())) {
 				return Term.integer(spelling);
+			} else if (c.suppressTypes()) {
+				return Term.string(spelling);
 			} else {
 				return Term.typed(spelling, type);
 			}

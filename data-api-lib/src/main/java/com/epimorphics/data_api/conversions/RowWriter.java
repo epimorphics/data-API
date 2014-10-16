@@ -24,10 +24,12 @@ public final class RowWriter implements JSONWritable {
 	
 	private final Set<Aspect> aspects;
 	private final ResultSet rs;
+	private final ResultsToRows rr;
 
-	public RowWriter(Set<Aspect> aspects, ResultSet rs) {
+	public RowWriter(Set<Aspect> aspects, ResultSet rs, Compactions c) {
 		this.aspects = aspects;
 		this.rs = rs;
+		this.rr = new ResultsToRows(c);
 	}
 
 	@Override public void writeTo(final JSFullWriter jw) {
@@ -43,7 +45,7 @@ public final class RowWriter implements JSONWritable {
     				comma.value = true;
     			}
     		};
-    		ResultsToRows.convert(aspects, stream, rs);
+    		rr.convert(aspects, stream, rs);
     		jw.finishArray();
     		jw.finishOutput();
 	    } catch (Exception e) {

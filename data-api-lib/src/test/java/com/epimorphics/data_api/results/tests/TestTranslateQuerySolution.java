@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.aspects.tests.TestAspects;
+import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.data_api.conversions.ResultsToRows;
 import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.data_queries.terms.Term;
@@ -43,11 +44,13 @@ public class TestTranslateQuerySolution {
 		
 //		System.err.println( ">> aspects: " + aspects );
 		
-		Row js = ResultsToRows.solutionToRow(aspects, qs);
+		ResultsToRows rr = new ResultsToRows(Compactions.None);
+		
+		Row js = rr.solutionToRow(aspects, qs);
 		
 		Row expected = new Row()
-			.put("pre:a", Term.fromNode(A))
-			.put("pre:b", Term.fromNode(B))
+			.put("pre:a", Term.fromNode(Compactions.None, A))
+			.put("pre:b", Term.fromNode(Compactions.None, B))
 			;
 		
 		assertEquals( expected, js );		
