@@ -33,6 +33,21 @@ public class TermArray extends Term {
 	private boolean same(TermArray other) {
 		return terms.equals(other.terms);
 	}
+	
+	/**
+		size() returns the number of elements in the term list.
+	*/
+	public int size() {
+		return terms.size();
+	}
+	
+	/**
+	    get(i) returns the i'th element of the term array if
+	    0 <= i < size(). 
+	*/
+	public Term get(int i) {
+		return terms.get(i);
+	}
 
 	@Override public String asSparqlTerm(PrefixMapping pm) {
 		throw new UnsupportedOperationException("Cannot represent an array as a SPARQL term.");

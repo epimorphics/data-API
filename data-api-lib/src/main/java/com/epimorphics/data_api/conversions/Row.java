@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.data_queries.terms.TermArray;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 
@@ -58,6 +59,20 @@ public class Row implements JSONWritable {
 	public Row put(String key, Term value) {
 		members.put(key, value);
 		return this;
+	}
+
+	public void squeezeOptionalProperty(String key) {
+		Term opt = members.get(key);
+		if (opt instanceof TermArray) {
+			TermArray ta = (TermArray) opt;
+			if (ta.size() > 0) {
+				members.put(key, ta.get(0));
+			} else {
+				members.remove(key);
+			}
+		} else {
+			throw new RuntimeException("BROKEN: squeezing a member that is not an array: " + opt);
+		}
 	}
 	
 	@Override public String toString() {

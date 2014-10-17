@@ -17,12 +17,14 @@ import com.hp.hpl.jena.rdf.model.RDFNode;
 public class ResultsToRows {
 
 	private final Compactions c;
+	private final Collection<Aspect> aspects;
 	
-	public ResultsToRows(Compactions c) {
+	public ResultsToRows(Collection<Aspect> aspects, Compactions c) {
 		this.c = c;
+		this.aspects = aspects;
 	}
 
-	public void convert(Collection<Aspect> aspects, RowConsumer rc, Iterator<QuerySolution> solutions) {
+	public void convert(RowConsumer rc, Iterator<QuerySolution> solutions) {
 				
 		Node current = null;
 		Row pending = null;		
@@ -49,7 +51,7 @@ public class ResultsToRows {
 					loadFromValueLists(pending, valuess, shorts);
 					rc.consume( pending );
 				}
-				pending = solutionToRow(aspects, sol); 
+				pending = solutionToRow(sol); 
 				pending.put("@id", Term.string(item.getURI() ) );
 								
 				current = item;
@@ -71,7 +73,7 @@ public class ResultsToRows {
 	
 	static final Term none = Term.array(new ArrayList<Term>());
 	
-	public Row solutionToRow(Collection<Aspect> aspects, QuerySolution qs) {
+	public Row solutionToRow(QuerySolution qs) {
 		Row result = new Row();
 		for (Aspect a: aspects) {
 			String key = a.getName().getCURIE();		
@@ -79,8 +81,7 @@ public class ResultsToRows {
 		//			
 			if (value == null) {
 				result.put(key, none);				
-			}
-			else {
+			} else {
 				Term v = Term.fromNode(c, value.asNode());
 				boolean ov = a.getIsOptional();
 				if (ov) {
@@ -95,10 +96,18 @@ public class ResultsToRows {
 
 	// load the appropriate fields of pending from the value sets accumulated
 	// in valuess.
-	private static void loadFromValueLists(Row pending,	Map<String, List<Term>> valuess, Map<String, String> shorts) {
+	private void loadFromValueLists(Row pending, Map<String, List<Term>> valuess, Map<String, String> shorts) {
 		for (Map.Entry<String, List<Term>> e: valuess.entrySet()) {	
 			String curi = shorts.get(e.getKey());
 			pending.put(curi, valueArrayNoDuplicatesFrom(e.getValue()));
+		}
+	//
+		if (c.squeezeValues()) {
+			for (Aspect a: aspects) {
+				if (a.getIsMultiValued() == false && a.getIsOptional()) {
+					pending.squeezeOptionalProperty(a.getName().getCURIE());
+				}
+			}
 		}
 	}
 
@@ -118,12 +127,12 @@ public class ResultsToRows {
 		return Term.array(result);
 	}
 
-	public List<Row> convert(List<Aspect> aspects, List<QuerySolution> rows) {
+	public List<Row> convert(List<QuerySolution> rows) {
 		final List<Row> result = new ArrayList<Row>();
 		RowConsumer consumeToArray = new RowConsumer() {
 			@Override public void consume(Row jo) { result.add( jo ); }
 		};
-		convert(aspects, consumeToArray, rows.iterator() );
+		convert(consumeToArray, rows.iterator() );
 		return result;
 	}
 }

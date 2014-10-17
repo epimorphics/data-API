@@ -156,6 +156,17 @@ public class DataQueryParser {
 			constraints.add( extractSearchSpec(key, null, value) );
 		} else if (key.equals("@suppress_types")) {
 			suppressTypes = extractBoolean(p, key, value);
+		} else if (key.equals("@json_mode")) {
+			String mode = getString(jo, key);
+			if (mode.equals("complete")) {
+				suppressTypes = false;
+				compactOptionals = false;
+			} else if (mode.equals("compact")) {
+				suppressTypes = true;
+				compactOptionals = true;
+			} else {
+				p.add("@json_mode must have value 'complete' or 'compact', was given '" + mode + "'.");
+			}
 		} else if (key.equals("@compact_optionals")) {
 			compactOptionals = extractBoolean(p, key, value);
 		} else if (key.equals("@limit")) {

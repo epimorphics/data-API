@@ -42,9 +42,10 @@ public abstract class Term implements JSONWritable {
 	}
 	
 	public static Term fromNode(Compactions c, Node n) {
-		if (n.isURI()) 
-			return Term.URI(n.getURI());
-		if (n.isLiteral()) {
+		if (n.isURI()) {
+			String uri = n.getURI();
+			return c.suppressTypes() ? Term.string(uri) : Term.URI(uri);			
+		} else if (n.isLiteral()) {
 			String spelling = n.getLiteralLexicalForm();
 			String type = n.getLiteralDatatypeURI();
 			if (type == null) {

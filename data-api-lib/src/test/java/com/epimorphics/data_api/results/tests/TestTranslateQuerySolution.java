@@ -44,9 +44,8 @@ public class TestTranslateQuerySolution {
 		
 //		System.err.println( ">> aspects: " + aspects );
 		
-		ResultsToRows rr = new ResultsToRows(Compactions.None);
-		
-		Row js = rr.solutionToRow(aspects, qs);
+		ResultsToRows rr = new ResultsToRows(aspects, Compactions.None);
+		Row js = rr.solutionToRow(qs);
 		
 		Row expected = new Row()
 			.put("pre:a", Term.fromNode(Compactions.None, A))
