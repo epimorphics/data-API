@@ -3,11 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api-lib</artifactId>
   <packaging>jar</packaging>
-<<<<<<< HEAD
-  <version>0.0.7-SNAPSHOT</version>
-=======
-  <version>0.0.7</version>
->>>>>>> logging-tweaks-over-006
+  <version>0.0.10-SNAPSHOT</version>
   <name>data-api-lib</name>
   <description>data query API for cubish RDF data</description>
   
@@ -66,11 +62,7 @@
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>
-<<<<<<< HEAD
-	<version>0.0.7-SNAPSHOT</version>
-=======
-	<version>0.0.7</version>
->>>>>>> logging-tweaks-over-006
+	<version>0.0.10-SNAPSHOT</version>
   </parent>
 
 </project>

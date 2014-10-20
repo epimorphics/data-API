@@ -86,7 +86,7 @@ public class TestTermTypeCompatability {
 
 	private void testType(String mode, final Resource type, Term t) {
 		final Problems p = new Problems();
-		Term.Visitor tv = new Term.Visitor() {
+		Term.Visitor<Term> tv = new Term.Visitor<Term>() {
 
 			@Override public Term visitVar(TermVar tv) {
 				p.add("variable term " + tv + " not permitted as value.");
