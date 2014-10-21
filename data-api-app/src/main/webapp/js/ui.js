@@ -86,7 +86,7 @@ $(function() {
     var formatExplanation = function(data) {
         var html =  data.status ? "<h3>Succeeded</h3>" :"<h3>Failed</h3>";
 	if (!data.status) {
-		html += "<pre>" + data.problems + "</pre>" 
+		html += "<pre>" + data.problems.replace(/</g,"&lt;") + "</pre>" 
 	}
 
         html += "<h3>Data set: " + data.datasetName + "</h3>";
