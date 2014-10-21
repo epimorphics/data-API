@@ -17,13 +17,16 @@ import java.util.Set;
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
+import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.data_queries.terms.TermValidator;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JsonUtil;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 // this should be data-driven, ie, a bunch of plugins that respond to
@@ -120,8 +123,10 @@ public class DataQueryParser {
 							if (op == Operator.BELOW) {
 								constraints.add( new Below(a, v.get(0)) );
 							} else if (op == Operator.ONEOF && v.size() == 1) {
+								validate(a, v);
 								constraints.add( new Filter(a, new Range(Operator.EQ, v)));
 							} else {
+								validate(a, v);
 								constraints.add( new Filter(a, new Range(op, v) ) );
 							}
 						} else {
@@ -136,6 +141,15 @@ public class DataQueryParser {
 				p.add("Value of shortname '" + key + "' should be Object, given " + range);
 			}
 		}
+	}
+	
+	void validate(Aspect a, List<Term> operands) {
+		if (Switches.validatingTermsAgainstTypes)
+			for (Term o: operands) {
+				String name = a.getName().getCURIE();
+				Resource type = a.getRangeType();
+				TermValidator.validate(dataset, p, name, type, o);				
+			}
 	}
 
 	private void parseAtMember(JsonObject jo, String key, JsonValue value) {

@@ -21,7 +21,11 @@
 		[ dsapi:property rdfs:label; rdfs:label "label"; dsapi:multivalued true ],
 		[ dsapi:property rdf:type;   rdfs:label "type"],
 		[ dsapi:property egc:players; rdfs:label "players"; dsapi:multivalued true ],
-		[ dsapi:property egc:playTimeMinutes; rdfs:label "playing time"; dsapi:optional true ],
+		[ dsapi:property egc:playTimeMinutes
+			; rdfs:label "playing time"
+			; dsapi:optional true 
+			; dsapi:rangeType xsd:integer
+		],
 		[ dsapi:property egc:pubYear; rdfs:label "publication year"],
 		[ dsapi:property egc:designed-by; rdfs:label "designed by"; dsapi:optional true ],
 		[ dsapi:property egc:designer-of; rdfs:label "designer of"; dsapi:optional true ],

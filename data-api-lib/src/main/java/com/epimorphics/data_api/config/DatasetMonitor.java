@@ -32,6 +32,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.FileManager;
@@ -163,6 +164,8 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     
     private static Property[] mergeProps = new Property[]{ RDFS.label, SKOS.prefLabel, RDFS.comment, RDFS.range, DCTerms.description};
     
+    static final Property Dsapi_rangeType = ResourceFactory.createProperty(Dsapi.NS + "rangeType"); 
+    
     private void parseAspects(API_Dataset dsapi, Resource root, List<API_Dataset> datasets) {
         for (Resource aspect : RDFUtil.allResourceValues(root, Dsapi.aspect)) {
             Resource decl = RDFUtil.getResourceValue(aspect, Dsapi.property);
@@ -174,6 +177,8 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             Aspect a = addAspect(dsapi, datasets, aspect, ! RDFUtil.getBooleanValue(aspect, Dsapi.optional, false));
             a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
             a.setPropertyPath( RDFUtil.getStringValue(aspect, Dsapi.propertyPath));
+            Resource t = RDFUtil.getResourceValue(aspect, Dsapi_rangeType);
+			a.setRangeType(t);
             // TODO parse range constraints
         }
     }

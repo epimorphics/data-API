@@ -15,7 +15,6 @@ import com.epimorphics.data_api.sparql.SQ_Expr;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Range {
@@ -24,9 +23,6 @@ public class Range {
 	final List<Term> operands;
 	
 	public Range(Operator op, List<Term> operands ) {
-		
-		if (op == null) throw new BrokenException( ">> OOPS OP IS NULL" );
-		
 		this.op = op;
 		this.operands = operands;
 	}

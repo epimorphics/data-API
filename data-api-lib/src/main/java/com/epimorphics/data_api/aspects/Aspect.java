@@ -197,7 +197,7 @@ public class Aspect extends ResourceBasedConfig {
 	}
 
 	public Aspect setRangeType(Resource type) {
-		this.rangeType = type;
+		if (type != null) this.rangeType = type;
 		return this;
 	}
 	

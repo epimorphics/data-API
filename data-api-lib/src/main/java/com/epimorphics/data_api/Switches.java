@@ -20,17 +20,20 @@ public class Switches {
     	the generated SPARQL queries will be on a single line.  It
     	may be set false when debugging.
 	*/
-	public static final boolean flattening = true;
+	public static final boolean flattening = false;
 
 	// sort the fields of a JS object when Row is generating them
 	public static boolean sorting = false;
 
+	// validate the (type of) terms against the range type of aspects
+	// when building a data query.
+	public static boolean validatingTermsAgainstTypes = true;
+
 	public static String reportSettings() {
 		return
 			", flatten query log entry: " + (flattening ? "yes" : "no")
+			+ ", validating terms against types: " + (validatingTermsAgainstTypes ? "yes" : "no")
 			+ "."
 			;
 	}
-
-
 }
