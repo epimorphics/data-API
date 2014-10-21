@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 
 import org.junit.Test;
 
+import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.hp.hpl.jena.datatypes.BaseDatatype;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
@@ -23,17 +24,17 @@ public class TestConvertNodeToTerm {
 
 	@Test public void testTranslateResource() {
 		Node resource = NodeFactory.createURI("eh:/example");
-		assertEquals(Term.URI("eh:/example"), Term.fromNode(resource));
+		assertEquals(Term.URI("eh:/example"), fromNode(resource));
 	}
 	
 	@Test public void testTranslatePlainString() {
 		Node string = NodeFactory.createLiteral("spelling", "", null);
-		assertEquals(Term.string("spelling"), Term.fromNode(string));
+		assertEquals(Term.string("spelling"), fromNode(string));
 	}
 	
 	@Test public void testTranslateLanguagedString() {
 		Node languaged = NodeFactory.createLiteral("spelling", "en-uk", null);
-		assertEquals(Term.languaged("spelling", "en-uk"), Term.fromNode(languaged));
+		assertEquals(Term.languaged("spelling", "en-uk"), fromNode(languaged));
 	}
 	
 	@Test public void testTranslateBooleanLiteral() {
@@ -44,25 +45,25 @@ public class TestConvertNodeToTerm {
 	private void testTranslateBooleanLiteral(boolean value) {
 		LiteralLabel ll = LiteralLabelFactory.create(value);
 		Node resource = NodeFactory.createLiteral(ll);
-		assertEquals(Term.bool(value), Term.fromNode(resource));
+		assertEquals(Term.bool(value), fromNode(resource));
 	}
 	
 	@Test public void testTranslateInteger() {
 		LiteralLabel ll = LiteralLabelFactory.create(17);
 		Node integer = NodeFactory.createLiteral(ll);
-		assertEquals(Term.integer("17"), Term.fromNode(integer));		
+		assertEquals(Term.integer("17"), fromNode(integer));		
 	}
 	
 	@Test public void testTranslateDecimal() {
 		LiteralLabel ll = LiteralLabelFactory.create(new BigDecimal("1.7"));
 		Node integer = NodeFactory.createLiteral(ll);
-		assertEquals(Term.decimal("1.7"), Term.fromNode(integer));		
+		assertEquals(Term.decimal("1.7"), fromNode(integer));		
 	}
 	
 	@Test public void testTranslateDouble() {
 		LiteralLabel ll = LiteralLabelFactory.create(17.0);
 		Node integer = NodeFactory.createLiteral(ll);
-		assertEquals(Term.Double("17.0"), Term.fromNode(integer));		
+		assertEquals(Term.Double("17.0"), fromNode(integer));		
 	}
 	
 	@Test public void testTypedLiteral() {
@@ -70,6 +71,10 @@ public class TestConvertNodeToTerm {
 		RDFDatatype dt = new BaseDatatype(URI);
 		LiteralLabel ll = LiteralLabelFactory.create("lex", "", dt);
 		Node x = NodeFactory.createLiteral(ll);
-		assertEquals(Term.typed("lex", URI), Term.fromNode(x));		
+		assertEquals(Term.typed("lex", URI), fromNode(x));		
+	}
+	
+	Term fromNode(Node n) {
+		return Term.fromNode(Compactions.None, n);
 	}
 }

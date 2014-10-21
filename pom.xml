@@ -13,7 +13,7 @@
   </scm>
 
   <properties>
-	<project.tagname>_(paying off technical debt; unit tests all pass; declaring of literal datatypes.)</project.tagname>
+	<project.tagname>_(@json_mode)</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

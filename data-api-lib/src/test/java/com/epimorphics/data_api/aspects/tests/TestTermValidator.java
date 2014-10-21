@@ -28,7 +28,13 @@ public class TestTermValidator {
 	
 	static final List<Term> terms = new ArrayList<Term>();
 	
-	static final API_Dataset dataset = new API_Dataset();
+	// fake config so that getting the root works.
+	static Resource config = ModelFactory
+		.createDefaultModel()
+		.createResource("eh:/root")
+		;
+	
+	static final API_Dataset dataset = new API_Dataset(config, null);
 	
 	// testing terms to see if they're compatible with types.
 	// this is just scratchpad code for the moment.

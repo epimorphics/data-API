@@ -17,5 +17,5 @@ package com.epimorphics.data_api;
 */
 public interface Version {
 	public final String string = "0.0.10-SNAPSHOT";
-	public final String tagname = "_(paying off technical debt; unit tests all pass; declaring of literal datatypes.)";
+	public final String tagname = "_(@json_mode)";
 }

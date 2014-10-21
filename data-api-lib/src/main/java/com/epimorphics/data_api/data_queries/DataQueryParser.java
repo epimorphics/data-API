@@ -63,6 +63,8 @@ public class DataQueryParser {
 	
 	Integer length = null, offset = null;
 	boolean isCount = false;
+	boolean suppressTypes = false;
+	boolean compactOptionals = false;
 	
 	final Problems p;
 	final API_Dataset dataset;
@@ -90,7 +92,15 @@ public class DataQueryParser {
 			}
 		}
 		Constraint c = Constraint.build(constraints, compositions);
-		return new DataQuery(c, sortby, guards, Slice.create(length, offset, isCount));
+		DataQuery dq = new DataQuery
+			( c
+			, sortby
+			, guards
+			, Slice.create(length, offset, isCount)
+			);
+		dq.setSuppressTypes(suppressTypes);
+		dq.setCompactOptionals(compactOptionals);
+		return dq;
 	}
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
@@ -157,6 +167,21 @@ public class DataQueryParser {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
 			constraints.add( extractSearchSpec(key, null, value) );
+		} else if (key.equals("@suppress_types")) {
+			suppressTypes = extractBoolean(p, key, value);
+		} else if (key.equals("@json_mode")) {
+			String mode = getString(jo, key);
+			if (mode.equals("complete")) {
+				suppressTypes = false;
+				compactOptionals = false;
+			} else if (mode.equals("compact")) {
+				suppressTypes = true;
+				compactOptionals = true;
+			} else {
+				p.add("@json_mode must have value 'complete' or 'compact', was given '" + mode + "'.");
+			}
+		} else if (key.equals("@compact_optionals")) {
+			compactOptionals = extractBoolean(p, key, value);
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {

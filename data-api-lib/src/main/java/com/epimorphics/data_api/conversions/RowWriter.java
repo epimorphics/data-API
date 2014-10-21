@@ -22,12 +22,12 @@ import com.hp.hpl.jena.query.ResultSet;
 */
 public final class RowWriter implements JSONWritable {
 	
-	private final Set<Aspect> aspects;
 	private final ResultSet rs;
+	private final ResultsToRows rtr;
 
-	public RowWriter(Set<Aspect> aspects, ResultSet rs) {
-		this.aspects = aspects;
+	public RowWriter(Set<Aspect> aspects, ResultSet rs, Compactions c) {
 		this.rs = rs;
+		this.rtr = new ResultsToRows(aspects, c);
 	}
 
 	@Override public void writeTo(final JSFullWriter jw) {
@@ -43,7 +43,7 @@ public final class RowWriter implements JSONWritable {
     				comma.value = true;
     			}
     		};
-    		ResultsToRows.convert(aspects, stream, rs);
+    		rtr.convert(stream, rs);
     		jw.finishArray();
     		jw.finishOutput();
 	    } catch (Exception e) {
