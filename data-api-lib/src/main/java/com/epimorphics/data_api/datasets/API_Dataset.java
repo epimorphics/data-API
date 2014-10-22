@@ -29,10 +29,8 @@ import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
-import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -74,15 +72,13 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 			add(new Aspect(aspectRoot));
 		}
 	}
-
-	static final Property DSAPI_LiteralType = ResourceFactory.createProperty(Dsapi.NS + "literalType");
 	
 	/**
 	    configureLiteralDatatypes(config) considers all the properties (dsapi:literalType T) of
 	    config that are not literals and adds them to the set literalTypes of known literal types.
 	*/
 	private void configureLiteralDatatypes(Resource config) {
-		for (RDFNode r: config.listProperties(DSAPI_LiteralType).mapWith(Statement.Util.getObject).toList()) {
+		for (RDFNode r: config.listProperties(Dsapi.literalType).mapWith(Statement.Util.getObject).toList()) {
 			if (r instanceof Resource) {
 				setIsLiteralType((Resource) r);				
 			}

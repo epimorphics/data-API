@@ -61,6 +61,13 @@ of the dataset to the ?item variable."""@en;
     rdfs:range  :Aspect;
     .
 
+:literalType a owl:ObjectProperty;
+	rdfs:label "literal type"@en;
+	rdfs:comment "Indicates that the type given as object has values that are (typed) literals."@en;
+	rdfs:domain :Aspect;
+	rdfs:range rdfs:Class;
+	.
+
 :codeList a owl:ObjectProperty;
     rdfs:label "code list"@en;
     rdfs:comment """Applied to a Dataset this indicates that the data set represents members of a code list (a skos:ConceptScheme, skos:Collection or qb:HierarchicalCodeList). It then supports @childOf filters.
