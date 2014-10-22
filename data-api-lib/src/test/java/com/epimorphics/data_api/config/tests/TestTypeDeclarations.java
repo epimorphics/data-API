@@ -50,7 +50,15 @@ public class TestTypeDeclarations {
 	}
 	
 	@Test public void testDeclareTypes() {
-		API_Dataset ds = configure("<eh:/root> dsapi:literalType <eh:/LT1>, <eh:/LT2>.");
+//		API_Dataset ds = configure("<eh:/root> dsapi:literalType <eh:/LT1>, <eh:/LT2>.");
+		API_Dataset ds = configure
+			( "<eh:/root> dsapi:aspect <eh:/A1>, <eh:/A2>"
+			+ ". <eh:/A1> dsapi:property <eh:/P1>"
+			+ ". <eh:/A2> dsapi:property <eh:/P2>"
+			+ ". <eh:/P1> rdfs:range <eh:/LT1>"
+			+ ". <eh:/P2> rdfs:range <eh:/LT2>"
+			+ "."
+			);
 		Model m = ds.getRoot().getModel();
 		assertTrue(ds.isLiteralType(m.createResource("eh:/LT1")));
 		assertTrue(ds.isLiteralType(m.createResource("eh:/LT2")));
