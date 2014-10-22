@@ -65,9 +65,16 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    configureHierarchy();
 	    configureBaseQuery();
 	    configureName();
+	    configureAspects(config);
 	    this.manager = manager;
 	}
 	
+	private void configureAspects(Resource config) {
+		for (Resource aspectRoot: RDFUtil.allResourceValues(root, Dsapi.aspect)) {
+			add(new Aspect(aspectRoot));
+		}
+	}
+
 	static final Property DSAPI_LiteralType = ResourceFactory.createProperty(Dsapi.NS + "literalType");
 	
 	/**

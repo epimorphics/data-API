@@ -77,7 +77,8 @@ public class TestUtil {
             
             if (p.isOK()) {
                 sq = dq.toSparql(p, dataset);
-//                System.out.println(">> " + sq);
+//                System.out.println(">> json:   " + json);
+//                System.out.println(">> sparql: " + sq);
                 try {
                     QueryFactory.create(sq);
                 } catch (Exception e) {

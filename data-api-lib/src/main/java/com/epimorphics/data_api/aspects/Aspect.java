@@ -16,6 +16,7 @@ import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
+import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Dsapi;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -101,11 +102,11 @@ public class Aspect extends ResourceBasedConfig {
 		return explictPrefixes == null ? super.getPrefixes() : explictPrefixes;
 	}
 
-	public Aspect(Resource aspect) {
-	    super(aspect);
-	    ID = aspect.getURI();
+	public Aspect(Resource aspectRoot) {
+	    super(aspectRoot);
+	    ID = aspectRoot.getURI();
 	    if (ID == null) {
-	        Resource prop = aspect.getPropertyResourceValue(Dsapi.property);
+	        Resource prop = aspectRoot.getPropertyResourceValue(Dsapi.property);
 	        if (prop != null) {
 	            ID = prop.getURI();
 	        } else {
@@ -115,9 +116,16 @@ public class Aspect extends ResourceBasedConfig {
 	    }
 	    PrefixMapping pm = getPrefixes();
 	    name = new Shortname(pm, pm.shortForm(ID));
-	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
+	    configureFrom(aspectRoot);
 	}
 	
+	public void configureFrom(Resource aspectRoot) {
+		setIsOptional( RDFUtil.getBooleanValue(aspectRoot, Dsapi.optional, false));
+		setRangeType(aspectRoot.getPropertyResourceValue(RDFS.range));
+        setIsMultiValued( RDFUtil.getBooleanValue(aspectRoot, Dsapi.multivalued, false) );
+        setPropertyPath( RDFUtil.getStringValue(aspectRoot, Dsapi.propertyPath));
+	}
+
 	@Override public int hashCode() {
 		return name.hashCode();
 	}

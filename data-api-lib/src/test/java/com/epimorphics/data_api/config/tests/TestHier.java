@@ -100,9 +100,10 @@ public class TestHier {
         
         dataset = man.getDataset("ea-areas-hcl");
         assertNotNull(dataset);
+                
         results = queryAsResultList(dataset, "{ '@childof' : null }");
-        assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
         assertEquals(6, results.size());
+        assertTrue(results.contains( ResourceFactory.createResource("http://environment.data.gov.uk/registry/def/ea-organization/ea_areas/1") ));
         
         // JSON serialization of dataset
         jo = asJson( dataset.asJsonShort("en", "http://localhost") ).getAsObject();
