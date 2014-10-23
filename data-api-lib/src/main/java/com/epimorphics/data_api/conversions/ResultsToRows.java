@@ -26,6 +26,8 @@ public class ResultsToRows {
 
 	public void convert(RowConsumer rc, Iterator<QuerySolution> solutions) {
 				
+		if (true) throw new RuntimeException("OH WOE IS ME");
+		
 		Node current = null;
 		Row pending = null;		
 		
