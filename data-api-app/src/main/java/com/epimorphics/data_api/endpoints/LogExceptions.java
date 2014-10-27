@@ -38,7 +38,7 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 	@Override public Response toResponse(Exception e) {
 		if (e instanceof WebApplicationException) return ((WebApplicationException) e).getResponse();
 		log.error("FAILED: " + e.toString(), e);
-		if (log.isDebugEnabled()) log.debug(stackTrace(e));
+		stackTraceIfDebugging(e);
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 			.entity(e.toString())
 			.build()
@@ -46,15 +46,17 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 	}
 
 	/**
-	    stackTrace returns a string representation of the stack
-	    trace of the exception e.
+	    stackTraceIfDebugging logs a debug stacktrace of the exception e
+	    if debug logging is enabled. Otherwise it does nothing.
 	*/
-	private String stackTrace(Exception e) {
-		ByteOutputStream bos = new ByteOutputStream();
-		PrintStream ps = new PrintStream(bos);
-		e.printStackTrace(ps);
-		ps.flush();
-		return bos.toString();
+	public static void stackTraceIfDebugging(Exception e) {
+		if (log.isDebugEnabled()) {
+			ByteOutputStream bos = new ByteOutputStream();
+			PrintStream ps = new PrintStream(bos);
+			e.printStackTrace(ps);
+			ps.flush();
+			log.debug(bos.toString());
+		}
 	}
 
 }
