@@ -61,7 +61,9 @@ import com.hp.hpl.jena.query.ResultSet;
 */
 public final class RowWriter implements JSONWritable {
 
-    static Logger log = LoggerFactory.getLogger(RowWriter.class);
+    private static final String FAILED = "@failed";
+
+	static Logger log = LoggerFactory.getLogger(RowWriter.class);
     
 	private final ResultSet rs;
 	private final ResultsToRows rtr;
@@ -74,6 +76,30 @@ public final class RowWriter implements JSONWritable {
 	public RowWriter(Set<Aspect> aspects, ResultSet rs, Compactions c) {
 		this.rs = rs;
 		this.rtr = new ResultsToRows(aspects, c);
+	}
+
+	public static final class RowToJSONWriter implements RowConsumer {
+		private final MutableBool comma = new MutableBool();
+		private final JSFullWriter jw;
+		
+		/**
+		    RowConsumer stream consumes JSON Row objects
+		    by serialising their JSON form to jw.
+		*/
+		public RowToJSONWriter(JSFullWriter jw) {
+			this.jw = jw;
+		}
+
+		@Override public void consume(Row jv) {
+			try {
+				if (comma.value) jw.arraySep(); 
+				jv.writeTo(jw);
+				comma.value = true;
+			} catch (Exception e) {
+				log.error("error writing JSON: " + e.getMessage());
+				throw new Caught(e);
+			}
+		}
 	}
 
 	/**
@@ -98,48 +124,22 @@ public final class RowWriter implements JSONWritable {
 	    generated.
 	*/
 	@Override public void writeTo(final JSFullWriter jw) {
+		final RowConsumer stream = new RowToJSONWriter(jw);
 	    try {
-    		final MutableBool comma = new MutableBool();
-    		jw.startArray();
-    		
-    		/**
-    		    RowConsumer stream consumes JSON Row objects
-    		    by serialising their JSON form to jw.
-    		*/
-    		RowConsumer stream = new RowConsumer() {
-    			
-    			@Override public void consume(Row jv) {
-    				try {
-	    				if (comma.value) jw.arraySep(); 
-	    				jv.writeTo(jw);
-	    				comma.value = true;
-    				} catch (Exception e) {
-    					log.error("error writing JSON: " + e.getMessage());
-    					throw new Caught(e);
-    				}
-    			}
-    		};
-    		
-    		/**
-    		    writeTo(jw) requests the ResultsToRows object rtr to
-    		    convert the rows from the ResultSet rs to their
-    		    serialised JSON form.
-    		*/
     		try { 
+    			jw.startArray();
     			rtr.convert(stream, rs); 
+    			jw.finishArray();
+    			jw.finishOutput();
     		} catch (Caught e) {
-    			stream.consume(poison(e));
+    			stream.consume(failingRow(e));
     		} catch (Exception e) {
-    			stream.consume(poison(e));
+    			stream.consume(failingRow(e));
     			log.error("Failure: " + e.getMessage());
-    		}
-    		
-    		jw.finishArray();
-    		jw.finishOutput();
-    		
+    		}   		
 	    } catch (Exception e) {
 	    	log.error("unhandled exception in RowWriter: " + e.getMessage());
-	    	poison(jw, e);
+	    	stream.consume(failingRow(e));
 	    }
 	    finally {
 	        if (rs instanceof ClosableResultSet) {
@@ -148,14 +148,8 @@ public final class RowWriter implements JSONWritable {
 	    }
 	}
 
-	private void poison(JSFullWriter jw, Exception e) {
-		jw.startObject();
-		jw.pair("@poison", e.getMessage());
-		jw.finishObject();
-	}
-
-	private Row poison(Exception e) {
-		return new Row().put("@poison", Term.string(e.getMessage()));
+	private Row failingRow(Exception e) {
+		return new Row().put(FAILED, Term.string(e.getMessage()));
 	}
 }
 
