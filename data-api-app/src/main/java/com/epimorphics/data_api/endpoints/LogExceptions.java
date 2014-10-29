@@ -5,6 +5,7 @@
 */
 package com.epimorphics.data_api.endpoints;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
 import javax.ws.rs.WebApplicationException;
@@ -15,7 +16,6 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 /**
     LogExceptions is an ExceptionMapper that maps every exception
@@ -51,7 +51,7 @@ import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 	*/
 	public static void stackTraceIfDebugging(Exception e) {
 		if (log.isDebugEnabled()) {
-			ByteOutputStream bos = new ByteOutputStream();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			PrintStream ps = new PrintStream(bos);
 			e.printStackTrace(ps);
 			ps.flush();
