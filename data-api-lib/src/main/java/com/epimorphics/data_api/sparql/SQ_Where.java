@@ -9,52 +9,70 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SQ_Where {
 
-	final List<SQ_WhereElement> elements = new ArrayList<SQ_WhereElement>();
+//	final List<SQ_WhereElement> elements = new ArrayList<SQ_WhereElement>();
+//	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
+	
+	final List<SQ_WhereElement> textQueries = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> groundTriples = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> ungroundTriples = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> optionalTriples = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> filters = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> ragbag = new ArrayList<SQ_WhereElement>();
+	
+	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
+	
 	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
 	
 	public void toString(StringBuilder sb, String indent) {
-		for (SQ_WhereElement e: elements) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: textQueries) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: groundTriples) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: ungroundTriples) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: filters) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: ragbag) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
 		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 	}
 
 	public void add(SQ_WhereElement e) {
-		elements.add(e);
+		ragbag.add(e);
 	}
 
 	private final Map<SQ_Variable, SQ_Node> equals = new HashMap<SQ_Variable, SQ_Node>();
 	
 	public void addBind(SQ_Node value, SQ_Variable var) {
-		SQ_Bind b = new SQ_Bind(value, var);
-		bindingElements.add(b);
-		equals.put(var, value);
+		bindingElements.add(new SQ_Bind(value, var));
 	}
 
 	// special-case a text-query triple to go at the front
 	public void addTriple(SQ_Triple t) {
 		t = subst(t);
 		if (t.P.equals(SQ_Const.textQuery)) {
-			elements.add(0, t);
+			textQueries.add(0, t);
+		} else if (t.O instanceof SQ_Variable) {
+			addUnlessPresent(ungroundTriples, t);
 		} else {
-			addUnlessPresent(t);
+			addUnlessPresent(groundTriples, t);
 		}
 	}
 
 	public void addOptionalTriple(SQ_Triple t) {
-		addUnlessPresent(subst(t).optional());
+		addUnlessPresent(optionalTriples, subst(t).optional());
 	}
 	
 	public void addOptionalTriples(List<SQ_Triple> ts) {
 		List<SQ_Triple> pruned = new ArrayList<SQ_Triple>();
 		for (SQ_Triple t: ts) {
-			t = subst(t);
-			if (!elements.contains(t))
-				pruned.add(t);
+			SQ_Triple subst_t = subst(t);
+			if (!addedTriples.contains(subst_t))
+				pruned.add(subst_t);
 		}
 		if (pruned.size() > 0)
-			addUnlessPresent(SQ_Triple.optionals(pruned));
+			addUnlessPresent(optionalTriples, SQ_Triple.optionals(pruned));
 	}
 	
 	private SQ_Triple subst(SQ_Triple t) {
@@ -67,17 +85,17 @@ public class SQ_Where {
 	}
 
 	public void addFilter(SQ_Filter f) {
-		elements.add(f);
+		filters.add(f);
 	}
 	
 	public void addComment(String c) {
-		elements.add(new SQ_Comment(c));
+		ragbag.add(new SQ_Comment(c));
 	}
 	
 	/**
 		add an element e to elements unless it's already present.
 	*/
-	private void addUnlessPresent(SQ_WhereElement e) {
+	private void addUnlessPresent(List<SQ_WhereElement> addTo, SQ_WhereElement e) {
 //		System.err.println(">> addUnlessPresent: " + e );
 //		for (SQ_WhereElement el: elements) {
 //			if (el.equals(e)) {
@@ -90,12 +108,12 @@ public class SQ_Where {
 //		System.err.println(">> not already in, adding." );
 		
 		// if (!elements.contains(e)) elements.add(e);
-		
-		for (SQ_WhereElement el: elements) {
+		for (SQ_WhereElement el: addedTriples) {
 			// System.err.println(">> " + e + " equals existing " + el.getClass().getSimpleName() + " " + el + ": " + (el.equals(e) ? "yes" : "no"));
 			if (el.equals(e) || SPLiteralAlreadyExistsForThisSPVariable(el, e)) return;
 		}
-		elements.add(e);	
+		addTo.add(e);
+		addedTriples.add(e);
 	}
 
 	private boolean SPLiteralAlreadyExistsForThisSPVariable(SQ_WhereElement present, SQ_WhereElement toInsert) {
@@ -132,7 +150,7 @@ public class SQ_Where {
 	}
 	
 	public void addSubquery(SQ nested) {
-		elements.add(new SubQuery(nested));
+		ragbag.add(new SubQuery(nested));
 	}
 	
 }
