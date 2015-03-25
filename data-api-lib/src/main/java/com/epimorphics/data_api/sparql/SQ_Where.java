@@ -13,33 +13,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class SQ_Where {
-
-//	final List<SQ_WhereElement> elements = new ArrayList<SQ_WhereElement>();
-//	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
 	
 	final List<SQ_WhereElement> textQueries = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> groundTriples = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> ungroundTriples = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> optionalTriples = new ArrayList<SQ_WhereElement>();
-	final List<SQ_WhereElement> filters = new ArrayList<SQ_WhereElement>();
-	final List<SQ_WhereElement> ragbag = new ArrayList<SQ_WhereElement>();
-	
-	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
-	
+	final List<SQ_WhereElement> filterElements = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> otherElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
 	
+	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
+		
 	public void toString(StringBuilder sb, String indent) {
 		for (SQ_WhereElement e: textQueries) e.toSparqlStatement(sb, indent);
 		for (SQ_WhereElement e: groundTriples) e.toSparqlStatement(sb, indent);
 		for (SQ_WhereElement e: ungroundTriples) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: filters) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: ragbag) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: filterElements) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: otherElements) e.toSparqlStatement(sb, indent);
 		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
 		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 	}
 
 	public void add(SQ_WhereElement e) {
-		ragbag.add(e);
+		otherElements.add(e);
 	}
 
 	private final Map<SQ_Variable, SQ_Node> equals = new HashMap<SQ_Variable, SQ_Node>();
@@ -85,11 +81,11 @@ public class SQ_Where {
 	}
 
 	public void addFilter(SQ_Filter f) {
-		filters.add(f);
+		filterElements.add(f);
 	}
 	
 	public void addComment(String c) {
-		ragbag.add(new SQ_Comment(c));
+		otherElements.add(new SQ_Comment(c));
 	}
 	
 	/**
@@ -150,7 +146,7 @@ public class SQ_Where {
 	}
 	
 	public void addSubquery(SQ nested) {
-		ragbag.add(new SubQuery(nested));
+		otherElements.add(new SubQuery(nested));
 	}
 	
 }
