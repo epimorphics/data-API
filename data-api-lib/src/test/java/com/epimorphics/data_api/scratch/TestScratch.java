@@ -60,20 +60,38 @@ public class TestScratch {
 	String[] A_eq_17 = new String[] {"", "'pre:A': {'@eq': 17}", "FILTER(?pre_A = 17)"};
 	String[] A_eq_X  = new String[] {"", "'pre:A': {'@eq': {'@id': 'eh:/X'}}", "?item pre:A <eh:/X>"};
 	String[] B_lt_17 = new String[] {"", "'pre:B': {'@lt': 17}", "FILTER(?pre_B < 17)"};
-	
-	@Test public void testSomething() {
-		runTest(A_free, B_lt_17);
-		runTest(A_free, D_free);
-		runTest(A_eq_X, B_free);
-		runTest(A_eq_X, D_free);
-		runTest(A_eq_X, B_lt_17);
-		runTest(B_lt_17, D_free);
-		runTest(B_free, A_eq_17);
+
+	@Test public void testSomethignElse() {
+		assertGeneratesInOrder( query(aspect("B", "lt", "17")), item("A"), filter("B", "<", "17"));
+		assertGeneratesInOrder( query(aspect("A", "eq", id("X"))), "?item pre:A <eh:/X>", item("B") );
+		assertGeneratesInOrder( query(aspect("A", "eq", id("X"))), "?item pre:A <eh:/X>", item("D") );
 		
+		assertGeneratesInOrder
+			( query(aspect("A", "eq", id("X")), aspect("B", "lt", "17"))
+			, "?item pre:A <eh:/X>"
+			, item("B")
+			, filter("B", "<", "17")
+			, "BIND(<eh:/X> AS ?pre_A)"
+			);
+	}
+	
+	private String id(String name) {
+		return "{'@id': 'eh:/" + name + "'}";
 	}
 
-	private void runTest(String[] firstTerm, String[] secondTerm) {
-		String queryString = both(firstTerm, secondTerm);		
+	private String item(String name) {
+		return "?item pre:" + name + " ?pre_" + name;
+	}
+	
+	private String aspect(String name, String op, String value) {
+		return "'pre:" + name + "': {'@" + op + "': " + value + "}";
+	}
+	
+	private String filter(String name, String op, String value) {
+		return "FILTER(?pre_" + name + " " + op + " " + value + ")";
+	}
+	
+	private void assertGeneratesInOrder(String queryString, String... fragments) {
 		Problems p = new Problems();
 		JsonObject jo = JSON.parse(queryString);
 		DataQuery dq = DataQueryParser.Do(p, dsAB, jo);
@@ -81,32 +99,39 @@ public class TestScratch {
 	//
 		String sparqlString = dq.toSparql(p, dsAB);
 		if (!p.isOK()) fail("Could not construct SPARQL query: " + p.getProblemStrings());
-	//
-		System.err.println(">> query:\n" + sparqlString);
 		
-		if (!matches(sparqlString, firstTerm[2], secondTerm[2])) {
-			fail
-				( "in the query generated from " + queryString + ","
-				+ "\nthe clause " + firstTerm[2]
-				+ "\nshould appear before the clause " + secondTerm[2]
-				+ "\nin the generated query\n" 
-				+ sparqlString
-				)
-				;
+		// System.err.println(">> QUERY:\n" + sparqlString);
+	//
+		String scan = sparqlString;
+		for (int fragIndex = 0; fragIndex < fragments.length; fragIndex += 1) {
+			String f = fragments[fragIndex];
+			int i = scan.indexOf(f);
+			if (i < 0) {
+				String previous = (fragIndex == 0 ? "WHERE" : fragments[fragIndex - 1]);
+				String next = (fragIndex == fragments.length ? "the end of the query" : fragments[fragIndex + 1]);
+				fail
+					( "in the query generated from " + queryString + ","
+					+ "\nthe clause " + f
+					+ "\nshould appear after " + previous
+					+ "\nshould appear before  " + next
+					+ "\nin the generated query\n" 
+					+ sparqlString
+					)
+					;
+			} else {
+				scan = scan.substring(i + f.length());
+			}
 		}
 	}
 
-	private boolean matches(String sparqlString, String first, String second) {
-		int f = sparqlString.indexOf(first);
-		if (f < 0) return false;
-		int s = sparqlString.indexOf(second, f + first.length());
-		return s >= 0;
-	}
-
-	private String both(String[] firstTerm, String[] secondTerm) {
-		String F = firstTerm[1], S = secondTerm[1];
-		String comma = F.equals("") || S.equals("") ? "" : ", ";
-		return "{" + firstTerm[1] + comma + secondTerm[1] + "}";
+	private String query(String... parts) {		
+		String result = "{", comma = "";
+		for (String p: parts) {
+			result = result + comma + p;
+			comma = ", ";			
+		}
+		result += "}";
+		return result;
 	}
 
 }
