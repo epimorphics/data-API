@@ -26,14 +26,29 @@ public class SQ_Where {
 	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
 		
 	public void toString(StringBuilder sb, String indent) {
-		for (SQ_WhereElement e: textQueries) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: groundTriples) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: ungroundTriples) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: filterElements) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: otherElements) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
-		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
-		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: textQueries) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: groundTriples) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: ungroundTriples) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: filterElements) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: otherElements) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
+//		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
+//		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
+		section(sb, indent, "text search queries", textQueries);
+		section(sb, indent, "items with values EQ to a constant", groundTriples);
+		section(sb, indent, "triples with unbound objects", ungroundTriples);
+		section(sb, indent, "mandatory filters", filterElements);
+		section(sb, indent, "otherwise uncategorised elements", otherElements);
+		section(sb, indent, "optional triples", optionalTriples);
+		section(sb, indent, "optional filter elements", optionalFilterElements);
+		section(sb, indent, "BINDings", bindingElements);
+	}
+	
+	protected void section(StringBuilder sb, String indent, String title, List<? extends SQ_WhereElement> elements) {
+		if (elements.size() > 0) {
+			sb.append("  # ").append(title).append("\n");
+			for (SQ_WhereElement e: elements) e.toSparqlStatement(sb, indent);
+		}
 	}
 
 	public void add(SQ_WhereElement e) {
