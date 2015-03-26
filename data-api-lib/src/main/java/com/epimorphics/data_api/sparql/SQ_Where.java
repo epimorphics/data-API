@@ -40,8 +40,10 @@ public class SQ_Where {
 
 	private final Map<SQ_Variable, SQ_Node> equals = new HashMap<SQ_Variable, SQ_Node>();
 	
-	public void addBind(SQ_Node value, SQ_Variable var) {
-		bindingElements.add(new SQ_Bind(value, var));
+	public void addBind(SQ_Node value, SQ_Variable var) {		
+		SQ_Bind b = new SQ_Bind(value, var);
+		bindingElements.add(b);
+		equals.put(var, value);
 	}
 
 	// special-case a text-query triple to go at the front

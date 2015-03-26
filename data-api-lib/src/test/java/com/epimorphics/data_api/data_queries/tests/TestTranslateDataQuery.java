@@ -419,8 +419,8 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, " ?item pre:X ?pre_X ."
-			, " OPTIONAL {?item pre:Y ?pre_Y .}"
 			, " FILTER(?pre_X = 17)"
+			, " OPTIONAL {?item pre:Y ?pre_Y .}"
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
