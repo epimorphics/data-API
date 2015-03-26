@@ -32,13 +32,7 @@ public class TestScratch {
 		* filters
 		* optional triples
 		* BINDings
-		
-		So there are six kinds of term and to check the ordering
-		we need 36 tests.  We'll set up a loop, easier to manage 
-		even if a bit harder to handle when there are failures.
-		
 	*/
-	
 	
 	static final Aspect A = new TestAspects.MockAspect("eh:/prefixPart/A");
 	static final Aspect B = new TestAspects.MockAspect("eh:/prefixPart/B");
@@ -51,26 +45,33 @@ public class TestScratch {
 		.add(C)
 		.add(D.setIsOptional(true))
 		;
-	
-	String[] A_free = new String [] {"", "", "?item pre:A ?pre_A"};
-	String[] B_free = new String [] {"", "", "?item pre:B ?pre_B"};
-	String[] C_free = new String [] {"", "", "?item pre:C ?pre_C"};
-	String[] D_free = new String [] {"", "", "OPTIONAL { ?item pre:D ?pre_D . }"};
-
-	String[] A_eq_17 = new String[] {"", "'pre:A': {'@eq': 17}", "FILTER(?pre_A = 17)"};
-	String[] A_eq_X  = new String[] {"", "'pre:A': {'@eq': {'@id': 'eh:/X'}}", "?item pre:A <eh:/X>"};
-	String[] B_lt_17 = new String[] {"", "'pre:B': {'@lt': 17}", "FILTER(?pre_B < 17)"};
 
 	@Test public void testSomethignElse() {
-		assertGeneratesInOrder( query(aspect("B", "lt", "17")), item("A"), filter("B", "<", "17"));
-		assertGeneratesInOrder( query(aspect("A", "eq", id("X"))), "?item pre:A <eh:/X>", item("B") );
-		assertGeneratesInOrder( query(aspect("A", "eq", id("X"))), "?item pre:A <eh:/X>", item("D") );
+		assertGeneratesInOrder
+			( query(aspect("B", "lt", "17"))
+			, item("A")
+			, filter("B", "<", "17")
+			);
+		
+		assertGeneratesInOrder
+			( query(aspect("A", "eq", id("X")))
+			, "?item pre:A <eh:/X>"
+			, item("B") 
+			);
+		
+		assertGeneratesInOrder
+			( query(aspect("A", "eq", id("X")))
+			, "?item pre:A <eh:/X>"
+			, "OPTIONAL"
+			, item("D") 
+			);
 		
 		assertGeneratesInOrder
 			( query(aspect("A", "eq", id("X")), aspect("B", "lt", "17"))
 			, "?item pre:A <eh:/X>"
 			, item("B")
 			, filter("B", "<", "17")
+			, "OPTIONAL"
 			, "BIND(<eh:/X> AS ?pre_A)"
 			);
 	}
@@ -100,7 +101,7 @@ public class TestScratch {
 		String sparqlString = dq.toSparql(p, dsAB);
 		if (!p.isOK()) fail("Could not construct SPARQL query: " + p.getProblemStrings());
 		
-		// System.err.println(">> QUERY:\n" + sparqlString);
+		System.err.println(">> QUERY:\n" + sparqlString);
 	//
 		String scan = sparqlString;
 		for (int fragIndex = 0; fragIndex < fragments.length; fragIndex += 1) {
@@ -108,7 +109,7 @@ public class TestScratch {
 			int i = scan.indexOf(f);
 			if (i < 0) {
 				String previous = (fragIndex == 0 ? "WHERE" : fragments[fragIndex - 1]);
-				String next = (fragIndex == fragments.length ? "the end of the query" : fragments[fragIndex + 1]);
+				String next = (fragIndex == fragments.length - 1 ? "the end of the query" : fragments[fragIndex + 1]);
 				fail
 					( "in the query generated from " + queryString + ","
 					+ "\nthe clause " + f
