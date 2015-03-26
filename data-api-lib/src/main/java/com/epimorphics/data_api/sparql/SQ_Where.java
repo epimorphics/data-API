@@ -20,6 +20,7 @@ public class SQ_Where {
 	final List<SQ_WhereElement> optionalTriples = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> filterElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> otherElements = new ArrayList<SQ_WhereElement>();
+	final List<SQ_WhereElement> optionalFilterElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
 	
 	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
@@ -31,6 +32,7 @@ public class SQ_Where {
 		for (SQ_WhereElement e: filterElements) e.toSparqlStatement(sb, indent);
 		for (SQ_WhereElement e: otherElements) e.toSparqlStatement(sb, indent);
 		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
+		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
 		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 	}
 
@@ -82,8 +84,12 @@ public class SQ_Where {
 		return value == null ? s : value;
 	}
 
-	public void addFilter(SQ_Filter f) {
-		filterElements.add(f);
+	public void addFilter(SQ_Filter f) {	
+		(f.x.getIsOptional() ? optionalFilterElements : filterElements).add(f); 
+	}
+	
+	public void addOptionalFilter(SQ_WhereElement e) {
+		optionalFilterElements.add(e);
 	}
 	
 	public void addComment(String c) {

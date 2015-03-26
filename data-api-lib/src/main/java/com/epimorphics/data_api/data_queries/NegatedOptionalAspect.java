@@ -35,8 +35,7 @@ public final class NegatedOptionalAspect extends Constraint  {
 		static final PrefixMapping tobefixed = PrefixMapping.Factory.create();
 		
 		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
-			SQ_Variable v = new SQ_Variable(negated.a.asVarName());
-			SQ_Filter f = negated.range.asFilterSQ(tobefixed, v);
+			SQ_Filter f = negated.range.asFilterSQ(tobefixed, negated.a);
 			
 			sb.append(indent).append("FILTER(" );
 			
@@ -49,7 +48,8 @@ public final class NegatedOptionalAspect extends Constraint  {
 	}
 	
 	public void tripleFiltering(Context cx) {
-		cx.sq.addWhereElement(new Element(cx, negated));
+		// cx.sq.addWhereElement(new Element(cx, negated));
+		cx.sq.addOptionalFilter(new Element(cx, negated));
 	}
 
 	@Override public String toString() {

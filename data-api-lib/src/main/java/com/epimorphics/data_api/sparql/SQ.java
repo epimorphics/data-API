@@ -121,6 +121,10 @@ public class SQ {
 	public void addFilter(SQ_Filter f) {
 		whereClause.addFilter(f);
 	}
+	
+	public void addOptionalFilter(SQ_WhereElement f) {
+		whereClause.addOptionalFilter(f);
+	}
 
 	public void addFalse() {
 		whereClause.add(SQ_FalseFilter.value);

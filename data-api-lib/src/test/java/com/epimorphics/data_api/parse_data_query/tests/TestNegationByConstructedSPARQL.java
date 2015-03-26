@@ -145,8 +145,8 @@ public class TestNegationByConstructedSPARQL {
 			( "PREFIX spoo: <eh:/namespace/>"
 			, "SELECT ?item ?spoo_local"
 			, "WHERE {"
-			, "  FILTER(?spoo_local _NEGOP 17 || !bound(?spoo_local))".replace("_NEGOP", negOp)
 			, "  OPTIONAL { ?item spoo:local ?spoo_local }"
+			, "  FILTER(?spoo_local _NEGOP 17 || !bound(?spoo_local))".replace("_NEGOP", negOp)
 			, "}"
 			);
 		

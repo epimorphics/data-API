@@ -23,7 +23,7 @@ public class Filter extends Constraint {
 	
 	@Override public void tripleFiltering(Context cx) {
 		SQ_Variable v = new SQ_Variable(a.asVarName());
-		cx.sq.addFilter(range.asFilterSQ(cx.api.getPrefixes(), v));
+		cx.sq.addFilter(range.asFilterSQ(cx.api.getPrefixes(), a));
 	}
 	
 	@Override public Constraint negate() {

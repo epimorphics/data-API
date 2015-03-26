@@ -7,18 +7,25 @@ package com.epimorphics.data_api.sparql;
 
 import java.util.List;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Operator;
 
 public class SQ_Filter implements SQ_WhereElement {
 	
 	final List<SQ_Expr> operands;
-	final SQ_Variable x;
+	final Aspect x;
 	final Operator op;
+	final String suffix;
 	
-	public SQ_Filter(Operator op, SQ_Variable x, List<SQ_Expr> operands) {
+	public SQ_Filter(Operator op, Aspect x, List<SQ_Expr> operands) {
+		this(op, x, operands, "");
+	}
+	
+	public SQ_Filter(Operator op, Aspect x, List<SQ_Expr> operands, String suffix) {
 		this.op = op;
 		this.x = x;
 		this.operands = operands;
+		this.suffix = suffix;
 	}
 			
 	@Override public void toSparqlStatement(StringBuilder sb, String indent) {
@@ -29,8 +36,12 @@ public class SQ_Filter implements SQ_WhereElement {
 		sb.append(SQ.nl);
 	}		
 	
+	public SQ_Variable aspectAsVariable() {
+		return new SQ_Variable(x.asVarName() + suffix);
+	}
+	
 	public void toStringNoFILTER(StringBuilder sb) {
-		op.asExpression(sb, x, operands);
+		op.asExpression(sb, aspectAsVariable(), operands);
 	}
 
 }

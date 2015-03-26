@@ -9,6 +9,7 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.sparql.SQ_Expr;
@@ -53,10 +54,14 @@ public class Range {
 		return sb.toString();
 	}
 
-	public SQ_Filter asFilterSQ(PrefixMapping pm, SQ_Variable l) {
+	public SQ_Filter asFilterSQ(PrefixMapping pm, Aspect l) {
+		return asFilterSQ(pm, l, "");
+	}
+	
+	public SQ_Filter asFilterSQ(PrefixMapping pm, Aspect l, String suffix) {
 		List<SQ_Expr> operands = new ArrayList<SQ_Expr>(this.operands.size());		
 		for (Term t: this.operands) operands.add(termAsExpr(pm, t));
-		return new SQ_Filter(op, l, operands);		
+		return new SQ_Filter(op, l, operands, suffix);		
 	}
 
 	public static SQ_Expr termAsExpr(final PrefixMapping pm, final Term term) {
