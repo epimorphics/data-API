@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.hp.hpl.jena.shared.BrokenException;
 
 public class False extends Constraint {
 
@@ -14,6 +15,11 @@ public class False extends Constraint {
 	public False() {
 	}
 
+	
+	void doAspect(State s, Aspect a) {
+		throw new BrokenException("False not implemented yet");
+	}
+	
 	@Override public String toString() {
 		return "False";
 	}

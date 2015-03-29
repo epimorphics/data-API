@@ -20,6 +20,7 @@ import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -53,6 +54,10 @@ public class SearchSpec extends Constraint {
 		this.aspectName = aspectName;
 		this.limit = limit;
 		this.negated = negated;
+	}
+	
+	void doAspect(State s, Aspect a) {
+		throw new BrokenException("SearchSpec not implemented yet");
 	}
 
 	@Override public Constraint negate() {

@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.hp.hpl.jena.shared.BrokenException;
 
 public class True extends Constraint {
 	
@@ -32,5 +33,9 @@ public class True extends Constraint {
 
 	@Override protected boolean constrains(Aspect a) {
 		return false;
+	}
+	
+	void doAspect(State s, Aspect a) {
+		throw new BrokenException("True not implemented yet");
 	}
 }

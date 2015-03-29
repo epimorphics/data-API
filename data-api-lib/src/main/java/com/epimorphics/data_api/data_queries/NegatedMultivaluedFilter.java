@@ -11,6 +11,7 @@ import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.hp.hpl.jena.shared.BrokenException;
 
 public class NegatedMultivaluedFilter extends Constraint {
 	
@@ -18,6 +19,10 @@ public class NegatedMultivaluedFilter extends Constraint {
 	
 	public NegatedMultivaluedFilter(Filter basis) {
 		this.basis = basis;			
+	}
+	
+	void doAspect(State s, Aspect a) {
+		throw new BrokenException("NegatedMultivaluedFilter not implemented yet");
 	}
 
 	public void tripleFiltering(Context cx) {

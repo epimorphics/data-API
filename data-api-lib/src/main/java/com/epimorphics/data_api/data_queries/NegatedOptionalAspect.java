@@ -12,6 +12,7 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
+import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public final class NegatedOptionalAspect extends Constraint  {
@@ -20,6 +21,11 @@ public final class NegatedOptionalAspect extends Constraint  {
 	
 	public NegatedOptionalAspect(Filter negated) {
 		this.negated = negated;
+	}
+
+	
+	void doAspect(State s, Aspect a) {
+		throw new BrokenException("NegatedOptionalAspect not implemented yet");
 	}
 	
 	public static class Element implements SQ_WhereElement {

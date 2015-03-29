@@ -144,7 +144,7 @@ public class DataQuery implements Compactions {
 			
 //			System.err.println(">> " + api.getPrefixes().getNsPrefixMap());
 			String query = DSAPI_Header + PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
-//			 System.err.println( ">> RENDERED QUERY:\n" + query );
+			 System.err.println( ">> RENDERED QUERY:\n" + query );
 			return query; 
 		}
 		catch (Exception e) { 

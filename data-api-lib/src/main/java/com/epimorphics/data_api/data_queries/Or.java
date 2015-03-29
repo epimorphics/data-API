@@ -8,13 +8,20 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.Constraint.State;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
+import com.hp.hpl.jena.shared.BrokenException;
 
 public class Or extends Bool {
 	
 	public Or(List<Constraint> operands) {
 		super(operands);
+	}
+	
+	void doAspect(State s, Aspect a) {
+		throw new BrokenException("Or not implemented yet");
 	}
 
 	public void tripleFiltering(Context cx) {

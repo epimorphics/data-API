@@ -10,6 +10,7 @@ import java.util.List;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.hp.hpl.jena.shared.BrokenException;
 
 public class Filter extends Constraint {
 	
@@ -19,6 +20,15 @@ public class Filter extends Constraint {
 	public Filter(Aspect a, Range range) {
 		this.a = a;
 		this.range = range;
+	}
+	
+	void doAspect(State s, Aspect a) {
+		Term t = range.operands.get(0);
+		if (range.op.equals(Operator.EQ)) {
+			s.hasObject(a, t);
+		} else {
+			s.filter(a, range.op, t);
+		}
 	}
 	
 	@Override public void tripleFiltering(Context cx) {

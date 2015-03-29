@@ -10,10 +10,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Const;
+import com.epimorphics.data_api.sparql.SQ_Expr;
+import com.epimorphics.data_api.sparql.SQ_Filter;
+import com.epimorphics.data_api.sparql.SQ_Node;
+import com.epimorphics.data_api.sparql.SQ_Resource;
+import com.epimorphics.data_api.sparql.SQ_TermAsNode;
+import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.hp.hpl.jena.shared.PrefixMapping;
 
 public abstract class Constraint {
 		
@@ -30,11 +40,17 @@ public abstract class Constraint {
 	     filter in the constraint tree that mentions it.
 	*/
 	protected abstract boolean constrains(Aspect a);
-
+	
+	abstract void doAspect(State s, Aspect a);
+	
 	/** 
 	 	Translate this constraint at the top level of SPARQL. 
 	*/
 	public void translate(Problems p, Context cx) {
+		
+		alternativeTranslation(p, cx);
+		
+		if (true) return;
 		
 		String baseQuery = cx.api.getBaseQuery();
 		List<Guard> guards = cx.dq.guards;
@@ -81,6 +97,106 @@ public abstract class Constraint {
 		}
 	}
 	
+	private void alternativeTranslation(Problems p, Context cx) {
+		
+		String baseQuery = cx.api.getBaseQuery();
+		List<Guard> guards = cx.dq.guards;
+		boolean needsDistinct = false;
+		boolean baseQueryNeeded = true;  
+		Integer length = cx.dq.slice.length,  offset = cx.dq.slice.offset;
+		
+		for (Guard guard : guards) {
+			if (guard.needsDistinct()) needsDistinct = true;
+			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
+		}
+
+		cx.sq.comment(cx.ordered.size() + " aspect variables");	
+		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
+
+		for (Aspect a: cx.ordered) {
+			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
+		}
+
+		baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
+		
+//		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+//		cx.sq.comment("variables declared, filters follow.");
+//		unEquals.tripleFiltering(cx);
+		
+		for (Aspect a: cx.ordered) {
+			if (!a.getIsOptional()) {
+				State s = new State(cx.api.getPrefixes(), cx);
+				for (Constraint x: operands()) {
+					x.doAspect(s, a);
+				}
+				s.done(a);
+			}
+		}
+		
+		for (Aspect a: cx.ordered) {
+			if (a.getIsOptional()) {
+				State s = new State(cx.api.getPrefixes(), cx);
+				for (Constraint x: operands()) {
+					x.doAspect(s, a);
+				}				
+				s.done(a);
+			}			
+		}
+		
+		addLengthAndOffset(cx.sq, length, offset);	
+	}
+	
+	static class State {
+		
+		final PrefixMapping pm;
+		final Context cx;
+		
+		final SQ sq;
+		
+		State(PrefixMapping pm, Context cx) {
+			this.pm = pm;
+			this.cx = cx;
+			this.sq = cx.sq;
+		}
+
+		void done(Aspect a) {
+		}
+		
+		public void hasObject(Aspect a, Term t) {
+			System.err.println("!! have to deal with property paths for " + a);
+			SQ_Node theProperty = new SQ_Resource(a.asProperty());
+			SQ_TermAsNode value = new SQ_TermAsNode(pm, t);
+			SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, value);
+			SQ_Variable var = new SQ_Variable(a.asVarName());
+			sq.addTriple(x);
+			sq.addBind(value, var);
+		}
+
+		public void filter(Aspect a, Operator op, Term t) {
+			List<SQ_Expr> operands = new ArrayList<SQ_Expr>();
+			operands.add(new SQ_TermAsNode(pm, t));
+			SQ_Filter f = new SQ_Filter(op, a, operands);
+			sq.addFilter(f);
+		}
+		
+	}
+	
+	protected List<Constraint> operands() {
+		List<Constraint> result = new ArrayList<Constraint>();
+		operands(result);
+		return result;
+	}
+	
+	private void operands(List<Constraint> result) {
+		if (this instanceof And) {
+			for (Constraint c: ((And) this).operands) {
+				result.add(c);
+			}
+		} else {
+			result.add(this);
+		}
+	}
+
 	private void baseQueryAndGuards(Context cx, String baseQuery, List<Guard> guards, boolean baseQueryNeeded, SQ sq) {
 		if (baseQuery != null && !baseQuery.isEmpty() && baseQueryNeeded) {
 			sq.comment("base query");
