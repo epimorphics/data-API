@@ -27,7 +27,7 @@ public class Filter extends Constraint {
 		if (range.op.equals(Operator.EQ) && canReplace(s, t)) {
 			s.hasObject(a, t);
 		} else {
-			s.filter(a, range.op, t);
+			s.filter(a, range.op, range.operands);
 		}
 	}
 	

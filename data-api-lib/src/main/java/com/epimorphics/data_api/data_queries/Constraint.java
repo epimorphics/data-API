@@ -198,9 +198,9 @@ public abstract class Constraint {
 			sq.addBind(value, var);
 		}
 
-		public void filter(Aspect a, Operator op, Term t) {
-			List<SQ_Expr> operands = new ArrayList<SQ_Expr>();
-			operands.add(new SQ_TermAsNode(pm, t));
+		public void filter(Aspect a, Operator op, List<Term> terms) {
+			List<SQ_Expr> operands = new ArrayList<SQ_Expr>(terms.size());
+			for (Term t: terms) operands.add(new SQ_TermAsNode(pm, t));
 			SQ_Filter f = new SQ_Filter(op, a, operands);
 			sq.addFilter(f);
 		}
