@@ -159,7 +159,7 @@ public class Context  {
 		return adjusted;
 	}
 
-	private void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
+	public void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
 						
 		String rawProperty = x.asProperty();		
 		List<SQ_Triple> triples = new ArrayList<SQ_Triple>(); 

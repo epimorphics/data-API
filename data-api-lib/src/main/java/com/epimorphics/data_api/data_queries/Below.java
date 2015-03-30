@@ -29,10 +29,17 @@ public class Below extends Constraint {
 		this.v = v;
 		this.negated = negated;
 	}
-
 	
 	void doAspect(State s, Aspect a) {
-		throw new BrokenException("Below not implemented yet");
+		String below = a.getBelowPredicate(s.cx.api);
+		
+		SQ_Node S = new SQ_Resource(((TermComposite) v).value);
+		SQ_Node P = new SQ_Resource(below + "*");
+		SQ_Node O = new SQ_Variable(a.asVarName());
+		SQ_Triple t = new SQ_Triple(S, P, O);
+		
+		if (negated) s.cx.sq.addNotExists(t);
+		else s.cx.sq.addTriple(t);
 	}
 	
 	public void tripleFiltering(Context cx) {

@@ -179,11 +179,13 @@ public abstract class Constraint {
 
 		void done(Aspect a) {
 			if (!defined) {
-				SQ_Node theProperty = new SQ_Resource(a.asProperty());
 				SQ_Variable theVariable = new SQ_Variable(a.asVarName());
-				SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, theVariable);
-				if (a.getIsOptional()) sq.addOptionalTriple(x);
-				else sq.addTriple(x);
+				cx.declareOneBindingSQ(a, a.getIsOptional(), 1, theVariable, null);
+				
+//				SQ_Node theProperty = new SQ_Resource(a.asProperty());
+//				SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, theVariable);
+//				if (a.getIsOptional()) sq.addOptionalTriple(x);
+//				else sq.addTriple(x);
 			}
 		}
 		
