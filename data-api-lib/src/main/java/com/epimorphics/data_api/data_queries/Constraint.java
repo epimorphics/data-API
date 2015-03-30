@@ -123,22 +123,25 @@ public abstract class Constraint {
 //		cx.sq.comment("variables declared, filters follow.");
 //		unEquals.tripleFiltering(cx);
 		
+		List<Constraint> operands = operands();
+		
+		for (Constraint x: operands) {
+			if (x instanceof SearchSpec) {
+				SearchSpec ss = (SearchSpec) x;
+				if (ss.getAspectName() == null) {
+					cx.generateSearchSQ(ss);
+				}
+			}
+		}
+		
 		for (Aspect a: cx.ordered) {
 			if (!a.getIsOptional()) {
-				State s = new State(cx.api.getPrefixes(), cx);
-				
-//				System.err.println(">> mandatory aspect " + a);
-				
-				for (Constraint x: operands()) {
-//					System.err.println(">> .. constraint " + x + " " + x.getClass().getSimpleName());
+				State s = new State(cx.api.getPrefixes(), cx);				
+				for (Constraint x: operands) {
 					if (x.constrains(a)) {
-//						System.err.println(">> .... doing " + x);
 						x.doAspect(s, a);
 					}
-				}
-				
-//				System.err.println(">> done " + a);
-				
+				}				
 				s.done(a);
 			}
 		}
@@ -146,7 +149,7 @@ public abstract class Constraint {
 		for (Aspect a: cx.ordered) {
 			if (a.getIsOptional()) {
 				State s = new State(cx.api.getPrefixes(), cx);
-				for (Constraint x: operands()) {
+				for (Constraint x: operands) {
 					if (x.constrains(a)) {
 						x.doAspect(s, a);
 					}
@@ -192,7 +195,6 @@ public abstract class Constraint {
 		}
 		
 		public void hasObject(Aspect a, Term t) {
-			System.err.println("!! have to deal with property paths for " + a);
 			SQ_Node theProperty = new SQ_Resource(a.asProperty());
 			SQ_TermAsNode value = new SQ_TermAsNode(pm, t);
 			SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, value);
