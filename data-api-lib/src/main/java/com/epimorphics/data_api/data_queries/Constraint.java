@@ -166,6 +166,7 @@ public abstract class Constraint {
 		final SQ sq;
 		
 		boolean defined = false;
+		boolean filtered = false;
 		
 		State(PrefixMapping pm, Context cx) {
 			this.pm = pm;
@@ -180,7 +181,8 @@ public abstract class Constraint {
 		void done(Aspect a) {
 			if (!defined) {
 				SQ_Variable theVariable = new SQ_Variable(a.asVarName());
-				cx.declareOneBindingSQ(a, a.getIsOptional(), 1, theVariable, null);
+				boolean optional = a.getIsOptional() && !filtered;
+				cx.declareOneBindingSQ(a, optional, 1, theVariable, null);
 				
 //				SQ_Node theProperty = new SQ_Resource(a.asProperty());
 //				SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, theVariable);
@@ -196,8 +198,8 @@ public abstract class Constraint {
 			SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, value);
 			SQ_Variable var = new SQ_Variable(a.asVarName());
 			sq.addTriple(x);
-			defined = true;
 			sq.addBind(value, var);
+			defined = true;
 		}
 
 		public void filter(Aspect a, Operator op, List<Term> terms) {
@@ -205,6 +207,7 @@ public abstract class Constraint {
 			for (Term t: terms) operands.add(new SQ_TermAsNode(pm, t));
 			SQ_Filter f = new SQ_Filter(op, a, operands);
 			sq.addFilter(f);
+			filtered = true;
 		}
 		
 	}
