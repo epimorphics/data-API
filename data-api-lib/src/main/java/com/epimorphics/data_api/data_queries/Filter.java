@@ -24,22 +24,16 @@ public class Filter extends Constraint {
 	
 	void doAspect(State s, Aspect a) {
 		Term t = range.operands.get(0);
-		if (range.op.equals(Operator.EQ) && canReplace(t)) {
+		if (range.op.equals(Operator.EQ) && canReplace(s, t)) {
 			s.hasObject(a, t);
 		} else {
 			s.filter(a, range.op, t);
 		}
 	}
 	
-	private boolean canReplace(Term term) {
-//		Substitution s = new Substitution(p, f);
-//		if (s.canReplace) {	
-//			eq.put(s.aspect, s.aspect.getName(), s.value);				
-//			return Constraint.EMPTY;
-//		} else {
-//			return c;
-//		}
-		return false;
+	private boolean canReplace(State s, Term term) {
+		Substitution sub = new Substitution(s.getProblems(), this);
+		return sub.canReplace;
 	}
 
 	@Override public void tripleFiltering(Context cx) {

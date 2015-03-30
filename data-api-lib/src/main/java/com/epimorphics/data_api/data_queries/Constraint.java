@@ -172,6 +172,10 @@ public abstract class Constraint {
 			this.cx = cx;
 			this.sq = cx.sq;
 		}
+		
+		public Problems getProblems() {
+			return cx.p;
+		}
 
 		void done(Aspect a) {
 			if (!defined) {
