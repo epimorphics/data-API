@@ -46,26 +46,32 @@ public class TestScratch {
 		.add(D.setIsOptional(true))
 		;
 
-	@Test public void testSomethignElse() {
+	@Test public void testA() {
 		assertGeneratesInOrder
 			( query(aspect("B", "lt", "17"))
 			, item("A")
 			, filter("B", "<", "17")
 			);
-		
+	}
+
+	@Test public void testB() {
 		assertGeneratesInOrder
 			( query(aspect("A", "eq", id("X")))
 			, "?item pre:A <eh:/X>"
 			, item("B") 
 			);
-		
+	}
+
+	@Test public void testC() {
 		assertGeneratesInOrder
 			( query(aspect("A", "eq", id("X")))
 			, "?item pre:A <eh:/X>"
 			, "OPTIONAL"
 			, item("D") 
 			);
-		
+	}
+
+	@Test public void testD() {
 		assertGeneratesInOrder
 			( query(aspect("A", "eq", id("X")), aspect("B", "lt", "17"))
 			, "?item pre:A <eh:/X>"

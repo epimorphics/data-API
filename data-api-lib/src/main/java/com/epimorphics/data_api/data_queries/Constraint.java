@@ -127,7 +127,9 @@ public abstract class Constraint {
 			if (!a.getIsOptional()) {
 				State s = new State(cx.api.getPrefixes(), cx);
 				for (Constraint x: operands()) {
-					x.doAspect(s, a);
+					if (x.constrains(a)) {
+						x.doAspect(s, a);
+					}
 				}
 				s.done(a);
 			}
@@ -137,7 +139,9 @@ public abstract class Constraint {
 			if (a.getIsOptional()) {
 				State s = new State(cx.api.getPrefixes(), cx);
 				for (Constraint x: operands()) {
-					x.doAspect(s, a);
+					if (x.constrains(a)) {
+						x.doAspect(s, a);
+					}
 				}				
 				s.done(a);
 			}			
@@ -153,6 +157,8 @@ public abstract class Constraint {
 		
 		final SQ sq;
 		
+		boolean defined = false;
+		
 		State(PrefixMapping pm, Context cx) {
 			this.pm = pm;
 			this.cx = cx;
@@ -160,6 +166,13 @@ public abstract class Constraint {
 		}
 
 		void done(Aspect a) {
+			if (!defined) {
+				SQ_Node theProperty = new SQ_Resource(a.asProperty());
+				SQ_Variable theVariable = new SQ_Variable(a.asVarName());
+				SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, theVariable);
+				if (a.getIsOptional()) sq.addOptionalTriple(x);
+				else sq.addTriple(x);
+			}
 		}
 		
 		public void hasObject(Aspect a, Term t) {
@@ -169,6 +182,7 @@ public abstract class Constraint {
 			SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, value);
 			SQ_Variable var = new SQ_Variable(a.asVarName());
 			sq.addTriple(x);
+			defined = true;
 			sq.addBind(value, var);
 		}
 
