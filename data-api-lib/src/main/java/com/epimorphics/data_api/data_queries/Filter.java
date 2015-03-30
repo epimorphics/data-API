@@ -24,13 +24,24 @@ public class Filter extends Constraint {
 	
 	void doAspect(State s, Aspect a) {
 		Term t = range.operands.get(0);
-		if (range.op.equals(Operator.EQ)) {
+		if (range.op.equals(Operator.EQ) && canReplace(t)) {
 			s.hasObject(a, t);
 		} else {
 			s.filter(a, range.op, t);
 		}
 	}
 	
+	private boolean canReplace(Term term) {
+//		Substitution s = new Substitution(p, f);
+//		if (s.canReplace) {	
+//			eq.put(s.aspect, s.aspect.getName(), s.value);				
+//			return Constraint.EMPTY;
+//		} else {
+//			return c;
+//		}
+		return false;
+	}
+
 	@Override public void tripleFiltering(Context cx) {
 		SQ_Variable v = new SQ_Variable(a.asVarName());
 		cx.sq.addFilter(range.asFilterSQ(cx.api.getPrefixes(), a));

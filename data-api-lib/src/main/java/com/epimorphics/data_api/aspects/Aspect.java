@@ -98,6 +98,14 @@ public class Aspect extends ResourceBasedConfig {
 		this.explictPrefixes = pm;
 	}
 	
+	public boolean equals(Object other) {
+		return other instanceof Aspect && same( (Aspect) other );
+	}
+	
+	private boolean same(Aspect other) {
+		return this.ID.equals(other.ID);
+	}
+
 	@Override public PrefixMapping getPrefixes() {
 		return explictPrefixes == null ? super.getPrefixes() : explictPrefixes;
 	}

@@ -126,11 +126,19 @@ public abstract class Constraint {
 		for (Aspect a: cx.ordered) {
 			if (!a.getIsOptional()) {
 				State s = new State(cx.api.getPrefixes(), cx);
+				
+//				System.err.println(">> mandatory aspect " + a);
+				
 				for (Constraint x: operands()) {
+//					System.err.println(">> .. constraint " + x + " " + x.getClass().getSimpleName());
 					if (x.constrains(a)) {
+//						System.err.println(">> .... doing " + x);
 						x.doAspect(s, a);
 					}
 				}
+				
+//				System.err.println(">> done " + a);
+				
 				s.done(a);
 			}
 		}

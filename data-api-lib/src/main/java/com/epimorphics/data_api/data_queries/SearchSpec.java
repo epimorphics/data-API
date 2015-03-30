@@ -57,7 +57,7 @@ public class SearchSpec extends Constraint {
 	}
 	
 	void doAspect(State s, Aspect a) {
-		throw new BrokenException("SearchSpec not implemented yet");
+		s.cx.sq.addTriple(toPositiveSearchAspectTriple(a, s.cx.api.getPrefixes()));
 	}
 
 	@Override public Constraint negate() {
@@ -112,7 +112,10 @@ public class SearchSpec extends Constraint {
 	
 	private SQ_Triple toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
 		Aspect a = aspects.get(aspectName);	
-		
+		return toPositiveSearchAspectTriple(a, pm);
+	}
+
+	private SQ_Triple toPositiveSearchAspectTriple(Aspect a, PrefixMapping pm) {
 		SQ_Variable aVar = new SQ_Variable(aspectName.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(a);
 		
