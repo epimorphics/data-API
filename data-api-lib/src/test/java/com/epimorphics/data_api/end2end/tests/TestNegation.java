@@ -79,15 +79,27 @@ public class TestNegation extends Setup {
     	testQueryReturnsExpectedResults("{'@not': [{'@search': 'notfound'}]}", allExpected );
     }
     
-    @Test public void testNegateNegatedOptionalAspect() {
+    @Test public void testOptionalAspect() {
     	testQueryReturnsExpectedResults("{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}", expectC);
+    }
+    
+    @Test public void testNegatedOptionalAspect() {
     	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}", expectABDEF);
+    }
+    
+    @Test public void testNegateNegatedOptionalAspect() {
     	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}]}", expectC);
     }
     
-    @Test public void testNegateBelow() {
+    @Test public void testNegateBelow_Unnegated() {
     	testQueryReturnsExpectedResults("{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}", "[]");
+    }
+    
+    @Test public void testNegateBelow() {
     	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}", allExpected);
+    }
+    
+    @Test public void testNegateBelow_TwiceNegated() {
     	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}]}", "[]");
     }
     

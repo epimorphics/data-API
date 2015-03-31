@@ -167,5 +167,9 @@ public class SQ {
 	public static SQ_NodeList list(SQ_Node ...elements) {
 		return new SQ_NodeList(elements);
 	}
+
+	public void addSqFilter(SQ_Expr toAdd) {
+		whereClause.addSqFilter(toAdd);
+	}
 	
 }

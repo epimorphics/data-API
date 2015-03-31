@@ -22,6 +22,7 @@ public class SQ_Where {
 	final List<SQ_WhereElement> otherElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> optionalFilterElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
+	final List<SQ_Expr> sqFilters = new ArrayList<SQ_Expr>();
 	
 	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
 		
@@ -38,16 +39,29 @@ public class SQ_Where {
 		section(sb, indent, "items with values EQ to a constant", groundTriples);
 		section(sb, indent, "triples with unbound objects", ungroundTriples);
 		section(sb, indent, "mandatory filters", filterElements);
+		exprSection(sb, indent, "mandatory filters", sqFilters);
 		section(sb, indent, "otherwise uncategorised elements", otherElements);
 		section(sb, indent, "optional triples", optionalTriples);
 		section(sb, indent, "optional filter elements", optionalFilterElements);
 		section(sb, indent, "BINDings", bindingElements);
 	}
-	
+
 	protected void section(StringBuilder sb, String indent, String title, List<? extends SQ_WhereElement> elements) {
 		if (elements.size() > 0) {
 			sb.append("  # ").append(title).append("\n");
 			for (SQ_WhereElement e: elements) e.toSparqlStatement(sb, indent);
+		}
+	}
+	
+	protected void exprSection(StringBuilder sb, String indent, String title, List<? extends SQ_Expr> elements) {
+		if (elements.size() > 0) {
+			sb.append("  # ").append(title).append("\n");
+			for (SQ_Expr e: elements) {
+				sb.append(indent);
+				sb.append("FILTER(");
+				e.toSparqlExpr(sb);
+				sb.append(")");
+			}
 		}
 	}
 
@@ -97,6 +111,10 @@ public class SQ_Where {
 	private SQ_Node subst(SQ_Node s) {
 		SQ_Node value = equals.get(s);
 		return value == null ? s : value;
+	}
+
+	public void addSqFilter(SQ_Expr toAdd) {
+		sqFilters.add(toAdd);
 	}
 
 	public void addFilter(SQ_Filter f) {	

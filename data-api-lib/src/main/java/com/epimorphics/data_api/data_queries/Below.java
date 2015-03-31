@@ -37,7 +37,6 @@ public class Below extends Constraint {
 		SQ_Node P = new SQ_Resource(below + "*");
 		SQ_Node O = new SQ_Variable(a.asVarName());
 		SQ_Triple t = new SQ_Triple(S, P, O);
-		
 		if (negated) s.cx.sq.addNotExists(t);
 		else s.cx.sq.addTriple(t);
 	}

@@ -9,8 +9,9 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Operator;
+import com.hp.hpl.jena.shared.BrokenException;
 
-public class SQ_Filter implements SQ_WhereElement {
+public class SQ_Filter implements SQ_Expr, SQ_WhereElement {
 	
 	final List<SQ_Expr> operands;
 	final Aspect x;
@@ -42,6 +43,15 @@ public class SQ_Filter implements SQ_WhereElement {
 	
 	public void toStringNoFILTER(StringBuilder sb) {
 		op.asExpression(sb, aspectAsVariable(), operands);
+	}
+
+	@Override public void toSparqlExpr(StringBuilder sb) {
+		toStringNoFILTER(sb);
+	}
+
+	@Override public List<SQ_Expr> operands() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
