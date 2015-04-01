@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.data_queries.terms.TermComposite;
+import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
@@ -37,8 +38,18 @@ public class Below extends Constraint {
 		SQ_Node P = new SQ_Resource(below + "*");
 		SQ_Node O = new SQ_Variable(a.asVarName());
 		SQ_Triple t = new SQ_Triple(S, P, O);
-		if (negated) s.cx.sq.addNotExists(t);
-		else s.cx.sq.addTriple(t);
+		
+		SQ_Resource asProperty = new SQ_Resource(a.asProperty());
+		SQ_Triple bind = new SQ_Triple(SQ_Const.item, asProperty, O);
+		s.cx.sq.addTriple(bind);
+		
+		if (negated) {
+			s.cx.sq.addNotExists(t); 
+		} else {
+			s.cx.sq.addTriple(t) ;
+		}
+		
+		s.defined = true;
 	}
 	
 	public void tripleFiltering(Context cx) {

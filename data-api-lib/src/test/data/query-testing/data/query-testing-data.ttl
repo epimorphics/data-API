@@ -17,6 +17,10 @@ eg:A
 	; eg:values	17, 18, 19
 	.
 	
+eg:A-resource
+	skos:narrower eg:poggles
+	.
+	
 eg:B
 	eg:label "B-one", "B1"
 	; eg:resource eg:B-resource
