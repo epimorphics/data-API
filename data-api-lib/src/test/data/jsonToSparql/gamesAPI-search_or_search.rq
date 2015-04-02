@@ -15,20 +15,6 @@ SELECT
   ?egc_designer2Dof
 WHERE
 {
-  # 8 aspect variables.
-  # no base query.
-  # no guards.
-  ?item egc:pubYear ?egc_pubYear .
-  OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes . }
-  ?item egc:players ?egc_players .
-  ?item rdf:type ?rdf_type .
-  ?item rdfs:label ?rdfs_label .
-  # dealing with property path egc:designed-by/egc:designer-of for aspect egc:co-designed [http://epimorphics.com/public/vocabulary/games.ttl#co-designed].
-  OPTIONAL { ?item egc:designed-by ?egc_designed2Dby . ?egc_designed2Dby egc:designer-of ?egc_co2Ddesigned . }
-  OPTIONAL { ?item egc:designed-by ?egc_designed2Dby . }
-  OPTIONAL { ?item egc:designer-of ?egc_designer2Dof . }
-  # variables declared, filters follow..
-  
   {    SELECT
       ?item
       ?egc_pubYear
