@@ -22,7 +22,14 @@ public class NegatedMultivaluedFilter extends Constraint {
 	}
 	
 	void doAspect(State s, Aspect a) {
-		throw new BrokenException("NegatedMultivaluedFilter not implemented yet");
+
+		SQ_Filter f = basis.range.asFilterSQ(s.cx.api.getPrefixes(), basis.a, "_A"); // TODO expose less
+		
+		SQ_Resource P = new SQ_Resource(basis.a.asProperty());
+		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, f.aspectAsVariable());
+		
+		s.cx.sq.addNotExists(t, f);
+		
 	}
 
 	public void tripleFiltering(Context cx) {
