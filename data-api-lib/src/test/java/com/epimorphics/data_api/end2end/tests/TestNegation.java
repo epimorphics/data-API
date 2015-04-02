@@ -51,18 +51,59 @@ public class TestNegation extends Setup {
 		, "]"
 		);
 	
-    @Test public void testNegatesSimpleFilter() {
-    	String expectA = BunchLib.join
-    		( "["
-			, "  {"
-			, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
-			, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
-			, "  , 'eg:value': 17"
-			, "  , 'eg:values': [17, 18, 19]"
-			, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
-			, "  }"
-    		, "]"
-    		);
+	static final String expectAllButA = BunchLib.join
+		( "["
+		, "  {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/B-resource'}]"
+		, "  , 'eg:value': 18"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['B-one', 'B1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource'}]"
+		, "  , 'eg:value': 19"
+		, "  , 'eg:values': [99]"
+		, "  , 'eg:label': ['C-one', 'C1']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/D'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+		, "  , 'eg:value': 20"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['D-two', 'D2']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/E'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/DE-resource'}]"
+		, "  , 'eg:value': 21"
+		, "  , 'eg:values': [42, 99]"
+		, "  , 'eg:label': ['E', 'e']"
+		, "  }"
+		, ", {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/F-resource'}]"
+		, "  , 'eg:value': 22"
+		, "  , 'eg:values': [42, 43]"
+		, "  , 'eg:label': ['F', 'eff', {'@lang': 'cy', '@value': 'F'}, {'@lang': 'fr', '@value': 'f'}]"
+		, "  }"
+		, "]"
+		);
+	
+	String expectA = BunchLib.join
+		( "["
+		, "  {"
+		, "  '@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A'"
+		, "  , 'eg:resource': [{'@id': 'http://www.epimorphics.com/test/dsapi/sprint3/search/A-resource'}]"
+		, "  , 'eg:value': 17"
+		, "  , 'eg:values': [17, 18, 19]"
+		, "  , 'eg:label': [{'@lang': 'cy', '@value': 'A'}, 'A-one', 'A1']"
+		, "  }"
+		, "]"
+		);
+
+	@Test public void testNegatesSimpleFilter() {
     	testQueryReturnsExpectedResults( "{'@not': [{'eg:value': {'@gt': 17}}]}", expectA );
     }
     
@@ -92,15 +133,15 @@ public class TestNegation extends Setup {
     }
     
     @Test public void testNegateBelow_Unnegated() {
-    	testQueryReturnsExpectedResults("{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}", "[]");
+    	testQueryReturnsExpectedResults("{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}", expectA);
     }
     
     @Test public void testNegateBelow() {
-    	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}", allExpected);
+    	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}", expectAllButA);
     }
     
     @Test public void testNegateBelow_TwiceNegated() {
-    	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}]}", "[]");
+    	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}]}", expectA);
     }
     
     @Test public void testNegateNotFilter() {    	
