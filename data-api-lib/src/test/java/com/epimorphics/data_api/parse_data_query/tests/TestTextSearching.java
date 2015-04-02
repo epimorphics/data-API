@@ -121,10 +121,15 @@ public class TestTextSearching {
 		String incoming = "{'pre:X': {'@search': 'A'}, '@or': [{'pre:Y': {'@search': 'B'}}]}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
+		
+		System.err.println(">> testSearchOr ---------------------------");
+		
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 	//
 		Asserts.assertNoProblems("test data did not parse", p);
 	//
+		
+		System.err.println(">> generated ------------------------------");
 		String generated = q.toSparql(p, ds);
 	//
 		String expected = BunchLib.join
@@ -132,17 +137,17 @@ public class TestTextSearching {
 			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "{"
-			, "  ?item pre:X ?pre_X ."
-			, "  ?item pre:Y ?pre_Y ."
+//			, "  ?item pre:X ?pre_X ."
+//			, "  ?item pre:Y ?pre_Y ."
 			, "{ SELECT ?item ?pre_X ?pre_Y {"
+			, "  ?pre_Y text:query 'B' ."
 			, "  ?item pre:X ?pre_X ."
 			, "  ?item pre:Y ?pre_Y ."
-			, "  ?pre_Y text:query 'B' ."
 		  	, "}}  UNION  {"
 		  	, "SELECT ?item ?pre_X ?pre_Y {"
+		  	, "  ?pre_X text:query 'A' ."
 		  	, "  ?item pre:X ?pre_X ."
 		  	, "  ?item pre:Y ?pre_Y ."
-		  	, "  ?pre_X text:query 'A' ."
 		  	, "}}"
 		  	, "}"
 			);

@@ -91,7 +91,7 @@ public class TestBooleans {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "PREFIX skos: <http://www.w3.org/2004/02/skos/core#>"
 			, "SELECT ?item ?pre_local {"
-			, "    ?item pre:local ?pre_local"
+//			, "    ?item pre:local ?pre_local"
 			, "    {"
 			, "    SELECT ?item ?pre_local WHERE"
 			, "    { ?item pre:local ?pre_local FILTER(?pre_local < 1) }"

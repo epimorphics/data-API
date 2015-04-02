@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.data_queries;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,15 @@ public class SearchSpec extends Constraint {
 	}
 	
 	void doAspect(State s, Aspect a) {
+		
+		System.err.println(">> SearchSpec.doAspect " + a);
+		
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(bos);
+		new RuntimeException("stack").printStackTrace(ps);
+		ps.close();
+		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
+		
 		s.cx.sq.addTriple(toPositiveSearchAspectTriple(a, s.cx.api.getPrefixes()));
 	}
 
