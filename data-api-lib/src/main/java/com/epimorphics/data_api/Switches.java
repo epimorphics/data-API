@@ -20,7 +20,7 @@ public class Switches {
     	the generated SPARQL queries will be on a single line.  It
     	may be set false when debugging.
 	*/
-	public static final boolean flattening = false;
+	public static final boolean flattening = true;
 
 	// sort the fields of a JS object when Row is generating them
 	public static boolean sorting = false;

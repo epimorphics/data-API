@@ -75,7 +75,7 @@ public class TestJSONtoSPARQL {
 		String generated = dq.toSparql(p, ds);
 		
 //		System.err.println(">> JSON QUERY:\n" + json);
-		System.err.println(">> EXPECTED:\n" + sparql);
+//		System.err.println(">> EXPECTED:\n" + sparql);
 //		System.err.println(">> OBTAINED:\n" + generated);
 		
 		String expected = sparql;

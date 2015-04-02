@@ -107,7 +107,7 @@ public class TestScratch {
 		String sparqlString = dq.toSparql(p, dsAB);
 		if (!p.isOK()) fail("Could not construct SPARQL query: " + p.getProblemStrings());
 		
-		System.err.println(">> QUERY:\n" + sparqlString);
+//		System.err.println(">> QUERY:\n" + sparqlString);
 	//
 		String scan = sparqlString;
 		for (int fragIndex = 0; fragIndex < fragments.length; fragIndex += 1) {

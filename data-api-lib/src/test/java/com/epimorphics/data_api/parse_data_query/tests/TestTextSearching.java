@@ -120,16 +120,11 @@ public class TestTextSearching {
 	
 		String incoming = "{'pre:X': {'@search': 'A'}, '@or': [{'pre:Y': {'@search': 'B'}}]}";
 		JsonObject jo = JSON.parse(incoming);
-		Problems p = new Problems();
-		
-		System.err.println(">> testSearchOr ---------------------------");
-		
+		Problems p = new Problems();		
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 	//
 		Asserts.assertNoProblems("test data did not parse", p);
 	//
-		
-		System.err.println(">> generated ------------------------------");
 		String generated = q.toSparql(p, ds);
 	//
 		String expected = BunchLib.join

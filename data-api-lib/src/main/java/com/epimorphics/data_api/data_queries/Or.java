@@ -24,9 +24,7 @@ public class Or extends Bool {
 	}
 	
 	public void translate(Problems p, Context cx) {
-		
-		System.err.println(">> Or.translate");
-		
+				
 		final List<SQ> new_operands = new ArrayList<SQ>(operands.size());
 		
 		// TODO this properly
@@ -62,9 +60,7 @@ public class Or extends Bool {
 	}
 	
 	void doAspect(State s, Aspect a) {
-		
-		System.err.println(">> Or.doAspect " + a);
-		
+				
 		final List<SQ> new_operands = new ArrayList<SQ>(operands.size());
 		
 		for (Constraint x: operands) {

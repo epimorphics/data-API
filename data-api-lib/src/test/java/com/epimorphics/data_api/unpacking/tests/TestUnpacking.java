@@ -135,7 +135,7 @@ public class TestUnpacking {
 
 	@Test public void testQueryWithEQFilterOnRequiredPathAspect() {
 		String query = makeQuery(makeDataset("A", "B=A/D"), "{'space:A': {'@eq': {'@id': 'hello:there'}}}");
-		System.err.println(">>\n" + query);
+//		System.err.println(">>\n" + query);
 		denyContains("OPTIONAL", query);
 		denyContains("FILTER", query);
 		denyContains("?item space:A ?space_A .", query);

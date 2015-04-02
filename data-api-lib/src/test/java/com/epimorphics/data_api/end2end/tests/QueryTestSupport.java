@@ -56,8 +56,8 @@ public class QueryTestSupport {
 		Object expectObject = quasiCopyConvertingArraysToSets(expectJSON);
 		Object resultObject = quasiCopyConvertingArraysToSets(jv);
 		
-		System.err.println( ">> expectObject:\n" + nicely(expectObject).replaceAll( "http://www.epimorphics.com/test/dsapi/sprint3/", "s3:" ) );
-		System.err.println( ">> resultObject:\n" + nicely(resultObject ).replaceAll( "http://www.epimorphics.com/test/dsapi/sprint3/", "s3:" ) );
+//		System.err.println( ">> expectObject:\n" + nicely(expectObject).replaceAll( "http://www.epimorphics.com/test/dsapi/sprint3/", "s3:" ) );
+//		System.err.println( ">> resultObject:\n" + nicely(resultObject ).replaceAll( "http://www.epimorphics.com/test/dsapi/sprint3/", "s3:" ) );
 					
 		assertEquals(expectObject, resultObject);
 	}

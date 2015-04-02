@@ -59,15 +59,13 @@ public class SearchSpec extends Constraint {
 	}
 	
 	void doAspect(State s, Aspect a) {
-		
-		System.err.println(">> SearchSpec.doAspect " + a);
-		
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		PrintStream ps = new PrintStream(bos);
-		new RuntimeException("stack").printStackTrace(ps);
-		ps.close();
-		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
-		
+				
+//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//		PrintStream ps = new PrintStream(bos);
+//		new RuntimeException("stack").printStackTrace(ps);
+//		ps.close();
+//		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
+//		
 		s.cx.sq.addTriple(toPositiveSearchAspectTriple(a, s.cx.api.getPrefixes()));
 	}
 
