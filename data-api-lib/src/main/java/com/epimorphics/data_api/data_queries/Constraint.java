@@ -64,10 +64,6 @@ public abstract class Constraint {
 
 		baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
 		
-//		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
-//		cx.sq.comment("variables declared, filters follow.");
-//		unEquals.tripleFiltering(cx);
-		
 		List<Constraint> operands = operands();
 		
 		for (Constraint x: operands) {
@@ -248,11 +244,6 @@ public abstract class Constraint {
 				SQ_Variable theVariable = new SQ_Variable(a.asVarName());
 				boolean optional = a.getIsOptional() && !filtered;
 				cx.declareOneBindingSQ(a, optional, 1, theVariable, null);
-				
-//				SQ_Node theProperty = new SQ_Resource(a.asProperty());
-//				SQ_Triple x = new SQ_Triple(SQ_Const.item, theProperty, theVariable);
-//				if (a.getIsOptional()) sq.addOptionalTriple(x);
-//				else sq.addTriple(x);
 			}
 		}
 		
@@ -310,16 +301,16 @@ public abstract class Constraint {
 		if (offset != null) sq.setOffset(offset);
 	}
 	
-	/**
-	    Returns true iff there is a bound multi-valued aspect in the
-	    collection.
-	*/
-	private boolean constrainsMultivaluedAspect(List<Aspect> ordered) {
-		for (Aspect a: ordered)
-			if (a.getIsMultiValued())
-				if (constrains(a)) return true;
-		return false;
-	}
+//	/**
+//	    Returns true iff there is a bound multi-valued aspect in the
+//	    collection.
+//	*/
+//	private boolean constrainsMultivaluedAspect(List<Aspect> ordered) {
+//		for (Aspect a: ordered)
+//			if (a.getIsMultiValued())
+//				if (constrains(a)) return true;
+//		return false;
+//	}
 	
 	@Override public boolean equals(Object other) {
 		return this.getClass() == other.getClass() && same((Constraint) other);

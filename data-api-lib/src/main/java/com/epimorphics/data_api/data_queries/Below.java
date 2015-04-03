@@ -13,7 +13,6 @@ import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public class Below extends Restriction {
 	

@@ -9,8 +9,6 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public class Filter extends Restriction {
 	

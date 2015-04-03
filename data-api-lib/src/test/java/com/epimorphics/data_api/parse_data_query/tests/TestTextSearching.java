@@ -54,7 +54,6 @@ public class TestTextSearching {
 	}
 	
 	@Test public void testSearchWithLimit() {
-		Shortname property = sn("eh:/some.uri/");
 		String incoming = "{'@search': {'@value': 'lookfor', '@limit': 17}}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
@@ -97,11 +96,6 @@ public class TestTextSearching {
 	//
 		Asserts.assertSameSelect(expected, generated);
 		}
-	
-	
-	private Shortname sn(String name) {
-		return new Shortname(ds.getPrefixes(), name);
-	}
 	
 	private Aspect aspect(String name) {
 		return new Aspect(ds.getPrefixes(), name);

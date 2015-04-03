@@ -117,6 +117,6 @@ public class Context  {
 	}
 	
 	public void generateSearchSQ(SearchSpec s) {
-		s.toSearchTripleSQ(this, api.getPrefixes());
+		s.toSearchTripleSQ(this);
 	}
 }

@@ -18,7 +18,6 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SearchSpec extends Restriction {
@@ -67,7 +66,7 @@ public class SearchSpec extends Restriction {
 		return aspect == null ? null : aspect.getName();
 	}
 
-	public void toSearchTripleSQ(Context cx, PrefixMapping pm) {
+	public void toSearchTripleSQ(Context cx) {
 		if (aspect == null) {
 			SQ_Node O = asSQNode();
 			SQ_Triple t = new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, O);

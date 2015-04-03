@@ -10,8 +10,6 @@ import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
-import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public class NegatedMultivaluedFilter extends Restriction {
 	
