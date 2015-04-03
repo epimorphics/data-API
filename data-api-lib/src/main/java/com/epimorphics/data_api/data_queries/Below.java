@@ -15,7 +15,7 @@ import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class Below extends Constraint {
+public class Below extends Restriction {
 	
 	final Aspect a;
 	final Term v;
@@ -31,7 +31,7 @@ public class Below extends Constraint {
 		this.negated = negated;
 	}
 	
-	void doAspect(State s, Aspect a) {
+	@Override void applyTo(State s) {		
 		String below = a.getBelowPredicate(s.cx.api);
 		
 		SQ_Node S = new SQ_Resource(((TermComposite) v).value);
@@ -50,18 +50,6 @@ public class Below extends Constraint {
 		}
 		
 		s.defined = true;
-	}
-	
-	public void tripleFiltering(Context cx) {
-		String below = a.getBelowPredicate(cx.api);
-		
-		SQ_Node S = new SQ_Resource(((TermComposite) v).value);
-		SQ_Node P = new SQ_Resource(below + "*");
-		SQ_Node O = new SQ_Variable(a.asVarName());
-		SQ_Triple t = new SQ_Triple(S, P, O);
-		
-		if (negated) cx.sq.addNotExists(t);
-		else cx.sq.addTriple(t);
 	}
 
 	@Override public String toString() {

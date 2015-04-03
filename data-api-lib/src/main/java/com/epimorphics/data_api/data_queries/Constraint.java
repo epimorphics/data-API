@@ -11,8 +11,6 @@ import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Const;
@@ -28,10 +26,8 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 public abstract class Constraint {
 		
 	public abstract Constraint negate();
-	
-	public abstract void tripleFiltering(Context cx);
-	
-	public static final Constraint EMPTY = new True();
+		
+	public static final Constraint EMPTY = True.value;
 	
 	public static final String nl = "\n";
 	
@@ -41,63 +37,12 @@ public abstract class Constraint {
 	*/
 	protected abstract boolean constrains(Aspect a);
 	
-	abstract void doAspect(State s, Aspect a);
+//	static boolean Return = true;
 	
 	/** 
 	 	Translate this constraint at the top level of SPARQL. 
 	*/
 	public void translate(Problems p, Context cx) {
-		
-		alternativeTranslation(p, cx);
-		
-		if (true) return;
-		
-		String baseQuery = cx.api.getBaseQuery();
-		List<Guard> guards = cx.dq.guards;
-		boolean needsDistinct = false;
-		boolean baseQueryNeeded = true;  
-		Integer length = cx.dq.slice.length,  offset = cx.dq.slice.offset;
-		
-		for (Guard guard : guards) {
-			if (guard.needsDistinct()) needsDistinct = true;
-			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
-		}
-
-		cx.sq.comment(cx.ordered.size() + " aspect variables");	
-		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
-
-		for (Aspect a: cx.ordered) {
-			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
-		}
-
-		boolean fullyGeneral = constrainsMultivaluedAspect(cx.ordered);
-		
-		if (fullyGeneral && (length != null || offset != null)) {
-			SQ nested = new SQ();
-			Context rx = new Context( nested, cx.out, cx.dq, p, cx.api );
-			
-			nested.addSelectedVar(SQ_Const.item, true);
-			
-			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, nested);
-	        
-	        cx.declareAspectVarsSQ(EMPTY);
-			Constraint unEquals = rx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
-			unEquals.tripleFiltering(rx);
-			cx.sq.comment("variables declared, filters follow.");
-			addLengthAndOffset(nested, length, offset);
-			cx.sq.comment("fully general case because constraints with multi-valued aspects.");
-			cx.sq.addSubquery(nested);
-						
-		} else {
-			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
-			Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
-			cx.sq.comment("variables declared, filters follow.");
-			unEquals.tripleFiltering(cx);
-			addLengthAndOffset(cx.sq, length, offset);
-		}
-	}
-	
-	private void alternativeTranslation(Problems p, Context cx) {
 		
 		String baseQuery = cx.api.getBaseQuery();
 		List<Guard> guards = cx.dq.guards;
@@ -138,8 +83,10 @@ public abstract class Constraint {
 			if (!a.getIsOptional()) {
 				State s = new State(cx.api.getPrefixes(), cx);				
 				for (Constraint x: operands) {
-					if (x.constrains(a)) {
-						x.doAspect(s, a);
+					if (x instanceof Restriction) {					
+						if (x.constrains(a)) {
+							((Restriction) x).applyTo(s);
+						}
 					}
 				}				
 				s.done(a);
@@ -150,8 +97,10 @@ public abstract class Constraint {
 			if (a.getIsOptional()) {
 				State s = new State(cx.api.getPrefixes(), cx);
 				for (Constraint x: operands) {
-					if (x.constrains(a)) {
-						x.doAspect(s, a);
+					if (x instanceof Restriction) {					
+						if (x.constrains(a)) {
+							((Restriction) x).applyTo(s);
+						}
 					}
 				}				
 				s.done(a);
@@ -159,7 +108,120 @@ public abstract class Constraint {
 		}
 		
 		addLengthAndOffset(cx.sq, length, offset);	
+	
+		
+//		alternativeTranslation(p, cx);
+//		
+//		if (Return) return;
+//		
+//		String baseQuery = cx.api.getBaseQuery();
+//		List<Guard> guards = cx.dq.guards;
+//		boolean needsDistinct = false;
+//		boolean baseQueryNeeded = true;  
+//		Integer length = cx.dq.slice.length,  offset = cx.dq.slice.offset;
+//		
+//		for (Guard guard : guards) {
+//			if (guard.needsDistinct()) needsDistinct = true;
+//			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
+//		}
+//
+//		cx.sq.comment(cx.ordered.size() + " aspect variables");	
+//		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
+//
+//		for (Aspect a: cx.ordered) {
+//			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
+//		}
+//
+//		boolean fullyGeneral = constrainsMultivaluedAspect(cx.ordered);
+//		
+//		if (fullyGeneral && (length != null || offset != null)) {
+//			SQ nested = new SQ();
+//			Context rx = new Context( nested, cx.out, cx.dq, p, cx.api );
+//			
+//			nested.addSelectedVar(SQ_Const.item, true);
+//			
+//			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, nested);
+//	        
+//	        cx.declareAspectVarsSQ(EMPTY);
+//			Constraint unEquals = rx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+//			unEquals.tripleFiltering(rx);
+//			cx.sq.comment("variables declared, filters follow.");
+//			addLengthAndOffset(nested, length, offset);
+//			cx.sq.comment("fully general case because constraints with multi-valued aspects.");
+//			cx.sq.addSubquery(nested);
+//						
+//		} else {
+//			baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
+//			Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+//			cx.sq.comment("variables declared, filters follow.");
+//			unEquals.tripleFiltering(cx);
+//			addLengthAndOffset(cx.sq, length, offset);
+//		}
 	}
+	
+//	private void alternativeTranslation(Problems p, Context cx) {
+//		
+//		String baseQuery = cx.api.getBaseQuery();
+//		List<Guard> guards = cx.dq.guards;
+//		boolean needsDistinct = false;
+//		boolean baseQueryNeeded = true;  
+//		Integer length = cx.dq.slice.length,  offset = cx.dq.slice.offset;
+//		
+//		for (Guard guard : guards) {
+//			if (guard.needsDistinct()) needsDistinct = true;
+//			if (guard.supplantsBaseQuery()) baseQueryNeeded = false;
+//		}
+//
+//		cx.sq.comment(cx.ordered.size() + " aspect variables");	
+//		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
+//
+//		for (Aspect a: cx.ordered) {
+//			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
+//		}
+//
+//		baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
+//		
+////		Constraint unEquals = cx.declareAspectVarsSQ(cx.earlySearchesSQ(this));
+////		cx.sq.comment("variables declared, filters follow.");
+////		unEquals.tripleFiltering(cx);
+//		
+//		List<Constraint> operands = operands();
+//		
+//		for (Constraint x: operands) {
+//			if (x instanceof SearchSpec) {
+//				SearchSpec ss = (SearchSpec) x;
+//				if (ss.getAspectName() == null) {
+//					cx.generateSearchSQ(ss);
+//				}
+//			}
+//		}
+//		
+//		for (Aspect a: cx.ordered) {
+//			if (!a.getIsOptional()) {
+//				State s = new State(cx.api.getPrefixes(), cx);				
+//				for (Constraint x: operands) {
+//					if (x.constrains(a)) {
+//						x.doAspect(s, a);
+//					}
+//				}				
+//				s.done(a);
+//			}
+//		}
+//		
+//		for (Aspect a: cx.ordered) {
+//			if (a.getIsOptional()) {
+//				State s = new State(cx.api.getPrefixes(), cx);
+//				for (Constraint x: operands) {
+//					if (x.constrains(a)) {
+//						x.doAspect(s, a);
+//					}
+//				}				
+//				s.done(a);
+//			}			
+//		}
+//		
+//		addLengthAndOffset(cx.sq, length, offset);	
+//	}
 	
 	static class State {
 		

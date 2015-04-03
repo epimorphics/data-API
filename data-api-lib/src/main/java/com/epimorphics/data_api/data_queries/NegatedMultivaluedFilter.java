@@ -13,7 +13,7 @@ import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class NegatedMultivaluedFilter extends Constraint {
+public class NegatedMultivaluedFilter extends Restriction {
 	
 	final Filter basis;
 	
@@ -21,7 +21,7 @@ public class NegatedMultivaluedFilter extends Constraint {
 		this.basis = basis;			
 	}
 	
-	void doAspect(State s, Aspect a) {
+	@Override void applyTo(State s) {
 
 		SQ_Filter f = basis.range.asFilterSQ(s.cx.api.getPrefixes(), basis.a, "_A"); // TODO expose less
 		
@@ -30,16 +30,6 @@ public class NegatedMultivaluedFilter extends Constraint {
 		
 		s.cx.sq.addNotExists(t, f);
 		
-	}
-
-	public void tripleFiltering(Context cx) {
-
-		SQ_Filter f = basis.range.asFilterSQ(cx.api.getPrefixes(), basis.a, "_A"); // TODO expose less
-		
-		SQ_Resource P = new SQ_Resource(basis.a.asProperty());
-		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, f.aspectAsVariable());
-		
-		cx.sq.addNotExists(t, f);
 	}
 
 	@Override public String toString() {

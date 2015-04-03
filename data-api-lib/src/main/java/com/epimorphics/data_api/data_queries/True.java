@@ -8,7 +8,7 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class True extends Constraint {
+public class True extends Restriction {
 	
 	public static True value = new True();
 	
@@ -23,10 +23,6 @@ public class True extends Constraint {
 		return true;
 	}
 
-	public void tripleFiltering(Context cx) {
-		// Nothing needs doing.
-	}
-
 	@Override public Constraint negate() {
 		return False.value;
 	}
@@ -35,7 +31,7 @@ public class True extends Constraint {
 		return false;
 	}
 	
-	void doAspect(State s, Aspect a) {
-		throw new BrokenException("True not implemented yet");
+	@Override void applyTo(State s) {
+		throw new BrokenException("True.doAspect should not be called");
 	}
 }

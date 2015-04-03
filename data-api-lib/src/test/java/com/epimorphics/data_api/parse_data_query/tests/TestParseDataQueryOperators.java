@@ -129,7 +129,8 @@ public class TestParseDataQueryOperators {
 	// @search no longer generates filters; search objects are
 	// handled separately.
 	@Test public void testSingleSearch() {
-		Shortname sn = new Shortname(pm, "pre:local");
+		Aspect a = new Aspect(pm, "pre:local");
+		Shortname sn = a.getName(); // new Shortname(pm, "pre:local");
 		String incoming = "{'pre:local': {'@search': 'texty bits'}}";
 		JsonObject jo = JSON.parse(incoming);		
 		Problems p = new Problems();
@@ -141,7 +142,7 @@ public class TestParseDataQueryOperators {
 		assertTrue("expected no sorts in query.", q.sorts().isEmpty());
 //
 		assertEquals(BunchLib.list(), q.filters());
-		assertEquals(BunchLib.list(new SearchSpec("texty bits", sn)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(a, "texty bits", sn)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSingleBelow() {

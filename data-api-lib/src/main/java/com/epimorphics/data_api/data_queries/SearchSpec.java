@@ -5,8 +5,6 @@
 */
 package com.epimorphics.data_api.data_queries;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,70 +18,88 @@ import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.epimorphics.data_api.sparql.SQ_WhereElement;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
 
-public class SearchSpec extends Constraint {
+public class SearchSpec extends Restriction {
 
 	final String pattern;
 	final Integer limit;
 	private final Shortname aspectName;
 	final Shortname property;
 	final boolean negated;
+	final Aspect aspect;
 	
-	public SearchSpec(String pattern) {
-		this(pattern, null);
+	public SearchSpec(Aspect a, String pattern) {
+		this(a, pattern, null);
 	}
 
-	public SearchSpec(String pattern, Shortname aspectName) {
-		this(pattern, aspectName, null);
+	public SearchSpec(Aspect a, String pattern, Shortname aspectName) {
+		this(a, pattern, aspectName, null);
 	}
 
-	public SearchSpec(String pattern, Shortname aspectName, Shortname property) {
-		this(pattern, aspectName, property, null);
+	public SearchSpec(Aspect a, String pattern, Shortname aspectName, Shortname property) {
+		this(a, pattern, aspectName, property, null);
 	}
 
-	public SearchSpec(String pattern, Shortname aspectName, Shortname property, Integer limit) {
-		this(pattern, aspectName, property, limit, false);
+	public SearchSpec(Aspect a, String pattern, Shortname aspectName, Shortname property, Integer limit) {
+		this(a, pattern, aspectName, property, limit, false);
 	}
 
-	public SearchSpec(String pattern, Shortname aspectName, Shortname property, Integer limit, boolean negated) {
+	public SearchSpec(Aspect aspect, String pattern, Shortname aspectName, Shortname property, Integer limit, boolean negated) {
 		this.pattern = pattern;
 		this.property = property;
 		this.aspectName = aspectName;
 		this.limit = limit;
 		this.negated = negated;
+		this.aspect = aspect;
+		
+	//
+	// sanity check while changing code to eliminate aspectName in
+	// favour of aspect
+		
+		if (aspect == null) {
+			if (aspectName == null) {
+				// consistent
+			} else {
+				throw new BrokenException("aspect null but name is " + aspectName);
+			}
+		} else {
+			if (aspectName == null) {
+				throw new BrokenException("aspect is " + aspect + " but name is null");
+			} else {
+				if (aspect.getName().equals(aspectName)) {
+					// consistent
+				} else {
+					throw new BrokenException("aspec is " + aspect + " but name is " + aspectName);
+				}
+			}
+		}
 	}
 	
-	void doAspect(State s, Aspect a) {
-				
+	@Override void applyTo(State s) {
 //		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //		PrintStream ps = new PrintStream(bos);
 //		new RuntimeException("stack").printStackTrace(ps);
 //		ps.close();
 //		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
 //		
-		s.cx.sq.addTriple(toPositiveSearchAspectTriple(a, s.cx.api.getPrefixes()));
+		s.cx.sq.addTriple(toPositiveSearchAspectTriple(aspect));		
 	}
 
 	@Override public Constraint negate() {
-		return new SearchSpec(pattern, aspectName, property, limit, true);
-	}
-
-	public void tripleFiltering(Context cx) {
-		cx.generateSearchSQ(this);
+		return new SearchSpec(aspect, pattern, aspectName, property, limit, true);
 	}
 	
 	public Shortname getAspectName() {
 		return aspectName;
 	}
 
-	public void toSearchTripleSQ(Context cx, Map<Shortname, Aspect> aspects, PrefixMapping pm) {
+	public void toSearchTripleSQ(Context cx, PrefixMapping pm) {
 		if (aspectName == null) {
-			SQ_Node O = asSQNode(pm);
+			SQ_Node O = asSQNode();
 			SQ_Triple t = new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, O);
 			if (negated) {
 				cx.sq.addNotExists(t);
@@ -92,11 +108,11 @@ public class SearchSpec extends Constraint {
 			}
 		} else {
 			// TODO have an "early" triple.
-			cx.sq.addTriple(toSearchAspectTripleSQ(aspects, pm));
+			cx.sq.addTriple(toSearchAspectTripleSQ());
 		}
 	}
 	
-	private SQ_Node asSQNode(PrefixMapping pm) {
+	private SQ_Node asSQNode() {
 		SQ_Literal literal = new SQ_Literal(pattern, "");
 		if (property == null && limit == null) {
 			return literal;		
@@ -109,8 +125,8 @@ public class SearchSpec extends Constraint {
 		}
 	}
 
-	private SQ_Triple toSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		SQ_Triple positive = toPositiveSearchAspectTripleSQ(aspects, pm);
+	private SQ_Triple toSearchAspectTripleSQ() {
+		SQ_Triple positive = toPositiveSearchAspectTripleSQ();
 		if (negated) {
 			throw new RuntimeException("TBD");
 			// return " FILTER(NOT EXISTS{" + positive + "})"; 
@@ -119,12 +135,17 @@ public class SearchSpec extends Constraint {
 		}
 	}
 	
-	private SQ_Triple toPositiveSearchAspectTripleSQ(Map<Shortname, Aspect> aspects, PrefixMapping pm) {
-		Aspect a = aspects.get(aspectName);	
-		return toPositiveSearchAspectTriple(a, pm);
+	private SQ_Triple toPositiveSearchAspectTripleSQ() {
+//		Aspect a = aspects.get(aspectName);	
+//		
+//		if (a.equals(aspect)) {} else {
+//			throw new BrokenException("Found aspect not the same as searched aspect.");
+//		}
+		
+		return toPositiveSearchAspectTriple(aspect);
 	}
 
-	private SQ_Triple toPositiveSearchAspectTriple(Aspect a, PrefixMapping pm) {
+	private SQ_Triple toPositiveSearchAspectTriple(Aspect a) {
 		SQ_Variable aVar = new SQ_Variable(aspectName.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(a);
 		
@@ -132,11 +153,11 @@ public class SearchSpec extends Constraint {
 			
 			if (hasLiteralRange) {
 
-				return new SQ_Triple( SQ_Const.item, SQ_Const.textQuery, asSQNode(pm) );
+				return new SQ_Triple( SQ_Const.item, SQ_Const.textQuery, asSQNode() );
 				
 			} else {
 				
-				return new SQ_Triple( aVar, SQ_Const.textQuery, asSQNode(pm) );
+				return new SQ_Triple( aVar, SQ_Const.textQuery, asSQNode() );
 				
 			}
 			
@@ -149,7 +170,7 @@ public class SearchSpec extends Constraint {
 				
 			} else {
 				
-				return new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode(pm));
+				return new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode());
 			}
 			
 		}

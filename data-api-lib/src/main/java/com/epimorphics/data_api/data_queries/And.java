@@ -19,7 +19,6 @@ public class And extends Bool {
 		super(rearrange(operands));
 	}
 
-	
 	void doAspect(State s, Aspect a) {
 		throw new BrokenException("And not implemented yet");
 	}
@@ -28,10 +27,6 @@ public class And extends Bool {
 		List<Constraint> newOperands = new ArrayList<Constraint>();
 		for (Constraint y: operands) newOperands.add(y.negate());
 		return or(newOperands);
-	}
-
-	public void tripleFiltering(Context cx) {
-		for (Constraint c: operands) c.tripleFiltering(cx);
 	}
 
 	// flatten ANDs. Move searches to the front. TODO efficient!
@@ -73,7 +68,8 @@ public class And extends Bool {
 			+ s.pattern
 			;
 		return new SearchSpec
-			( aPattern
+			( s.aspect
+			, aPattern
 			, s.getAspectName()
 			, null
 			, s.limit
@@ -90,11 +86,12 @@ public class And extends Bool {
 			;		
 		
 		SearchSpec result = new SearchSpec
-				( jointPattern
-				, A.getAspectName()	
-				, null
-				, max(A.limit, B.limit)
-				);
+			( A.aspect
+			, jointPattern
+			, A.getAspectName()	
+			, null
+			, max(A.limit, B.limit)
+			);
 		
 		return result;
 	}

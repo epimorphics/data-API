@@ -254,7 +254,7 @@ public class TestTranslateDataQuery {
 	@Test public void testSingleSearchFilter() {
 		Problems p = new Problems();		
 		List<Constraint> filters = BunchLib.list();
-		SearchSpec s = new SearchSpec( "look for me");
+		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me");
 		List<SearchSpec> searches = BunchLib.list(s);
 		DataQuery q = new DataQuery(Constraint.filters(filters, searches));
 	//	
@@ -349,7 +349,7 @@ public class TestTranslateDataQuery {
 	
 	@Test public void testGlobalSearch() {		
 		Problems p = new Problems();
-		SearchSpec s = new SearchSpec("look for me");
+		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me");
 		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
 			( Constraint.filters(noFilters, BunchLib.list(s) )
@@ -378,7 +378,7 @@ public class TestTranslateDataQuery {
 	@Test public void testGlobalSearchWithProperty() {		
 		Problems p = new Problems();
 		Shortname someProperty = X.getName();
-		SearchSpec s = new SearchSpec("look for me", null, someProperty );
+		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me", null, someProperty );
 		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
 			( Constraint.filters( noFilters, BunchLib.list(s))

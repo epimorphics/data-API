@@ -12,7 +12,7 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class Filter extends Constraint {
+public class Filter extends Restriction {
 	
 	final Range range;
 	final Aspect a;
@@ -22,7 +22,7 @@ public class Filter extends Constraint {
 		this.range = range;
 	}
 	
-	void doAspect(State s, Aspect a) {
+	@Override void applyTo(State s) {
 		Term t = range.operands.get(0);
 		if (range.op.equals(Operator.EQ) && canReplace(s, t)) {
 			s.hasObject(a, t);
@@ -34,11 +34,6 @@ public class Filter extends Constraint {
 	private boolean canReplace(State s, Term term) {
 		Substitution sub = new Substitution(s.getProblems(), this);
 		return sub.canReplace;
-	}
-
-	@Override public void tripleFiltering(Context cx) {
-		SQ_Variable v = new SQ_Variable(a.asVarName());
-		cx.sq.addFilter(range.asFilterSQ(cx.api.getPrefixes(), a));
 	}
 	
 	@Override public Constraint negate() {

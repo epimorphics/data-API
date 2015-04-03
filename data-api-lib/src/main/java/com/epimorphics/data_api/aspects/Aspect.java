@@ -33,6 +33,8 @@ public class Aspect extends ResourceBasedConfig {
 		}
 	};
 	
+	public static final Aspect NONE = null;
+	
 	/**
 	 	Compare two aspects, taking into account whether they are optional or
 	 	have some constraint on their value.
@@ -91,6 +93,12 @@ public class Aspect extends ResourceBasedConfig {
 	
 	PrefixMapping explictPrefixes = null;
 	
+	/**
+		Initialise this Aspect with the given shortName 'spoo:local',
+		with its full name being given using the prefixes pm
+		to expand the prefix 'spoo'. The prefixes are retained
+		and may be extracted uwing getPrefixes().
+	*/
 	public Aspect(PrefixMapping pm, String shortName) {
 		String fullName = pm.expandPrefix(shortName);		
 		this.ID = fullName;

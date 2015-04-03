@@ -8,16 +8,15 @@ package com.epimorphics.data_api.data_queries;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.hp.hpl.jena.shared.BrokenException;
 
-public class False extends Constraint {
+public class False extends Restriction {
 
 	public static False value = new False();
 	
 	public False() {
 	}
 
-	
-	void doAspect(State s, Aspect a) {
-		throw new BrokenException("False not implemented yet");
+	@Override void applyTo(State s) {
+		throw new BrokenException("False.doAspect should not be called");
 	}
 	
 	@Override public String toString() {
@@ -30,10 +29,6 @@ public class False extends Constraint {
 
 	@Override public Constraint negate() {
 		return True.value;
-	}
-
-	@Override public void tripleFiltering(Context cx) {
-		cx.sq.addFalse();
 	}
 
 	@Override protected boolean constrains(Aspect a) {
