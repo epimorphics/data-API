@@ -71,7 +71,6 @@ public class And extends Bool {
 			( s.aspect
 			, aPattern
 			, s.getAspectName()
-			, null
 			, s.limit
 			);
 	}
@@ -89,7 +88,6 @@ public class And extends Bool {
 			( A.aspect
 			, jointPattern
 			, A.getAspectName()	
-			, null
 			, max(A.limit, B.limit)
 			);
 		

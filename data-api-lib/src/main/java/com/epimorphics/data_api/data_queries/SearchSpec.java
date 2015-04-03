@@ -7,7 +7,6 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
@@ -19,7 +18,6 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -27,56 +25,28 @@ public class SearchSpec extends Restriction {
 
 	final String pattern;
 	final Integer limit;
-	private final Shortname aspectName;
 	final Shortname property;
 	final boolean negated;
 	final Aspect aspect;
-	
+
 	public SearchSpec(Aspect a, String pattern) {
-		this(a, pattern, null);
+		this(a, pattern, null, null);
 	}
 
-	public SearchSpec(Aspect a, String pattern, Shortname aspectName) {
-		this(a, pattern, aspectName, null);
+	public SearchSpec(Aspect a, String pattern, Shortname property) {
+		this(a, pattern, property, null);
 	}
 
-	public SearchSpec(Aspect a, String pattern, Shortname aspectName, Shortname property) {
-		this(a, pattern, aspectName, property, null);
+	public SearchSpec(Aspect a, String pattern, Shortname property, Integer limit) {
+		this(a, pattern, property, limit, false);
 	}
 
-	public SearchSpec(Aspect a, String pattern, Shortname aspectName, Shortname property, Integer limit) {
-		this(a, pattern, aspectName, property, limit, false);
-	}
-
-	public SearchSpec(Aspect aspect, String pattern, Shortname aspectName, Shortname property, Integer limit, boolean negated) {
+	public SearchSpec(Aspect aspect, String pattern, Shortname property, Integer limit, boolean negated) {
 		this.pattern = pattern;
 		this.property = property;
-		this.aspectName = aspectName;
 		this.limit = limit;
 		this.negated = negated;
 		this.aspect = aspect;
-		
-	//
-	// sanity check while changing code to eliminate aspectName in
-	// favour of aspect
-		
-		if (aspect == null) {
-			if (aspectName == null) {
-				// consistent
-			} else {
-				throw new BrokenException("aspect null but name is " + aspectName);
-			}
-		} else {
-			if (aspectName == null) {
-				throw new BrokenException("aspect is " + aspect + " but name is null");
-			} else {
-				if (aspect.getName().equals(aspectName)) {
-					// consistent
-				} else {
-					throw new BrokenException("aspec is " + aspect + " but name is " + aspectName);
-				}
-			}
-		}
 	}
 	
 	@Override void applyTo(State s) {
@@ -86,19 +56,19 @@ public class SearchSpec extends Restriction {
 //		ps.close();
 //		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
 //		
-		s.cx.sq.addTriple(toPositiveSearchAspectTriple(aspect));		
+		s.cx.sq.addTriple(toPositiveSearchAspectTriple());		
 	}
 
 	@Override public Constraint negate() {
-		return new SearchSpec(aspect, pattern, aspectName, property, limit, true);
+		return new SearchSpec(aspect, pattern, property, limit, true);
 	}
 	
 	public Shortname getAspectName() {
-		return aspectName;
+		return aspect == null ? null : aspect.getName();
 	}
 
 	public void toSearchTripleSQ(Context cx, PrefixMapping pm) {
-		if (aspectName == null) {
+		if (aspect == null) {
 			SQ_Node O = asSQNode();
 			SQ_Triple t = new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, O);
 			if (negated) {
@@ -136,18 +106,12 @@ public class SearchSpec extends Restriction {
 	}
 	
 	private SQ_Triple toPositiveSearchAspectTripleSQ() {
-//		Aspect a = aspects.get(aspectName);	
-//		
-//		if (a.equals(aspect)) {} else {
-//			throw new BrokenException("Found aspect not the same as searched aspect.");
-//		}
-		
-		return toPositiveSearchAspectTriple(aspect);
+		return toPositiveSearchAspectTriple();
 	}
 
-	private SQ_Triple toPositiveSearchAspectTriple(Aspect a) {
-		SQ_Variable aVar = new SQ_Variable(aspectName.asVar().substring(1));
-		boolean hasLiteralRange = hasLiteralRange(a);
+	private SQ_Triple toPositiveSearchAspectTriple() {
+		SQ_Variable aVar = new SQ_Variable(aspect.asVar().substring(1));
+		boolean hasLiteralRange = hasLiteralRange(aspect);
 		
 		if (property == null) {
 			
@@ -166,7 +130,7 @@ public class SearchSpec extends Restriction {
 			if (hasLiteralRange) {
 
 				throw new UnsupportedOperationException
-					("@search on aspect " + (a == null ? aspectName : a) + " has @property " + property + " -- should have been detected earlier" );
+					("@search on aspect " + (aspect == null ? aspect : aspect) + " has @property " + property + " -- should have been detected earlier" );
 				
 			} else {
 				
@@ -194,7 +158,7 @@ public class SearchSpec extends Restriction {
 		return
 			(negated ? "@not " : "")
 			+ "@search" 
-			+ (aspectName == null ? "[global]" : "[" + aspectName + "]") 
+			+ (aspect == null ? "[global]" : "[" + aspect + "]") 
 			+ " (" + match + limitString + ")"
 			;
 	}
@@ -203,7 +167,7 @@ public class SearchSpec extends Restriction {
 		return
 			(pattern == null ? 0 : pattern.hashCode())
 			^ (property == null ? 0 : property.hashCode())
-			^ (aspectName == null ? 0 : aspectName.hashCode())
+			^ (aspect == null ? 0 : aspect.hashCode())
 			;
 	}
 
@@ -213,7 +177,7 @@ public class SearchSpec extends Restriction {
 	
 	private boolean same(SearchSpec other) {
 		return
-			(aspectName == null ? other.aspectName == null : aspectName.equals(other.aspectName))
+			(aspect == null ? other.aspect == null : aspect.equals(other.aspect))
 			&& (pattern == null ? other.pattern == null : pattern.equals(other.pattern))
 			&& (property == null ? other.property == null : property.equals(other.property))
 			&& (limit == null ? other.limit == null : limit.equals(other.limit))
@@ -233,6 +197,6 @@ public class SearchSpec extends Restriction {
 	}
 
 	@Override protected boolean constrains(Aspect a) {
-		return aspectName == null ? false : aspectName.equals(a.getName());
+		return aspect == null ? false : aspect.equals(a);
 	}	
 }

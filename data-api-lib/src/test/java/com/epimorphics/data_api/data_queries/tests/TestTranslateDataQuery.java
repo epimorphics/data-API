@@ -378,7 +378,7 @@ public class TestTranslateDataQuery {
 	@Test public void testGlobalSearchWithProperty() {		
 		Problems p = new Problems();
 		Shortname someProperty = X.getName();
-		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me", null, someProperty );
+		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me", someProperty );
 		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
 			( Constraint.filters( noFilters, BunchLib.list(s))

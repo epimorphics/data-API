@@ -122,7 +122,7 @@ public class DataQueryParser {
 				for (String opKey: rob.keys()) {
 					JsonValue operand = rob.get(opKey);
 					if (opKey.equals("@search")) {
-						constraints.add( extractSearchSpec(key, a, sn, operand) );
+						constraints.add( extractSearchSpec(key, a, operand) );
 					} else if (opKey.equals("@matches")) {
 						constraints.add( extractMatches(key, a, operand) );
 					} else if (opKey.startsWith("@")) {
@@ -166,7 +166,7 @@ public class DataQueryParser {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
-			constraints.add( extractSearchSpec(key, Aspect.NONE, null, value) );
+			constraints.add( extractSearchSpec(key, Aspect.NONE, value) );
 		} else if (key.equals("@suppress_types")) {
 			suppressTypes = extractBoolean(p, key, value);
 		} else if (key.equals("@json_mode")) {
@@ -248,10 +248,10 @@ public class DataQueryParser {
 		return null;
 	}
 
-	private SearchSpec extractSearchSpec(String key, Aspect a, Shortname aspectName, JsonValue value) {
+	private SearchSpec extractSearchSpec(String key, Aspect a, JsonValue value) {
 		if (value.isString()) {
 			String pattern = value.getAsString().value();
-			return new SearchSpec(a, pattern, aspectName);
+			return new SearchSpec(a, pattern);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
 			String pattern = getString(ob, "@value");
@@ -260,7 +260,7 @@ public class DataQueryParser {
 			Shortname shortProperty = (property == null ? null : new Shortname(pm, property));
 			if (property == null && limit == null)
 				p.add("@search object has neither @property nor @limit: " + value);
-			return new SearchSpec(a, pattern, aspectName, shortProperty, limit);
+			return new SearchSpec(a, pattern, shortProperty, limit);
 		} else {
 			p.add("Operand of @search must be string or object, given: " + value);
 			return SearchSpec.absent();

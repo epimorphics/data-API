@@ -46,9 +46,8 @@ public class TestTextSearch {
 		System.err.println(p.getProblemStrings());
 		
 		assertEquals(0, p.size());
-		Aspect local_a = aspect("pre:local");
-		Shortname local = local_a.getName(); // sn("pre:local");
-		assertEquals(BunchLib.list(new SearchSpec(local_a, "pattern", local)), q.getSearchPatterns() );
+		Aspect local = aspect("pre:local");
+		assertEquals(BunchLib.list(new SearchSpec(local, "pattern")), q.getSearchPatterns() );
 	}
 	
 	private Shortname sn(String name) {
@@ -67,7 +66,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", null, property)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", property)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithJustLimit() {
@@ -76,7 +75,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		Asserts.assertNoProblems("failed to parse search", p);
-		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", null, null, 17)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", null, 17)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithLimitAndProperty() {
@@ -86,7 +85,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		Asserts.assertNoProblems("failed to parse search", p);
-		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", null, property, 17)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", property, 17)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithNeitherLimitNotPropertyRaisesProblem() {

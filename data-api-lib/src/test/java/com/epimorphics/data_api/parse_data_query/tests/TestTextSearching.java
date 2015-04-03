@@ -50,7 +50,7 @@ public class TestTextSearching {
 		System.err.println(p.getProblemStrings());
 		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec(a, "pattern", sn("pre:local"))), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(a, "pattern")), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithLimit() {
@@ -115,7 +115,7 @@ public class TestTextSearching {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", null, property)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", property)), q.getSearchPatterns() );
 	}
 	
 	static final Aspect X = new TestAspects.MockAspect("eh:/prefixPart/X");
