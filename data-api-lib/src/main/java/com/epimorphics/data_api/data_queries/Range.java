@@ -52,10 +52,6 @@ public class Range {
 		}
 		return sb.toString();
 	}
-
-	public SQ_Filter asFilterSQ(PrefixMapping pm, Aspect l) {
-		return asFilterSQ(pm, l, "");
-	}
 	
 	public SQ_Filter asFilterSQ(PrefixMapping pm, Aspect l, String suffix) {
 		List<SQ_Expr> operands = new ArrayList<SQ_Expr>(this.operands.size());		

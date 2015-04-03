@@ -20,7 +20,6 @@ public class SQ_Where {
 	final List<SQ_WhereElement> optionalTriples = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> filterElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_WhereElement> otherElements = new ArrayList<SQ_WhereElement>();
-	final List<SQ_WhereElement> optionalFilterElements = new ArrayList<SQ_WhereElement>();
 	final List<SQ_Bind> bindingElements = new ArrayList<SQ_Bind>();
 	final List<SQ_Expr> sqFilters = new ArrayList<SQ_Expr>();
 	
@@ -42,7 +41,6 @@ public class SQ_Where {
 		exprSection(sb, indent, "mandatory filters", sqFilters);
 		section(sb, indent, "otherwise uncategorised elements", otherElements);
 		section(sb, indent, "optional triples", optionalTriples);
-		section(sb, indent, "optional filter elements", optionalFilterElements);
 		section(sb, indent, "BINDings", bindingElements);
 	}
 
@@ -118,11 +116,7 @@ public class SQ_Where {
 	}
 
 	public void addFilter(SQ_Filter f) {	
-		(f.x.getIsOptional() ? optionalFilterElements : filterElements).add(f); 
-	}
-	
-	public void addOptionalFilter(SQ_WhereElement e) {
-		optionalFilterElements.add(e);
+		filterElements.add(f);
 	}
 	
 	public void addComment(String c) {
