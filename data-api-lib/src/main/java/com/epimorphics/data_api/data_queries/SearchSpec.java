@@ -48,6 +48,10 @@ public class SearchSpec extends Restriction {
 		this.aspect = aspect;
 	}
 	
+	public boolean isGlobal() {
+		return aspect == null;
+	}
+	
 	@Override void applyTo(State s) {
 //		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //		PrintStream ps = new PrintStream(bos);
@@ -55,7 +59,21 @@ public class SearchSpec extends Restriction {
 //		ps.close();
 //		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
 //		
-		s.cx.sq.addTriple(toPositiveSearchAspectTriple());		
+		if (isGlobal()) {
+			applyGlobalSearch(s.cx);
+		} else {
+			s.cx.sq.addTriple(toPositiveSearchAspectTriple());
+		}
+	}
+
+	private void applyGlobalSearch(Context cx) {
+		SQ_Node O = asSQNode();
+		SQ_Triple t = new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, O);
+		if (negated) {
+			cx.sq.addNotExists(t);
+		} else {
+			cx.sq.addTriple(t);			
+		}
 	}
 
 	@Override public Constraint negate() {
@@ -64,21 +82,6 @@ public class SearchSpec extends Restriction {
 	
 	public Shortname getAspectName() {
 		return aspect == null ? null : aspect.getName();
-	}
-
-	public void toSearchTripleSQ(Context cx) {
-		if (aspect == null) {
-			SQ_Node O = asSQNode();
-			SQ_Triple t = new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, O);
-			if (negated) {
-				cx.sq.addNotExists(t);
-			} else {
-				cx.sq.addTriple(t);			
-			}
-		} else {
-			// TODO have an "early" triple.
-			cx.sq.addTriple(toSearchAspectTripleSQ());
-		}
 	}
 	
 	private SQ_Node asSQNode() {
@@ -92,20 +95,6 @@ public class SearchSpec extends Restriction {
 			if (limit == null) return SQ.list(useProperty, literal);
 			else return SQ.list(useProperty, literal, SQ.integer(limit));
 		}
-	}
-
-	private SQ_Triple toSearchAspectTripleSQ() {
-		SQ_Triple positive = toPositiveSearchAspectTripleSQ();
-		if (negated) {
-			throw new RuntimeException("TBD");
-			// return " FILTER(NOT EXISTS{" + positive + "})"; 
-		} else {
-			return positive;
-		}
-	}
-	
-	private SQ_Triple toPositiveSearchAspectTripleSQ() {
-		return toPositiveSearchAspectTriple();
 	}
 
 	private SQ_Triple toPositiveSearchAspectTriple() {
@@ -181,10 +170,6 @@ public class SearchSpec extends Restriction {
 			&& (property == null ? other.property == null : property.equals(other.property))
 			&& (limit == null ? other.limit == null : limit.equals(other.limit))
 			;
-	}
-
-	public boolean isPresent() {
-		return pattern != null;
 	}
 
 	public static SearchSpec absent() {

@@ -48,7 +48,7 @@ public class Below extends Restriction {
 			s.cx.sq.addTriple(t) ;
 		}
 		
-		s.defined = true;
+		s.define(a);
 	}
 
 	@Override public String toString() {

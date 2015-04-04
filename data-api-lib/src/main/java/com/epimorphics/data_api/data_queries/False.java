@@ -16,7 +16,7 @@ public class False extends Restriction {
 	}
 
 	@Override void applyTo(State s) {
-		throw new BrokenException("False.doAspect should not be called");
+		throw new BrokenException("False.applyTo should not be called");
 	}
 	
 	@Override public String toString() {

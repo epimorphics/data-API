@@ -6,8 +6,11 @@
 package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
@@ -64,47 +67,18 @@ public abstract class Constraint {
 
 		baseQueryAndGuards(cx, baseQuery, guards, baseQueryNeeded, cx.sq);
 		
-		List<Constraint> operands = operands();
+		State s = new State(cx.api.getPrefixes(), cx);	
 		
-		for (Constraint x: operands) {
-			if (x instanceof SearchSpec) {
-				SearchSpec ss = (SearchSpec) x;
-				if (ss.getAspectName() == null) {
-					cx.generateSearchSQ(ss);
-				}
+		for (Constraint x: operands()) {
+			if (x instanceof Restriction) {					
+				((Restriction) x).applyTo(s);
+			} else {
+				System.err.println(">> Hmm, this operand is not a Restriction: " + x);
 			}
-		}
+		}				
 		
-		for (Aspect a: cx.ordered) {
-			if (!a.getIsOptional()) {
-				State s = new State(cx.api.getPrefixes(), cx);				
-				for (Constraint x: operands) {
-					if (x instanceof Restriction) {					
-						if (x.constrains(a)) {
-							((Restriction) x).applyTo(s);
-						}
-					}
-				}				
-				s.done(a);
-			}
-		}
-		
-		for (Aspect a: cx.ordered) {
-			if (a.getIsOptional()) {
-				State s = new State(cx.api.getPrefixes(), cx);
-				for (Constraint x: operands) {
-					if (x instanceof Restriction) {					
-						if (x.constrains(a)) {
-							((Restriction) x).applyTo(s);
-						}
-					}
-				}				
-				s.done(a);
-			}			
-		}
-		
+		s.bindUnboundAspects(cx.ordered);
 		addLengthAndOffset(cx.sq, length, offset);	
-	
 		
 //		alternativeTranslation(p, cx);
 //		
@@ -221,13 +195,12 @@ public abstract class Constraint {
 	
 	static class State {
 		
-		final PrefixMapping pm;
-		final Context cx;
-		
 		final SQ sq;
+		final Context cx;
+		final PrefixMapping pm;
 		
-		boolean defined = false;
-		boolean filtered = false;
+		final Set<Aspect> defined = new HashSet<Aspect>();
+		final Set<Aspect> filtered = new HashSet<Aspect>();
 		
 		State(PrefixMapping pm, Context cx) {
 			this.pm = pm;
@@ -238,12 +211,19 @@ public abstract class Constraint {
 		public Problems getProblems() {
 			return cx.p;
 		}
+		
+		void define(Aspect a) {
+			defined.add(a);
+		}
+		
+		void bindUnboundAspects(List<Aspect> aspects) {
+			for (Aspect a: aspects)	done(a);
+		}
 
 		void done(Aspect a) {
-			if (!defined) {
-				SQ_Variable theVariable = new SQ_Variable(a.asVarName());
-				boolean optional = a.getIsOptional() && !filtered;
-				cx.declareOneBindingSQ(a, optional, 1, theVariable, null);
+			if (!defined.contains(a)) {
+				boolean optional = a.getIsOptional() && !filtered.contains(a);
+				cx.declareOneBindingSQ(a, optional);
 			}
 		}
 		
@@ -254,7 +234,7 @@ public abstract class Constraint {
 			SQ_Variable var = new SQ_Variable(a.asVarName());
 			sq.addTriple(x);
 			sq.addBind(value, var);
-			defined = true;
+			defined.add(a);
 		}
 
 		public void filter(Aspect a, Operator op, List<Term> terms) {
@@ -262,7 +242,7 @@ public abstract class Constraint {
 			for (Term t: terms) operands.add(new SQ_TermAsNode(pm, t));
 			SQ_Filter f = new SQ_Filter(op, a, operands);
 			sq.addFilter(f);
-			filtered = true;
+			filtered.add(a);
 		}
 		
 	}

@@ -6,7 +6,6 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public class True extends Restriction {
 	
@@ -32,6 +31,6 @@ public class True extends Restriction {
 	}
 	
 	@Override void applyTo(State s) {
-		throw new BrokenException("True.doAspect should not be called");
+		// we don't need to do anything, and must do nothing.
 	}
 }

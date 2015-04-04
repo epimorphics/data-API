@@ -8,11 +8,9 @@ package com.epimorphics.data_api.data_queries;
 import java.util.*;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.*;
-import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class Context  {
 
@@ -62,8 +60,10 @@ public class Context  {
 		}
 	}
 
-	public void declareOneBindingSQ(Aspect x, boolean isOptional, int countBindings, SQ_Variable var, Term equalTo) {		
-						
+	public void declareOneBindingSQ(Aspect x, boolean isOptional) {		
+
+		SQ_Variable var = new SQ_Variable(x.asVarName());
+		
 		String rawProperty = x.asProperty();		
 		List<SQ_Triple> triples = new ArrayList<SQ_Triple>(); 
 		
@@ -92,7 +92,7 @@ public class Context  {
 				;
 			
 			SQ_Node nextObject = remainingElements == 0 
-				? (equalTo == null ? var : termAsNode(equalTo))
+				? var
 				: new SQ_Variable(nextVariableName)
 				;
 			
@@ -103,20 +103,6 @@ public class Context  {
 			firstElement = false;
 		}
 				
-		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);
-		
-		if (equalTo != null && countBindings == 0) {
-			// sq.addBind(Range.termAsExpr(api.getPrefixes(), equalTo), var);		
-			sq.addBind(termAsNode(equalTo), var);
-		}		
-	}
-	
-	private SQ_Node termAsNode(final Term equalTo) {		
-		final PrefixMapping pm = api.getPrefixes();
-		return new SQ_TermAsNode(pm, equalTo);
-	}
-	
-	public void generateSearchSQ(SearchSpec s) {
-		s.toSearchTripleSQ(this);
+		if (isOptional) sq.addOptionalTriples(triples); else sq.addTriples(triples);	
 	}
 }

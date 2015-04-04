@@ -10,17 +10,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.epimorphics.data_api.aspects.Aspect;
-import com.hp.hpl.jena.shared.BrokenException;
-
 public class And extends Bool {
 
 	public And(List<Constraint> operands) {
 		super(rearrange(operands));
-	}
-
-	void doAspect(State s, Aspect a) {
-		throw new BrokenException("And not implemented yet");
 	}
 	
 	@Override public Constraint negate() {
