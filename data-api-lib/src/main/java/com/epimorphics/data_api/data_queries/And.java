@@ -44,60 +44,14 @@ public class And extends Bool {
 				Shortname aName = s.getAspectName();
 				SearchSpec already = specs.get(aName);
 				if (already == null) {
-					specs.put(aName, revise(s));
+					specs.put(aName, s.withExplicitField());
 				} else {
-					specs.put(aName, combine(already, s));
+					specs.put(aName, already.withAndExplicitField(s));
 				}
 			}
 			ArrayList<Constraint> result = new ArrayList<Constraint>(specs.values());
 			return result;
 		}			
-	}
-
-	private static SearchSpec revise(SearchSpec s) {
-		String aPattern = 
-			localName(s.property.URI)
-			+ ": "
-			+ s.pattern
-			;
-		return new SearchSpec
-			( s.aspect
-			, aPattern
-			, s.getAspectName()
-			, s.limit
-			);
-	}
-
-	private static SearchSpec combine(SearchSpec A, SearchSpec B) {
-		
-		String bField = localName(B.property.URI);
-		
-		String jointPattern = 
-			A.pattern + " "
-			+ " AND " + bField + ": " + B.pattern;
-			;		
-		
-		SearchSpec result = new SearchSpec
-			( A.aspect
-			, jointPattern
-			, A.getAspectName()	
-			, max(A.limit, B.limit)
-			);
-		
-		return result;
-	}
-
-	private static String localName(String resource) {
-		int lastSlash = resource.lastIndexOf('/');
-		int lastHash = resource.lastIndexOf('#');
-		int begin = Math.max(lastSlash, lastHash);
-		return resource.substring(begin + 1);
-	}
-
-	private static Integer max(Integer A, Integer B) {
-		if (A == null) return B;
-		if (B == null) return A;
-		return Math.max(A, B);
 	}
 
 	private static List<Constraint> flattenANDs(List<Constraint> operands) {

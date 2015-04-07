@@ -47,18 +47,86 @@ public class SearchSpec extends Restriction {
 		this.negated = negated;
 		this.aspect = aspect;
 	}
+
+	/**
+	    withExplicitField() returns a SearchSpec with the
+	    field name of the spec explicitly present in the
+	    pattern.
+	*/
+	public SearchSpec withExplicitField() {
+		String aPattern = fieldName() + ": " + pattern;
+		return new SearchSpec
+			( aspect
+			, aPattern
+			, getAspectName()
+			, limit
+			);
+	}
+
+	/**
+		withAndExplicitField(B) ANDs the pattern and
+		field of B with the explicit-field pattern of this
+		SearchSpec and returns the result. The limit field of the
+		result is the maximum of the limit fields of this
+		SearchSpec and B.			
+	*/
+	public SearchSpec withAndExplicitField(SearchSpec B) {
+		String bField = B.fieldName(); 
+		
+		String jointPattern = 
+			pattern + " AND " + bField + ": " + B.pattern;
+			;		
+		
+		SearchSpec result = new SearchSpec
+			( aspect
+			, jointPattern
+			, getAspectName()	
+			, max(limit, B.limit)
+			);
+		
+		return result;
+	}
+
+	private static Integer max(Integer A, Integer B) {
+		if (A == null) return B;
+		if (B == null) return A;
+		return Math.max(A, B);
+	}
 	
 	public boolean isGlobal() {
 		return aspect == null;
 	}
 	
+	public String getPattern() {
+		return pattern;
+	}
+	
+	/**
+		fieldName() returns the name of the indexing field of
+		this SearchSpec, defined as the local name of the
+		property URI or, if that is null, the local name of
+		the aspect's name. 
+	*/
+	public String fieldName() {
+		return localName
+			((property == null ? aspect.getName() : property).URI)
+			;
+	}
+
+	/*
+		localName(uri) returns the local name of the uri, defined
+		as the section of the URI starting just past the last
+		'#' or '/', whichever is later in the URI. This is used
+		to derive the field name from a property name.
+	*/
+	private String localName(String uri) {
+		int lastSlash = uri.lastIndexOf('/');
+		int lastHash = uri.lastIndexOf('#');
+		int begin = Math.max(lastSlash, lastHash);
+		return uri.substring(begin + 1);
+	}
+	
 	@Override void applyTo(State s) {
-//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//		PrintStream ps = new PrintStream(bos);
-//		new RuntimeException("stack").printStackTrace(ps);
-//		ps.close();
-//		System.err.println(">> STACK:\n" + bos.toString().substring(0, 700) + "\n...\n");
-//		
 		if (isGlobal()) {
 			applyGlobalSearch(s.cx);
 		} else {

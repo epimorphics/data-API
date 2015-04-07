@@ -6,7 +6,6 @@
 package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -15,15 +14,7 @@ import java.util.Set;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.reporting.Problems;
-import com.epimorphics.data_api.sparql.SQ;
-import com.epimorphics.data_api.sparql.SQ_Const;
-import com.epimorphics.data_api.sparql.SQ_Expr;
-import com.epimorphics.data_api.sparql.SQ_Filter;
-import com.epimorphics.data_api.sparql.SQ_Node;
-import com.epimorphics.data_api.sparql.SQ_Resource;
-import com.epimorphics.data_api.sparql.SQ_TermAsNode;
-import com.epimorphics.data_api.sparql.SQ_Triple;
-import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.epimorphics.data_api.sparql.*;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public abstract class Constraint {
