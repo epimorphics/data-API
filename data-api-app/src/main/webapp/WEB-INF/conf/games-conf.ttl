@@ -1,39 +1,42 @@
-#
-# games config used in stand-alone server used for local
-# exercise of the dsapi
-#
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix qb:    <http://purl.org/linked-data/cube#> .
+@prefix wfd: <http://location.data.gov.uk/def/am/wfd/> .
+@prefix ppd:  <http://landregistry.data.gov.uk/def/ppi/> .
+@prefix lrcommon: <http://landregistry.data.gov.uk/def/common/>.
+@prefix dsapi: <http://www.epimorphics.com/public/vocabulary/dsapi#> .
+@prefix admingeo: <http://data.ordnancesurvey.co.uk/ontology/admingeo/> .
+@prefix sr:    <http://data.ordnancesurvey.co.uk/ontology/spatialrelations/> .
+@prefix :  <http://landregistry.data.gov.uk/dsapi/ppd#> .
 
-@prefix dct:    <http://purl.org/dc/terms/> .
-@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
-@prefix egc:	<http://epimorphics.com/public/vocabulary/games.ttl#>.
-@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix xsd:	<http://www.w3.org/2001/XMLSchema#> .
-@prefix dsapi:	<http://www.epimorphics.com/public/vocabulary/dsapi#> .
+:ppd a dsapi:Dataset;
+    rdfs:label "Property price data";
+    dct:description "A dataset of property transactions";
+#    dsapi:source "source1";
+    dsapi:aspect
+      [rdfs:label "transaction"              ; dsapi:property ppd:hasTransaction],
+      [rdfs:label "publish date"             ; dsapi:property ppd:publishDate],
+      [rdfs:label "transaction date"         ; dsapi:property ppd:transactionDate],
+      [rdfs:label "transaction ID"           ; dsapi:property ppd:transactionId],
+      [rdfs:label "price paid"               ; dsapi:property ppd:pricePaid],
+      [rdfs:label "property address"         ; dsapi:property ppd:propertyAddress],
 
-@prefix :		<http://www.epimorphics.com/test/dsapi/games#> .
+      [rdfs:label "estate type"              ; dsapi:property ppd:estateType;     dsapi:optional true],
+      [rdfs:label "new build"                ; dsapi:property ppd:newBuild;       dsapi:optional true],
+      [rdfs:label "property type"            ; dsapi:property ppd:propertyType;   dsapi:optional true],
+      [rdfs:label "record status"            ; dsapi:property ppd:recordStatus;   dsapi:optional true],
 
-:games a dsapi:Dataset;
-	rdfs:label "Games";
-	dct:description "Kers games database";
-	dsapi:baseQuery "" ;
+      [rdfs:label "property-paon"            ; dsapi:property ppd:propertyAddressPaon ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:paon";     dsapi:optional true],
+      [rdfs:label "property-postcode"        ; dsapi:property ppd:propertyAddressPostcode ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:postcode"; dsapi:optional true],
+      [rdfs:label "property-saon"            ; dsapi:property ppd:propertyAddressSaon ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:saon";     dsapi:optional true],
+      [rdfs:label "property-town"            ; dsapi:property ppd:propertyAddressTown ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:town";     dsapi:optional true],
+      [rdfs:label "property-locality"        ; dsapi:property ppd:propertyAddressLocality ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:locality"; dsapi:optional true],
+      [rdfs:label "property-district"        ; dsapi:property ppd:propertyAddressDistrict ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:district"; dsapi:optional true],
+      [rdfs:label "property-county"          ; dsapi:property ppd:propertyAddressCounty ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:county";   dsapi:optional true],
+      [rdfs:label "property-street"          ; dsapi:property ppd:propertyAddressStreet ; dsapi:propertyPath "ppd:propertyAddress/lrcommon:street";   dsapi:optional true]
 
-	dsapi:aspect 
-		[ dsapi:property rdfs:label; rdfs:label "label"; dsapi:multivalued true ],
-		[ dsapi:property rdf:type;   rdfs:label "type"],
-		[ dsapi:property egc:players; rdfs:label "players"; dsapi:multivalued true ],
-		[ dsapi:property egc:playTimeMinutes; rdfs:label "playing time"; dsapi:optional true ],
-		[ dsapi:property egc:pubYear; rdfs:label "publication year"],
-		[ dsapi:property egc:designed-by; rdfs:label "designed by"; dsapi:optional true ],
-		[ dsapi:property egc:designer-of; rdfs:label "designer of"; dsapi:optional true ],
-		[ dsapi:property egc:co-designed; 
-			rdfs:label "co-designed"; 
-			dsapi:propertyPath "egc:designed-by/egc:designer-of"; 
-			dsapi:optional true 
-		],
-		[ dsapi:property egc:designer-name;
-			rdfs:label "designer name";
-			dsapi:propertyPath "egc:designed-by/rdfs:label";
-			dsapi:optional true
 
-		]
-	.
