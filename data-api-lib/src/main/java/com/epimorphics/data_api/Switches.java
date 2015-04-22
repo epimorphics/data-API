@@ -27,7 +27,7 @@ public class Switches {
 
 	// validate the (type of) terms against the range type of aspects
 	// when building a data query.
-	public static boolean validatingTermsAgainstTypes = true;
+	public static boolean validatingTermsAgainstTypes = false;
 
 	public static String reportSettings() {
 		return
