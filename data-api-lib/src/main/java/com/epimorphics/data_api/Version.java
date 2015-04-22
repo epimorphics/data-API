@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "0.0.10-SNAPSHOT";
-	public final String tagname = "_(@json_mode)";
+	public final String string = "0.0.10";
+	public final String tagname = "_(reordering)";
 }
