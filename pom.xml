@@ -13,7 +13,7 @@
   </scm>
 
   <properties>
-	<project.tagname>_(reordering)</project.tagname>
+	<project.tagname>_(reordering, B)</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
