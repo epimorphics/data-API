@@ -9,11 +9,12 @@
   
   <scm>
     <developerConnection>scm:git:ssh://git@github.com/epimorphics/data-API.git</developerConnection>
-    <tag>data-api-0.0.1-SNAPSHOT</tag>
+    <tag>data-api-0.0.10C</tag>
+
   </scm>
 
   <properties>
-	<project.tagname>_(reordering, B)</project.tagname>
+	<project.tagname>_(reordering)</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
