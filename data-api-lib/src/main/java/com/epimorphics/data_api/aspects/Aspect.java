@@ -10,6 +10,9 @@ import static com.epimorphics.data_api.config.JSONConstants.*;
 import java.util.Comparator;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
@@ -25,6 +28,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
 	
+	static final Logger log = LoggerFactory.getLogger(Aspect.class);
+
 	public static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
 		
 		@Override public int compare(Aspect a, Aspect b) {
@@ -221,7 +226,10 @@ public class Aspect extends ResourceBasedConfig {
 	}
 
 	public Aspect setRangeType(Resource type) {
-		if (type != null) this.rangeType = type;
+		if (type != null) {
+			log.debug("set rangeType of " + name.getCURIE() + " to " + type);
+			this.rangeType = type;
+		}
 		return this;
 	}
 	

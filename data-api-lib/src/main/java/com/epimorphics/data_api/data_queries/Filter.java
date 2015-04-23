@@ -9,6 +9,8 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.data_queries.terms.TermBool;
+import com.epimorphics.data_api.data_queries.terms.TermResource;
 
 public class Filter extends Restriction {
 	
@@ -30,8 +32,12 @@ public class Filter extends Restriction {
 	}
 	
 	private boolean canReplace(State s, Term term) {
-		Substitution sub = new Substitution(s.getProblems(), this);
-		return sub.canReplace;
+		return 
+			term instanceof TermResource
+			|| term instanceof TermBool
+			;
+//		Substitution sub = new Substitution(s.getProblems(), this);
+//		return sub.canReplace;
 	}
 	
 	@Override public Constraint negate() {
