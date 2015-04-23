@@ -36,6 +36,21 @@ public class TestParseDataQueryTerms {
 		assertEquals(Term.typed("1066", "xsd:integer"), t);
 	}
 	
+	@Test public void testBool() {
+		testBooleanLiteral(true, "true");
+		testBooleanLiteral(false, "false");
+	}
+
+	private void testBooleanLiteral(boolean value, String valueString) {
+		Problems p = new Problems();
+		PrefixMapping pm = PrefixMapping.Extended;
+		JsonObject jo = new JsonObject();
+		jo.put("@value", valueString);
+		jo.put("@type", "xsd:boolean");
+		Term t = DataQueryParser.jsonToTerm(p, pm, jo);
+		assertEquals(Term.bool(value), t);
+	}
+	
 	@Test public void testLanguaged() {
 		Problems p = new Problems();
 		PrefixMapping pm = PrefixMapping.Extended;

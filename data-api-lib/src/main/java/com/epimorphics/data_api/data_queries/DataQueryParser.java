@@ -401,7 +401,9 @@ public class DataQueryParser {
 					return null;
 				} else if (type != null) {
 					String typeString = type.getAsString().value();
-					return Term.typed(valueString, typeString);				
+					if (typeString.equals("xsd:boolean")) return Term.bool(valueString.equals("true"));
+					return Term.typed(valueString, typeString);		
+					
 				} else if (lang != null) {
 					String langString = lang.getAsString().value();
 					return Term.languaged(valueString, langString);
