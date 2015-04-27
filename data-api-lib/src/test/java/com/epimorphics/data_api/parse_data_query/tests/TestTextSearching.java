@@ -61,6 +61,7 @@ public class TestTextSearching {
 		Asserts.assertNoProblems("failed to parse @search query", p);
 	//
 		String generated = q.toSparql(p, ds);
+		Asserts.assertNoProblems("failed to generate SPARQL", p);
 	//
 		String expected = BunchLib.join
 			( "PREFIX text: <http://jena.apache.org/text#>"

@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.hp.hpl.jena.shared.BrokenException;
+
 public class SQ_Where {
 	
 	final List<SQ_WhereElement> textQueries = new ArrayList<SQ_WhereElement>();
@@ -79,12 +81,18 @@ public class SQ_Where {
 	public void addTriple(SQ_Triple t) {
 		t = subst(t);
 		if (t.P.equals(SQ_Const.textQuery)) {
+			if (true) throw new BrokenException("BOOM");
 			textQueries.add(0, t);
 		} else if (t.O instanceof SQ_Variable) {
 			addUnlessPresent(ungroundTriples, t);
 		} else {
 			addUnlessPresent(groundTriples, t);
 		}
+	}
+	
+	public void addSearchTriple(SQ_Triple t) {
+		t = subst(t);
+		addUnlessPresent(textQueries, t);
 	}
 
 	public void addOptionalTriple(SQ_Triple t) {

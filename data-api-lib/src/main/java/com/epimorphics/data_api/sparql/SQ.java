@@ -104,13 +104,15 @@ public class SQ {
 		whereClause.addOptionalTriples(ts);
 	}
 	
+	public void addSearchTriple(SQ_Triple t) {
+		whereClause.addSearchTriple(t);
+	}
+	
 	public void addTriple(SQ_Triple t) {
-		// System.err.println(">> adding triple: " + t);
 		whereClause.addTriple(t);
 	}
 	
 	public void addTriples(List<SQ_Triple> ts) {
-		// System.err.println(">> adding triples: " + ts);
 		for (SQ_Triple t: ts) whereClause.addTriple(t);
 	}
 

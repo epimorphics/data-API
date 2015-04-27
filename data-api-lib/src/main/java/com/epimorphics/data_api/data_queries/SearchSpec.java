@@ -137,8 +137,34 @@ public class SearchSpec extends Restriction {
 		if (isGlobal()) {
 			applyGlobalSearch(s.cx);
 		} else {
-			s.cx.sq.addTriple(toPositiveSearchAspectTriple());
+			toPositiveSearchAspectTriple(s.cx.sq);
 		}
+	}
+
+	private void toPositiveSearchAspectTriple(SQ sq) {
+		SQ_Variable aVar = new SQ_Variable(aspect.asVar().substring(1));
+		boolean hasLiteralRange = hasLiteralRange(aspect);
+		
+		if (hasLiteralRange && hasSpecifiedProperty()) {
+			throw new UnsupportedOperationException
+				("@search on aspect " + (aspect == null ? aspect : aspect) + " has @property " + property + " -- should have been detected earlier" );
+		}
+		
+		if (hasLiteralRange) {
+			sq.addSearchTriple(new SQ_Triple(SQ_Const.item, SQ_Const.textQuery, asSQNode()));
+		} else {
+			SQ_Node theProperty = new SQ_Resource(aspect.asProperty());
+			sq.addSearchTriple(new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode()));
+			sq.addSearchTriple(new SQ_Triple(SQ_Const.item, theProperty, aVar));
+		}
+			
+	}
+
+	public boolean hasLiteralRange(Aspect a) {
+		if (a == null) return true;
+		Resource rangeType = a.getRangeType();
+		if (rangeType == null) return false;
+		return isLiteralType(rangeType);
 	}
 
 	private void applyGlobalSearch(Context cx) {
@@ -147,7 +173,7 @@ public class SearchSpec extends Restriction {
 		if (negated) {
 			cx.sq.addNotExists(t);
 		} else {
-			cx.sq.addTriple(t);			
+			cx.sq.addSearchTriple(t);			
 		}
 	}
 
@@ -170,28 +196,6 @@ public class SearchSpec extends Restriction {
 			if (limit == null) return SQ.list(useProperty, literal);
 			else return SQ.list(useProperty, literal, SQ.integer(limit));
 		}
-	}
-
-	private SQ_Triple toPositiveSearchAspectTriple() {
-		SQ_Variable aVar = new SQ_Variable(aspect.asVar().substring(1));
-		boolean hasLiteralRange = hasLiteralRange(aspect);
-		
-		if (hasLiteralRange && hasSpecifiedProperty()) {
-			throw new UnsupportedOperationException
-				("@search on aspect " + (aspect == null ? aspect : aspect) + " has @property " + property + " -- should have been detected earlier" );
-		}
-		
-		if (hasLiteralRange) 
-			return new SQ_Triple( SQ_Const.item, SQ_Const.textQuery, asSQNode() );
-		else
-			return new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode());
-	}
-
-	public boolean hasLiteralRange(Aspect a) {
-		if (a == null) return true;
-		Resource rangeType = a.getRangeType();
-		if (rangeType == null) return false;
-		return isLiteralType(rangeType);
 	}
 
 	private boolean isLiteralType(Resource type) {
