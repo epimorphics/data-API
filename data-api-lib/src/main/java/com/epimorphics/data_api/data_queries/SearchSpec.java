@@ -18,7 +18,6 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.BrokenException;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SearchSpec extends Restriction {
@@ -110,21 +109,16 @@ public class SearchSpec extends Restriction {
 	*/
 	public String fieldName() {
 		return localName
-			((hasNoProperty() ? aspect.getName() : property).URI)
+			((hasSpecifiedProperty() ? property : aspect.getName()).URI)
 			;
 	}
 	
-	/**
-		This SearchSpec has no explicit property if the property is
-		null or if it is the same as the aspect.
-	 */
-	protected boolean hasNoProperty() {
+	protected boolean hasSpecifiedProperty() {
 		return 
-			property == null 
-			|| (aspect == null ? false : property.equals(aspect.getName()))
+			property != null 
+			&& (aspect == null ? true : !property.equals(aspect.getName()))
 			;
 	}
-	
 
 	/*
 		localName(uri) returns the local name of the uri, defined
@@ -167,9 +161,9 @@ public class SearchSpec extends Restriction {
 	
 	private SQ_Node asSQNode() {
 		SQ_Literal literal = new SQ_Literal(pattern, "");
-		if (hasNoProperty() && limit == null) {
+		if (!hasSpecifiedProperty() && limit == null) {
 			return literal;		
-		} else if (hasNoProperty()) {
+		} else if (!hasSpecifiedProperty()) {
 			return SQ.list(literal, SQ.integer(limit));
 		} else {
 			SQ_Resource useProperty = new SQ_Resource(property.URI);
@@ -182,31 +176,15 @@ public class SearchSpec extends Restriction {
 		SQ_Variable aVar = new SQ_Variable(aspect.asVar().substring(1));
 		boolean hasLiteralRange = hasLiteralRange(aspect);
 		
-		if (hasNoProperty()) {
-			
-			if (hasLiteralRange) {
-
-				return new SQ_Triple( SQ_Const.item, SQ_Const.textQuery, asSQNode() );
-				
-			} else {
-				
-				return new SQ_Triple( aVar, SQ_Const.textQuery, asSQNode() );
-				
-			}
-			
-		} else {
-			
-			if (hasLiteralRange) {
-
-				throw new UnsupportedOperationException
-					("@search on aspect " + (aspect == null ? aspect : aspect) + " has @property " + property + " -- should have been detected earlier" );
-				
-			} else {
-				
-				return new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode());
-			}
-			
+		if (hasLiteralRange && hasSpecifiedProperty()) {
+			throw new UnsupportedOperationException
+				("@search on aspect " + (aspect == null ? aspect : aspect) + " has @property " + property + " -- should have been detected earlier" );
 		}
+		
+		if (hasLiteralRange) 
+			return new SQ_Triple( SQ_Const.item, SQ_Const.textQuery, asSQNode() );
+		else
+			return new SQ_Triple(aVar, SQ_Const.textQuery, asSQNode());
 	}
 
 	public boolean hasLiteralRange(Aspect a) {
@@ -222,7 +200,7 @@ public class SearchSpec extends Restriction {
 
 	@Override public String toString() {
 		if (pattern == null) return "absent @search";
-		String match = Term.quote(pattern) + (hasNoProperty() ? "" : ", " + property);
+		String match = Term.quote(pattern) + (hasSpecifiedProperty() ? ", " + property : "");
 		String limitString = (limit == null ? "" : ", limit: " + limit );
 		return
 			(negated ? "@not " : "")
@@ -235,7 +213,7 @@ public class SearchSpec extends Restriction {
 	@Override public int hashCode() {
 		return
 			(pattern == null ? 0 : pattern.hashCode())
-			^ (hasNoProperty() ? 0 : property.hashCode())
+			^ (hasSpecifiedProperty() ? property.hashCode() : 0)
 			^ (aspect == null ? 0 : aspect.hashCode())
 			;
 	}
@@ -248,7 +226,7 @@ public class SearchSpec extends Restriction {
 		return
 			(aspect == null ? other.aspect == null : aspect.equals(other.aspect))
 			&& (pattern == null ? other.pattern == null : pattern.equals(other.pattern))
-			&& (hasNoProperty() ? other.hasNoProperty() : property.equals(other.property))
+			&& (property == null ? other.property == null : property.equals(other.property))
 			&& (limit == null ? other.limit == null : limit.equals(other.limit))
 			;
 	}
