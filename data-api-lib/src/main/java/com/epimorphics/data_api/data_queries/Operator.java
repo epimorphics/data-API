@@ -107,13 +107,6 @@ public abstract class Operator {
 	public abstract void asExpression
 		(StringBuilder sb, SQ_Variable x, List<SQ_Expr>operands);
 	
-	public abstract void asConstraint
-		( Filter newParam
-		, StringBuilder sb
-		, API_Dataset api
-		, String varSuffix
-		);
-	
 	static class InfixOperator extends Operator {
 		
 		public final String sparqlOp;
@@ -121,24 +114,6 @@ public abstract class Operator {
 		public InfixOperator(String name, String sparqlOp) {
 			super(name);
 			this.sparqlOp = sparqlOp;
-		}
-
-		public void asConstraint
-			( Filter filter
-			, StringBuilder sb
-			, API_Dataset api
-			, String varSuffix
-			) {
-			String fVar = filter.a.asVar();
-			PrefixMapping pm = api.getPrefixes();
-			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			sb.append(" ")
-				.append(fVar).append(varSuffix)
-				.append(" ")
-				.append(sparqlOp)
-				.append(" ")
-				.append(value)
-				;	
 		}
 
 		@Override public void asExpression
@@ -158,28 +133,6 @@ public abstract class Operator {
 			super(name);
 			this.needsNot = negated;
 			this.functionName = functionName;
-		}
-
-		public void asConstraint
-			( Filter filter
-			, StringBuilder sb
-			, API_Dataset api
-			, String varSuffix
-		) {	
-			PrefixMapping pm = api.getPrefixes();
-			List<Term> operands = filter.range.operands;
-			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			String fVar = filter.a.asVar();
-			sb.append(" ")
-				.append( needsNot ? "!" : "")
-				.append( functionName )
-				.append("(")
-				.append(fVar).append(varSuffix)
-				.append(", ")
-				.append(value)
-				.append(operands.size() == 2 ? ", " + operands.get(1).asSparqlTerm(pm) : "")
-				.append(")")
-				;
 		}
 
 		@Override public void asExpression
@@ -207,27 +160,6 @@ public abstract class Operator {
 			this.negated = negated;
 		}
 
-		public void asConstraint
-			( Filter filter
-			, StringBuilder sb
-			, API_Dataset api
-			, String varSuffix
-			) {
-			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.a.asVar();
-			String orOp = "";
-			sb.append(" ");
-			for (Term v: filter.range.operands) {
-				sb
-					.append(orOp)
-					.append(fVar).append(varSuffix)
-					.append( " = ")
-					.append(v.asSparqlTerm(pm))
-					;
-				orOp = " || ";
-			}
-		}
-
 		@Override public void asExpression
 			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 			String orOp = "";
@@ -249,24 +181,6 @@ public abstract class Operator {
 			this.opName = "=";
 		}
 
-		public void asConstraint
-			( Filter filter
-			, StringBuilder sb
-			, API_Dataset api
-			, String varSuffix
-			) {
-			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.a.asVar();
-			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			sb.append(" ")
-				.append(fVar).append(varSuffix)
-				.append(" ")
-				.append("=")
-				.append(" ")
-				.append(value)
-				;
-		}
-
 		@Override public void asExpression
 			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
 			x.toSparqlExpr(sb);
@@ -284,46 +198,8 @@ public abstract class Operator {
 			this.negated = negated;
 		}
 
-		public void asConstraint
-			( Filter filter
-			, StringBuilder sb
-			, API_Dataset api
-			, String varSuffix
-			) {
-			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.a.asVar();
-			String value = filter.range.operands.get(0).asSparqlTerm(pm);			
-			Aspect x = api.getAspectNamed(filter.a.getName());
-			String below = x.getBelowPredicate(api);
-			sb.append(value)
-				.append(" ")
-				.append(below)
-				.append("* ")
-				.append(fVar).append(varSuffix)
-				.append(" .")
-				.append("\n")
-				;		
-		}
-
 		@Override public void asExpression
 			(StringBuilder sb, SQ_Variable x, List<SQ_Expr> operands) {
-//			PrefixMapping pm = api.getPrefixes();
-//			String fVar = filter.a.asVar();
-//			Expr value = operands.get(0);			
-//			Aspect x = api.getAspectNamed(filter.a.getName());
-//			
-//			String below = x.getBelowPredicate(api);
-//			
-//			value.toString(sb);
-//			sb.append(" ");
-//			sb.append(below);
-//			sb.append("* ");
-//			x.toString(sb);
-//			sb.append(" .")
-//				.append(fVar).append(varSuffix)
-//				.append(" .")
-//				.append("\n")
-//				;	
 			throw new RuntimeException("TBD");
 			
 		}
@@ -336,23 +212,6 @@ public abstract class Operator {
 		public SearchOperator(String name, boolean negated) {
 			super(name);
 			this.negated = negated;
-		}
-
-		public void asConstraint
-			( Filter filter
-			, StringBuilder sb
-			, API_Dataset api
-			, String varSuffix
-			) {	
-			PrefixMapping pm = api.getPrefixes();
-			String fVar = filter.a.getName().asVar();
-			String value = filter.range.operands.get(0).asSparqlTerm(pm);
-			sb
-				.append(fVar).append(varSuffix)
-				.append(" text:query ")
-				.append(value)
-				.append(" .")
-				;
 		}
 
 		@Override public void asExpression
