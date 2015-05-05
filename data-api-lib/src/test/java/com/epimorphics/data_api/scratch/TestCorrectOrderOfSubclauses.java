@@ -17,10 +17,12 @@ import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
 
 import static org.junit.Assert.fail;
 
-public class TestScratch {
+public class TestCorrectOrderOfSubclauses {
 	
 	/*
 		Tests that requests generate their components in the
@@ -39,14 +41,18 @@ public class TestScratch {
 	static final Aspect C = new TestAspects.MockAspect("eh:/prefixPart/C");
 	static final Aspect D = new TestAspects.MockAspect("eh:/prefixPart/D");
 	
-	static final API_Dataset dsAB = new API_Dataset(Setup.pseudoRoot(), null)
+	static final Resource CType = ResourceFactory.createResource("eh:/CTYpe");
+	
+	static final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 		.add(A)
 		.add(B)
-		.add(C)
+		.add(C.setRangeType(CType))
 		.add(D.setIsOptional(true))
 		;
+	
+	static { ds.setIsLiteralType(CType); }
 
-	@Test public void testA() {
+	@Test public void requireFilterAppearsAfterItem() {
 		assertGeneratesInOrder
 			( query(aspect("B", "lt", "17"))
 			, item("A")
@@ -54,15 +60,15 @@ public class TestScratch {
 			);
 	}
 
-	@Test public void testB() {
+	@Test public void requireLiteralAppearsBeforeItem() {
 		assertGeneratesInOrder
-			( query(aspect("A", "eq", id("X")))
-			, "?item pre:A <eh:/X>"
-			, item("B") 
+			( query(aspect("B", "eq", id("X")))
+			, "?item pre:B <eh:/X>"
+			, item("A") 
 			);
 	}
 
-	@Test public void testC() {
+	@Test public void requireLiteralAppearsBeforeOptional() {
 		assertGeneratesInOrder
 			( query(aspect("A", "eq", id("X")))
 			, "?item pre:A <eh:/X>"
@@ -71,12 +77,23 @@ public class TestScratch {
 			);
 	}
 
-	@Test public void testD() {
+	@Test public void requireOrderIsLiteralThenItemThenFilterThenOptionalThenBind() {
 		assertGeneratesInOrder
 			( query(aspect("A", "eq", id("X")), aspect("B", "lt", "17"))
 			, "?item pre:A <eh:/X>"
 			, item("B")
 			, filter("B", "<", "17")
+			, "OPTIONAL"
+			, "BIND(<eh:/X> AS ?pre_A)"
+			);
+	}
+	
+	@Test public void requireOrderIsSearchThenLiteralThenOptionalThenBind() {
+		assertGeneratesInOrder
+			( query(aspect("A", "eq", id("X")), aspect("B", "search", "'string'"))
+			, "?pre_B text:query \"string\""
+			, "?item pre:B ?pre_B"
+			, "?item pre:A <eh:/X>"
 			, "OPTIONAL"
 			, "BIND(<eh:/X> AS ?pre_A)"
 			);
@@ -101,10 +118,10 @@ public class TestScratch {
 	private void assertGeneratesInOrder(String queryString, String... fragments) {
 		Problems p = new Problems();
 		JsonObject jo = JSON.parse(queryString);
-		DataQuery dq = DataQueryParser.Do(p, dsAB, jo);
+		DataQuery dq = DataQueryParser.Do(p, ds, jo);
 		if (!p.isOK()) fail("Could not construct data query: " + p.getProblemStrings());
 	//
-		String sparqlString = dq.toSparql(p, dsAB);
+		String sparqlString = dq.toSparql(p, ds);
 		if (!p.isOK()) fail("Could not construct SPARQL query: " + p.getProblemStrings());
 		
 //		System.err.println(">> QUERY:\n" + sparqlString);
@@ -131,6 +148,10 @@ public class TestScratch {
 		}
 	}
 
+	/**
+		query(parts) returns a DSAPI query constructed by making
+		a single JSON object from the comma-separated parts.
+	*/
 	private String query(String... parts) {		
 		String result = "{", comma = "";
 		for (String p: parts) {
