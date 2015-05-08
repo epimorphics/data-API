@@ -29,10 +29,14 @@ import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
+import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.Statement;
+import com.hp.hpl.jena.vocabulary.XSD;
 
 public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
-    static Logger log = LoggerFactory.getLogger(API_Dataset.class);
+
+	static final Logger log = LoggerFactory.getLogger(API_Dataset.class);
     
     String name;
 	String query;
@@ -40,7 +44,11 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	String sourceName;
 	Hierarchy hierarchy;
 	
+	final Set<Resource> literalTypes = new HashSet<Resource>();
+	
 	final Map<Shortname, Aspect> nameToAspect = new HashMap<Shortname, Aspect>();
+
+	private static final String XSD_URI = XSD.getURI();
 	
 	public API_Dataset(String name) {
 		this.name = name;
@@ -51,12 +59,39 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	
 	public API_Dataset(Resource config, DSAPIManager manager) {
 	    super(config);
+	    configureLiteralDatatypes(config);
 	    configureHierarchy();
 	    configureBaseQuery();
 	    configureName();
+	    configureAspects(config);
 	    this.manager = manager;
 	}
 	
+	private void configureAspects(Resource config) {
+		for (Resource aspectRoot: RDFUtil.allResourceValues(root, Dsapi.aspect)) {
+			add(new Aspect(aspectRoot));
+		}
+	}
+	
+	/**
+	    configureLiteralDatatypes(config) considers all the properties (dsapi:literalType T) of
+	    config that are not literals and adds them to the set literalTypes of known literal types.
+	*/
+	private void configureLiteralDatatypes(Resource config) {
+		for (RDFNode r: config.listProperties(Dsapi.literalType).mapWith(Statement.Util.getObject).toList()) {
+			if (r instanceof Resource) {
+				setIsLiteralType((Resource) r);				
+			}
+		}
+	}
+	
+	/**
+	    Add type to the set of known literal types.
+	*/
+	public void setIsLiteralType(Resource type) {
+		literalTypes.add(type);
+	}
+
 	private void configureHierarchy() {
 	    if (root.hasProperty(Dsapi.codeList)) {
 	        hierarchy = new Hierarchy( getResourceValue(Dsapi.codeList) );
@@ -87,6 +122,21 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 
 	public String getName() {
 		return name;
+	}
+
+	/**
+	    isLiteralType(type) returns true if type is known to be
+	    a literal type, ie it is either an XSD type or it has
+	    been declared using configureLiteralDatatypes or
+	    setIsLiteralType.
+	    
+	    A type is "literal" if values of that type are typed
+	    literals.
+	*/
+	public boolean isLiteralType(Resource type) {
+		if (type == null) return false;
+		String tu = type.getURI();
+		return tu.startsWith(XSD_URI) || literalTypes.contains(type);		
 	}
 
 	public Set<Aspect> getAspects() {

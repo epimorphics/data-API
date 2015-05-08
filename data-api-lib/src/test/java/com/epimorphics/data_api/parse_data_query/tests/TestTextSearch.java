@@ -11,6 +11,7 @@ import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
 import org.junit.Test;
 
+import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.SearchSpec;
@@ -32,7 +33,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("pattern")), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "pattern")), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchSettingFromAspect() {
@@ -45,21 +46,27 @@ public class TestTextSearch {
 		System.err.println(p.getProblemStrings());
 		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("pattern", sn("pre:local"))), q.getSearchPatterns() );
+		Aspect local = aspect("pre:local");
+		assertEquals(BunchLib.list(new SearchSpec(local, "pattern")), q.getSearchPatterns() );
 	}
 	
 	private Shortname sn(String name) {
 		return new Shortname(ds.getPrefixes(), name);
 	}
+	
+	private Aspect aspect(String name) {
+		return new Aspect(ds.getPrefixes(), name);
+	}
 
 	@Test public void testSearchSettingWithProperty() {
-		Shortname property = sn("eh:/some.uri/");
+		Aspect a = aspect("eh:/some.uri/");
+		Shortname property = a.getName(); // sn("eh:/some.uri/");
 		String incoming = "{'@search': {'@value': 'lookfor', '@property': 'eh:/some.uri/'}}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, property)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", property)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithJustLimit() {
@@ -68,7 +75,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		Asserts.assertNoProblems("failed to parse search", p);
-		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, null, 17)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", null, 17)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithLimitAndProperty() {
@@ -78,7 +85,7 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		Asserts.assertNoProblems("failed to parse search", p);
-		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, property, 17)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", property, 17)), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithNeitherLimitNotPropertyRaisesProblem() {
@@ -87,6 +94,6 @@ public class TestTextSearch {
 		Problems p = new Problems();
 		DataQuery _ignored = DataQueryParser.Do(p, ds, jo);		
 		assertFalse("failed to detect missing-both-property-and-limit error", p.isOK());
-		Asserts.assertContains("neither @property nor @limit", p.getProblemStrings());
+		Asserts.assertInsensitiveContains("neither @property nor @limit", p.getProblemStrings());
 	}
 }

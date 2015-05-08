@@ -87,12 +87,27 @@ public class TestNegationByConstructedSPARQL {
 	
 	static { ds.getPrefixes().setNsPrefixes(pm); }
 	
-	@Test public void testGenerateNegatedOptionalInfixQuery() {
+	@Test public void testGenerateNegatedOptionalLT() {
 		testGeneratedNegatedOptional("@lt", ">=");
+	}	
+	
+	@Test public void testGenerateNegatedOptionalLE() {
 		testGeneratedNegatedOptional("@le", ">");
+	}
+	
+	@Test public void testGenerateNegatedOptionalGT() {
 		testGeneratedNegatedOptional("@gt", "<=");
+	}	
+	
+	@Test public void testGenerateNegatedOptionalGE() {
 		testGeneratedNegatedOptional("@ge", "<");
+	}	
+	
+	@Test public void testGenerateNegatedOptionalEQ() {
 		testGeneratedNegatedOptional("@eq", "!=");
+	}
+	
+	@Test public void testGenerateNegatedOptionalNE() {
 		testGeneratedNegatedOptional("@ne", "=");
 	}
 	
@@ -119,8 +134,8 @@ public class TestNegationByConstructedSPARQL {
 			( "PREFIX spoo: <eh:/namespace/>"
 			, "SELECT ?item ?spoo_local"
 			, "WHERE {"
-			, "  OPTIONAL { ?item spoo:local ?spoo_local }"
 			, "  FILTER( _NEGFUN(?spoo_local, 'target') || !bound(?spoo_local))".replace("_NEGFUN", negFun)
+			, "  OPTIONAL { ?item spoo:local ?spoo_local }"
 			, "}"
 			);
 		
@@ -145,8 +160,8 @@ public class TestNegationByConstructedSPARQL {
 			( "PREFIX spoo: <eh:/namespace/>"
 			, "SELECT ?item ?spoo_local"
 			, "WHERE {"
-			, "  OPTIONAL { ?item spoo:local ?spoo_local }"
 			, "  FILTER(?spoo_local _NEGOP 17 || !bound(?spoo_local))".replace("_NEGOP", negOp)
+			, "  OPTIONAL { ?item spoo:local ?spoo_local }"
 			, "}"
 			);
 		

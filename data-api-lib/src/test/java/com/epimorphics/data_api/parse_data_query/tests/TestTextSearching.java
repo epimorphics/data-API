@@ -35,10 +35,12 @@ public class TestTextSearching {
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("pattern")), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "pattern")), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchSettingFromAspect() {
+		
+		Aspect a = new Aspect(ds.getPrefixes(), "pre:local");
 		
 		String incoming = "{'pre:local': {'@search': 'pattern'}}";
 		JsonObject jo = JSON.parse(incoming);
@@ -48,11 +50,10 @@ public class TestTextSearching {
 		System.err.println(p.getProblemStrings());
 		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("pattern", sn("pre:local"))), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(a, "pattern")), q.getSearchPatterns() );
 	}
 	
 	@Test public void testSearchWithLimit() {
-		Shortname property = sn("eh:/some.uri/");
 		String incoming = "{'@search': {'@value': 'lookfor', '@limit': 17}}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
@@ -60,6 +61,7 @@ public class TestTextSearching {
 		Asserts.assertNoProblems("failed to parse @search query", p);
 	//
 		String generated = q.toSparql(p, ds);
+		Asserts.assertNoProblems("failed to generate SPARQL", p);
 	//
 		String expected = BunchLib.join
 			( "PREFIX text: <http://jena.apache.org/text#>"
@@ -96,19 +98,19 @@ public class TestTextSearching {
 		Asserts.assertSameSelect(expected, generated);
 		}
 	
-	
-	private Shortname sn(String name) {
-		return new Shortname(ds.getPrefixes(), name);
+	private Aspect aspect(String name) {
+		return new Aspect(ds.getPrefixes(), name);
 	}
 	
 	@Test public void testSearchSettingWithProperty() {
-		Shortname property = sn("eh:/some.uri/");
+		Aspect a = aspect("eh:/some.uri/");
+		Shortname property = a.getName(); // sn("eh:/some.uri/");
 		String incoming = "{'@search': {'@value': 'lookfor', '@property': 'eh:/some.uri/'}}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 		assertEquals(0, p.size());
-		assertEquals(BunchLib.list(new SearchSpec("lookfor", null, property)), q.getSearchPatterns() );
+		assertEquals(BunchLib.list(new SearchSpec(Aspect.NONE, "lookfor", property)), q.getSearchPatterns() );
 	}
 	
 	static final Aspect X = new TestAspects.MockAspect("eh:/prefixPart/X");
@@ -120,7 +122,7 @@ public class TestTextSearching {
 	
 		String incoming = "{'pre:X': {'@search': 'A'}, '@or': [{'pre:Y': {'@search': 'B'}}]}";
 		JsonObject jo = JSON.parse(incoming);
-		Problems p = new Problems();
+		Problems p = new Problems();		
 		DataQuery q = DataQueryParser.Do(p, ds, jo);		
 	//
 		Asserts.assertNoProblems("test data did not parse", p);
@@ -132,17 +134,17 @@ public class TestTextSearching {
 			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y"
 			, "{"
-			, "  ?item pre:X ?pre_X ."
-			, "  ?item pre:Y ?pre_Y ."
+//			, "  ?item pre:X ?pre_X ."
+//			, "  ?item pre:Y ?pre_Y ."
 			, "{ SELECT ?item ?pre_X ?pre_Y {"
+			, "  ?pre_Y text:query 'B' ."
 			, "  ?item pre:X ?pre_X ."
 			, "  ?item pre:Y ?pre_Y ."
-			, "  ?pre_Y text:query 'B' ."
 		  	, "}}  UNION  {"
 		  	, "SELECT ?item ?pre_X ?pre_Y {"
+		  	, "  ?pre_X text:query 'A' ."
 		  	, "  ?item pre:X ?pre_X ."
 		  	, "  ?item pre:Y ?pre_Y ."
-		  	, "  ?pre_X text:query 'A' ."
 		  	, "}}"
 		  	, "}"
 			);

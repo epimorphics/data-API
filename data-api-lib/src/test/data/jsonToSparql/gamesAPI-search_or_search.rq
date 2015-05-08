@@ -1,4 +1,4 @@
-# DSAPI 0.0.4-SNAPSHOT_(Fri 3rd, Ordering 2)
+# DSAPI 0.0.7-SNAPSHOT_(paying off technical debt)
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX text: <http://jena.apache.org/text#>
 PREFIX egc: <http://epimorphics.com/public/vocabulary/games.ttl#>
@@ -6,35 +6,22 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 SELECT
   ?item
   ?egc_pubYear
+  ?egc_playTimeMinutes
   ?egc_players
   ?rdf_type
   ?rdfs_label
-  ?egc_playTimeMinutes
   ?egc_co2Ddesigned
   ?egc_designed2Dby
   ?egc_designer2Dof
 WHERE
 {
-  # 8 aspect variables.
-  # no base query.
-  # no guards.
-  ?item egc:pubYear ?egc_pubYear  .
-  ?item egc:players ?egc_players  .
-  ?item rdf:type ?rdf_type  .
-  ?item rdfs:label ?rdfs_label  .
-  OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes  . }
-  # dealing with property path egc:designed-by/egc:designer-of for aspect egc:co-designed [http://epimorphics.com/public/vocabulary/games.ttl#co-designed].
-  OPTIONAL { ?item egc:designed-by ?egc_designed2Dby  . ?egc_designed2Dby egc:designer-of ?egc_co2Ddesigned  . }
-  OPTIONAL { ?item egc:designed-by ?egc_designed2Dby  . }
-  OPTIONAL { ?item egc:designer-of ?egc_designer2Dof  . }
-  
   {    SELECT
       ?item
       ?egc_pubYear
+      ?egc_playTimeMinutes
       ?egc_players
       ?rdf_type
       ?rdfs_label
-      ?egc_playTimeMinutes
       ?egc_co2Ddesigned
       ?egc_designed2Dby
       ?egc_designer2Dof
@@ -44,25 +31,26 @@ WHERE
       # 8 aspect variables.
       # no base query.
       # no guards.
-      ?item egc:pubYear ?egc_pubYear  .
-      ?item egc:players ?egc_players  .
-      ?item rdf:type ?rdf_type  .
-      ?item rdfs:label ?rdfs_label  .
-      OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes  . }
+      ?item egc:pubYear ?egc_pubYear .
+      OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes . }
+      ?item egc:players ?egc_players .
+      ?item rdf:type ?rdf_type .
+      ?item rdfs:label ?rdfs_label .
       # dealing with property path egc:designed-by/egc:designer-of for aspect egc:co-designed [http://epimorphics.com/public/vocabulary/games.ttl#co-designed].
-      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby  . ?egc_designed2Dby egc:designer-of ?egc_co2Ddesigned  . }
-      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby  . }
-      OPTIONAL { ?item egc:designer-of ?egc_designer2Dof  . }
+      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby . ?egc_designed2Dby egc:designer-of ?egc_co2Ddesigned . }
+      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby . }
+      OPTIONAL { ?item egc:designer-of ?egc_designer2Dof . }
+      # variables declared, filters follow..
     }
   }
    UNION 
   {    SELECT
       ?item
       ?egc_pubYear
+      ?egc_playTimeMinutes
       ?egc_players
       ?rdf_type
       ?rdfs_label
-      ?egc_playTimeMinutes
       ?egc_co2Ddesigned
       ?egc_designed2Dby
       ?egc_designer2Dof
@@ -72,17 +60,16 @@ WHERE
       # 8 aspect variables.
       # no base query.
       # no guards.
-      ?item egc:pubYear ?egc_pubYear  .
-      ?item egc:players ?egc_players  .
-      ?item rdf:type ?rdf_type  .
-      ?item rdfs:label ?rdfs_label  .
-      OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes  . }
+      ?item egc:pubYear ?egc_pubYear .
+      OPTIONAL { ?item egc:playTimeMinutes ?egc_playTimeMinutes . }
+      ?item egc:players ?egc_players .
+      ?item rdf:type ?rdf_type .
+      ?item rdfs:label ?rdfs_label .
       # dealing with property path egc:designed-by/egc:designer-of for aspect egc:co-designed [http://epimorphics.com/public/vocabulary/games.ttl#co-designed].
-      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby  . ?egc_designed2Dby egc:designer-of ?egc_co2Ddesigned  . }
-      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby  . }
-      OPTIONAL { ?item egc:designer-of ?egc_designer2Dof  . }
+      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby . ?egc_designed2Dby egc:designer-of ?egc_co2Ddesigned . }
+      OPTIONAL { ?item egc:designed-by ?egc_designed2Dby . }
+      OPTIONAL { ?item egc:designer-of ?egc_designer2Dof . }
+      # variables declared, filters follow..
     }
   }
 }
-
-

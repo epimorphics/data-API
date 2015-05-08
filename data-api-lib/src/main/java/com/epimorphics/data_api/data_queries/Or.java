@@ -8,7 +8,11 @@ package com.epimorphics.data_api.data_queries;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.epimorphics.data_api.aspects.Aspect;
+import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
+import com.epimorphics.data_api.sparql.SQ_Const;
+import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
 
 public class Or extends Bool {
@@ -16,11 +20,21 @@ public class Or extends Bool {
 	public Or(List<Constraint> operands) {
 		super(operands);
 	}
-
-	public void tripleFiltering(Context cx) {
-		
+	
+	public void translate(Problems p, Context cx) {
+				
 		final List<SQ> new_operands = new ArrayList<SQ>(operands.size());
 		
+		// TODO this properly
+		boolean needsDistinct = false;
+		
+		cx.sq.comment(cx.ordered.size() + " aspect variables");	
+		cx.sq.addSelectedVar(SQ_Const.item, needsDistinct);
+
+		for (Aspect a: cx.ordered) {
+			cx.sq.addSelectedVar(new SQ_Variable(a.asVarName()));
+		}
+
 		for (Constraint x: operands) {
 			SQ sq = new SQ();
 			StringBuilder out = new StringBuilder();
@@ -40,7 +54,7 @@ public class Or extends Bool {
 					sb.append(indent).append("}").append(nl);
 				}
 			}};
-		cx.sq.addWhereElement(e);
+		cx.sq.addWhereElement(e);	
 	}
 	
 	@Override public Constraint negate() {

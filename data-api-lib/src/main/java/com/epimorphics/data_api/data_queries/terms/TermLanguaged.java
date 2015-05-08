@@ -12,9 +12,9 @@ public class TermLanguaged extends TermComposite {
 
 	final String lang;
 	
-	public TermLanguaged(String value, String type) {
+	public TermLanguaged(String value, String lang) {
 		super(value);
-		this.lang = type;
+		this.lang = lang;
 	}
 
 	@Override public String toString() {
@@ -42,5 +42,9 @@ public class TermLanguaged extends TermComposite {
 		jw.pair("@value", value);
 		jw.pair("@lang", lang);
 		jw.finishObject();
+	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitLanguaged(this);
 	}
 }

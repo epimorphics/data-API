@@ -37,7 +37,7 @@ public class SQ_Variable extends SQ_Node {
 	}
 
 	@Override public void toSparqlExpr(StringBuilder sb) {
-		sb.append("?").append(name()).append(" ");
+		sb.append("?").append(name());
 	}
 	
 }

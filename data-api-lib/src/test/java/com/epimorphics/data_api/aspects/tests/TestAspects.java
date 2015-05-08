@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.aspects.tests;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
@@ -13,6 +14,8 @@ import com.epimorphics.data_api.aspects.Aspects;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
+import com.epimorphics.data_api.test_support.LoadModel;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 import com.hp.hpl.jena.vocabulary.RDFS;
@@ -67,11 +70,24 @@ public class TestAspects {
 	}
      */
 	
+	@Test public void testAspectDefaultRangeType() {
+		Aspect a = new MockAspect("eh:/mock/aspect/C");
+		assertNull(a.getRangeType());
+	}
+	
 	@Test public void testAspectRangeType() {
 		Resource type = RDFS.Class;
 		Aspect a = new MockAspect("eh:/mock/aspect/C");
 		assertNull(a.getRangeType());
 		assertSame(a, a.setRangeType(type));
+		assertEquals(type, a.getRangeType());
+	}
+	
+	@Test public void testAspectConfigureRangeType() {
+		Model m = LoadModel.modelFromTurtle("<eh:/root> rdfs:range <eh:/T>");
+		Resource root = m.createResource("eh:/root");
+		Resource type = m.createResource("eh:/T");
+		Aspect a = new Aspect(root);
 		assertEquals(type, a.getRangeType());
 	}
 	

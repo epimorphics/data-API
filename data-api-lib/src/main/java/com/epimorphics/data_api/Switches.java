@@ -22,41 +22,18 @@ public class Switches {
 	*/
 	public static final boolean flattening = true;
 
-	// if true, various tests are omitted so as to get a testable WAR.
-	public static final boolean dontTest = true;
-
 	// sort the fields of a JS object when Row is generating them
 	public static boolean sorting = false;
-	
-	// set to true if aspect order respects whether or not constraints matter
-	public static boolean checkConstraints = true;
 
-	// if true, property paths are not unpacked and are just written
-	// out to, and handled by, SPARQL. If false, then intermediate
-	// variables are generated, used, and shared.
-	public static final boolean onlyImplicityPropertyPathsWay = false;
-
-	// force seargh properties to be early in the list
-	public static final boolean forceSearchProperty = true;
-
-	// if true, replace @oneof[X] with @eq[X].
-	public static boolean optimiseOneof = true;
-	
-	// if true, generated BINDs are moved toward the end of
-	// their WHERE-clause.
-	public static boolean moveBindsDownwards = true;
+	// validate the (type of) terms against the range type of aspects
+	// when building a data query.
+	public static boolean validatingTermsAgainstTypes = false;
 
 	public static String reportSettings() {
 		return
-			" doPaths: " + (onlyImplicityPropertyPathsWay ? "no" : "yes")
-			+ ", optimise oneof: " + (optimiseOneof ? "yes" : "no")
-			+ ", move binds: " + (moveBindsDownwards ? "yes" : "no")
-			+ ", respect constraints: " + (checkConstraints ? "yes" : "no")
-			+ ", push @search item property early: " + (forceSearchProperty ? "yes" : "no")
-			+ ", flatten query log entry: " + (flattening ? "yes" : "no")
+			", flatten query log entry: " + (flattening ? "yes" : "no")
+			+ ", validating terms against types: " + (validatingTermsAgainstTypes ? "yes" : "no")
 			+ "."
 			;
 	}
-
-
 }

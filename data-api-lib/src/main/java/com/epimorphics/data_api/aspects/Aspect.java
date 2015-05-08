@@ -10,13 +10,16 @@ import static com.epimorphics.data_api.config.JSONConstants.*;
 import java.util.Comparator;
 import java.util.Set;
 
-import com.epimorphics.data_api.Switches;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
+import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Dsapi;
 import com.hp.hpl.jena.rdf.model.Resource;
@@ -25,6 +28,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
 	
+	static final Logger log = LoggerFactory.getLogger(Aspect.class);
+
 	public static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
 		
 		@Override public int compare(Aspect a, Aspect b) {
@@ -32,6 +37,8 @@ public class Aspect extends ResourceBasedConfig {
 			return a.getIsOptional() ? +1 : -1;
 		}
 	};
+	
+	public static final Aspect NONE = null;
 	
 	/**
 	 	Compare two aspects, taking into account whether they are optional or
@@ -54,12 +61,11 @@ public class Aspect extends ResourceBasedConfig {
 	*/
 	public static final Comparator<? super Aspect> compareConstrainedAspects
 		(final Shortname searchProperty, final Set<Aspect> constrained) {
-		if (Switches.checkConstraints == false) return compareAspects;
 		return new Comparator<Aspect>() {		
 			
 			@Override public int compare(Aspect a, Aspect b) {
 				
-				if (searchProperty != null && Switches.forceSearchProperty) {
+				if (searchProperty != null) {
 					if (a.name.equals(searchProperty)) return -1;
 					if (b.name.equals(searchProperty)) return +1;
 				}
@@ -92,6 +98,12 @@ public class Aspect extends ResourceBasedConfig {
 	
 	PrefixMapping explictPrefixes = null;
 	
+	/**
+		Initialise this Aspect with the given shortName 'spoo:local',
+		with its full name being given using the prefixes pm
+		to expand the prefix 'spoo'. The prefixes are retained
+		and may be extracted uwing getPrefixes().
+	*/
 	public Aspect(PrefixMapping pm, String shortName) {
 		String fullName = pm.expandPrefix(shortName);		
 		this.ID = fullName;
@@ -99,15 +111,23 @@ public class Aspect extends ResourceBasedConfig {
 		this.explictPrefixes = pm;
 	}
 	
+	public boolean equals(Object other) {
+		return other instanceof Aspect && same( (Aspect) other );
+	}
+	
+	private boolean same(Aspect other) {
+		return this.ID.equals(other.ID);
+	}
+
 	@Override public PrefixMapping getPrefixes() {
 		return explictPrefixes == null ? super.getPrefixes() : explictPrefixes;
 	}
 
-	public Aspect(Resource aspect) {
-	    super(aspect);
-	    ID = aspect.getURI();
+	public Aspect(Resource aspectRoot) {
+	    super(aspectRoot);
+	    ID = aspectRoot.getURI();
 	    if (ID == null) {
-	        Resource prop = aspect.getPropertyResourceValue(Dsapi.property);
+	        Resource prop = aspectRoot.getPropertyResourceValue(Dsapi.property);
 	        if (prop != null) {
 	            ID = prop.getURI();
 	        } else {
@@ -117,9 +137,16 @@ public class Aspect extends ResourceBasedConfig {
 	    }
 	    PrefixMapping pm = getPrefixes();
 	    name = new Shortname(pm, pm.shortForm(ID));
-	    rangeType = aspect.getPropertyResourceValue(RDFS.range);
+	    configureFrom(aspectRoot);
 	}
 	
+	public void configureFrom(Resource aspectRoot) {
+		setIsOptional( RDFUtil.getBooleanValue(aspectRoot, Dsapi.optional, false));
+		setRangeType(aspectRoot.getPropertyResourceValue(RDFS.range));
+        setIsMultiValued( RDFUtil.getBooleanValue(aspectRoot, Dsapi.multivalued, false) );
+        setPropertyPath( RDFUtil.getStringValue(aspectRoot, Dsapi.propertyPath));
+	}
+
 	@Override public int hashCode() {
 		return name.hashCode();
 	}
@@ -199,7 +226,10 @@ public class Aspect extends ResourceBasedConfig {
 	}
 
 	public Aspect setRangeType(Resource type) {
-		this.rangeType = type;
+		if (type != null) {
+			log.debug("set rangeType of " + name.getCURIE() + " to " + type);
+			this.rangeType = type;
+		}
 		return this;
 	}
 	

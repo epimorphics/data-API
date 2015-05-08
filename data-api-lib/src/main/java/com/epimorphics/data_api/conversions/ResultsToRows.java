@@ -25,7 +25,7 @@ public class ResultsToRows {
 	}
 
 	public void convert(RowConsumer rc, Iterator<QuerySolution> solutions) {
-				
+						
 		Node current = null;
 		Row pending = null;		
 		
@@ -39,7 +39,7 @@ public class ResultsToRows {
 			}
 		
 		while (solutions.hasNext()) {
-
+			
 			QuerySolution sol = solutions.next();
 			Node item = sol.get("item").asNode();
 			

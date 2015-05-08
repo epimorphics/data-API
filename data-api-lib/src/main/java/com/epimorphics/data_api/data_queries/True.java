@@ -7,7 +7,7 @@ package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
 
-public class True extends Constraint {
+public class True extends Restriction {
 	
 	public static True value = new True();
 	
@@ -22,15 +22,15 @@ public class True extends Constraint {
 		return true;
 	}
 
-	public void tripleFiltering(Context cx) {
-		// Nothing needs doing.
-	}
-
 	@Override public Constraint negate() {
 		return False.value;
 	}
 
 	@Override protected boolean constrains(Aspect a) {
 		return false;
+	}
+	
+	@Override void applyTo(State s) {
+		// we don't need to do anything, and must do nothing.
 	}
 }

@@ -35,4 +35,8 @@ public class TermResource extends TermComposite {
 		jw.pair("@id", value);
 		jw.finishObject();					
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitResource(this);
+	}
 }

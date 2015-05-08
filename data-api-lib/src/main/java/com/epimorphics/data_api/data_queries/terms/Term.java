@@ -26,6 +26,8 @@ public abstract class Term implements JSONWritable {
 	
 	public abstract String asSparqlTerm(PrefixMapping pm);
 	
+	public abstract <T> T visit(Visitor<T> v);
+	
 	@Override public abstract String toString();
 	
 	@Override public abstract int hashCode();
@@ -133,5 +135,17 @@ public abstract class Term implements JSONWritable {
 	
 	public static Term array(List<Term> terms) {
 		return new TermArray(terms);
+	}
+	
+	public interface Visitor<T> {
+		public T visitVar(TermVar tv);
+		public T visitTyped(TermTyped tt);
+		public T visitResource(TermResource tr);
+		public T visitLanguaged(TermLanguaged tl);
+		public T visitBad(TermBad tb);
+		public T visitArray(TermArray ta);
+		public T visitString(TermString ts);
+		public T visitNumber(TermNumber tn);
+		public T visitBool(TermBool tb);
 	}
 }

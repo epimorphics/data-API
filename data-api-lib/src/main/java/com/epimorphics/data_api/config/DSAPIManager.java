@@ -157,7 +157,10 @@ public class DSAPIManager extends ComponentBase {
         
         @Override
         public void writeTo(JSFullWriter out) {
-            writeJson(out, lang, uribase);
+            try { writeJson(out, lang, uribase); }
+            catch (Exception e) {
+            	log.error("OH BOTHER");
+            }
         }
     }
     
@@ -376,6 +379,7 @@ public class DSAPIManager extends ComponentBase {
             }
 
             if (p.isOK()) {
+            	// log.info("issuing query:\n" + sq);
             	log.info(flatten("issuing query:\n" + sq));
                 SparqlSource source = api.getSource();
                 if (source instanceof RemoteSparqlSource) {

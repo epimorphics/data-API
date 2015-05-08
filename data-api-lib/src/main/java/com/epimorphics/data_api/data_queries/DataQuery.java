@@ -117,12 +117,11 @@ public class DataQuery implements Compactions {
 	
 	public static final String DSAPI_Header = "# " + DSAPI_Info + "\n";
 	
-    public String toSparql(Problems p, API_Dataset api) {
+    public String toSparql(Problems p, API_Dataset api) {    	
     	try {
 			SQ sq = new SQ();
 			StringBuilder out = new StringBuilder();
-			Context rx = new Context( sq, out, this, p, api );
-			
+			Context rx = new Context( sq, out, this, p, api );			
 			c.translate(p, rx);
 			if (sortby.size() > 0) sq.comment(sortby.size() + " sort specifications");
 			sq.addSorts(sortby);			

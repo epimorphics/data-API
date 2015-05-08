@@ -9,9 +9,10 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.epimorphics.data_api.sparql.SQ_Variable;
+import com.epimorphics.data_api.data_queries.terms.TermBool;
+import com.epimorphics.data_api.data_queries.terms.TermResource;
 
-public class Filter extends Constraint {
+public class Filter extends Restriction {
 	
 	final Range range;
 	final Aspect a;
@@ -20,10 +21,23 @@ public class Filter extends Constraint {
 		this.a = a;
 		this.range = range;
 	}
-
-	@Override public void tripleFiltering(Context cx) {
-		SQ_Variable v = new SQ_Variable(a.asVarName());
-		cx.sq.addFilter(range.asFilterSQ(cx.api.getPrefixes(), v));
+	
+	@Override void applyTo(State s) {
+		Term t = range.operands.get(0);
+		if (range.op.equals(Operator.EQ) && canReplace(s, t)) {
+			s.hasObject(a, t);
+		} else {
+			s.filter(a, range.op, range.operands);
+		}
+	}
+	
+	private boolean canReplace(State s, Term term) {
+		return 
+			term instanceof TermResource
+			|| term instanceof TermBool
+			;
+//		Substitution sub = new Substitution(s.getProblems(), this);
+//		return sub.canReplace;
 	}
 	
 	@Override public Constraint negate() {

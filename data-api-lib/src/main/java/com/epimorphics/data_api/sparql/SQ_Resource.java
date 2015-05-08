@@ -36,9 +36,9 @@ public class SQ_Resource extends SQ_Node {
 	@Override public void toSparqlExpr(StringBuilder sb) {
 		if (uri.startsWith("http:") || uri.startsWith("eh:")) {
 			// System.err.println(">> TODO: fix this fragile absolute-uri test.");
-			sb.append("<").append(uri()).append(">").append(" ");
+			sb.append("<").append(uri()).append(">");
 		} else {
-			sb.append("").append(uri()).append("").append(" ");
+			sb.append("").append(uri()).append("");
 		}
 	}
 	

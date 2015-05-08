@@ -60,4 +60,8 @@ public class TermArray extends Term {
 		}
 		jw.finishArray();
 	}
+
+	@Override public <T> T visit(Visitor<T> v) {
+		return v.visitArray(this);
+	}
 }

@@ -21,10 +21,12 @@ import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.data_queries.terms.TermValidator;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JsonUtil;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 // this should be data-driven, ie, a bunch of plugins that respond to
@@ -120,7 +122,7 @@ public class DataQueryParser {
 				for (String opKey: rob.keys()) {
 					JsonValue operand = rob.get(opKey);
 					if (opKey.equals("@search")) {
-						constraints.add( extractSearchSpec(key, sn, operand) );
+						constraints.add( extractSearchSpec(key, a, operand) );
 					} else if (opKey.equals("@matches")) {
 						constraints.add( extractMatches(key, a, operand) );
 					} else if (opKey.startsWith("@")) {
@@ -130,9 +132,11 @@ public class DataQueryParser {
 							Operator op = Operator.lookup(opName);
 							if (op == Operator.BELOW) {
 								constraints.add( new Below(a, v.get(0)) );
-							} else if (op == Operator.ONEOF && v.size() == 1 && Switches.optimiseOneof) {
+							} else if (op == Operator.ONEOF && v.size() == 1) {
+								validate(a, v);
 								constraints.add( new Filter(a, new Range(Operator.EQ, v)));
 							} else {
+								validate(a, v);
 								constraints.add( new Filter(a, new Range(op, v) ) );
 							}
 						} else {
@@ -148,12 +152,21 @@ public class DataQueryParser {
 			}
 		}
 	}
+	
+	void validate(Aspect a, List<Term> operands) {
+		if (Switches.validatingTermsAgainstTypes)
+			for (Term o: operands) {
+				String name = a.getName().getCURIE();
+				Resource type = a.getRangeType();
+				TermValidator.validate(dataset, p, name, type, o);				
+			}
+	}
 
 	private void parseAtMember(JsonObject jo, String key, JsonValue value) {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
 		} else if (key.equals("@search")) {
-			constraints.add( extractSearchSpec(key, null, value) );
+			constraints.add( extractSearchSpec(key, Aspect.NONE, value) );
 		} else if (key.equals("@suppress_types")) {
 			suppressTypes = extractBoolean(p, key, value);
 		} else if (key.equals("@json_mode")) {
@@ -235,10 +248,10 @@ public class DataQueryParser {
 		return null;
 	}
 
-	private SearchSpec extractSearchSpec(String key, Shortname aspectName, JsonValue value) {
+	private SearchSpec extractSearchSpec(String key, Aspect a, JsonValue value) {
 		if (value.isString()) {
 			String pattern = value.getAsString().value();
-			return new SearchSpec(pattern, aspectName);
+			return new SearchSpec(a, pattern);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
 			String pattern = getString(ob, "@value");
@@ -247,7 +260,7 @@ public class DataQueryParser {
 			Shortname shortProperty = (property == null ? null : new Shortname(pm, property));
 			if (property == null && limit == null)
 				p.add("@search object has neither @property nor @limit: " + value);
-			return new SearchSpec(pattern, aspectName, shortProperty, limit);
+			return new SearchSpec(a, pattern, shortProperty, limit);
 		} else {
 			p.add("Operand of @search must be string or object, given: " + value);
 			return SearchSpec.absent();
@@ -388,7 +401,9 @@ public class DataQueryParser {
 					return null;
 				} else if (type != null) {
 					String typeString = type.getAsString().value();
-					return Term.typed(valueString, typeString);				
+					if (typeString.equals("xsd:boolean")) return Term.bool(valueString.equals("true"));
+					return Term.typed(valueString, typeString);		
+					
 				} else if (lang != null) {
 					String langString = lang.getAsString().value();
 					return Term.languaged(valueString, langString);

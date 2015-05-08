@@ -10,25 +10,24 @@ import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
-import com.epimorphics.data_api.sparql.SQ_Variable;
 
-public class NegatedMultivaluedFilter extends Constraint {
+public class NegatedMultivaluedFilter extends Restriction {
 	
 	final Filter basis;
 	
 	public NegatedMultivaluedFilter(Filter basis) {
 		this.basis = basis;			
 	}
+	
+	@Override void applyTo(State s) {
 
-	public void tripleFiltering(Context cx) {
-
-		SQ_Variable V = new SQ_Variable(basis.a.asVarName() + "_A");
-		SQ_Filter f = basis.range.asFilterSQ(cx.api.getPrefixes(), V); // TODO expose less
+		SQ_Filter f = basis.range.asFilterSQ(s.cx.api.getPrefixes(), basis.a, "_A"); // TODO expose less
 		
 		SQ_Resource P = new SQ_Resource(basis.a.asProperty());
-		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, V);
+		SQ_Triple t = new SQ_Triple(SQ_Const.item, P, f.aspectAsVariable());
 		
-		cx.sq.addNotExists(t, f);
+		s.cx.sq.addNotExists(t, f);
+		
 	}
 
 	@Override public String toString() {

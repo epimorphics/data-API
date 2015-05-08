@@ -1,0 +1,9 @@
+export CP=$(echo data-api-app/target/data-api-app-0.0.10-SNAPSHOT/WEB-INF/lib/* | sed -e 's/ /:/g')
+
+java -cp $CP jena.schemagen \
+	--package com.epimorphics.vocabs \
+	--owl \
+	-a "http://www.epimorphics.com/public/vocabulary/dsapi#" \
+	-i data-api-lib/src/main/vocabs/dsapi.ttl \
+	-o data-api-lib/src/main/java/com/epimorphics/vocabs/Dsapi.java
+

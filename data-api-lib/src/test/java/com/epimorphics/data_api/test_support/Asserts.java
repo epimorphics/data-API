@@ -15,9 +15,30 @@ import com.hp.hpl.jena.query.QueryParseException;
 
 public class Asserts {
 
-	public static void assertContains(String expected, String s) {
+	public static void assertInsensitiveContains(String expected, String s) {
 		if (!s.toLowerCase().contains(expected.toLowerCase()))
 			fail("'" + expected + "' was not present in '" + s + "'");		
+	}
+
+	public static void assertContains(String wanted, String subject) {
+		if (subject.contains(wanted)) return;
+		fail("the fragment `" + wanted + "` did not appear in the subject:\n" + subject);
+	}
+
+	public static void assertContainsOnce(String wanted, String subject) {
+		int first = subject.indexOf(wanted);
+		if (first < 0) {
+			fail("the fragment `" + wanted + "` did not appear in the subject:\n" + subject);
+		} else {
+			int second = subject.indexOf(wanted, first + wanted.length());
+			if (second > -1) 
+				fail("the fragment `" + wanted + "` appeared more than once in the subject:\n" + subject);
+		}
+	}
+
+	public static void denyContains(String unwanted, String subject) {
+		if (subject.contains(unwanted))
+			fail("the unwanted fragment `" + unwanted + "` appeared in the subject:\n" + subject);
 	}
 
 	public static void assertNoProblems(String tag, Problems p) {

@@ -144,37 +144,36 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
     
     static final Property[] CodelistProps = new Property[]{Cube.codeList, Dsapi.codeList};
     
-    private Aspect addAspect(API_Dataset dsapi, List<API_Dataset> datasets, Resource aspect, boolean required) {
-        Aspect a = new Aspect(aspect);
+    private Aspect addAspect(API_Dataset dsapi, List<API_Dataset> datasets, Resource aspectRoot, boolean required) {
+        Aspect a = new Aspect(aspectRoot);
         a.setIsOptional(!required);
         for (Property p : CodelistProps) {
-            if (aspect.hasProperty(p)) { 
-                API_Dataset codelistDataset = parseCodelist( aspect.getPropertyResourceValue(p) );
+            if (aspectRoot.hasProperty(p)) { 
+                API_Dataset codelistDataset = parseCodelist( aspectRoot.getPropertyResourceValue(p) );
                 a.setRangeDataset(codelistDataset.getName());
                 datasets.add( codelistDataset );
             }
         }
-        if (aspect.hasProperty(Dsapi.rangeDataset)) {
-            a.setRangeDataset( RDFUtil.getStringValue(aspect, Dsapi.rangeDataset) );
+        if (aspectRoot.hasProperty(Dsapi.rangeDataset)) {
+            a.setRangeDataset( RDFUtil.getStringValue(aspectRoot, Dsapi.rangeDataset) );
         }
         dsapi.add(a);
         return a;
     }
     
     private static Property[] mergeProps = new Property[]{ RDFS.label, SKOS.prefLabel, RDFS.comment, RDFS.range, DCTerms.description};
-    
+        
     private void parseAspects(API_Dataset dsapi, Resource root, List<API_Dataset> datasets) {
-        for (Resource aspect : RDFUtil.allResourceValues(root, Dsapi.aspect)) {
-            Resource decl = RDFUtil.getResourceValue(aspect, Dsapi.property);
+        for (Resource aspectRoot : RDFUtil.allResourceValues(root, Dsapi.aspect)) {
+            Resource decl = RDFUtil.getResourceValue(aspectRoot, Dsapi.property);
             if (decl != null) {
                 for (Property p : mergeProps) {
-                    mergeProp(aspect, decl, p);
+                    mergeProp(aspectRoot, decl, p);
                 }
             }
-            Aspect a = addAspect(dsapi, datasets, aspect, ! RDFUtil.getBooleanValue(aspect, Dsapi.optional, false));
-            a.setIsMultiValued( RDFUtil.getBooleanValue(aspect, Dsapi.multivalued, false) );
-            a.setPropertyPath( RDFUtil.getStringValue(aspect, Dsapi.propertyPath));
-            // TODO parse range constraints
+            boolean required = ! RDFUtil.getBooleanValue(aspectRoot, Dsapi.optional, false);
+			Aspect a = addAspect(dsapi, datasets, aspectRoot, required);
+            a.configureFrom(aspectRoot);
         }
     }
     

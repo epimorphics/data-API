@@ -26,9 +26,10 @@ public class SQ_Triple implements SQ_WhereElement {
 		return other instanceof SQ_Triple && same( (SQ_Triple) other );
 	}
 	
+	static int count = 0;
+	
 	private boolean same(SQ_Triple other) {
 		boolean result = S.equals(other.S) && P.equals(other.P) && O.equals(other.O);
-//		System.err.println(">> " + this + ".equals(" + other + "): " + result);
 		return result;
 	}
 
@@ -47,7 +48,9 @@ public class SQ_Triple implements SQ_WhereElement {
 
 	void renderRawCoreTriple(StringBuilder sb) {
 		S.toSparqlExpr(sb);
+		sb.append(" ");
 		P.toSparqlExpr(sb);
+		sb.append(" ");
 		O.toSparqlExpr(sb);
 	}
 
