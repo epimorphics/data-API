@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "0.0.11";
-	public final String tagname = "_(reordering)";
+	public final String string = "0.0.12";
+	public final String tagname = "_RELEASED";
 }
