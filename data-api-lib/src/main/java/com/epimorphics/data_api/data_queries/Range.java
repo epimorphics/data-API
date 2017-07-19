@@ -15,7 +15,7 @@ import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.sparql.SQ_Expr;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Node;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public class Range {
 	

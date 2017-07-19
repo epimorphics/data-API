@@ -22,7 +22,7 @@ import org.junit.Test;
 import com.epimorphics.appbase.core.App;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Resource;
 
 public class TestMultiSrc {
     App testapp;

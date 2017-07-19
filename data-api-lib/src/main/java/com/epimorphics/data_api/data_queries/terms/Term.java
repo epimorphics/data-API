@@ -12,10 +12,10 @@ import java.util.List;
 import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.util.FmtUtils;
 
 /**
     A Term encodes a Node or an array of Terms.

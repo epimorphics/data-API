@@ -14,7 +14,7 @@ import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public class TestCombinedSearch {
 

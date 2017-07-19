@@ -15,8 +15,8 @@ import com.epimorphics.data_api.data_queries.terms.TermResource;
 import com.epimorphics.data_api.data_queries.terms.TermString;
 import com.epimorphics.data_api.data_queries.terms.TermTyped;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.BrokenException;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.BrokenException;
 
 /**
  	The default implementation of A @eq V is as a

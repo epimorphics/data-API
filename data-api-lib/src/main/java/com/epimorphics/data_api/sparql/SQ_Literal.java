@@ -5,7 +5,7 @@
 */
 package com.epimorphics.data_api.sparql;
 
-import com.hp.hpl.jena.sparql.util.FmtUtils;
+import org.apache.jena.sparql.util.FmtUtils;
 
 public class SQ_Literal extends SQ_Node {
 

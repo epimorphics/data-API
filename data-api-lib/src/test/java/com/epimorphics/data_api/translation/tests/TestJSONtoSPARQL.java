@@ -23,13 +23,13 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Dsapi;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.shared.BrokenException;
-import com.hp.hpl.jena.util.FileManager;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.shared.BrokenException;
+import org.apache.jena.util.FileManager;
+import org.apache.jena.vocabulary.RDF;
 
 public class TestJSONtoSPARQL {
 	
@@ -84,7 +84,7 @@ public class TestJSONtoSPARQL {
 
 	// TODO integrate properly with monitor code
 	private void addAspectsToDataset(API_Dataset ds, Resource config) {
-		for (RDFNode x: config.listProperties(Dsapi.aspect).mapWith(Statement.Util.getObject).toList()) {
+		for (RDFNode x: config.listProperties(Dsapi.aspect).mapWith(Statement::getObject).toList()) {
 			Resource rx = (Resource) x;
 			Aspect a = new Aspect(rx);
 			a.setIsOptional( RDFUtil.getBooleanValue(rx, Dsapi.optional, false));

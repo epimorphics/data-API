@@ -17,8 +17,8 @@ import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.XSD;
 
 public class SearchSpec extends Restriction {
 

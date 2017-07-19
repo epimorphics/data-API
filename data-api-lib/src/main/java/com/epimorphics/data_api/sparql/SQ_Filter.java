@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Operator;
-import com.hp.hpl.jena.shared.BrokenException;
+import org.apache.jena.shared.BrokenException;
 
 public class SQ_Filter implements SQ_Expr, SQ_WhereElement {
 	

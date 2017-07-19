@@ -12,8 +12,8 @@ package com.epimorphics.data_api.conversions;
 import com.epimorphics.appbase.data.ClosableResultSet;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
-import com.hp.hpl.jena.query.ResultSet;
-import com.hp.hpl.jena.rdf.model.Literal;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
 
 public class CountWriter implements JSONWritable {
     private final ResultSet rs;

@@ -27,8 +27,8 @@ import com.epimorphics.data_api.data_queries.terms.TermString;
 import com.epimorphics.data_api.data_queries.terms.TermTyped;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public class TestSubstitution {
 	

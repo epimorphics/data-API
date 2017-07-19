@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "0.0.13-SNAPSHOT";
-	public final String tagname = "_SNAP";
+	public final String string = "1.0.1-SNAPSHOT";
+	public final String tagname = "_CLEAN";
 }

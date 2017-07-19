@@ -13,7 +13,7 @@ import org.junit.Test;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.reporting.Problems;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public class TestParseDataQueryTerms {
 

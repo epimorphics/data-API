@@ -29,8 +29,8 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.vocabs.Cube;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
 
 public class TestHier {
     App testapp;

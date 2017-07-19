@@ -36,7 +36,7 @@ import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
 import com.epimorphics.vocabs.SKOS;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 // TODO Apply DRY to the tests.
 public class TestTranslateDataQuery {

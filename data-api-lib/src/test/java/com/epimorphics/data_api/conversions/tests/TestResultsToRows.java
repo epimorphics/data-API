@@ -21,10 +21,10 @@ import com.epimorphics.data_api.conversions.Row;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.results.tests.TestTranslateQuerySolution;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.QuerySolution;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
+import org.apache.jena.graph.Node;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 
 public class TestResultsToRows {
 	

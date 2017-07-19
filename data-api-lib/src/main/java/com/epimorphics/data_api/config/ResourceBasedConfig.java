@@ -10,9 +10,9 @@
 package com.epimorphics.data_api.config;
 
 import com.epimorphics.rdfutil.RDFUtil;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.PrefixMapping;
 
 /**
  * Utility or base class for objects which have been configured via an

@@ -18,7 +18,7 @@ import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 import static com.epimorphics.data_api.test_support.Asserts.assertSameSelect;
 

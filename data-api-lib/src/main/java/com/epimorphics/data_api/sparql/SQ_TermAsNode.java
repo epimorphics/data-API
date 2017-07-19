@@ -7,7 +7,7 @@
 package com.epimorphics.data_api.sparql;
 
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public final class SQ_TermAsNode extends SQ_Node {
 	private final PrefixMapping pm;

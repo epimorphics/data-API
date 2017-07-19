@@ -29,7 +29,7 @@ import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.vocabulary.XSD;
 
 public class TestConfig {
     App testapp;

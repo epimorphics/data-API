@@ -17,7 +17,7 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.MutableBool;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ResultSet;
 
 /**
     A RowWriter is initialised with a ResultSet 

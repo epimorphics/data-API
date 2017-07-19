@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.hp.hpl.jena.shared.BrokenException;
+import org.apache.jena.shared.BrokenException;
 
 public class SQ_Where {
 	

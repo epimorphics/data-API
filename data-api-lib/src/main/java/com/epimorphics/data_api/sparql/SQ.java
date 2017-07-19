@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Sort;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.vocabulary.XSD;
 
 public class SQ {
 	
