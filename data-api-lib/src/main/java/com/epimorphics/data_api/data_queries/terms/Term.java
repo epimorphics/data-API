@@ -52,19 +52,10 @@ public abstract class Term implements JSONWritable {
 			String spelling = n.getLiteralLexicalForm();
 			String type = n.getLiteralDatatypeURI();
 			if (type.equals(XSDDatatype.XSDstring.getURI())) {
-				String language = n.getLiteralLanguage();
-				if (language.equals("")) {
-					return Term.string(spelling);
-				} else {
-					return Term.languaged(spelling, language);
-				}
+				return Term.string(spelling);
 			} else if (type.equals(RDF.langString.getURI())) {
 				String language = n.getLiteralLanguage();
-				if (language.equals("")) {
-					return Term.string(spelling);
-				} else {
-					return Term.languaged(spelling, language);
-				}
+				return Term.languaged(spelling, language);
 			} else if (type.equals(XSDDatatype.XSDboolean.getURI())) {
 				return Term.bool(spelling.equals("true"));
 			} else if (type.equals(XSDDatatype.XSDinteger.getURI())) {
