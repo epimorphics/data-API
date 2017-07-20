@@ -50,7 +50,7 @@ public abstract class Term implements JSONWritable {
 		} else if (n.isLiteral()) {
 			String spelling = n.getLiteralLexicalForm();
 			String type = n.getLiteralDatatypeURI();
-			if (type == null) {
+			if (type.equals(XSDDatatype.XSDstring.getURI())) {
 				String language = n.getLiteralLanguage();
 				if (language.equals("")) {
 					return Term.string(spelling);
