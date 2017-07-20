@@ -16,6 +16,7 @@ import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.graph.Node;
 import org.apache.jena.shared.PrefixMapping;
 import org.apache.jena.sparql.util.FmtUtils;
+import org.apache.jena.vocabulary.RDF;
 
 /**
     A Term encodes a Node or an array of Terms.
@@ -51,6 +52,13 @@ public abstract class Term implements JSONWritable {
 			String spelling = n.getLiteralLexicalForm();
 			String type = n.getLiteralDatatypeURI();
 			if (type.equals(XSDDatatype.XSDstring.getURI())) {
+				String language = n.getLiteralLanguage();
+				if (language.equals("")) {
+					return Term.string(spelling);
+				} else {
+					return Term.languaged(spelling, language);
+				}
+			} else if (type.equals(RDF.langString.getURI())) {
 				String language = n.getLiteralLanguage();
 				if (language.equals("")) {
 					return Term.string(spelling);
