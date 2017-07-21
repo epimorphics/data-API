@@ -65,14 +65,14 @@ public class TestJSONtoSPARQL {
 //		System.err.println( ">> ASPECTS: " + ds.getAspects());
 		
 		String json = FileManager.get().readWholeFileAsUTF8( jsonFile.getPath());
-		String sparql = FileManager.get().readWholeFileAsUTF8(sparqlFile.getPath());
+		String sparql = trimHeader(FileManager.get().readWholeFileAsUTF8(sparqlFile.getPath()));
 				
 		JsonObject jo = JSON.parse(json);
 		Problems p = new Problems();
 		DataQuery dq = DataQueryParser.Do(p, ds, jo);
 
 //		Asserts.assertNoProblems("JSON query did not parse", p);
-		String generated = dq.toSparql(p, ds);
+		String generated = trimHeader(dq.toSparql(p, ds));
 		
 //		System.err.println(">> JSON QUERY:\n" + json);
 //		System.err.println(">> EXPECTED:\n" + sparql);
@@ -80,6 +80,10 @@ public class TestJSONtoSPARQL {
 		
 		String expected = sparql;
 		Asserts.assertSameSelect(expected, generated);
+	}
+
+	private String trimHeader(String s) {
+		return s.replaceFirst("# DSAPI .*", "");
 	}
 
 	// TODO integrate properly with monitor code
