@@ -8,7 +8,6 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -83,15 +82,8 @@ public class DataQueryParser {
 		compositions.put("@not", new ArrayList<Constraint>() );
 	}
 
-	private List<String> ordered(Set<String> items) {
-		List<String> result = new ArrayList<String>(items);
-		// Collections.sort(result);
-		// Collections.reverse(result);
-		return result;
-	}
-	
 	private DataQuery parseDataQuery(JsonObject jo) {		
-		for (String key: ordered(jo.keys())) {
+		for (String key: jo.keys()) {
 			JsonValue value = jo.get(key);
 			if (key.startsWith("@")) {
 				parseAtMember(jo, key, value);
@@ -127,7 +119,7 @@ public class DataQueryParser {
 		} else {			
 			if (range.isObject()) {
 				JsonObject rob = range.getAsObject();
-				for (String opKey: ordered(rob.keys())) {
+				for (String opKey: rob.keys()) {
 					JsonValue operand = rob.get(opKey);
 					if (opKey.equals("@search")) {
 						constraints.add( extractSearchSpec(key, a, operand) );
