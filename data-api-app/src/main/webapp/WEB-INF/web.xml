@@ -18,6 +18,16 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+    <filter>
+        <filter-name>QueryID</filter-name>
+        <filter-class>com.epimorphics.data_api.filters.QueryID</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>QueryID</filter-name>
+        <url-pattern>/*</url-pattern>    
+    </filter-mapping>
+
   <filter>
     <filter-name>extension-filter</filter-name>
     <filter-class>com.epimorphics.appbase.webapi.ExtensionFilter</filter-class>
