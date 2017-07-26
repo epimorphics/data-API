@@ -44,6 +44,7 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
+import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
@@ -71,7 +72,7 @@ import com.sun.jersey.api.NotFoundException;
  * @author <a href="mailto:dave@epimorphics.com">Dave Reynolds</a>
  */
 public class DSAPIManager extends ComponentBase {
-    static Logger log = LoggerFactory.getLogger(DSAPIManager.class);
+    static EpiLogger log = EpiLogger.createFrom(DSAPIManager.class);
     
     static { log.info(DataQuery.DSAPI_Info); }
 
