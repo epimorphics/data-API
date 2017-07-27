@@ -22,7 +22,7 @@ public class EpiLogger {
 	}
 
 	public void info(String s) {
-		super.info(QueryID.getQueryId(), s);
+		delegate.info(QueryID.getQueryId(), s);
 	}
 
 	public void error(String s) {

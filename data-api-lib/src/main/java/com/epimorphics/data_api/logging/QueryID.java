@@ -17,9 +17,14 @@ public class QueryID implements Filter {
 		// No init needed yet.
 	}
 
-	
 	public static ThreadLocal<String> queryID = new ThreadLocal<String>();
 	
+	public static final String X_REQUEST_ID  = "X-Request-Id";
+
+    public static final String X_RESPONSE_ID  = "X-Response-Id";
+    
+    public static final String QUERY_ID_PARAM  = "_query-id";
+    
 	static final String ZOG = "EPI_ID";
 	static final String PAR = "EPI_PAR";
 	
@@ -31,20 +36,30 @@ public class QueryID implements Filter {
 		throws IOException, ServletException {
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
-		String query = httpRequest.getQueryString();
-		String path = httpRequest.getRequestURI();
-		
+//		String query = httpRequest.getQueryString();
+//		String path = httpRequest.getRequestURI();
+//		
 		String ID = null;
-		String headerID = httpRequest.getHeader(ZOG);
-		String paramID = httpRequest.getParameter(PAR);
-
+		String headerID = httpRequest.getHeader(X_REQUEST_ID);
+		String paramID = httpRequest.getParameter(QUERY_ID_PARAM);
+//
 		if (ID == null) ID = paramID;
 		if (ID == null) ID = headerID;
-		if (ID == null) ID = generateID();
-
+		if (ID == null) ID = getDefaultId();
+		
+//
+		httpResponse.setHeader(X_RESPONSE_ID, ID);
 		setQueryId(ID);
-        chain.doFilter(request, response);
+		
+      chain.doFilter(request, response);
     
+	}
+	
+	public String getDefaultId() {
+		String result = System.getProperty("DSAPI_INSTANCE");
+		if (result == null) result = System.getenv("DSAPI_INSTANCE");
+		if (result == null) result = "ANON." + System.currentTimeMillis();
+		return result;
 	}
 
 	private void setQueryId(String id) {
@@ -53,11 +68,6 @@ public class QueryID implements Filter {
 
 	public static String getQueryId() {
 		return queryID.get();
-	}
-
-	private String generateID() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override public void destroy() {	
