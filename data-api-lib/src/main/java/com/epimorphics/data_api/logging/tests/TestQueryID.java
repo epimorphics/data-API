@@ -43,7 +43,7 @@ public class TestQueryID {
 	String filterId = filter.getDefaultId();
 	
 	@Test public void them() throws IOException, ServletException {
-		testThat(null, null, "");
+		testThat(null, null, "DEFAULT");
 		testThat("fromHeader", null, "fromHeader");
 		testThat(null, "fromParam", "fromParam");
 		testThat("fromHeader", "fromParam", "fromParam");
@@ -54,6 +54,8 @@ public class TestQueryID {
 
 		if (header != null) httpRequest.headers.put(QueryID.X_REQUEST_ID, header);
 		if (param != null) httpRequest.params.put(QueryID.QUERY_ID_PARAM, param);
+		
+		System.setProperty("DSAPI_INSTANCE", "DEFAULT");
 		
 		After chain = new After();
 		
@@ -365,8 +367,7 @@ public class TestQueryID {
 
 		@Override
 		public String getParameter(String name) {
-			// TODO Auto-generated method stub
-			return null;
+			return params.get(name);
 		}
 
 		@Override
@@ -558,8 +559,7 @@ public class TestQueryID {
 
 		@Override
 		public String getHeader(String name) {
-			// TODO Auto-generated method stub
-			return null;
+			return headers.get(name);
 		}
 
 		@Override

@@ -46,7 +46,7 @@ public class QueryID implements Filter {
 		if (ID == null) ID = paramID;
 		if (ID == null) ID = headerID;
 		if (ID == null) ID = getDefaultId();
-		
+		System.err.println(">> ID: " + ID);
 //
 		httpResponse.setHeader(X_RESPONSE_ID, ID);
 		setQueryId(ID);
