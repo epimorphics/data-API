@@ -24,10 +24,19 @@ public class TestQueryID {
 	
 	String filterId = filter.getDefaultId();
 	
-	@Test public void them() throws IOException, ServletException {
+	@Test public void testNeitherHeaderNorParam() throws IOException, ServletException {
 		testThat(null, null, "DEFAULT");
+	}	
+	
+	@Test public void testHeader() throws IOException, ServletException {
 		testThat("fromHeader", null, "fromHeader");
+	}	
+	
+	@Test public void testParam() throws IOException, ServletException {
 		testThat(null, "fromParam", "fromParam");
+	}	
+	
+	@Test public void testHeaderAndParam() throws IOException, ServletException {
 		testThat("fromHeader", "fromParam", "fromParam");
 	}
 	
