@@ -17,7 +17,7 @@ public class EpiLogger {
 		return toEpiLogger(LoggerFactory.getLogger(c));
 	}
 
-	private static EpiLogger toEpiLogger(Logger logger) {
+	public static EpiLogger toEpiLogger(Logger logger) {
 		return new EpiLogger(new SubstituteLogger(logger.getName()));
 	}
 
@@ -26,7 +26,7 @@ public class EpiLogger {
 	}
 
 	public void error(String s) {
-		// TODO
+		delegate.error(QueryID.getQueryId(), s);
 	}
 
 	public void error(String s, Exception e) {
