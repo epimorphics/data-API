@@ -37,9 +37,9 @@ public class TestQueryID {
 		if (header != null) httpRequest.headers.put(QueryID.X_REQUEST_ID, header);
 		if (param != null) httpRequest.params.put(QueryID.QUERY_ID_PARAM, param);
 		
-		System.setProperty("DSAPI_INSTANCE", "DEFAULT");
+		System.setProperty(QueryID.DSAPI_INSTANCE, "DEFAULT");
 		
-		After chain = new After();
+		LogChain chain = new LogChain();
 		
 		filter.doFilter(httpRequest, httpResponse, chain);
 
@@ -64,13 +64,12 @@ public class TestQueryID {
 			}
 
 			@Override public Enumeration<String> getInitParameterNames() {
-				// TODO Auto- method stub
 				return null;
 			}};
 		return f;
 	}
 	
-	static class After implements FilterChain {
+	static class LogChain implements FilterChain {
 
 		boolean wasInvoked = false;
 		

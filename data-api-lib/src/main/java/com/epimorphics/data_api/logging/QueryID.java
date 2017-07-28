@@ -24,6 +24,8 @@ public class QueryID implements Filter {
     public static final String X_RESPONSE_ID  = "X-Response-Id";
     
     public static final String QUERY_ID_PARAM  = "_query-id";
+    
+    public static final String DSAPI_INSTANCE = "DSAPI_INSTANCE";
 	
 	@Override public void doFilter(
 		ServletRequest request
@@ -33,8 +35,6 @@ public class QueryID implements Filter {
 		throws IOException, ServletException {
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
-//		String query = httpRequest.getQueryString();
-//		String path = httpRequest.getRequestURI();
 //		
 		String ID = null;
 		String headerID = httpRequest.getHeader(X_REQUEST_ID);
@@ -52,8 +52,8 @@ public class QueryID implements Filter {
 	}
 	
 	public String getDefaultId() {
-		String result = System.getProperty("DSAPI_INSTANCE");
-		if (result == null) result = System.getenv("DSAPI_INSTANCE");
+		String result = System.getProperty(DSAPI_INSTANCE);
+		if (result == null) result = System.getenv(DSAPI_INSTANCE);
 		if (result == null) result = "ANON." + System.currentTimeMillis();
 		return result;
 	}
