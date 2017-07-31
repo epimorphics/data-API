@@ -1,13 +1,12 @@
 package com.epimorphics.data_api.logging;
 
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.SubstituteLogger;
 import org.slf4j.Logger;
 
 
 public class EpiLogger {
 
-	final Logger delegate;
+	public final Logger delegate;
 
 	public EpiLogger(Logger delegate) {
 		this.delegate = delegate;
@@ -18,20 +17,19 @@ public class EpiLogger {
 	}
 
 	public static EpiLogger toEpiLogger(Logger logger) {
-		return new EpiLogger(new SubstituteLogger(logger.getName()));
+		return new EpiLogger(logger);
 	}
 
-	public void info(String s) {
-		delegate.info(QueryID.getQueryId(), s);
+	public void info(String format) {
+		delegate.info(format + " %s ", QueryID.getQueryId());
 	}
 
-	public void error(String s) {
-		delegate.error(QueryID.getQueryId(), s);
+	public void error(String format) {
+		delegate.error("%s" + format, QueryID.getQueryId());
 	}
 
-	public void error(String s, Exception e) {
-		// TODO
+	public void error(String format, Throwable e) {
+		delegate.error("%s" + format, QueryID.getQueryId(), e);
 	}
-
 
 }

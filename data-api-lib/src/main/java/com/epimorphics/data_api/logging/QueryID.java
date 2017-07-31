@@ -58,7 +58,7 @@ public class QueryID implements Filter {
 		return result;
 	}
 
-	private void setQueryId(String id) {
+	public static void setQueryId(String id) {
 		queryID.set(id);
 	}
 
