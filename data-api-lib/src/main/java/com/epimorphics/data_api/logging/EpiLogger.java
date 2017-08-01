@@ -37,7 +37,7 @@ public class EpiLogger {
 	}
 
 	public void error(String format) {
-		delegate.error("%s" + format, QueryID.getQueryId());
+		delegate.error(format + "%s", QueryID.getQueryId());
 	}
 
 	public void error(String format, Throwable e) {

@@ -22,18 +22,18 @@ public class TestEpiLogging {
 	}
 
 	@Test public void testWarn() {
-		l.info("INFORMATIVE");
+		l.warn("INFORMATIVE");
 		assertEquals(expect("WARN INFORMATIVE_%s MESSAGEID"), h.history);
 	}
 
-	@Test public void testIdDebugAnabled() {
+	@Test public void testIdDebugIsenabled() {
 		assertFalse(l.isDebugEnabled());
-		assertEquals(expect("DEBUG INFORMATIVE_%s MESSAGEID"), h.history);
+		assertEquals(expect("DEBUG ISENABLED"), h.history);
 	}
 	
 	@Test public void testDebug() {
-		l.info("INFORMATIVE");
-		assertEquals(expect("DEBUG INFORMATIVE_%s MESSAGEID"), h.history);
+		l.debug("DEBUGGING");
+		assertEquals(expect("DEBUG DEBUGGING_%s MESSAGEID"), h.history);
 	}
 
 	@Test public void testInfo() {
@@ -42,8 +42,8 @@ public class TestEpiLogging {
 	}
 
 	 @Test public void testError() {
-		l.info("UNFORTUNATE");
-		assertEquals(expect("ERROR UNFORTUNATE_%s MESSAGEID"), h.history);
+		l.error("UNFORTUNATE");
+		assertEquals(expect("ERROR UNFORTUNATE%s MESSAGEID"), h.history);
 	}
 
 	@Test public void testErrorWithException() {
@@ -87,7 +87,7 @@ public class TestEpiLogging {
 		}
 		
 		@Override public boolean isDebugEnabled() {
-			history.add(Arrays.asList("DEBUG", "IS_ENABLED"));
+			history.add(Arrays.asList("DEBUG", "ISENABLED"));
 			return false;
 		}
 		
