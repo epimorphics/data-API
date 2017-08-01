@@ -11,6 +11,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.NDC;
+
 public class QueryID implements Filter {
 
 	@Override public void init(FilterConfig filterConfig) throws ServletException {
@@ -47,8 +49,9 @@ public class QueryID implements Filter {
 		httpResponse.setHeader(X_RESPONSE_ID, ID);
 		setQueryId(ID);
 		
-      chain.doFilter(request, response);
-    
+		NDC.push(ID);
+		chain.doFilter(request, response);
+		NDC.pop();
 	}
 	
 	public String getDefaultId() {
