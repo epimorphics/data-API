@@ -20,7 +20,7 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 
     <filter>
         <filter-name>QueryID</filter-name>
-        <filter-class>com.epimorphics.data_api.filters.QueryID</filter-class>
+        <filter-class>com.epimorphics.data_api.logging.QueryID</filter-class>
     </filter>
 
     <filter-mapping>
