@@ -48,7 +48,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
  * @author <a href="mailto:dave@epimorphics.com">Dave Reynolds</a>
  */
 public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
-    static EpiLogger log = EpiLogger.createFrom(DatasetMonitor.class);
+    static Logger log = LoggerFactory.getLogger(DatasetMonitor.class);
 
     protected DSAPIManager manager;
     

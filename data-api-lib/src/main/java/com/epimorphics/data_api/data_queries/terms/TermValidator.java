@@ -23,7 +23,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 */
 public final class TermValidator implements Term.Visitor<Term> {
 	
-	static EpiLogger log = EpiLogger.createFrom(TermValidator.class);
+	static Logger log = LoggerFactory.getLogger(TermValidator.class);
 
 	static final String RDF_langString = RDF.getURI() + "langString";
 	static final boolean backwardsCompatibleStringTypes = true;

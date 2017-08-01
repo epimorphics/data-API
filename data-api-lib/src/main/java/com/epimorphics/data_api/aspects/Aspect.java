@@ -29,7 +29,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
 	
-	static final EpiLogger log = EpiLogger.createFrom(Aspect.class);
+	static final Logger log = LoggerFactory.getLogger(Aspect.class);
 
 	public static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
 		

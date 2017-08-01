@@ -64,7 +64,7 @@ public final class RowWriter implements JSONWritable {
 
     private static final String FAILED = "@failed";
 
-	static EpiLogger log = EpiLogger.createFrom(RowWriter.class);
+	static Logger log = LoggerFactory.getLogger(RowWriter.class);
     
 	private final ResultSet rs;
 	private final ResultsToRows rtr;

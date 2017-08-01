@@ -72,7 +72,7 @@ import com.sun.jersey.api.NotFoundException;
  * @author <a href="mailto:dave@epimorphics.com">Dave Reynolds</a>
  */
 public class DSAPIManager extends ComponentBase {
-    static EpiLogger log = EpiLogger.createFrom(DSAPIManager.class);
+    static Logger log = LoggerFactory.getLogger(DSAPIManager.class);
     
     static { log.info(DataQuery.DSAPI_Info); }
 

@@ -37,7 +37,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 
-	static final EpiLogger log = EpiLogger.createFrom(API_Dataset.class);
+	static final Logger log = LoggerFactory.getLogger(API_Dataset.class);
     
     String name;
 	String query;
