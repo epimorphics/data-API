@@ -21,9 +21,34 @@ public class TestEpiLogging {
 		QueryID.setQueryId("MESSAGEID");
 	}
 
-	@Test public void t() {
+	@Test public void testWarn() {
 		l.info("INFORMATIVE");
-		assertEquals(expect("INFO MESSAGEID INFORMATIVE"), h.history);
+		assertEquals(expect("WARN INFORMATIVE_%s MESSAGEID"), h.history);
+	}
+
+	@Test public void testIdDebugAnabled() {
+		assertFalse(l.isDebugEnabled());
+		assertEquals(expect("DEBUG INFORMATIVE_%s MESSAGEID"), h.history);
+	}
+	
+	@Test public void testDebug() {
+		l.info("INFORMATIVE");
+		assertEquals(expect("DEBUG INFORMATIVE_%s MESSAGEID"), h.history);
+	}
+
+	@Test public void testInfo() {
+		l.info("INFORMATIVE");
+		assertEquals(expect("INFO INFORMATIVE_%s MESSAGEID"), h.history);
+	}
+
+	 @Test public void testError() {
+		l.info("UNFORTUNATE");
+		assertEquals(expect("ERROR UNFORTUNATE_%s MESSAGEID"), h.history);
+	}
+
+	@Test public void testErrorWithException() {
+		l.error("DISTRESS", new RuntimeException());
+		assertEquals(expect("ERROR %sDISTRESS MESSAGEID"), h.history);
 	}
 	
 	List<List<String>> expect(String x) {
@@ -35,13 +60,17 @@ public class TestEpiLogging {
 	}
 
 	private List<String> chopAtSpace(String line) {
-		return Arrays.asList(line.split(" "));
+		List<String> items = Arrays.asList(line.split(" "));
+		for (int i = 0; i < items.size(); i += 1) {
+			items.set(i, items.get(i).replaceAll("_",  " "));
+		}
+		return items;
 	}
 
 	/**
 	 	Saves logged messages for later comparison
 	*/
-	public static class LoggingHistory extends NullLogger {
+	public static class LoggingHistory extends FailLogger {
 		
 		final List<List<String>> history = new ArrayList<List<String>>();
 		
@@ -49,9 +78,20 @@ public class TestEpiLogging {
 			super(name);
 		}
 		
+		@Override public void debug(String format, Object x) {
+			history.add(Arrays.asList("DEBUG", format, x.toString()));
+		}
+		
+		@Override public void warn(String format, Object x) {
+			history.add(Arrays.asList("WARN", format, x.toString()));
+		}
+		
+		@Override public boolean isDebugEnabled() {
+			history.add(Arrays.asList("DEBUG", "IS_ENABLED"));
+			return false;
+		}
+		
 		@Override public void info(String format, Object x) {
-			System.err.println(">> info; x = " + x);
-			System.err.println(">> format; x = " + format);
 			history.add(Arrays.asList("INFO", format, x.toString()));
 		}
 		
@@ -59,8 +99,12 @@ public class TestEpiLogging {
 			history.add(Arrays.asList("ERROR", s));
 		}
 		
-		@Override public void error(String s, Throwable e) {
-			history.add(Arrays.asList("ERROR", s));
+		@Override public void error(String format, Object arg) {
+			history.add(Arrays.asList("ERROR", format, arg.toString()));
+		}
+		
+		@Override public void error(String format, Throwable e) {
+			history.add(Arrays.asList("ERROR", format));
 		}
 	}
 

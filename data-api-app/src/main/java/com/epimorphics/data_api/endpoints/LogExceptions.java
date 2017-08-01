@@ -16,6 +16,8 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.epimorphics.data_api.logging.EpiLogger;
+
 
 /**
     LogExceptions is an ExceptionMapper that maps every exception
@@ -24,7 +26,7 @@ import org.slf4j.LoggerFactory;
 */
 @Provider public class LogExceptions implements ExceptionMapper<Exception>{
 
-	static final Logger log = LoggerFactory.getLogger(LogExceptions.class);
+	static final EpiLogger log = EpiLogger.createFrom(LogExceptions.class);
 	
 	public LogExceptions() {
 	}

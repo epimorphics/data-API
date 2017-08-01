@@ -21,6 +21,7 @@ import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.monitor.ConfigMonitor;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.util.EpiException;
@@ -47,7 +48,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
  * @author <a href="mailto:dave@epimorphics.com">Dave Reynolds</a>
  */
 public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
-    static Logger log = LoggerFactory.getLogger(DatasetMonitor.class);
+    static EpiLogger log = EpiLogger.createFrom(DatasetMonitor.class);
 
     protected DSAPIManager manager;
     

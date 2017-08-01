@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
@@ -22,7 +23,7 @@ import com.hp.hpl.jena.vocabulary.RDF;
 */
 public final class TermValidator implements Term.Visitor<Term> {
 	
-	static Logger log = LoggerFactory.getLogger(TermValidator.class);
+	static EpiLogger log = EpiLogger.createFrom(TermValidator.class);
 
 	static final String RDF_langString = RDF.getURI() + "langString";
 	static final boolean backwardsCompatibleStringTypes = true;

@@ -23,6 +23,7 @@ import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.config.Hierarchy;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.rdfutil.RDFUtil;
@@ -36,7 +37,7 @@ import com.hp.hpl.jena.vocabulary.XSD;
 
 public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 
-	static final Logger log = LoggerFactory.getLogger(API_Dataset.class);
+	static final EpiLogger log = EpiLogger.createFrom(API_Dataset.class);
     
     String name;
 	String query;

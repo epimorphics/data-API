@@ -17,6 +17,7 @@ import com.epimorphics.data_api.config.JSONConstants;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.rdfutil.RDFUtil;
@@ -28,7 +29,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
 	
-	static final Logger log = LoggerFactory.getLogger(Aspect.class);
+	static final EpiLogger log = EpiLogger.createFrom(Aspect.class);
 
 	public static final Comparator<? super Aspect> compareAspects = new Comparator<Aspect>() {
 		

@@ -20,8 +20,20 @@ public class EpiLogger {
 		return new EpiLogger(logger);
 	}
 
+	public boolean isDebugEnabled() {
+		return delegate.isDebugEnabled();
+	}
+	
+	public void debug(String format) {
+		delegate.debug(format + " %s", QueryID.getQueryId());
+	}
+
+	public void warn(String format) {
+		delegate.warn(format + " %s", QueryID.getQueryId());
+	}
+	
 	public void info(String format) {
-		delegate.info(format + " %s ", QueryID.getQueryId());
+		delegate.info(format + " %s", QueryID.getQueryId());
 	}
 
 	public void error(String format) {
@@ -29,7 +41,7 @@ public class EpiLogger {
 	}
 
 	public void error(String format, Throwable e) {
-		delegate.error("%s" + format, QueryID.getQueryId(), e);
+		delegate.error("%s" + format, QueryID.getQueryId());
 	}
 
 }

@@ -15,6 +15,7 @@ import com.epimorphics.appbase.data.ClosableResultSet;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.libs.MutableBool;
+import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.hp.hpl.jena.query.ResultSet;
@@ -63,7 +64,7 @@ public final class RowWriter implements JSONWritable {
 
     private static final String FAILED = "@failed";
 
-	static Logger log = LoggerFactory.getLogger(RowWriter.class);
+	static EpiLogger log = EpiLogger.createFrom(RowWriter.class);
     
 	private final ResultSet rs;
 	private final ResultsToRows rtr;
