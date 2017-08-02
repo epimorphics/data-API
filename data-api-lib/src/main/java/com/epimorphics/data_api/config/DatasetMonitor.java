@@ -21,7 +21,6 @@ import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.monitor.ConfigMonitor;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.rdfutil.QueryUtil;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.util.EpiException;

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.epimorphics.data_api.datasets.API_Dataset;
-import com.epimorphics.data_api.logging.EpiLogger;
 import com.epimorphics.data_api.reporting.Problems;
 import com.hp.hpl.jena.datatypes.RDFDatatype;
 import com.hp.hpl.jena.datatypes.TypeMapper;
