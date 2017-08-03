@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.epimorphics.data_api.Switches;
 import com.hp.hpl.jena.shared.BrokenException;
 
 public class SQ_Where {
@@ -37,8 +38,10 @@ public class SQ_Where {
 //		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
 //		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 		
-		sb.append(indent).append("{").append(SQ.nl);
+		if (Switches.boxing) {
+			sb.append(indent).append("{").append(SQ.nl);
 		indent += " ";
+		}
 		
 		section(sb, indent, "text search queries", textQueries);
 		section(sb, indent, "items with values EQ to a constant", groundTriples);
@@ -46,8 +49,10 @@ public class SQ_Where {
 		section(sb, indent, "mandatory filters", filterElements);
 		exprSection(sb, indent, "mandatory filters", sqFilters);
 		
-		sb.append(indent).append("}").append(SQ.nl);
-		indent = indent.substring(2);
+		if (Switches.boxing) {
+			sb.append(indent).append("}").append(SQ.nl);
+			indent = indent.substring(2);
+		}
 		
 		section(sb, indent, "otherwise uncategorised elements", otherElements);
 		section(sb, indent, "optional triples", optionalTriples);
