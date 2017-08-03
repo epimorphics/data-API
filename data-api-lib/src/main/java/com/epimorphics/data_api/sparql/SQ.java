@@ -40,6 +40,9 @@ public class SQ {
 	public String toString(String indent) {
 		StringBuilder sb = new StringBuilder();
 		toString(sb, indent);
+		
+//		System.err.println(">> " + sb);
+		
 		return sb.toString();
 	}
 	

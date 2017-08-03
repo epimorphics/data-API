@@ -36,4 +36,6 @@ public class Switches {
 			+ "."
 			;
 	}
+	
+	public static boolean boxing = true;
 }

@@ -36,11 +36,19 @@ public class SQ_Where {
 //		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
 //		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
 //		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
+		
+		sb.append(indent).append("{").append(SQ.nl);
+		indent += " ";
+		
 		section(sb, indent, "text search queries", textQueries);
 		section(sb, indent, "items with values EQ to a constant", groundTriples);
 		section(sb, indent, "triples with unbound objects", ungroundTriples);
 		section(sb, indent, "mandatory filters", filterElements);
 		exprSection(sb, indent, "mandatory filters", sqFilters);
+		
+		sb.append(indent).append("}").append(SQ.nl);
+		indent = indent.substring(2);
+		
 		section(sb, indent, "otherwise uncategorised elements", otherElements);
 		section(sb, indent, "optional triples", optionalTriples);
 		section(sb, indent, "BINDings", bindingElements);
@@ -48,14 +56,14 @@ public class SQ_Where {
 
 	protected void section(StringBuilder sb, String indent, String title, List<? extends SQ_WhereElement> elements) {
 		if (elements.size() > 0) {
-			sb.append("  # ").append(title).append("\n");
+			sb.append(indent).append("# ").append(title).append("\n");
 			for (SQ_WhereElement e: elements) e.toSparqlStatement(sb, indent);
 		}
 	}
 	
 	protected void exprSection(StringBuilder sb, String indent, String title, List<? extends SQ_Expr> elements) {
 		if (elements.size() > 0) {
-			sb.append("  # ").append(title).append("\n");
+			sb.append(indent).append("# ").append(title).append("\n");
 			for (SQ_Expr e: elements) {
 				sb.append(indent);
 				sb.append("FILTER(");

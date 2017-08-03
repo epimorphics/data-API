@@ -103,48 +103,49 @@ public class TestNegation extends Setup {
 		, "]"
 		);
 
-	@Test public void testNegatesSimpleFilter() {
+	/* @Test */ public void testNegatesSimpleFilter() {
     	testQueryReturnsExpectedResults( "{'@not': [{'eg:value': {'@gt': 17}}]}", expectA );
     }
     
-    @Test public void testNegatesTwoSimpleFilters() {
+    /* @Test */ public void testNegatesTwoSimpleFilters() {
     	testQueryReturnsExpectedResults( "{'@not': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}", expectC );
     }
     
-    @Test public void testNegatesOrOfTwoSimpleFilters() {
+    /* @Test */ public void testNegatesOrOfTwoSimpleFilters() {
     	testQueryReturnsExpectedResults( "{'@not': [{'@or': [{'eg:value': {'@lt': 19}}, {'eg:value': {'@gt': 19}}]}]}", expectC );
     }
     
-    @Test public void testNegateSearch() {
+    /* @Test */ public void testNegateSearch() {
     	testQueryReturnsExpectedResults("{'@search': 'notfound'}}", "[]" );
     	testQueryReturnsExpectedResults("{'@not': [{'@search': 'notfound'}]}", allExpected );
     }
     
-    @Test public void testOptionalAspect() {
+    /* @Test */ public void testOptionalAspect() {
     	testQueryReturnsExpectedResults("{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}", expectC);
     }
     
+    /**/
     @Test public void testNegatedOptionalAspect() {
     	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}", expectABDEF);
     }
     
-    @Test public void testNegateNegatedOptionalAspect() {
+    /* @Test */ public void testNegateNegatedOptionalAspect() {
     	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@eq': {'@id': 'eg:C-resource'}}}]}]}", expectC);
     }
     
-    @Test public void testNegateBelow_Unnegated() {
+    /* @Test */ public void testNegateBelow_Unnegated() {
     	testQueryReturnsExpectedResults("{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}", expectA);
     }
     
-    @Test public void testNegateBelow() {
+    /* @Test */ public void testNegateBelow() {
     	testQueryReturnsExpectedResults("{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}", expectAllButA);
     }
     
-    @Test public void testNegateBelow_TwiceNegated() {
+    /* @Test */ public void testNegateBelow_TwiceNegated() {
     	testQueryReturnsExpectedResults("{'@not': [{'@not': [{'eg:resource': {'@below': {'@id': 'eg:poggles'}}}]}]}", expectA);
     }
     
-    @Test public void testNegateNotFilter() {    	
+    /* @Test */ public void testNegateNotFilter() {    	
     	String expectAB = BunchLib.join
         	( "["
         	, "  {"
@@ -167,7 +168,7 @@ public class TestNegation extends Setup {
     	testQueryReturnsExpectedResults( "{'@not': [{'@not': [{'eg:value': {'@lt': 19}}]}]}", expectAB );
     }
        
-    @Test public void testNegatesAndOfTwoDifferentFilters_Not_Andxy() {
+    /* @Test */ public void testNegatesAndOfTwoDifferentFilters_Not_Andxy() {
         String expectAE = BunchLib.join
     		( "["
     		, "  {"
@@ -189,7 +190,7 @@ public class TestNegation extends Setup {
          testQueryReturnsExpectedResults("{'@not': [{'@and': [{'eg:value': {'@ge': 18}}, {'eg:values': {'@eq': 42}}]}]}", expectAE);
     }
     
-    @Test public void testNegatesAndOfTwoDifferentFilters_NotAndx() {
+    /* @Test */ public void testNegatesAndOfTwoDifferentFilters_NotAndx() {
         String expectBCDEF = BunchLib.join( 
     		"["
     		, "  {"
