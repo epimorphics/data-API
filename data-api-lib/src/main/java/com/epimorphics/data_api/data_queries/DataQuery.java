@@ -144,7 +144,9 @@ public class DataQuery implements Compactions {
 //			System.err.println(">> " + api.getPrefixes().getNsPrefixMap());
 			String query = DSAPI_Header + PrefixUtils.expandQuery(unprefixedQuery, api.getPrefixes());
 			 System.err.println( ">> RENDERED QUERY:\n" + query );
-			return query; 
+//			 query = query.replace("FILTER((?eg_resource != <http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource> || !(BOUND(?eg_resource))))", "");
+//			 query = query.replace("urce . }", "urce . }\nFILTER((?eg_resource != <http://www.epimorphics.com/test/dsapi/sprint3/search/C-resource> || !(BOUND(?eg_resource))))");
+			 return query; 
 		}
 		catch (Exception e) { 
 			p.add("exception generating SPARQL query: " + e.getMessage()); 

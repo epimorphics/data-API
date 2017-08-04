@@ -46,8 +46,6 @@ public class SQ_Where {
 		section(sb, indent, "text search queries", textQueries);
 		section(sb, indent, "items with values EQ to a constant", groundTriples);
 		section(sb, indent, "triples with unbound objects", ungroundTriples);
-		section(sb, indent, "mandatory filters", filterElements);
-		exprSection(sb, indent, "mandatory filters", sqFilters);
 		
 		if (Switches.boxing) {
 			sb.append(indent).append("}").append(SQ.nl);
@@ -56,6 +54,10 @@ public class SQ_Where {
 		
 		section(sb, indent, "otherwise uncategorised elements", otherElements);
 		section(sb, indent, "optional triples", optionalTriples);
+		
+		section(sb, indent, "mandatory filters", filterElements);
+		exprSection(sb, indent, "mandatory filters", sqFilters);
+
 		section(sb, indent, "BINDings", bindingElements);
 	}
 

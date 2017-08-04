@@ -200,7 +200,7 @@ public class DataQueryParser {
 				for (JsonValue element: value.getAsArray()) {
 					DataQuery subQuery = DoQuietly(p, dataset, element);
 					these.add(subQuery.constraint());
-			}			
+				}			
 			} else {
 				p.add("operand of " + key + " must be an array: " + value );
 			}
