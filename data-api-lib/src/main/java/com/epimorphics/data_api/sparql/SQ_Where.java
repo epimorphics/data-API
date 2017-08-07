@@ -38,25 +38,21 @@ public class SQ_Where {
 //		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
 //		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 		
-		if (Switches.boxing) {
-			sb.append(indent).append("{").append(SQ.nl);
+		sb.append(indent).append("{").append(SQ.nl);
 		indent += " ";
-		}
 		
 		section(sb, indent, "text search queries", textQueries);
 		section(sb, indent, "items with values EQ to a constant", groundTriples);
+
 		section(sb, indent, "triples with unbound objects", ungroundTriples);
+		section(sb, indent, "mandatory filters", filterElements);
 		
-		if (Switches.boxing) {
-			sb.append(indent).append("}").append(SQ.nl);
-			indent = indent.substring(2);
-		}
+		sb.append(indent).append("}").append(SQ.nl);
+		indent = indent.substring(2);
 		
 		section(sb, indent, "otherwise uncategorised elements", otherElements);
 		section(sb, indent, "optional triples", optionalTriples);
-		
-		section(sb, indent, "mandatory filters", filterElements);
-		exprSection(sb, indent, "mandatory filters", sqFilters);
+		exprSection(sb, indent, "negated aspects", sqFilters); 
 
 		section(sb, indent, "BINDings", bindingElements);
 	}
