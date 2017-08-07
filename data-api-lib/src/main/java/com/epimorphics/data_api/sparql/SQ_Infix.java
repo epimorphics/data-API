@@ -29,6 +29,10 @@ public class SQ_Infix implements SQ_Expr {
 		sb.append(")");
 		sb1.append(sb);
 	}
+	
+	@Override public String toString() {
+		return show(this);
+	}
 
 	private String show(SQ_Expr e) {
 		StringBuilder sb = new StringBuilder();
