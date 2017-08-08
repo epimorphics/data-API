@@ -69,10 +69,8 @@ public class TestTextSearching {
 			,  "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, QueryTestSupport.BLOCK(
-				"  ?item text:query ('lookfor' 17) ."
-				,   "  ?item pre:local ?pre_local ."
-				)
+			,  "?item text:query ('lookfor' 17) ."
+			,   "?item pre:local ?pre_local ."
 			, "}"
 			);
 	//
@@ -93,10 +91,8 @@ public class TestTextSearching {
 			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, QueryTestSupport.BLOCK(
-				"  ?item text:query (<eh:/some.uri/> 'lookfor' 17) ."
-				, "  ?item pre:local ?pre_local ."
-			)
+			, "  ?item text:query (<eh:/some.uri/> 'lookfor' 17) ."
+			, "  ?item pre:local ?pre_local ."
 			, "}"
 			);
 	//

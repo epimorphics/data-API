@@ -14,6 +14,7 @@ import java.util.Set;
 
 import com.epimorphics.data_api.Switches;
 import com.hp.hpl.jena.shared.BrokenException;
+import com.hp.hpl.jena.sparql.function.library.leviathan.sq;
 
 public class SQ_Where {
 	
@@ -38,9 +39,28 @@ public class SQ_Where {
 //		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
 //		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
 		
-		int count = textQueries.size() + groundTriples.size() + ungroundTriples.size() + filterElements.size();
+		int countBefore = textQueries.size() + groundTriples.size() + ungroundTriples.size() + filterElements.size();
+		int countAfter = sizeWithoutComments(otherElements) + optionalTriples.size() + sqFilters.size() + bindingElements.size();
 		
-		if (count > 0) {
+		boolean nest = countBefore > 0 && countAfter > 0;
+		
+//		System.err.println(">> textQueries: " + textQueries);
+//		System.err.println(">> grountTriples: " + groundTriples);
+//		System.err.println(">> ungroundTriples: " + ungroundTriples);
+//		System.err.println(">> filterElements: " + filterElements);
+//
+//		System.err.println();
+//		
+//		System.err.println(">> otherElements: " + otherElements + " " + otherElements.size());
+//		System.err.println(">> optionalTriples: " + optionalTriples + " " + optionalTriples.size());
+//		System.err.println(">> sqFilters: " + sqFilters+ " " + sqFilters.size());
+//		System.err.println(">> bndingElements: " + bindingElements + " " + bindingElements.size());
+//		
+//		System.err.println(">> countBefore = " + countBefore);
+//		System.err.println(">> countAfter = " + countAfter);
+//		System.err.println(">> nest = " + nest);
+		
+		if (nest) {
 			sb.append(indent).append("{").append(SQ.nl);
 			indent += " ";			
 		}
@@ -51,7 +71,7 @@ public class SQ_Where {
 		section(sb, indent, "triples with unbound objects", ungroundTriples);
 		section(sb, indent, "mandatory filters", filterElements);
 		
-		if (count > 0) {
+		if (nest) {
 			sb.append(indent).append("}").append(SQ.nl);
 			indent = indent.substring(2);			
 		}
@@ -61,6 +81,13 @@ public class SQ_Where {
 		exprSection(sb, indent, "negated aspects", sqFilters); 
 
 		section(sb, indent, "BINDings", bindingElements);
+	}
+
+	private int sizeWithoutComments(List<SQ_WhereElement> others) {
+		int count = 0;
+		for (SQ_WhereElement o: others) 
+			if (!(o instanceof SQ_Comment)) count += 1;
+		return count;
 	}
 
 	protected void section(StringBuilder sb, String indent, String title, List<? extends SQ_WhereElement> elements) {
