@@ -212,7 +212,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, BLOCK(" ?item pre:X ?pre_X .", "FILTER( (?pre_X = 17) || (?pre_X = 99))")
+			, " ?item pre:X ?pre_X .", "FILTER( (?pre_X = 17) || (?pre_X = 99))"
 			, "}"
 			);
 		assertSameSelect( expected, sq );
@@ -296,7 +296,7 @@ public class TestTranslateDataQuery {
 		String prefix_p = "PREFIX pre: <eh:/prefixPart/>\n";
 		String prefix_skos = (op.equals(Operator.BELOW) ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
 		String select = "SELECT ?item _VAR WHERE {"
-				+ BLOCK("?item _PROP _VAR . " + filter) 
+				+ "?item _PROP _VAR . " + filter 
 				+ " }"
 				;
 		
@@ -424,8 +424,9 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X ?pre_X ."
-			, " FILTER(?pre_X = 17)"
+			, QueryTestSupport.BLOCK( 
+				"?item pre:X ?pre_X ." , " FILTER(?pre_X = 17)"
+			)
 			, " OPTIONAL {?item pre:Y ?pre_Y .}"
 			, "}"
 			);

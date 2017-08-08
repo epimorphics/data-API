@@ -53,11 +53,9 @@ public class TestMultipleFilters {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, QueryTestSupport.BLOCK(
-				" ?item pre:local ?pre_local"
-				, " FILTER(?pre_local < 17)"
-				, " FILTER(?pre_local > 42)"
-				)
+			, " ?item pre:local ?pre_local"
+			, " FILTER(?pre_local < 17)"
+			, " FILTER(?pre_local > 42)"
 			, "}"
 			);
 		
