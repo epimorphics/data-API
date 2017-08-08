@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.data_queries.tests;
 
 
+import static com.epimorphics.data_api.end2end.tests.QueryTestSupport.BLOCK;
 import static com.epimorphics.data_api.test_support.Asserts.*;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import com.epimorphics.data_api.data_queries.Slice;
 import com.epimorphics.data_api.data_queries.Sort;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.end2end.tests.QueryTestSupport;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
@@ -74,7 +76,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " ?item pre:X ?pre_X ."
+			, BLOCK(" ?item pre:X ?pre_X .")
 			, "}"
 			);
 		assertSameSelect( expected, sq );
@@ -91,7 +93,9 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X"
-			, "WHERE { ?item pre:X ?pre_X. }"
+			, "WHERE { "
+			, BLOCK("?item pre:X ?pre_X."),
+			"}"
 			, "ORDER BY ?pre_X"
 			);
 		assertSameSelect( expected, sq );
@@ -125,8 +129,10 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
-			, " ?item pre:X ?pre_X ."
-			, " ?item pre:Y ?pre_Y ."
+			, BLOCK(
+				" ?item pre:X ?pre_X ."
+				, " ?item pre:Y ?pre_Y ."
+				)
 			, "}"
 			, "ORDER BY ?pre_X DESC(?pre_Y)"
 			);
@@ -144,8 +150,9 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " ?item pre:X ?pre_X ."
-			, "FILTER(?pre_X = 17)"
+			, BLOCK(" ?item pre:X ?pre_X ."
+					, "FILTER(?pre_X = 17)"
+				)
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -190,7 +197,7 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, " ?item pre:X ?pre_X . FILTER(?pre_X " + opSparql + " 17)"
+			, BLOCK(" ?item pre:X ?pre_X . FILTER(?pre_X " + opSparql + " 17)")
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
@@ -208,8 +215,7 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE {"
-			, " ?item pre:X ?pre_X ."
-			, "FILTER( (?pre_X = 17) || (?pre_X = 99))"
+			, BLOCK(" ?item pre:X ?pre_X .", "FILTER( (?pre_X = 17) || (?pre_X = 99))")
 			, "}"
 			);
 		assertSameSelect( expected, sq );
@@ -292,7 +298,10 @@ public class TestTranslateDataQuery {
 		
 		String prefix_p = "PREFIX pre: <eh:/prefixPart/>\n";
 		String prefix_skos = (op.equals(Operator.BELOW) ? "PREFIX skos: <" + SKOS.getURI() + "> " : "");
-		String select = "SELECT ?item _VAR WHERE { ?item _PROP _VAR . " + filter + " }";
+		String select = "SELECT ?item _VAR WHERE {"
+				+ BLOCK("?item _PROP _VAR . " + filter) 
+				+ " }"
+				;
 		
 		String expected = 
 			prefix_p + (select.contains("skos:") ? prefix_skos : "") 

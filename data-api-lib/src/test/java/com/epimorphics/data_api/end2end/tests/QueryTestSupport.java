@@ -19,6 +19,7 @@ import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
 
 import com.epimorphics.data_api.config.DSAPIManager;
+import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 
@@ -101,5 +102,9 @@ public class QueryTestSupport {
 		} else {
 			return x.toString();
 		}
+	}
+
+	public static String BLOCK(String... elements) {
+		return BunchLib.join("{", BunchLib.join(elements), "}");
 	}
 }

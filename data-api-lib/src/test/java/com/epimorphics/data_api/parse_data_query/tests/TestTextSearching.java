@@ -19,6 +19,7 @@ import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.SearchSpec;
 import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.end2end.tests.QueryTestSupport;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.test_support.Asserts;
@@ -68,8 +69,10 @@ public class TestTextSearching {
 			,  "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, "  ?item text:query ('lookfor' 17) ."
-			, "  ?item pre:local ?pre_local ."
+			, QueryTestSupport.BLOCK(
+				"  ?item text:query ('lookfor' 17) ."
+				,   "  ?item pre:local ?pre_local ."
+				)
 			, "}"
 			);
 	//
@@ -90,8 +93,10 @@ public class TestTextSearching {
 			, "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_local"
 			, "WHERE {"
-			, "  ?item text:query (<eh:/some.uri/> 'lookfor' 17) ."
-			, "  ?item pre:local ?pre_local ."
+			, QueryTestSupport.BLOCK(
+				"  ?item text:query (<eh:/some.uri/> 'lookfor' 17) ."
+				, "  ?item pre:local ?pre_local ."
+			)
 			, "}"
 			);
 	//

@@ -16,6 +16,7 @@ import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.end2end.tests.QueryTestSupport;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.reporting.Problems;
@@ -48,9 +49,11 @@ public class TestPropertyPaths {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X WHERE"
 			, "{"
-			, " ?item pre:A ?pre_A ."
-			, " ?pre_A pre:B ?pre_X ."
-			, "FILTER(?pre_X " + ">" + " 17)"
+			, QueryTestSupport.BLOCK(
+				" ?item pre:A ?pre_A ."
+				, " ?pre_A pre:B ?pre_X ."
+				, "FILTER(?pre_X " + ">" + " 17)"
+				)
 			, "}"
 			);
 		Asserts.assertSameSelect( expected, sq );
