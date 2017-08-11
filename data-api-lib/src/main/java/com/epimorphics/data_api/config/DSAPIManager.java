@@ -406,7 +406,7 @@ public class DSAPIManager extends ComponentBase {
 
         } else {
             String problemStrings = p.getProblemStrings();
-            throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + BunchLib.join(problemStrings));
+            throw new WebApiException(Status.BAD_REQUEST, "FAILED:\n" + problemStrings);
         }
     }
 

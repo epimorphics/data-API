@@ -22,13 +22,18 @@ import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.config.Hierarchy;
 import com.epimorphics.data_api.config.ResourceBasedConfig;
+import com.epimorphics.data_api.data_queries.DataQuery;
+import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Shortname;
+import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
+
+import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
@@ -65,6 +70,15 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    configureName();
 	    configureAspects(config);
 	    this.manager = manager;
+	//
+	    checkNullQuerySucceeds();
+	}
+
+	private void checkNullQuerySucceeds() {
+		Problems p = new Problems();
+	    DataQueryParser.Do(p, this, new JsonObject());
+	    if (p.isOK()) return;
+	    throw new RuntimeException("failed configuring -- null query has problems.");
 	}
 	
 	private void configureAspects(Resource config) {
