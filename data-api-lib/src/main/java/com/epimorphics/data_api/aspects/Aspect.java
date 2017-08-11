@@ -102,7 +102,7 @@ public class Aspect extends ResourceBasedConfig {
 		Initialise this Aspect with the given shortName 'spoo:local',
 		with its full name being given using the prefixes pm
 		to expand the prefix 'spoo'. The prefixes are retained
-		and may be extracted uwing getPrefixes().
+		and may be extracted using getPrefixes().
 	*/
 	public Aspect(PrefixMapping pm, String shortName) {
 		String fullName = pm.expandPrefix(shortName);		

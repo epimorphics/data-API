@@ -107,6 +107,7 @@ public class DataQueryParser {
 		Shortname sn = new Shortname(pm, key);	
 		Aspect a = dataset.getAspectNamed(sn);
 		
+//		System.err.println(">> a: " + a);
 //		System.err.println( ">> parseAspectMember: key = " + key );
 //		System.err.println( ">>   shortname sn = " + sn );
 //		System.err.println( ">>   URI of sn = " + sn.URI );
