@@ -8,9 +8,9 @@ package com.epimorphics.data_api.test_support;
 import java.io.StringReader;
 
 import com.epimorphics.vocabs.Dsapi;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.vocabulary.XSD;
 
 /**
     Utility class for loading a Turtle model from a string

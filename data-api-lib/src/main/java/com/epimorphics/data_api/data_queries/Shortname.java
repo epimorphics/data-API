@@ -5,7 +5,7 @@
 */
 package com.epimorphics.data_api.data_queries;
 
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 /**
     A Shortname holds the full URI and the CURIE of an Aspect

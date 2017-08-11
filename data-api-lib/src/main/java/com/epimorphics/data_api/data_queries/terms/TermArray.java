@@ -8,7 +8,7 @@ package com.epimorphics.data_api.data_queries.terms;
 import java.util.List;
 
 import com.epimorphics.json.JSFullWriter;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public class TermArray extends Term {
 

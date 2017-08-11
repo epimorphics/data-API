@@ -7,7 +7,7 @@ package com.epimorphics.data_api.data_queries.terms;
 
 import com.epimorphics.data_api.data_queries.terms.Term.Primitive;
 import com.epimorphics.json.JSFullWriter;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public class TermString extends Primitive {
 

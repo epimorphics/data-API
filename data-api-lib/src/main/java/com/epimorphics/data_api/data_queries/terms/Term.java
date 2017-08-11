@@ -12,10 +12,11 @@ import java.util.List;
 import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.json.JSFullWriter;
 import com.epimorphics.json.JSONWritable;
-import com.hp.hpl.jena.datatypes.xsd.XSDDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
+import org.apache.jena.datatypes.xsd.XSDDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.sparql.util.FmtUtils;
+import org.apache.jena.vocabulary.RDF;
 
 /**
     A Term encodes a Node or an array of Terms.
@@ -50,13 +51,11 @@ public abstract class Term implements JSONWritable {
 		} else if (n.isLiteral()) {
 			String spelling = n.getLiteralLexicalForm();
 			String type = n.getLiteralDatatypeURI();
-			if (type == null) {
+			if (type.equals(XSDDatatype.XSDstring.getURI())) {
+				return Term.string(spelling);
+			} else if (type.equals(RDF.langString.getURI())) {
 				String language = n.getLiteralLanguage();
-				if (language.equals("")) {
-					return Term.string(spelling);
-				} else {
-					return Term.languaged(spelling, language);
-				}
+				return Term.languaged(spelling, language);
 			} else if (type.equals(XSDDatatype.XSDboolean.getURI())) {
 				return Term.bool(spelling.equals("true"));
 			} else if (type.equals(XSDDatatype.XSDinteger.getURI())) {

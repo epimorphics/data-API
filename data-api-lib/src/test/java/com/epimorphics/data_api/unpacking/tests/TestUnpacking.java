@@ -24,8 +24,8 @@ import com.epimorphics.data_api.sparql.SQ_Node;
 import com.epimorphics.data_api.sparql.SQ_Resource;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.shared.PrefixMapping;
 
 public class TestUnpacking {
 

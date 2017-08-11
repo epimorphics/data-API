@@ -19,7 +19,7 @@ import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.json.JSONWritable;
 import com.epimorphics.util.PrefixUtils;
-import com.hp.hpl.jena.query.ResultSet;
+import org.apache.jena.query.ResultSet;
 
 public class DataQuery implements Compactions {
 	

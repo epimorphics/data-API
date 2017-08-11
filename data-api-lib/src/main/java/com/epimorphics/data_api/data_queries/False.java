@@ -6,7 +6,7 @@
 package com.epimorphics.data_api.data_queries;
 
 import com.epimorphics.data_api.aspects.Aspect;
-import com.hp.hpl.jena.shared.BrokenException;
+import org.apache.jena.shared.BrokenException;
 
 public class False extends Restriction {
 
