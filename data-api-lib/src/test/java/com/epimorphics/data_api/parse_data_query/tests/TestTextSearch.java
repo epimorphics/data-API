@@ -92,7 +92,7 @@ public class TestTextSearch {
 		String incoming = "{'@search': {'@value': 'lookfor'}}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery _ignored = DataQueryParser.Do(p, ds, jo);		
+		assertNotNull(DataQueryParser.Do(p, ds, jo));		
 		assertFalse("failed to detect missing-both-property-and-limit error", p.isOK());
 		Asserts.assertInsensitiveContains("neither @property nor @limit", p.getProblemStrings());
 	}

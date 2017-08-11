@@ -251,7 +251,7 @@ public class DataQueryParser {
 	private SearchSpec extractSearchSpec(String key, Aspect a, JsonValue value) {
 		if (value.isString()) {
 			String pattern = value.getAsString().value();
-			return new SearchSpec(a, pattern);
+			return new SearchSpec(dataset, a, pattern);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
 			String pattern = getString(ob, "@value");

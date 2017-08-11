@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
+import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Literal;
 import com.epimorphics.data_api.sparql.SQ_Node;
@@ -18,7 +19,6 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Triple;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.vocabulary.XSD;
 
 public class SearchSpec extends Restriction {
 
@@ -27,25 +27,39 @@ public class SearchSpec extends Restriction {
 	final Shortname property;
 	final boolean negated;
 	final Aspect aspect;
+	final API_Dataset dataset;
 
 	public SearchSpec(Aspect a, String pattern) {
-		this(a, pattern, null, null);
+		this(null, a, pattern, null, null);
+	}
+	
+	public SearchSpec(API_Dataset d, Aspect a, String pattern) {
+		this(d, a, pattern, null, null);
+	}
+
+	public SearchSpec(API_Dataset d, Aspect a, String pattern, Shortname property) {
+		this(d, a, pattern, property, null);
 	}
 
 	public SearchSpec(Aspect a, String pattern, Shortname property) {
-		this(a, pattern, property, null);
+		this(null, a, pattern, property, null);
 	}
 
 	public SearchSpec(Aspect a, String pattern, Shortname property, Integer limit) {
-		this(a, pattern, property, limit, false);
+		this(null, a, pattern, property, limit, false);
 	}
 
-	public SearchSpec(Aspect aspect, String pattern, Shortname property, Integer limit, boolean negated) {
+	public SearchSpec(API_Dataset d, Aspect a, String pattern, Shortname property, Integer limit) {
+		this(d, a, pattern, property, limit, false);
+	}
+
+	public SearchSpec(API_Dataset dataset, Aspect aspect, String pattern, Shortname property, Integer limit, boolean negated) {
 		this.pattern = pattern;
 		this.property = property;
 		this.limit = limit;
 		this.negated = negated;
 		this.aspect = aspect;
+		this.dataset = dataset;
 	}
 
 	/**
@@ -56,7 +70,8 @@ public class SearchSpec extends Restriction {
 	public SearchSpec withExplicitField() {
 		String aPattern = fieldName() + ": " + pattern;
 		return new SearchSpec
-			( aspect
+			( dataset
+			, aspect
 			, aPattern
 			, getAspectName()
 			, limit
@@ -78,7 +93,8 @@ public class SearchSpec extends Restriction {
 			;		
 		
 		SearchSpec result = new SearchSpec
-			( aspect
+			( dataset
+			, aspect
 			, jointPattern
 			, getAspectName()	
 			, max(limit, B.limit)
@@ -178,7 +194,7 @@ public class SearchSpec extends Restriction {
 	}
 
 	@Override public Constraint negate() {
-		return new SearchSpec(aspect, pattern, property, limit, true);
+		return new SearchSpec(dataset, aspect, pattern, property, limit, true);
 	}
 	
 	public Shortname getAspectName() {
@@ -198,8 +214,15 @@ public class SearchSpec extends Restriction {
 		}
 	}
 
+	/**
+		isLiteralType(T) returns true iff it has been declared as a literal
+		type of the owning dataset (which by default will treat any XSD type
+		as a literal type). If T is null, it's not a literal type; if the
+		dataset is null (which only happens when the SearchSpec has been
+		constructed as part of a test) then its not a literal type.
+	*/
 	private boolean isLiteralType(Resource type) {
-		return type != null && type.getURI().startsWith(XSD.getURI());
+		return type != null && dataset != null && dataset.isLiteralType(type);
 	}
 
 	@Override public String toString() {
@@ -236,7 +259,7 @@ public class SearchSpec extends Restriction {
 	}
 
 	public static SearchSpec absent() {
-		return new SearchSpec(null, null);
+		return new SearchSpec((API_Dataset) null, null, null);
 	}
 
 	public static List<SearchSpec> none() {
