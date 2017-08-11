@@ -11,8 +11,8 @@ import org.apache.jena.shared.PrefixMapping;
     A Shortname holds the full URI and the CURIE of an Aspect
     (or other named thing) in the dataset. [We could probably have 
     got away with just using String, but then they would be easily
-    confusable with other string-shaped things.)
-    
+    confusable with other string-shaped things.]
+<p>
     Hmm, probably needs to allow for direct specification; a 
     property-path aspect isn't just a single aspect property.
 */
