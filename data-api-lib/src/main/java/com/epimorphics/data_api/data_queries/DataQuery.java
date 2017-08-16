@@ -122,9 +122,7 @@ public class DataQuery implements Compactions {
 			StringBuilder out = new StringBuilder();
 			Context rx = new Context( sq, out, this, p, api );			
 			c.translate(p, rx);
-			List<Sort> sortby = queryModifiers.sortBy;
-			if (sortby.size() > 0) sq.comment(sortby.size() + " sort specifications");
-			sq.addSorts(sortby);			
+			sq.setQueryModifiers(queryModifiers);
 			
 			String unprefixedQuery = sq.toString();
 			

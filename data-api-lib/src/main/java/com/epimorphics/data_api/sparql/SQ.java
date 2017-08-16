@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Modifiers;
-import com.epimorphics.data_api.data_queries.Sort;
 import com.hp.hpl.jena.vocabulary.XSD;
 
 public class SQ {
@@ -22,14 +21,12 @@ public class SQ {
 	
 	final SQ_Where whereClause = new SQ_Where();
 	
-	Modifiers queryModifiers;
+	Modifiers queryModifiers = new Modifiers(null, null, null);
 	
-	Modifiers itemModifiers;
+	Modifiers itemModifiers = new Modifiers(null, null, null);
 	
 	String baseQuery;
-	
-	final List<Sort> sorts = new ArrayList<Sort>();
-	
+		
 	public SQ() {
 	}
 
@@ -53,7 +50,7 @@ public class SQ {
 		if (baseQuery != null) sb.append(indent).append(baseQuery).append(nl);
 		whereClause.toString(sb, indent + "  ", this);
 		sb.append(indent).append("}").append(nl);
-		queryModifiers.render(sb);
+		queryModifiers.toSparqlString(sb);
 	}
 
 	void appendSelection(StringBuilder sb, String indent) 
@@ -139,10 +136,6 @@ public class SQ {
 			? message 
 			: message + " " + Arrays.asList(values).toString()
 			);
-	}
-	
-	public void addSorts(List<Sort> sorts) {
-		this.sorts.addAll(sorts);
 	}
 
 	static final String XSD_integer = XSD.getURI() + "integer";

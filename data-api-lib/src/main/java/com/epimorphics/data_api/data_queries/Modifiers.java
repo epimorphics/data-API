@@ -1,5 +1,6 @@
 package com.epimorphics.data_api.data_queries;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Modifiers {
@@ -11,21 +12,21 @@ public class Modifiers {
 	public Modifiers(Integer limit, Integer offset, List<Sort> sortBy) {
 		this.limit = limit;
 		this.offset = offset;
-		this.sortBy = sortBy;	}
+		this.sortBy = sortBy == null ? new ArrayList<Sort>() : sortBy;	}
 	
 	public static Modifiers create(Integer limit, Integer offset, List<Sort> sortBy) {
 		return new Modifiers(limit, offset, sortBy);
 	}
 	
 	public static Modifiers trivial() {
-		return new Modifiers(null, null, null);
+		return new Modifiers(null, null, new ArrayList<Sort>());
 	}
 	
 	public static Modifiers sortBy(List<Sort> sortBy) {
 		return new Modifiers(null, null, sortBy);
 	}
 
-	public void render(StringBuilder sb) {
+	public void toSparqlString(StringBuilder sb) {
 		if (sortBy.size() > 0) {
 			sb.append( " ORDER BY");
 			for (Sort s: sortBy) {
@@ -47,6 +48,10 @@ public class Modifiers {
 			+ (offset == null ? "" : "offset: " + offset + "\n")
 			+ (sortBy.isEmpty() ? "" : "sortBy: " + sortBy + "\n")
 			;
+	}
+
+	public boolean isNonTrivial() {
+		return limit != null || offset != null || !sortBy.isEmpty();
 	}
 
 }

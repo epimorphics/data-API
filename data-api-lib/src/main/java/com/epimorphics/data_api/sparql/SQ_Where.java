@@ -5,12 +5,7 @@
 */
 package com.epimorphics.data_api.sparql;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import com.hp.hpl.jena.shared.BrokenException;
 
@@ -28,20 +23,12 @@ public class SQ_Where {
 	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
 	
 	public void toString(StringBuilder sb, String indent, SQ parent) {
-//		for (SQ_WhereElement e: textQueries) e.toSparqlStatement(sb, indent);
-//		for (SQ_WhereElement e: groundTriples) e.toSparqlStatement(sb, indent);
-//		for (SQ_WhereElement e: ungroundTriples) e.toSparqlStatement(sb, indent);
-//		for (SQ_WhereElement e: filterElements) e.toSparqlStatement(sb, indent);
-//		for (SQ_WhereElement e: otherElements) e.toSparqlStatement(sb, indent);
-//		for (SQ_WhereElement e: optionalTriples) e.toSparqlStatement(sb, indent);
-//		for (SQ_WhereElement e: optionalFilterElements) e.toSparqlStatement(sb, indent);
-//		for (SQ_Bind e: bindingElements) e.toSparqlStatement(sb, indent);
-		
+	
 		int countBefore = textQueries.size() + groundTriples.size() + ungroundTriples.size() + filterElements.size();
 		int countAfter = sizeWithoutComments(otherElements) + optionalTriples.size() + sqFilters.size() + bindingElements.size();
 		
-		boolean nest = countBefore > 0 && countAfter > 0;
-		boolean subSelect = true;
+		boolean subSelect = parent.itemModifiers.isNonTrivial(); 
+		boolean nest = subSelect || (countBefore > 0 && countAfter > 0);
 		
 //		System.err.println(">> textQueries: " + textQueries);
 //		System.err.println(">> grountTriples: " + groundTriples);
@@ -67,10 +54,7 @@ public class SQ_Where {
 				update(varNames, groundTriples);
 				update(varNames, ungroundTriples);
 				update(varNames, filterElements);
-				
-//				for (String s: varNames) System.err.println(">> " + s);
-				
-				
+			
 				sb.append(indent).append("SELECT ");
 				for (String name: varNames) {
 					sb.append(indent).append("  ").append(name).append(SQ.nl);
@@ -89,7 +73,7 @@ public class SQ_Where {
 		if (nest) {
 			sb.append(indent).append("}").append(SQ.nl);
 			if (subSelect) {
-				if (parent.itemModifiers != null) parent.itemModifiers.render(sb);
+				if (parent.itemModifiers != null) parent.itemModifiers.toSparqlString(sb);
 				sb.append("}");
 			}
 			indent = indent.substring(2);			
@@ -201,18 +185,7 @@ public class SQ_Where {
 	/**
 		add an element e to elements unless it's already present.
 	*/
-	private void addUnlessPresent(List<SQ_WhereElement> addTo, SQ_WhereElement e) {
-//		System.err.println(">> addUnlessPresent: " + e );
-//		for (SQ_WhereElement el: elements) {
-//			if (el.equals(e)) {
-//				System.err.println(">> YAY it is here alreadies, we're done." );
-//				return;
-//			} else {
-//				System.err.println(">> not " + el);
-//			}
-//		}
-//		System.err.println(">> not already in, adding." );
-		
+	private void addUnlessPresent(List<SQ_WhereElement> addTo, SQ_WhereElement e) {		
 		// if (!elements.contains(e)) elements.add(e);
 		for (SQ_WhereElement el: addedTriples) {
 			// System.err.println(">> " + e + " equals existing " + el.getClass().getSimpleName() + " " + el + ": " + (el.equals(e) ? "yes" : "no"));
