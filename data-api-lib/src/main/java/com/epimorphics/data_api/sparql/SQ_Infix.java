@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.List;
+import java.util.Set;
 
 import com.epimorphics.data_api.libs.BunchLib;
 
@@ -42,6 +43,11 @@ public class SQ_Infix implements SQ_Expr {
 
 	@Override public List<SQ_Expr> operands() {
 		return BunchLib.list(L, R);
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		L.updateVars(varNames);
+		R.updateVars(varNames);
 	}
 
 }

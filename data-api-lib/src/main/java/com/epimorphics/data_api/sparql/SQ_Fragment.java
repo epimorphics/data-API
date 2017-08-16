@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 public class SQ_Fragment implements SQ_WhereElement {
 
 	final String content;
@@ -15,6 +17,11 @@ public class SQ_Fragment implements SQ_WhereElement {
 	
 	@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 		sb.append(indent).append(content).append(SQ.nl);
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		// we can't know. Can we?
+		// TODO
 	}
 	
 }

@@ -23,40 +23,43 @@ import com.hp.hpl.jena.query.ResultSet;
 
 public class DataQuery implements Compactions {
 	
-	final List<Sort> sortby;
-	final Slice slice;
 	final List<Guard> guards; 
+	
+	final Modifiers itemModifiers;
+	final Modifiers queryModifiers;
 	
 	boolean suppressTypes = false;
 	boolean compactOptionals = false;
 	
 	private final Constraint c;
-	
+	private final boolean isCount;
+		
 	public DataQuery(Constraint c) {
 		this(c, new ArrayList<Sort>() );
 	}
 
 	public DataQuery(Constraint c, List<Sort> sortby ) {
-        this(c, sortby, null, Slice.all());
+        this(false, c, new ArrayList<Guard>(), Modifiers.sortBy(sortby), Modifiers.trivial());
     }
 
     public DataQuery(Constraint c, List<Sort> sortby, List<Guard> guards ) {
-        this(c, sortby, guards, Slice.all());
+        this(false, c, guards, Modifiers.sortBy(sortby), Modifiers.trivial());
     }
     
     public DataQuery(Constraint c, List<Sort> sortby, Slice slice) {
-        this(c, sortby, null, slice);
+        this(false, c, new ArrayList<Guard>(), Modifiers.sliceSortBy(slice, sortby), Modifiers.trivial());
     }    
     
-    public DataQuery(Constraint c, List<Sort> sortby, List<Guard> guards, Slice slice) {
+    public DataQuery(boolean isCount, Constraint c, List<Guard> guards, Modifiers queryModifiers, Modifiers itemModifiers) {
 		this.c = c;
-		this.sortby = sortby;
-		this.slice = slice;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
+		this.itemModifiers = itemModifiers;
+		this.queryModifiers = queryModifiers;
+		this.isCount = isCount;
 	}
 
 	public List<Sort> sorts() {
-		return sortby;
+		return queryModifiers.sortBy;
 	}
 	
 	public String lang() {
@@ -64,7 +67,7 @@ public class DataQuery implements Compactions {
 	}
 	
 	public Slice slice() {
-		return slice;
+		return new Slice(queryModifiers.limit, queryModifiers.offset, isCount);
 	}
 	
 	public Constraint constraint() {
@@ -72,11 +75,7 @@ public class DataQuery implements Compactions {
 	}
     
     public boolean isCountQuery() {
-        return slice.isCount;
-    }
-    
-    public boolean isNestedCountQuery() {
-        return slice.isCount && (slice.length != null || slice.offset != null);
+        return isCount;
     }
 
 	public List<SearchSpec> getSearchPatterns() {
@@ -123,6 +122,7 @@ public class DataQuery implements Compactions {
 			StringBuilder out = new StringBuilder();
 			Context rx = new Context( sq, out, this, p, api );			
 			c.translate(p, rx);
+			List<Sort> sortby = queryModifiers.sortBy;
 			if (sortby.size() > 0) sq.comment(sortby.size() + " sort specifications");
 			sq.addSorts(sortby);			
 			
@@ -156,8 +156,8 @@ public class DataQuery implements Compactions {
     @Override public String toString() {
     	return 
     		c
-    		+ (sortby.isEmpty() ? "" : "\n    sortby: " + sortby)
-    		+ (!slice.isAll() ? ""   : "\n    slice:  " + slice)
+    		+ queryModifiers.toString()
+    		+ itemModifiers.toString()
     		+ (guards.isEmpty() ? "" : "\n    guards: " + guards)
     		+ "\n"
     		;

@@ -24,6 +24,7 @@ import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.data_queries.Filter;
 import com.epimorphics.data_api.data_queries.Guard;
+import com.epimorphics.data_api.data_queries.Modifiers;
 import com.epimorphics.data_api.data_queries.Operator;
 import com.epimorphics.data_api.data_queries.Range;
 import com.epimorphics.data_api.data_queries.SearchSpec;
@@ -358,10 +359,11 @@ public class TestTranslateDataQuery {
 		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me");
 		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
-			( Constraint.filters(noFilters, BunchLib.list(s) )
-			, new ArrayList<Sort>()
-			, null // new ArrayList<Guard>()
-			, Slice.all()
+			( false
+			, Constraint.filters(noFilters, BunchLib.list(s) )
+			, new ArrayList<Guard>()
+			, Modifiers.trivial()
+			, Modifiers.trivial()
 			);
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -387,10 +389,11 @@ public class TestTranslateDataQuery {
 		SearchSpec s = new SearchSpec(Aspect.NONE, "look for me", someProperty );
 		ArrayList<Constraint> noFilters = new ArrayList<Constraint>();
 		DataQuery q = new DataQuery
-			( Constraint.filters( noFilters, BunchLib.list(s))
-			, new ArrayList<Sort>()
+			( false
+			, Constraint.filters( noFilters, BunchLib.list(s))
 			, new ArrayList<Guard>()
-			, Slice.all()
+			, Modifiers.trivial()
+			, Modifiers.trivial()
 			);
 	//
 		String sq = q.toSparql(p, dsXY);

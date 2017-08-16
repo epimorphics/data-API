@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 
 public class SQ_Literal extends SQ_Node {
@@ -33,5 +35,9 @@ public class SQ_Literal extends SQ_Node {
 		sb.append("\"").append(safeSpelling()).append("\"");
 		if (!type.isEmpty()) sb.append("^^<").append(type).append(">");
 		sb.append(" ");
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		// A literal is not a variable.
 	}
 }

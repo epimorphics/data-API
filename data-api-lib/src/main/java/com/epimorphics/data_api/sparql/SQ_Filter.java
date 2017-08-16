@@ -6,10 +6,10 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.List;
+import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.Operator;
-import com.hp.hpl.jena.shared.BrokenException;
 
 public class SQ_Filter implements SQ_Expr, SQ_WhereElement {
 	
@@ -49,9 +49,13 @@ public class SQ_Filter implements SQ_Expr, SQ_WhereElement {
 		toStringNoFILTER(sb);
 	}
 
+	@Override public void updateVars(Set<String> varNames) {
+		varNames.add(x.asVar());
+		for (SQ_Expr e: operands) e.updateVars(varNames);
+	}
+
 	@Override public List<SQ_Expr> operands() {
-		// TODO Auto-generated method stub
-		return null;
+		return operands;
 	}
 
 }

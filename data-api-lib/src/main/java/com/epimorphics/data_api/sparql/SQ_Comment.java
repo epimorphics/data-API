@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 import com.epimorphics.data_api.data_queries.Constraint;
 
 public final class SQ_Comment implements SQ_WhereElement {
@@ -21,5 +23,9 @@ public final class SQ_Comment implements SQ_WhereElement {
 	
 	@Override public void toSparqlStatement(StringBuilder sb, String indent) {
 		sb.append(indent).append("# ").append(comment).append(".").append(Constraint.nl);
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		// it's a comment. It doesn't have any variables.
 	}
 }

@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.List;
+import java.util.Set;
 
 public class SQ_Triple implements SQ_WhereElement {
 
@@ -61,7 +62,17 @@ public class SQ_Triple implements SQ_WhereElement {
 	public static SQ_WhereElement optionals(final List<SQ_Triple> ts) {
 		return new OptionalTriples(ts);
 	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		updateVars(varNames, S);
+		updateVars(varNames, P);
+		updateVars(varNames, O);
+	}
 	
+	private void updateVars(Set<String> varNames, SQ_Node x) {
+		if (x instanceof SQ_Variable) varNames.add(((SQ_Variable) x).asVar());
+	}
+
 	private static final class OptionalTriples implements SQ_WhereElement {
 		private final List<SQ_Triple> ts;
 
@@ -88,6 +99,10 @@ public class SQ_Triple implements SQ_WhereElement {
 				t.renderRawCoreTriple(sb); sb.append( " . "); 
 			}
 			sb.append("}").append(SQ.nl);
+		}
+
+		@Override public void updateVars(Set<String> varNames) {
+			// optionals don't bind all names
 		}
 	}
 
@@ -116,6 +131,10 @@ public class SQ_Triple implements SQ_WhereElement {
 			sb.append("OPTIONAL { ");
 			t.renderRawCoreTriple(sb);
 			sb.append("}").append(SQ.nl);
+		}
+
+		@Override public void updateVars(Set<String> varNames) {
+			// optional triples don't always bind names
 		}
 	}
 }

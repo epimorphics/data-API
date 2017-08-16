@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 public class SQ_Resource extends SQ_Node {
 
 	final String uri;
@@ -40,6 +42,10 @@ public class SQ_Resource extends SQ_Node {
 		} else {
 			sb.append("").append(uri()).append("");
 		}
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		// A resource is not a variable.
 	}
 	
 }

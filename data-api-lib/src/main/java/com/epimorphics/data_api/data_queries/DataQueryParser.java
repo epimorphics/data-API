@@ -59,9 +59,12 @@ public class DataQueryParser {
 	final List<Sort> sortby = new ArrayList<Sort>();
 	final List<Guard> guards = new ArrayList<Guard>();
 	
+	final List<Sort> itemSortBy = new ArrayList<Sort>();
+	
 	final Map<String, List<Constraint>> compositions = new HashMap<String, List<Constraint>>();
 	
 	Integer length = null, offset = null;
+	Integer itemLimit = null, itemOffset = null;
 	boolean isCount = false;
 	boolean suppressTypes = false;
 	boolean compactOptionals = false;
@@ -93,10 +96,11 @@ public class DataQueryParser {
 		}
 		Constraint c = Constraint.build(constraints, compositions);
 		DataQuery dq = new DataQuery
-			( c
-			, sortby
+			( isCount
+			, c
 			, guards
-			, Slice.create(length, offset, isCount)
+			, Modifiers.create(length, offset, sortby)
+			, Modifiers.create(itemLimit, itemOffset, itemSortBy)
 			);
 		dq.setSuppressTypes(suppressTypes);
 		dq.setCompactOptionals(compactOptionals);
@@ -165,6 +169,8 @@ public class DataQueryParser {
 	private void parseAtMember(JsonObject jo, String key, JsonValue value) {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
+		} else if (key.equals("@itemSort")) {
+			extractSorts(pm, p, jo, itemSortBy, key);
 		} else if (key.equals("@search")) {
 			constraints.add( extractSearchSpec(key, Aspect.NONE, value) );
 		} else if (key.equals("@suppress_types")) {
@@ -182,6 +188,10 @@ public class DataQueryParser {
 			}
 		} else if (key.equals("@compact_optionals")) {
 			compactOptionals = extractBoolean(p, key, value);
+		} else if (key.equals("@itemLimit")) {
+			itemLimit = extractNumber(p, key, value);
+		} else if (key.equals("@itemOffset")) {	
+			itemOffset = extractNumber(p, key, value);			
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {

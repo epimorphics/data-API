@@ -5,6 +5,9 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
+import org.apache.commons.lang.NotImplementedException;
 
 public class SQ_NotExists implements SQ_WhereElement {
 	
@@ -26,6 +29,11 @@ public class SQ_NotExists implements SQ_WhereElement {
 		sb.append(" ");
 		if (f != null) f.toSparqlStatement(sb, "");
 		sb.append("})").append(SQ.nl);
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		// TODO
+		throw new NotImplementedException();
 	}
 	
 }

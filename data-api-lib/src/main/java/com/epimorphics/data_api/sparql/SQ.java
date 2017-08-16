@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.epimorphics.data_api.data_queries.Modifiers;
 import com.epimorphics.data_api.data_queries.Sort;
 import com.hp.hpl.jena.vocabulary.XSD;
 
@@ -21,9 +22,9 @@ public class SQ {
 	
 	final SQ_Where whereClause = new SQ_Where();
 	
-	Integer limit;
+	Modifiers forQuery;
 	
-	Integer offset;
+	Modifiers forItem;
 	
 	String baseQuery;
 	
@@ -40,38 +41,28 @@ public class SQ {
 	public String toString(String indent) {
 		StringBuilder sb = new StringBuilder();
 		toString(sb, indent);
-		
-//		System.err.println(">> " + sb);
-		
 		return sb.toString();
 	}
 	
 	public void toString(StringBuilder sb, String indent) {
-		sb.append(indent).append("SELECT").append(nl);
 		
-		for (SQ_SelectedVar v: selected) {
-			sb.append(indent).append("  ");
-			if (v.needsDistinct) sb.append("DISTINCT ");
-			sb.append(v.var.asVar()).append(nl);
-		}
+		sb.append(indent).append("SELECT").append(nl);
+		appendSelection(sb, indent);
 		
 		sb.append(indent).append("WHERE").append(nl);
 		sb.append(indent).append("{").append(nl);
 		if (baseQuery != null) sb.append(indent).append(baseQuery).append(nl);
-		whereClause.toString(sb, indent + "  ");
+		whereClause.toString(sb, indent + "  ", this);
 		sb.append(indent).append("}").append(nl);
-		querySort(sb, indent, sorts);
-		if (limit != null) sb.append(indent).append("LIMIT").append(" ").append(limit).append(nl);
-		if (offset != null) sb.append(indent).append("OFFSET").append(" ").append(offset).append(nl);
+		forQuery.render(sb);
 	}
-	
-	protected void querySort(StringBuilder sb, String indent, List<Sort> sortby) {
-		if (sortby.size() > 0) {
-			sb.append(indent).append("ORDER BY");
-			for (Sort s: sortby) {
-				sb.append(" ");
-				s.toString(sb);
-			}
+
+	void appendSelection(StringBuilder sb, String indent) 
+		{
+		for (SQ_SelectedVar v: selected) {
+			sb.append(indent).append("  ");
+			if (v.needsDistinct) sb.append("DISTINCT ");
+			sb.append(v.var.asVar()).append(nl);
 		}
 	}
 	
@@ -131,12 +122,12 @@ public class SQ {
 		whereClause.add(SQ_FalseFilter.value);
 	}
 	
-	public void setLimit(int limit) {
-		this.limit = limit;
+	public void setModifiers(Modifiers forQuery) {
+		this.forQuery = forQuery;
 	}
 	
-	public void setOffset(int offset) {
-		this.offset = offset;
+	public void setItemModifiers(Modifiers forItem) {
+		this.forItem = forItem;
 	}
 
 	public void addBind(SQ_Node value, SQ_Variable var) {
@@ -153,10 +144,6 @@ public class SQ {
 	
 	public void addSorts(List<Sort> sorts) {
 		this.sorts.addAll(sorts);
-	}
-
-	public void addSubquery(SQ nested) {
-		whereClause.addSubquery(nested);
 	}
 
 	static final String XSD_integer = XSD.getURI() + "integer";

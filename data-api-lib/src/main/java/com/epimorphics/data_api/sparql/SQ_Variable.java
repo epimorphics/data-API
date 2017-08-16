@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 public class SQ_Variable extends SQ_Node {
 	
 	final String name;
@@ -38,6 +40,10 @@ public class SQ_Variable extends SQ_Node {
 
 	@Override public void toSparqlExpr(StringBuilder sb) {
 		sb.append("?").append(name());
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		varNames.add(asVar());
 	}
 	
 }

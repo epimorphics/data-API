@@ -8,6 +8,7 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.data_queries.terms.Term;
@@ -16,6 +17,8 @@ import com.epimorphics.data_api.sparql.SQ_Expr;
 import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Node;
 import com.hp.hpl.jena.shared.PrefixMapping;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Range {
 	
@@ -68,6 +71,11 @@ public class Range {
 			
 			@Override public void toSparqlExpr(StringBuilder sb) {
 				sb.append(term.asSparqlTerm(pm));
+			}
+
+			@Override public void updateVars(Set<String> varNames) {
+				// TODO 
+				throw new NotImplementedException();
 			}};
 	}
 	

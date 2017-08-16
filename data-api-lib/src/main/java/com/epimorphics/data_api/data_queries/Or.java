@@ -7,6 +7,7 @@ package com.epimorphics.data_api.data_queries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.reporting.Problems;
@@ -14,6 +15,8 @@ import com.epimorphics.data_api.sparql.SQ;
 import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Or extends Bool {
 	
@@ -53,6 +56,11 @@ public class Or extends Bool {
 					o.toString(sb, indent + "  ");
 					sb.append(indent).append("}").append(nl);
 				}
+			}
+
+			@Override public void updateVars(Set<String> varNames) {
+				// TODO 
+				throw new NotImplementedException();
 			}};
 		cx.sq.addWhereElement(e);	
 	}

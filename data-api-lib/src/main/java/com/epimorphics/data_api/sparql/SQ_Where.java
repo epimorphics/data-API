@@ -12,9 +12,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.epimorphics.data_api.Switches;
 import com.hp.hpl.jena.shared.BrokenException;
-import com.hp.hpl.jena.sparql.function.library.leviathan.sq;
 
 public class SQ_Where {
 	
@@ -28,8 +26,8 @@ public class SQ_Where {
 	final List<SQ_Expr> sqFilters = new ArrayList<SQ_Expr>();
 	
 	final Set<SQ_WhereElement> addedTriples = new HashSet<SQ_WhereElement>();
-		
-	public void toString(StringBuilder sb, String indent) {
+	
+	public void toString(StringBuilder sb, String indent, SQ parent) {
 //		for (SQ_WhereElement e: textQueries) e.toSparqlStatement(sb, indent);
 //		for (SQ_WhereElement e: groundTriples) e.toSparqlStatement(sb, indent);
 //		for (SQ_WhereElement e: ungroundTriples) e.toSparqlStatement(sb, indent);
@@ -43,25 +41,42 @@ public class SQ_Where {
 		int countAfter = sizeWithoutComments(otherElements) + optionalTriples.size() + sqFilters.size() + bindingElements.size();
 		
 		boolean nest = countBefore > 0 && countAfter > 0;
+		boolean subSelect = true;
 		
-//		System.err.println(">> textQueries: " + textQueries);
-//		System.err.println(">> grountTriples: " + groundTriples);
-//		System.err.println(">> ungroundTriples: " + ungroundTriples);
-//		System.err.println(">> filterElements: " + filterElements);
-//
-//		System.err.println();
-//		
-//		System.err.println(">> otherElements: " + otherElements + " " + otherElements.size());
-//		System.err.println(">> optionalTriples: " + optionalTriples + " " + optionalTriples.size());
-//		System.err.println(">> sqFilters: " + sqFilters+ " " + sqFilters.size());
-//		System.err.println(">> bndingElements: " + bindingElements + " " + bindingElements.size());
-//		
-//		System.err.println(">> countBefore = " + countBefore);
-//		System.err.println(">> countAfter = " + countAfter);
-//		System.err.println(">> nest = " + nest);
+		System.err.println(">> textQueries: " + textQueries);
+		System.err.println(">> grountTriples: " + groundTriples);
+		System.err.println(">> ungroundTriples: " + ungroundTriples);
+		System.err.println(">> filterElements: " + filterElements);
+
+		System.err.println();
+		
+		System.err.println(">> otherElements: " + otherElements + " " + otherElements.size());
+		System.err.println(">> optionalTriples: " + optionalTriples + " " + optionalTriples.size());
+		System.err.println(">> sqFilters: " + sqFilters+ " " + sqFilters.size());
+		System.err.println(">> bndingElements: " + bindingElements + " " + bindingElements.size());
+		
+		System.err.println(">> countBefore = " + countBefore);
+		System.err.println(">> countAfter = " + countAfter);
+		System.err.println(">> nest = " + nest);
 		
 		if (nest) {
 			sb.append(indent).append("{").append(SQ.nl);
+			if (subSelect) {
+				Set<String> varNames = new HashSet<String>();
+				update(varNames, textQueries);
+				update(varNames, groundTriples);
+				update(varNames, ungroundTriples);
+				update(varNames, filterElements);
+				
+				for (String s: varNames) System.err.println(">> " + s);
+				
+				
+				sb.append(indent).append("SELECT ");
+				for (String name: varNames) {
+					sb.append(indent).append("  ").append(name).append(SQ.nl);
+				}
+				sb.append("{");			
+			}
 			indent += " ";			
 		}
 		
@@ -73,6 +88,10 @@ public class SQ_Where {
 		
 		if (nest) {
 			sb.append(indent).append("}").append(SQ.nl);
+			if (subSelect) {
+				if (parent.forItem != null) parent.forItem.render(sb);
+				sb.append("}");
+			}
 			indent = indent.substring(2);			
 		}
 		
@@ -81,6 +100,10 @@ public class SQ_Where {
 		exprSection(sb, indent, "negated aspects", sqFilters); 
 
 		section(sb, indent, "BINDings", bindingElements);
+	}
+	
+	private void update(Set<String> varNames, List<SQ_WhereElement> wheres) {
+		for (SQ_WhereElement w: wheres) w.updateVars(varNames);
 	}
 
 	private int sizeWithoutComments(List<SQ_WhereElement> others) {
@@ -214,26 +237,6 @@ public class SQ_Where {
 
 	private boolean isLiteral(SQ_Node o) {
 		return o instanceof SQ_Literal || o instanceof SQ_TermAsNode;
-	}
-
-	static class SubQuery implements SQ_WhereElement {
-
-		final SQ subQuery;
-		
-		public SubQuery(SQ subQuery) {
-			this.subQuery = subQuery;
-		}
-		
-		@Override public void toSparqlStatement(StringBuilder sb, String indent) {
-			sb.append(indent).append("{").append("\n");
-			subQuery.toString(sb, indent + "  ");
-			sb.append(indent).append("}").append("\n");
-		}
-		
-	}
-	
-	public void addSubquery(SQ nested) {
-		otherElements.add(new SubQuery(nested));
 	}
 	
 }

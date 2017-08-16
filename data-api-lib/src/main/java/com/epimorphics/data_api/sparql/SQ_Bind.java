@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 public class SQ_Bind implements SQ_WhereElement {
 
 	final SQ_Expr value;
@@ -21,6 +23,10 @@ public class SQ_Bind implements SQ_WhereElement {
 		sb.append(" AS ");
 		var.toSparqlExpr(sb);
 		sb.append(")").append(SQ.nl);
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		varNames.add(var.asVar());
 	}
 	
 }

@@ -5,6 +5,8 @@
 */
 package com.epimorphics.data_api.sparql;
 
+import java.util.Set;
+
 public class SQ_NodeList extends SQ_Node {
 
 	final SQ_Node[] elements;
@@ -21,5 +23,9 @@ public class SQ_NodeList extends SQ_Node {
 			e.toSparqlExpr(sb);
 		}
 		sb.append(")");
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		for (SQ_Node e: elements) e.updateVars(varNames);
 	}
 }

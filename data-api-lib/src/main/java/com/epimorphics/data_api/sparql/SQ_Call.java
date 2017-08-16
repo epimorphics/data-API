@@ -6,6 +6,7 @@
 package com.epimorphics.data_api.sparql;
 
 import java.util.List;
+import java.util.Set;
 
 public class SQ_Call implements SQ_Expr {
 
@@ -29,6 +30,10 @@ public class SQ_Call implements SQ_Expr {
 
 	@Override public List<SQ_Expr> operands() {
 		return operands;
+	}
+
+	@Override public void updateVars(Set<String> varNames) {
+		for (SQ_Expr e: operands) e.updateVars(varNames);
 	}
 
 }

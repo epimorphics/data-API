@@ -42,7 +42,9 @@ public abstract class Constraint {
 		List<Guard> guards = cx.dq.guards;
 		boolean needsDistinct = false;
 		boolean baseQueryNeeded = true;  
-		Integer length = cx.dq.slice.length,  offset = cx.dq.slice.offset;
+				
+		setItemModifiers(cx.sq, cx.dq.itemModifiers);	
+		setQueryModifiers(cx.sq, cx.dq.queryModifiers);
 		
 		for (Guard guard : guards) {
 			if (guard.needsDistinct()) needsDistinct = true;
@@ -64,12 +66,12 @@ public abstract class Constraint {
 			if (x instanceof Restriction) {					
 				((Restriction) x).applyTo(s);
 			} else {
+				// TODO
 				System.err.println(">> Hmm, this operand is not a Restriction: " + x);
 			}
 		}				
 		
 		s.bindUnboundAspects(cx.ordered);
-		addLengthAndOffset(cx.sq, length, offset);	
 		
 //		alternativeTranslation(p, cx);
 //		
@@ -267,9 +269,12 @@ public abstract class Constraint {
 		for (Guard g: guards) sq.addQueryFragment(g.queryFragment(cx.api));
 	}
 	
-	private void addLengthAndOffset(SQ sq, Integer length, Integer offset) {
-		if (length != null) sq.setLimit(length);
-		if (offset != null) sq.setOffset(offset);
+	private void setQueryModifiers(SQ sq, Modifiers m) {
+		sq.setModifiers(m);
+	}
+	
+	private void setItemModifiers(SQ sq, Modifiers forItem) {
+		sq.setItemModifiers(forItem);
 	}
 	
 //	/**
