@@ -81,7 +81,7 @@ public class DataQuery implements Compactions {
 	public List<SearchSpec> getSearchPatterns() {
 		// TODO revise so it's not hackery
 		// this getter is only used for tests
-		// so tempoarilty faking it out is OK
+		// so temporarily faking it out is OK
 		List<SearchSpec> result = new ArrayList<SearchSpec>();
 		hackery(result, c);
 		return result;

@@ -30,9 +30,7 @@ public abstract class Constraint {
 	     filter in the constraint tree that mentions it.
 	*/
 	protected abstract boolean constrains(Aspect a);
-	
-//	static boolean Return = true;
-	
+		
 	/** 
 	 	Translate this constraint at the top level of SPARQL. 
 	*/
