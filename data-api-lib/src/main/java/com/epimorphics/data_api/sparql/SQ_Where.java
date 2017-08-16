@@ -43,21 +43,21 @@ public class SQ_Where {
 		boolean nest = countBefore > 0 && countAfter > 0;
 		boolean subSelect = true;
 		
-		System.err.println(">> textQueries: " + textQueries);
-		System.err.println(">> grountTriples: " + groundTriples);
-		System.err.println(">> ungroundTriples: " + ungroundTriples);
-		System.err.println(">> filterElements: " + filterElements);
-
-		System.err.println();
-		
-		System.err.println(">> otherElements: " + otherElements + " " + otherElements.size());
-		System.err.println(">> optionalTriples: " + optionalTriples + " " + optionalTriples.size());
-		System.err.println(">> sqFilters: " + sqFilters+ " " + sqFilters.size());
-		System.err.println(">> bndingElements: " + bindingElements + " " + bindingElements.size());
-		
-		System.err.println(">> countBefore = " + countBefore);
-		System.err.println(">> countAfter = " + countAfter);
-		System.err.println(">> nest = " + nest);
+//		System.err.println(">> textQueries: " + textQueries);
+//		System.err.println(">> grountTriples: " + groundTriples);
+//		System.err.println(">> ungroundTriples: " + ungroundTriples);
+//		System.err.println(">> filterElements: " + filterElements);
+//
+//		System.err.println();
+//		
+//		System.err.println(">> otherElements: " + otherElements + " " + otherElements.size());
+//		System.err.println(">> optionalTriples: " + optionalTriples + " " + optionalTriples.size());
+//		System.err.println(">> sqFilters: " + sqFilters+ " " + sqFilters.size());
+//		System.err.println(">> bndingElements: " + bindingElements + " " + bindingElements.size());
+//		
+//		System.err.println(">> countBefore = " + countBefore);
+//		System.err.println(">> countAfter = " + countAfter);
+//		System.err.println(">> nest = " + nest);
 		
 		if (nest) {
 			sb.append(indent).append("{").append(SQ.nl);
@@ -68,7 +68,7 @@ public class SQ_Where {
 				update(varNames, ungroundTriples);
 				update(varNames, filterElements);
 				
-				for (String s: varNames) System.err.println(">> " + s);
+//				for (String s: varNames) System.err.println(">> " + s);
 				
 				
 				sb.append(indent).append("SELECT ");
@@ -89,7 +89,7 @@ public class SQ_Where {
 		if (nest) {
 			sb.append(indent).append("}").append(SQ.nl);
 			if (subSelect) {
-				if (parent.forItem != null) parent.forItem.render(sb);
+				if (parent.itemModifiers != null) parent.itemModifiers.render(sb);
 				sb.append("}");
 			}
 			indent = indent.substring(2);			

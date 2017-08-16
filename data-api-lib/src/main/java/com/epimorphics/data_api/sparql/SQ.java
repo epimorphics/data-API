@@ -22,16 +22,15 @@ public class SQ {
 	
 	final SQ_Where whereClause = new SQ_Where();
 	
-	Modifiers forQuery;
+	Modifiers queryModifiers;
 	
-	Modifiers forItem;
+	Modifiers itemModifiers;
 	
 	String baseQuery;
 	
 	final List<Sort> sorts = new ArrayList<Sort>();
 	
 	public SQ() {
-		
 	}
 
 	@Override public String toString() {
@@ -54,7 +53,7 @@ public class SQ {
 		if (baseQuery != null) sb.append(indent).append(baseQuery).append(nl);
 		whereClause.toString(sb, indent + "  ", this);
 		sb.append(indent).append("}").append(nl);
-		forQuery.render(sb);
+		queryModifiers.render(sb);
 	}
 
 	void appendSelection(StringBuilder sb, String indent) 
@@ -122,12 +121,12 @@ public class SQ {
 		whereClause.add(SQ_FalseFilter.value);
 	}
 	
-	public void setModifiers(Modifiers forQuery) {
-		this.forQuery = forQuery;
+	public void setQueryModifiers(Modifiers queryModifiers) {
+		this.queryModifiers = queryModifiers;
 	}
 	
-	public void setItemModifiers(Modifiers forItem) {
-		this.forItem = forItem;
+	public void setItemModifiers(Modifiers itemModifiers) {
+		this.itemModifiers = itemModifiers;
 	}
 
 	public void addBind(SQ_Node value, SQ_Variable var) {

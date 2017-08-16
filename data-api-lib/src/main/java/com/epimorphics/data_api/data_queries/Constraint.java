@@ -270,7 +270,7 @@ public abstract class Constraint {
 	}
 	
 	private void setQueryModifiers(SQ sq, Modifiers m) {
-		sq.setModifiers(m);
+		sq.setQueryModifiers(m);
 	}
 	
 	private void setItemModifiers(SQ sq, Modifiers forItem) {

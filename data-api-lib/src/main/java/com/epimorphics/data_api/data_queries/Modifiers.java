@@ -27,8 +27,11 @@ public class Modifiers {
 
 	public void render(StringBuilder sb) {
 		if (sortBy.size() > 0) {
-			sb.append( " ORDER BY ");
-			for (Sort s: sortBy) s.toString(sb);
+			sb.append( " ORDER BY");
+			for (Sort s: sortBy) {
+				sb.append(" ");
+				s.toString(sb);
+			}
 		}
 		if (limit != null) sb.append(" LIMIT " ).append(limit);
 		if (offset != null) sb.append(" OFFSET " ).append(offset);
