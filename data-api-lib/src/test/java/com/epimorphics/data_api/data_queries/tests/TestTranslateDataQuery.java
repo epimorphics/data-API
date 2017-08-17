@@ -5,8 +5,6 @@
 */
 package com.epimorphics.data_api.data_queries.tests;
 
-
-import static com.epimorphics.data_api.end2end.tests.QueryTestSupport.BLOCK;
 import static com.epimorphics.data_api.test_support.Asserts.*;
 
 import java.util.ArrayList;
