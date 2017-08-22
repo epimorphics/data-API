@@ -107,4 +107,28 @@ public class QueryTestSupport {
 	public static String BLOCK(String... elements) {
 		return BunchLib.join("{", BunchLib.join(elements), "}");
 	}
+
+	public static Set<Set<ResultBinding>> parseRows(String rows) {
+		Set<Set<ResultBinding>> result = new HashSet<Set<ResultBinding>>();
+		
+		String scan = rows;
+		while(true) {
+			int semi = scan.indexOf(';');
+			if (semi < 0) break;
+			String row = scan.substring(0, semi).trim();			
+			result.add(parseRow(row));
+			scan = scan.substring(semi + 1);
+		}
+		result.add(parseRow(scan));
+		
+		return result;
+	}
+
+	public static Set<ResultBinding> parseRow(String row) {		
+		Set<ResultBinding> result = new HashSet<ResultBinding>();
+		for (String element: row.trim().split("[ \n]+")) {
+			result.add(ResultBinding.parseBinding(element));
+		}		
+		return result;
+	}
 }

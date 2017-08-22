@@ -15,6 +15,8 @@ import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.data_queries.DataQuery;
 import com.epimorphics.data_api.data_queries.DataQueryParser;
 import com.epimorphics.data_api.datasets.API_Dataset;
+import com.epimorphics.data_api.end2end.tests.ResultBinding;
+import com.epimorphics.data_api.end2end.tests.QueryTestSupport;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 
@@ -29,7 +31,6 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestSubSelect {
@@ -37,7 +38,7 @@ public class TestSubSelect {
 	API_Dataset dataset = createDataset();
 	Model data = createData();
 	
-	@Test public void testIt() {
+	@Test public void testUnconstrainedQuery() {
 		String incoming = "{}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
@@ -46,24 +47,24 @@ public class TestSubSelect {
 		
 		System.err.println(">> query is:\n" + sparql);
 		
-		Set<Set<Binding>> obtained = new HashSet<Set<Binding>>();
+		Set<Set<ResultBinding>> obtained = new HashSet<Set<ResultBinding>>();
 		
 		Query q = QueryFactory.create(sparql);
 		QueryExecution qx = QueryExecutionFactory.create(q, data);
 		ResultSet rs = qx.execSelect();
 		while (rs.hasNext()) {
-			Set<Binding> row = new HashSet<Binding>();
+			Set<ResultBinding> row = new HashSet<ResultBinding>();
 			QuerySolution qs = rs.next();
 			Iterator<String> names = qs.varNames();
 			while(names.hasNext()) {
 				String name = names.next();
 				RDFNode node = qs.get(name);
-				row.add(new Binding(name, node));
+				row.add(new ResultBinding(name, node));
 			}
 			obtained.add(row);
 		}
 		
-		Set<Set<Binding>> expected = parseRows
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
 			( BunchLib.join
 				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
 				, "; item=eh:/B pre_P='BP' pre_Q='BQ'"
@@ -75,71 +76,6 @@ public class TestSubSelect {
 		assertEquals(expected, obtained);
 	}
 	
-	private Set<Set<Binding>> parseRows(String rows) {
-		Set<Set<Binding>> result = new HashSet<Set<Binding>>();
-		
-		String scan = rows;
-		while(true) {
-			int semi = scan.indexOf(';');
-			if (semi < 0) break;
-			String row = scan.substring(0, semi).trim();			
-			result.add(parseRow(row));
-			scan = scan.substring(semi + 1);
-		}
-		result.add(parseRow(scan));
-		
-		return result;
-	}
-
-	private Set<Binding> parseRow(String row) {		
-		Set<Binding> result = new HashSet<Binding>();
-		for (String element: row.trim().split("[ \n]+")) {
-			result.add(parseBinding(element));
-		}		
-		return result;
-	}
-
-	private Binding parseBinding(String element) {
-		String [] parts = element.split("=");
-		String name = parts[0];
-		RDFNode node = parseNode(parts[1]);
-		return new Binding(name, node);
-	}
-
-	private RDFNode parseNode(String s) {
-		if (s.startsWith("'")) {
-			int limit = s.length() - 1;
-			return ResourceFactory.createPlainLiteral(s.substring(1, limit));
-		}
-		return ResourceFactory.createResource(s);
-	}
-
-	static final class Binding {
-		final String name;
-		final RDFNode node;
-		
-		public Binding(String name, RDFNode node) {
-			this.name = name;
-			this.node = node;
-		}
-		
-		@Override public boolean equals(Object other) {
-			return other instanceof Binding && same((Binding) other);
-		}
-		
-		@Override public int hashCode() {
-			return name.hashCode() ^ node.hashCode();
-		}
-
-		private boolean same(Binding other) {
-			return name.equals(other.name) && node.equals(other.node);
-		}
-		
-		@Override public String toString() {
-			return name + " --> " + node + "\n";
-		}
-	}
-
 	private API_Dataset createDataset() {
 		PrefixMapping pm = PrefixMapping.Factory.create();
 		pm.setNsPrefix("pre", "eh:/");
