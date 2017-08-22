@@ -15,10 +15,10 @@ import com.epimorphics.data_api.data_queries.Shortname;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.parse_data_query.tests.Setup;
 import com.epimorphics.data_api.test_support.LoadModel;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.vocabulary.RDFS;
 
 public class TestAspects {
 	

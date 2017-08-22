@@ -7,10 +7,10 @@ package com.epimorphics.data_api.parse_data_query.tests;
 
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.DefaultPrefixes;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.PrefixMapping;
 
 public class Setup {
 

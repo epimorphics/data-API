@@ -16,7 +16,6 @@ import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
     LogExceptions is an ExceptionMapper that maps every exception
     to a report repose and a log entry, except that WebApplicationExceptions

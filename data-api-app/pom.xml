@@ -3,12 +3,13 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api-app</artifactId>
   <packaging>war</packaging>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>data-api-app</name>
   <description>server for data API</description>
   
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <jersey.version>1.18.2</jersey.version>
   </properties>
 
   <dependencies>
@@ -23,7 +24,7 @@
     <dependency>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api-lib</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -50,7 +51,7 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-core</artifactId>
-      <version>1.12</version>
+      <version>1.18.2</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -58,13 +59,13 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-servlet</artifactId>
-      <version>1.12</version>
+      <version>1.18.2</version>
     </dependency>
 
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-server</artifactId>
-      <version>1.12</version>
+      <version>1.18.2</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -72,7 +73,7 @@
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-json</artifactId>
-      <version>1.12</version>
+      <version>1.18.2</version>
       <type>jar</type>
       <scope>compile</scope>
     </dependency>
@@ -98,7 +99,7 @@
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
   </parent>
 
 </project>

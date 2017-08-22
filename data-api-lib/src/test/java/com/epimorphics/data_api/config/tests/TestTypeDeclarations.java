@@ -12,9 +12,9 @@ import org.junit.Test;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.test_support.LoadModel;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.vocabulary.XSD;
 
 public class TestTypeDeclarations {
 	

@@ -23,6 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -30,6 +31,7 @@ import org.apache.jena.atlas.json.JsonObject;
 
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.appbase.templates.VelocityRender;
+import com.epimorphics.appbase.webapi.WebApiException;
 import com.epimorphics.data_api.config.DSAPIManager;
 import com.epimorphics.json.JSONWritable;
 
@@ -66,34 +68,42 @@ public class Endpoints {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable listDatasets() {
-        return getManager().datasetsEndpoint(lang, getBaseURI());
+        try { return getManager().datasetsEndpoint(lang, getBaseURI()); }
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
+
     }
     
     @GET
     @Produces(MediaType.TEXT_HTML)
     public StreamingOutput listDatasetsHtml() {
-       return getVelocity().render("listDatasets.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters());
+       try { return getVelocity().render("listDatasets.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters()); }        
+       catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @GET
     @Path("/{dataset}")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable getDataset(@PathParam("dataset") String dsid) {
-        return getManager().datasetEndpoint(lang, dsid, getBaseURI());
+        try { return getManager().datasetEndpoint(lang, dsid, getBaseURI()); }
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @GET
     @Path("/{dataset}/structure")
     @Produces(MediaType.APPLICATION_JSON)
     public JSONWritable getDatasetStructure(@PathParam("dataset") String dsid) {
-        return getManager().datasetStructureEndpoint(lang, dsid, getBaseURI());
+        try { return getManager().datasetStructureEndpoint(lang, dsid, getBaseURI()); }        
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
+
     }
     
     @GET
     @Path("/{dataset}/structure")
     @Produces(MediaType.TEXT_HTML)
     public StreamingOutput getDatasetStructureHtml(@PathParam("dataset") String dsid) {
-        return getVelocity().render("datasetStructure.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid);
+        try { return getVelocity().render("datasetStructure.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid); }       
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
+
     }
     
     @POST
@@ -101,14 +111,17 @@ public class Endpoints {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public JSONWritable getDataJSON(@PathParam("dataset") String dsid, JsonObject query) {
-        return getManager().datasetDataEndpoint(lang, dsid, query);
+        try { return getManager().datasetDataEndpoint(lang, dsid, query); }
+        catch (WebApiException w) { throw w; }
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @GET
     @Path("/{dataset}/data")
     @Produces(MediaType.TEXT_HTML)
     public StreamingOutput getDataHtml(@PathParam("dataset") String dsid) {
-       return getVelocity().render("getData.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid);
+       try { return getVelocity().render("getData.vm", uriInfo.getPath(), context, uriInfo.getQueryParameters(), "dataset", dsid);}      
+       catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @POST
@@ -116,14 +129,16 @@ public class Endpoints {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response explainQuery(@PathParam("dataset") String dsid, JsonObject query) {
-        return getManager().datasetExplainEndpoint(dsid, query);
+        try { return getManager().datasetExplainEndpoint(dsid, query); }    
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @GET
     @Path("/{dataset}/describe")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getDescriptionByGET(@PathParam("dataset") String dsid, @QueryParam("uri") List<String> uris) {
-        return getManager().datasetDescribeEndpoint(dsid, uris);
+        try { return getManager().datasetDescribeEndpoint(dsid, uris); }       
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @POST
@@ -131,7 +146,8 @@ public class Endpoints {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getLabelsByPOST(@PathParam("dataset") String dsid, JsonObject query) {
-        return getManager().datasetGetLabels(dsid, query);
+        try { return getManager().datasetGetLabels(dsid, query); }
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
     @POST
@@ -139,7 +155,8 @@ public class Endpoints {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getDescriptionByPOST(@PathParam("dataset") String dsid, JsonObject query) {
-        return getManager().datasetDescribeEndpoint(dsid, query);
+        try { return getManager().datasetDescribeEndpoint(dsid, query); }
+        catch(Throwable t) { throw new WebApiException(Status.INTERNAL_SERVER_ERROR, t.toString()); }
     }
     
 }

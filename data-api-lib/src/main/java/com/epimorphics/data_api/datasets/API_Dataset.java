@@ -29,10 +29,10 @@ import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.vocabs.Cube;
 import com.epimorphics.vocabs.Dsapi;
 import com.epimorphics.vocabs.SKOS;
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.vocabulary.XSD;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.vocabulary.XSD;
 
 public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 
@@ -78,7 +78,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    config that are not literals and adds them to the set literalTypes of known literal types.
 	*/
 	private void configureLiteralDatatypes(Resource config) {
-		for (RDFNode r: config.listProperties(Dsapi.literalType).mapWith(Statement.Util.getObject).toList()) {
+		for (RDFNode r: config.listProperties(Dsapi.literalType).mapWith(Statement::getObject).toList()) {
 			if (r instanceof Resource) {
 				setIsLiteralType((Resource) r);				
 			}

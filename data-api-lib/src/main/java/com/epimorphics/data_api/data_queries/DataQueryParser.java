@@ -26,8 +26,8 @@ import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JsonUtil;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.PrefixMapping;
 
 // this should be data-driven, ie, a bunch of plugins that respond to
 // operator names.
@@ -111,6 +111,7 @@ public class DataQueryParser {
 		Shortname sn = new Shortname(pm, key);	
 		Aspect a = dataset.getAspectNamed(sn);
 		
+//		System.err.println(">> a: " + a);
 //		System.err.println( ">> parseAspectMember: key = " + key );
 //		System.err.println( ">>   shortname sn = " + sn );
 //		System.err.println( ">>   URI of sn = " + sn.URI );
@@ -261,7 +262,7 @@ public class DataQueryParser {
 	private SearchSpec extractSearchSpec(String key, Aspect a, JsonValue value) {
 		if (value.isString()) {
 			String pattern = value.getAsString().value();
-			return new SearchSpec(a, pattern);
+			return new SearchSpec(dataset, a, pattern);
 		} else if (value.isObject()) {
 			JsonObject ob = value.getAsObject();
 			String pattern = getString(ob, "@value");

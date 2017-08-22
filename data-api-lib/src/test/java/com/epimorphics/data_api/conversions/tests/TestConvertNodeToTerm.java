@@ -11,12 +11,12 @@ import org.junit.Test;
 
 import com.epimorphics.data_api.conversions.Compactions;
 import com.epimorphics.data_api.data_queries.terms.Term;
-import com.hp.hpl.jena.datatypes.BaseDatatype;
-import com.hp.hpl.jena.datatypes.RDFDatatype;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.NodeFactory;
-import com.hp.hpl.jena.graph.impl.LiteralLabel;
-import com.hp.hpl.jena.graph.impl.LiteralLabelFactory;
+import org.apache.jena.datatypes.BaseDatatype;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.impl.LiteralLabel;
+import org.apache.jena.graph.impl.LiteralLabelFactory;
 
 import static org.junit.Assert.assertEquals;
 
@@ -69,7 +69,7 @@ public class TestConvertNodeToTerm {
 	@Test public void testTypedLiteral() {
 		String URI = "eh:/types/something#";
 		RDFDatatype dt = new BaseDatatype(URI);
-		LiteralLabel ll = LiteralLabelFactory.create("lex", "", dt);
+		LiteralLabel ll = LiteralLabelFactory.create("lex", dt);
 		Node x = NodeFactory.createLiteral(ll);
 		assertEquals(Term.typed("lex", URI), fromNode(x));		
 	}

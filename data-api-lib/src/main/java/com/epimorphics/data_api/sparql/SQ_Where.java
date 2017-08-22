@@ -7,7 +7,7 @@ package com.epimorphics.data_api.sparql;
 
 import java.util.*;
 
-import com.hp.hpl.jena.shared.BrokenException;
+import org.apache.jena.shared.BrokenException;
 
 public class SQ_Where {
 	

@@ -7,8 +7,13 @@ package com.epimorphics.data_api.parse_data_query.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.JsonObject;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.shared.PrefixMapping;
 import org.junit.Test;
 
 import com.epimorphics.data_api.aspects.Aspect;
@@ -23,7 +28,7 @@ import com.epimorphics.data_api.test_support.Asserts;
 
 public class TestTextSearch {
 
-	static final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
+	final API_Dataset ds = new API_Dataset(Setup.pseudoRoot(), null)
 		.add(Setup.localAspect)
 		;
 	
@@ -92,8 +97,58 @@ public class TestTextSearch {
 		String incoming = "{'@search': {'@value': 'lookfor'}}";
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
-		DataQuery _ignored = DataQueryParser.Do(p, ds, jo);		
+		assertNotNull(DataQueryParser.Do(p, ds, jo));		
 		assertFalse("failed to detect missing-both-property-and-limit error", p.isOK());
 		Asserts.assertInsensitiveContains("neither @property nor @limit", p.getProblemStrings());
 	}
+	
+	@Test public void testSearchRespectsAbsentLiteralDeclarations() {
+		
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/");
+		Aspect a = new Aspect(pm, "pre:local");
+		Resource TheType = ResourceFactory.createResource("eh:/TheType");
+		ds.add(a.setRangeType(TheType));
+		
+		String incoming = "{'pre:local': {'@search': 'pattern'}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		
+		DataQuery dq = DataQueryParser.Do(p, ds, jo);
+		String sparql = dq.toSparql(p, ds);				
+		assertTrue("problems", p.isOK());
+		
+		assertLike(sparql, "?pre_local text:query", "pattern", "?item pre:local ?pre_local .");
+		
+	}
+	
+	private void assertLike(String sparql, String... expected) {
+		String scanSparql = sparql; 
+		for (String fragment: expected) {
+			int where = scanSparql.indexOf(fragment);
+			if (where < 0) {
+				fail("missing fragment: " + fragment + " in " + sparql);
+			}
+			scanSparql = scanSparql.substring(where + fragment.length());
+		}
+	}
+
+	@Test public void testSearchRespectsLiteralDeclarations() {
+		
+		PrefixMapping pm = PrefixMapping.Factory.create().setNsPrefix("pre", "eh:/prefixPart/");
+		Aspect a = new Aspect(pm, "pre:local");
+		Resource TheType = ResourceFactory.createResource("eh:/TheType");
+		ds.add(a.setRangeType(TheType));
+		ds.setIsLiteralType(TheType);
+		String incoming = "{'pre:local': {'@search': 'pattern'}}";
+		JsonObject jo = JSON.parse(incoming);
+		Problems p = new Problems();
+		
+		DataQuery dq = DataQueryParser.Do(p, ds, jo);
+		String sparql = dq.toSparql(p, ds);
+		assertTrue("problems", p.isOK());
+		
+		assertLike(sparql, "?item text:query", "pattern", "?item pre:local ?pre_local .");
+
+	}	
+	
 }

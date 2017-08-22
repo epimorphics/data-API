@@ -14,7 +14,7 @@ import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.sparql.SQ_Expr;
 import com.epimorphics.data_api.sparql.SQ_Variable;
-import com.hp.hpl.jena.shared.PrefixMapping;
+import org.apache.jena.shared.PrefixMapping;
 
 public abstract class Operator {
 	

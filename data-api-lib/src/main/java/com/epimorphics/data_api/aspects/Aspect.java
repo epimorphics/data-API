@@ -22,9 +22,9 @@ import com.epimorphics.json.JSONWritable;
 import com.epimorphics.rdfutil.RDFUtil;
 import com.epimorphics.util.EpiException;
 import com.epimorphics.vocabs.Dsapi;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.shared.PrefixMapping;
-import com.hp.hpl.jena.vocabulary.RDFS;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.PrefixMapping;
+import org.apache.jena.vocabulary.RDFS;
 
 public class Aspect extends ResourceBasedConfig {
 	
@@ -102,7 +102,7 @@ public class Aspect extends ResourceBasedConfig {
 		Initialise this Aspect with the given shortName 'spoo:local',
 		with its full name being given using the prefixes pm
 		to expand the prefix 'spoo'. The prefixes are retained
-		and may be extracted uwing getPrefixes().
+		and may be extracted using getPrefixes().
 	*/
 	public Aspect(PrefixMapping pm, String shortName) {
 		String fullName = pm.expandPrefix(shortName);		

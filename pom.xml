@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>data-api</name>
   <description>data query API for cubish RDF data</description>
   
@@ -14,7 +14,7 @@
   </scm>
 
   <properties>
-	<project.tagname>_CLEAN</project.tagname>
+	<project.tagname>_MERGE</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -90,6 +90,11 @@
   </repositories>
 
   <dependencies>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.3.4</version>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
@@ -113,8 +118,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
       </plugin>
 
