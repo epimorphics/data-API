@@ -35,17 +35,111 @@ import com.hp.hpl.jena.shared.PrefixMapping;
 
 public class TestSubSelect {
 
-	API_Dataset dataset = createDataset();
+	API_Dataset dataset = createPQDataset();
 	Model data = createData();
 	
 	@Test public void testUnconstrainedQuery() {
 		String incoming = "{}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
+				, "; item=eh:/B pre_P='BP' pre_Q='BQ'"
+				, "; item=eh:/C pre_P='CP'"
+				, "; item=eh:/D pre_P='DP'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+	
+	@Test public void testOuterSortedQuery() {
+		String incoming = "{'@limit': 1, '@sort': [{'@up': 'pre:P'}]}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+	
+	@Test public void testInnerSortedQueryItemLimit1() {
+		String incoming = "{'@itemLimit': 1, '@itemSort': [{'@up': 'pre:P'}]}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+	
+	@Test public void testInnerSortedQueryItemLimit2() {
+		String incoming = "{'@itemLimit': 2, '@itemSort': [{'@up': 'pre:P'}]}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
+				, "; item=eh:/B pre_P='BP' pre_Q='BQ'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+
+	@Test public void testOuterSortedQueryItemLimit2() {
+		String incoming = "{'@limit': 2, '@sort': [{'@up': 'pre:P'}]}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
+				, "; item=eh:/B pre_P='BP' pre_Q='BQ'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+	
+	@Test public void testOptionalSortReversed() {
+		String incoming = "{'@limit': 2, '@sort': [{'@down': 'pre:P'}]}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( 
+				"  item=eh:/C pre_P='CP'"
+				, "; item=eh:/D pre_P='DP'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+	
+	@Test public void testItemOptionalSortReversed() {
+		String incoming = "{'@itemLimit': 2, '@itemSort': [{'@down': 'pre:P'}]}";
+		
+		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
+			( BunchLib.join
+				( 
+				"  item=eh:/C pre_P='CP'"
+				, "; item=eh:/D pre_P='DP'"
+				));
+			;
+		
+		runQuery(incoming, expected);
+	}	
+	
+	// ----------------------==================-------------------
+
+	private void runQuery(String incoming, Set<Set<ResultBinding>> expected) {
 		JsonObject jo = JSON.parse(incoming);
 		Problems p = new Problems();
 		DataQuery dq = DataQueryParser.Do(p, dataset, jo);
 		String sparql = dq.toSparql(p, dataset);
 		
-		System.err.println(">> query is:\n" + sparql);
+		// System.err.println(">> query is:\n" + sparql);
 		
 		Set<Set<ResultBinding>> obtained = new HashSet<Set<ResultBinding>>();
 		
@@ -63,20 +157,10 @@ public class TestSubSelect {
 			}
 			obtained.add(row);
 		}
-		
-		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
-			( BunchLib.join
-				( "  item=eh:/A pre_P='AP' pre_Q='AQ'"
-				, "; item=eh:/B pre_P='BP' pre_Q='BQ'"
-				, "; item=eh:/C pre_P='CP'"
-				, "; item=eh:/D pre_P='DP'"
-				));
-			;
-				
 		assertEquals(expected, obtained);
 	}
 	
-	private API_Dataset createDataset() {
+	private API_Dataset createPQDataset() {
 		PrefixMapping pm = PrefixMapping.Factory.create();
 		pm.setNsPrefix("pre", "eh:/");
 

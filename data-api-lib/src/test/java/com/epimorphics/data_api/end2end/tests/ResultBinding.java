@@ -40,6 +40,6 @@ public class ResultBinding {
 	}
 	
 	@Override public String toString() {
-		return name + " --> " + node;
+		return name + " --> " + node + "\n";
 	}
 }
