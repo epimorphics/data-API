@@ -15,7 +15,6 @@ import com.epimorphics.data_api.reporting.Problems;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.epimorphics.data_api.test_support.Asserts;
 import static com.epimorphics.data_api.test_support.Asserts.*;
 
 public class TestSubSelecting {	
