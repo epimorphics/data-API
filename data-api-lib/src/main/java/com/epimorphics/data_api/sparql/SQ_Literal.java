@@ -7,6 +7,8 @@ package com.epimorphics.data_api.sparql;
 
 import java.util.Set;
 
+import org.apache.jena.sparql.util.FmtUtils;
+
 public class SQ_Literal extends SQ_Node {
 
 	final String spelling;

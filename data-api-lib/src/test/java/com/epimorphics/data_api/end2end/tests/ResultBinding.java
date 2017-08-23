@@ -1,7 +1,7 @@
 package com.epimorphics.data_api.end2end.tests;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResourceFactory;
 
 public class ResultBinding {
 	final String name;
