@@ -1,4 +1,4 @@
-export CP=$(echo data-api-app/target/data-api-app-0.0.10-SNAPSHOT/WEB-INF/lib/* | sed -e 's/ /:/g')
+export CP=$(echo data-api-app/target/data-api-app-1.0.0-SNAPSHOT/WEB-INF/lib/* | sed -e 's/ /:/g')
 
 java -cp $CP jena.schemagen \
 	--package com.epimorphics.vocabs \

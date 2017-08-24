@@ -44,6 +44,8 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	String sourceName;
 	Hierarchy hierarchy;
 	
+	Resource modifiersPosition = Dsapi.inner;
+	
 	final Set<Resource> literalTypes = new HashSet<Resource>();
 	
 	final Map<Shortname, Aspect> nameToAspect = new HashMap<Shortname, Aspect>();
@@ -64,12 +66,25 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	    configureBaseQuery();
 	    configureName();
 	    configureAspects(config);
+	    configurePositions(config);
 	    this.manager = manager;
 	}
 	
 	private void configureAspects(Resource config) {
 		for (Resource aspectRoot: RDFUtil.allResourceValues(root, Dsapi.aspect)) {
 			add(new Aspect(aspectRoot));
+		}
+	}
+	
+	private void configurePositions(Resource config) {
+		Statement s = config.getProperty(Dsapi.modifiers);
+		if (s != null) {
+			RDFNode n = s.getObject();
+			if (n.equals(Dsapi.inner) || n.equals(Dsapi.outer)) {
+				modifiersPosition = n.asResource();				
+			} else {
+				throw new IllegalArgumentException("" + n);
+			}
 		}
 	}
 	
@@ -162,6 +177,10 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	
 	public Hierarchy getHierarchy() {
 	    return hierarchy;
+	}
+	
+	public Resource getModifiersPosition() {
+		return modifiersPosition;
 	}
 	
 	public DSAPIManager getManager() {

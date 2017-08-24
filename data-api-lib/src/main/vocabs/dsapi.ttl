@@ -67,6 +67,33 @@ of the dataset to the ?item variable."""@en;
 	rdfs:domain :Aspect;
 	rdfs:range rdfs:Class;
 	.
+	
+:modifiers a owl:ObjectProperty;
+    rdfs:label "modifiers";
+    rdfs:comment 
+        """
+        controls whether modifiers are applied to the inner (default)
+        or outer (legacy) SELECTs of the generated query.
+        """@en;
+    rdfs:domain :Dataset;
+    rdfs:range rdfs:Position;
+    .
+    
+:inner a :Position;
+    rdfs:label "inner";
+    rdfs:comment 
+        """
+        value for modifiers to be attached to inner SELECT."
+        """@en
+    .
+
+:outer a :Position;
+    rdfs:label "outer";
+    rdfs:comment 
+        """
+        value for modifiers to be attached to outer SELECT.
+        """@en
+    .
 
 :codeList a owl:ObjectProperty;
     rdfs:label "code list"@en;
