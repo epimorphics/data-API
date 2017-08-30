@@ -28,31 +28,31 @@ public class TestSubSelecting {
 	static final API_Dataset dsXY = new API_Dataset(Setup.pseudoRoot(), null).add(X).add(Y);
 	
 	@Test public void testSubSelectByItemLimit() {
-		testSubSelectByItems("{'@itemLimit': 2}", "LIMIT 2");
+		testSubSelectByItems("{'@limit': 2}", "LIMIT 2");
 	}
 	
 	@Test public void testSubSelectByItemOffset() {
-		testSubSelectByItems("{'@itemOffset': 3}", "OFFSET 3");
+		testSubSelectByItems("{'@offset': 3}", "OFFSET 3");
 	}
 	
 	@Test public void testSubSelectByItemOffsetAndLimit() {
-		testSubSelectByItems("{'@itemOffset': 4, '@itemLimit': 5}", "LIMIT 5 OFFSET 4");
+		testSubSelectByItems("{'@offset': 4, '@limit': 5}", "LIMIT 5 OFFSET 4");
 	}
 	
 	@Test public void testSubSelectByItemSort() {
-		testSubSelectByItems("{'@itemSort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG");
+		testSubSelectByItems("{'@sort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG");
 	}
 	
 	@Test public void testSubSelectByItemSortAndLimit() {
-		testSubSelectByItems("{'@itemLimit': 8, '@itemSort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG LIMIT 8");
+		testSubSelectByItems("{'@limit': 8, '@sort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG LIMIT 8");
 	}
 	
 	@Test public void testSubSelectByItemSortAndOffset() {
-		testSubSelectByItems("{'@itemOffset': 9, '@itemSort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG OFFSET 9");
+		testSubSelectByItems("{'@offset': 9, '@sort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG OFFSET 9");
 	}
 	
 	@Test public void testSubSelectByItemSortLimitAndOffset() {
-		testSubSelectByItems("{'@itemLimit': 10, '@itemOffset': 9, '@itemSort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG LIMIT 10 OFFSET 9");
+		testSubSelectByItems("{'@limit': 10, '@offset': 9, '@sort': [{'@up': 'ZOG'}]}", "ORDER BY ?ZOG LIMIT 10 OFFSET 9");
 	}
 
 	private void testSubSelectByItems(String incoming, String modifiers) {
@@ -114,10 +114,12 @@ public class TestSubSelecting {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
+			, "  { SELECT ?item ?pre_X ?pre_Y WHERE { "
 			, "?item pre:X ?pre_X ."
 			, "?item pre:Y ?pre_Y"
 			, "}"
 			, modifiers
+			, "}}"
 			);	
 		
 		assertSameSelect(expected, toTest);

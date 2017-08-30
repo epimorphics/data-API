@@ -6,13 +6,7 @@
 
 package com.epimorphics.data_api.data_queries;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.jena.atlas.json.JsonObject;
 import org.apache.jena.atlas.json.JsonValue;
@@ -20,12 +14,15 @@ import org.apache.jena.atlas.json.JsonValue;
 import com.epimorphics.data_api.Switches;
 import com.epimorphics.data_api.aspects.Aspect;
 import com.epimorphics.data_api.config.JSONConstants;
+import com.epimorphics.data_api.data_queries.Modifiers.Position;
 import com.epimorphics.data_api.data_queries.terms.Term;
 import com.epimorphics.data_api.data_queries.terms.TermValidator;
 import com.epimorphics.data_api.datasets.API_Dataset;
 import com.epimorphics.data_api.libs.BunchLib;
 import com.epimorphics.data_api.reporting.Problems;
 import com.epimorphics.json.JsonUtil;
+import com.epimorphics.vocabs.Dsapi;
+
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.shared.PrefixMapping;
 
@@ -99,12 +96,15 @@ public class DataQueryParser {
 			( isCount
 			, c
 			, guards
-			, Modifiers.create(length, offset, sortby)
-			, Modifiers.create(itemLimit, itemOffset, itemSortBy)
+			, Modifiers.create(asPosition(dataset.getModifiersPosition()), length, offset, sortby)
 			);
 		dq.setSuppressTypes(suppressTypes);
 		dq.setCompactOptionals(compactOptionals);
 		return dq;
+	}
+
+	private Position asPosition(Resource mp) {
+		return mp.equals(Dsapi.inner) ? Position.Inner : Position.Outer;
 	}
 
 	private void parseAspectMember(JsonObject jo, String key, JsonValue range) {
@@ -170,8 +170,6 @@ public class DataQueryParser {
 	private void parseAtMember(JsonObject jo, String key, JsonValue value) {
 		if (key.equals("@sort")) {
 			extractSorts(pm, p, jo, sortby, key);
-		} else if (key.equals("@itemSort")) {
-			extractSorts(pm, p, jo, itemSortBy, key);
 		} else if (key.equals("@search")) {
 			constraints.add( extractSearchSpec(key, Aspect.NONE, value) );
 		} else if (key.equals("@suppress_types")) {
@@ -188,11 +186,7 @@ public class DataQueryParser {
 				p.add("@json_mode must have value 'complete' or 'compact', was given '" + mode + "'.");
 			}
 		} else if (key.equals("@compact_optionals")) {
-			compactOptionals = extractBoolean(p, key, value);
-		} else if (key.equals("@itemLimit")) {
-			itemLimit = extractNumber(p, key, value);
-		} else if (key.equals("@itemOffset")) {	
-			itemOffset = extractNumber(p, key, value);			
+			compactOptionals = extractBoolean(p, key, value);		
 		} else if (key.equals("@limit")) {
 			length = extractNumber(p, key, value);
 		} else if (key.equals("@offset")) {

@@ -40,8 +40,7 @@ public abstract class Constraint {
 		List<Guard> guards = cx.dq.guards;
 		boolean needsDistinct = false;
 		boolean baseQueryNeeded = true;  
-				
-		setItemModifiers(cx.sq, cx.dq.itemModifiers);	
+					
 		setQueryModifiers(cx.sq, cx.dq.queryModifiers);
 		
 		for (Guard guard : guards) {
@@ -269,10 +268,6 @@ public abstract class Constraint {
 	
 	private void setQueryModifiers(SQ sq, Modifiers m) {
 		sq.setQueryModifiers(m);
-	}
-	
-	private void setItemModifiers(SQ sq, Modifiers forItem) {
-		sq.setItemModifiers(forItem);
 	}
 	
 //	/**

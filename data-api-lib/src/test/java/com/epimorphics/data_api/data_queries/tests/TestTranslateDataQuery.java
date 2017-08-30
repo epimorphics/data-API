@@ -93,9 +93,11 @@ public class TestTranslateDataQuery {
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X"
 			, "WHERE { "
-			, "?item pre:X ?pre_X.",
-			"}"
+			, "{ SELECT ?item ?pre_X {"
+			, "?item pre:X ?pre_X"
+			, "}"
 			, "ORDER BY ?pre_X"
+			, "}}"
 			);
 		assertSameSelect( expected, sq );
 	}	
@@ -128,10 +130,12 @@ public class TestTranslateDataQuery {
 		String expected = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
+			, "{ SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
 			, "}"
 			, "ORDER BY ?pre_X DESC(?pre_Y)"
+			, "}}"
 			);
 		assertSameSelect( expected, sq );
 	}
@@ -361,7 +365,6 @@ public class TestTranslateDataQuery {
 			, Constraint.filters(noFilters, BunchLib.list(s) )
 			, new ArrayList<Guard>()
 			, Modifiers.trivial()
-			, Modifiers.trivial()
 			);
 	//
 		String sq = q.toSparql(p, dsXY);
@@ -390,7 +393,6 @@ public class TestTranslateDataQuery {
 			( false
 			, Constraint.filters( noFilters, BunchLib.list(s))
 			, new ArrayList<Guard>()
-			, Modifiers.trivial()
 			, Modifiers.trivial()
 			);
 	//
@@ -449,12 +451,14 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
+			, "{ SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
 			, " FILTER(?pre_X = 8)"
 			, " FILTER(?pre_Y = 9)"
 			, "}"
 			, "LIMIT 17"
+			, "}}"
 			);
 		assertSameSelect(expect, sq );
 	}
@@ -474,12 +478,14 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
+			, "{ SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
 			, " FILTER(?pre_X = 8)"
 			, " FILTER(?pre_Y = 9)"
 			, "}"
 			, "OFFSET 1066"
+			, "}}"
 			);
 		assertSameSelect(expect, sq );
 	}
@@ -499,12 +505,14 @@ public class TestTranslateDataQuery {
 		String expect = BunchLib.join
 			( "PREFIX pre: <eh:/prefixPart/>"
 			, "SELECT ?item ?pre_X ?pre_Y WHERE {"
+			, "{ SELECT ?item ?pre_X ?pre_Y WHERE {"
 			, " ?item pre:X ?pre_X ."
 			, " ?item pre:Y ?pre_Y ."
 			, " FILTER(?pre_X = 8)"
 			, " FILTER(?pre_Y = 9)"
 			, "}"
 			, "LIMIT 17 OFFSET 1829"
+			, "}}"
 			);
 		assertSameSelect(expect, sq );
 	}	

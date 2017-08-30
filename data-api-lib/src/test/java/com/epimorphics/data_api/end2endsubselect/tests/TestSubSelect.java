@@ -65,7 +65,7 @@ public class TestSubSelect {
 	}	
 	
 	@Test public void testInnerSortedQueryItemLimit1() {
-		String incoming = "{'@itemLimit': 1, '@itemSort': [{'@up': 'pre:P'}]}";
+		String incoming = "{'@limit': 1, '@sort': [{'@up': 'pre:P'}]}";
 		
 		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
 			( BunchLib.join
@@ -77,7 +77,7 @@ public class TestSubSelect {
 	}	
 	
 	@Test public void testInnerSortedQueryItemLimit2() {
-		String incoming = "{'@itemLimit': 2, '@itemSort': [{'@up': 'pre:P'}]}";
+		String incoming = "{'@limit': 2, '@sort': [{'@up': 'pre:P'}]}";
 		
 		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
 			( BunchLib.join
@@ -117,7 +117,7 @@ public class TestSubSelect {
 	}	
 	
 	@Test public void testItemOptionalSortReversed() {
-		String incoming = "{'@itemLimit': 2, '@itemSort': [{'@down': 'pre:P'}]}";
+		String incoming = "{'@limit': 2, '@sort': [{'@down': 'pre:P'}]}";
 		
 		Set<Set<ResultBinding>> expected = QueryTestSupport.parseRows
 			( BunchLib.join

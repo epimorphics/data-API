@@ -25,7 +25,6 @@ public class DataQuery implements Compactions {
 	
 	final List<Guard> guards; 
 	
-	final Modifiers itemModifiers;
 	final Modifiers queryModifiers;
 	
 	boolean suppressTypes = false;
@@ -39,21 +38,20 @@ public class DataQuery implements Compactions {
 	}
 
 	public DataQuery(Constraint c, List<Sort> sortby ) {
-        this(false, c, new ArrayList<Guard>(), Modifiers.sortBy(sortby), Modifiers.trivial());
+        this(false, c, new ArrayList<Guard>(), Modifiers.sortBy(sortby));
     }
 
     public DataQuery(Constraint c, List<Sort> sortby, List<Guard> guards ) {
-        this(false, c, guards, Modifiers.sortBy(sortby), Modifiers.trivial());
+        this(false, c, guards, Modifiers.sortBy(sortby));
     }
     
     public DataQuery(Constraint c, List<Sort> sortby, Slice slice) {
-        this(false, c, new ArrayList<Guard>(), Modifiers.sliceSortBy(slice, sortby), Modifiers.trivial());
+        this(false, c, new ArrayList<Guard>(), Modifiers.sliceSortBy(slice, sortby));
     }    
     
-    public DataQuery(boolean isCount, Constraint c, List<Guard> guards, Modifiers queryModifiers, Modifiers itemModifiers) {
+    public DataQuery(boolean isCount, Constraint c, List<Guard> guards, Modifiers queryModifiers) {
 		this.c = c;
 		this.guards = guards == null ? new ArrayList<Guard>(0) : guards;
-		this.itemModifiers = itemModifiers;
 		this.queryModifiers = queryModifiers;
 		this.isCount = isCount;
 	}
@@ -155,7 +153,6 @@ public class DataQuery implements Compactions {
     	return 
     		c
     		+ queryModifiers.toString()
-    		+ itemModifiers.toString()
     		+ (guards.isEmpty() ? "" : "\n    guards: " + guards)
     		+ "\n"
     		;

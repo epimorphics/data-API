@@ -9,6 +9,8 @@ import java.util.*;
 
 import org.apache.jena.shared.BrokenException;
 
+import com.epimorphics.data_api.data_queries.Modifiers;
+
 public class SQ_Where {
 	
 	final List<SQ_WhereElement> textQueries = new ArrayList<SQ_WhereElement>();
@@ -27,7 +29,10 @@ public class SQ_Where {
 		int countBefore = textQueries.size() + groundTriples.size() + ungroundTriples.size() + filterElements.size();
 		int countAfter = sizeWithoutComments(otherElements) + optionalTriples.size() + sqFilters.size() + bindingElements.size();
 		
-		boolean subSelect = parent.itemModifiers.isNonTrivial(); 
+//		boolean subSelect = parent.itemModifiers.isNonTrivial(); 
+		
+		boolean subSelect = parent.queryModifiers.isNonTrivial() && parent.queryModifiers.isInnerModifiers();
+//		boolean nest = subSelect ;
 		boolean nest = subSelect || (countBefore > 0 && countAfter > 0);
 		
 //		System.err.println(">> textQueries: " + textQueries);
@@ -73,7 +78,7 @@ public class SQ_Where {
 		if (nest) {
 			sb.append(indent).append("}").append(SQ.nl);
 			if (subSelect) {
-				if (parent.itemModifiers != null) parent.itemModifiers.toSparqlString(sb);
+				parent.queryModifiers.toSparqlString(Modifiers.Position.Inner, sb);
 				sb.append("}");
 			}
 			indent = indent.substring(2);			

@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.epimorphics.data_api.data_queries.Modifiers;
+import com.epimorphics.data_api.data_queries.Modifiers.Position;
+
 import org.apache.jena.vocabulary.XSD;
 
 public class SQ {
@@ -21,9 +23,7 @@ public class SQ {
 	
 	final SQ_Where whereClause = new SQ_Where();
 	
-	Modifiers queryModifiers = new Modifiers(null, null, null);
-	
-	Modifiers itemModifiers = new Modifiers(null, null, null);
+	Modifiers queryModifiers = new Modifiers(Position.Inner, null, null, null);
 	
 	String baseQuery;
 		
@@ -50,7 +50,7 @@ public class SQ {
 		if (baseQuery != null) sb.append(indent).append(baseQuery).append(nl);
 		whereClause.toString(sb, indent + "  ", this);
 		sb.append(indent).append("}").append(nl);
-		queryModifiers.toSparqlString(sb);
+		queryModifiers.toSparqlString(Modifiers.Position.Outer, sb);
 	}
 
 	void appendSelection(StringBuilder sb, String indent) 
@@ -120,10 +120,6 @@ public class SQ {
 	
 	public void setQueryModifiers(Modifiers queryModifiers) {
 		this.queryModifiers = queryModifiers;
-	}
-	
-	public void setItemModifiers(Modifiers itemModifiers) {
-		this.itemModifiers = itemModifiers;
 	}
 
 	public void addBind(SQ_Node value, SQ_Variable var) {
