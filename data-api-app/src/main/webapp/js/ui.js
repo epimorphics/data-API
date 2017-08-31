@@ -84,6 +84,7 @@ $(function() {
     
     
     var formatExplanation = function(data) {
+        var theURL = data.grabURL;
         var html =  data.status ? "<h3>Succeeded</h3>" :"<h3>Failed</h3>";
 	if (!data.status) {
 		html += "<pre>" + data.problems.replace(/</g,"&lt;") + "</pre>" 
@@ -97,6 +98,7 @@ $(function() {
         html += "</ul>";
         html += "<h3>Request</h3><pre>" + data.request + "</pre>";
         html += "<h3>Query</h3><pre>" + data.sparql.replace(/</g,"&lt;") + "</pre>";
+        html += "<h3>" + theURL + "</h3>";
         // html += "<p>Processed in " + data.time + " ms</p>";
         return html;
     };
@@ -111,6 +113,7 @@ $(function() {
                 data: $("#json").val(),
                 dataType: "json",
                 success: function(data) {
+                    data.grabURL = url;
                     $("#results").html("<h2>Results</h2>" + formatter(data, start));
                 },
                 error: function(xhr, status, error) {
