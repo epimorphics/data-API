@@ -425,7 +425,8 @@ public class DSAPIManager extends ComponentBase {
         String x = "[unknown]";
         SparqlSource s = api.getSource();
         if (s instanceof RemoteSparqlSource) {
-        	x = "[SPARQL]"; // TODO     	Relay.getEndpoint((RemoteSparqlSource) s);
+        	RemoteSparqlSource rs = (RemoteSparqlSource) s;
+        	// TODO, when hpl dependency fixed: x = rs.getEndpoint();
         }
 
         comments.put("sparqlQueryURL", api.getSparqlQueryURL(x));
