@@ -44,6 +44,8 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	String sourceName;
 	Hierarchy hierarchy;
 	
+	Resource sparqlQueryURL = null;
+	
 	final Set<Resource> literalTypes = new HashSet<Resource>();
 	
 	final Map<Shortname, Aspect> nameToAspect = new HashMap<Shortname, Aspect>();
@@ -59,8 +61,11 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	
 	public API_Dataset(Resource config, DSAPIManager manager) {
 	    super(config);
+	    this.sparqlQueryURL = getResourceValue(Dsapi.qb_dataset);
+
 	    configureLiteralDatatypes(config);
 	    configureHierarchy();
+	    
 	    configureBaseQuery();
 	    configureName();
 	    configureAspects(config);
@@ -85,6 +90,10 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 		}
 	}
 	
+	public String getSparqlQueryURL(String ifAbsent) {
+		return sparqlQueryURL == null ? ifAbsent : sparqlQueryURL.getURI();
+	}
+	
 	/**
 	    Add type to the set of known literal types.
 	*/
@@ -103,7 +112,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
         if (query == null) {
             Resource dataset = getResourceValue(Dsapi.qb_dataset);
             if (dataset != null) {
-                query = "?item  <" + Cube.dataSet + "> <" + getResourceValue(Dsapi.qb_dataset).getURI() + "> .";
+                query = "?item  <" + Cube.dataSet + "> <" + dataset.getURI() + "> .";
             } else if (isHierarchy()) {
                 query = hierarchy.getMemberQuery("item");
             } else {

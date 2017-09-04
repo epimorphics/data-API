@@ -421,7 +421,14 @@ public class DSAPIManager extends ComponentBase {
         Problems p = new Problems();
         
         JsonObject comments = new JsonObject();
+        
+        String x = "[unknown]";
+        SparqlSource s = api.getSource();
+        if (s instanceof RemoteSparqlSource) {
+        	x = "[SPARQL]"; // TODO     	Relay.getEndpoint((RemoteSparqlSource) s);
+        }
 
+        comments.put("sparqlQueryURL", api.getSparqlQueryURL(x));
         comments.put("datasetName", api.getName());
         comments.put("request", query.toString());
 
