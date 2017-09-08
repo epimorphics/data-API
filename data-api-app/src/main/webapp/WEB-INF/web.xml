@@ -61,20 +61,20 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
   <filter>
     <filter-name>Jersey Web Application</filter-name>
     <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
+    
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
       <param-value>com.epimorphics.data_api.endpoints,com.epimorphics.server.webapi</param-value>
     </init-param>
     
-    <!-- com.sun things will need replacing -->
-    
     <init-param>
-      <param-name>com.sun.jersey.config.feature.FilterForwardOn404</param-name>
-      <param-value>true</param-value>
+      <param-name>jersey.config.servlet.filter.staticContentRegex</param-name>
+      <param-value>/.*[.](html|css|js)</param-value>
     </init-param>
+  
     <init-param>
-         <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-         <param-value>com.sun.jersey.api.container.filter.PostReplaceFilter</param-value>
+         <param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
+         <param-value>org.glassfish.jersey.server.filter.HttpMethodOverrideFilter</param-value>
      </init-param>
   </filter>
 
