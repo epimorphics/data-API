@@ -96,7 +96,9 @@ $(function() {
         }
         html += "</ul>";
         html += "<h3>Request</h3><pre>" + data.request + "</pre>";
-        html += "<h3>Query</h3><pre>" + data.sparql.replace(/</g,"&lt;") + "</pre>";
+        html += "<h3>Query</h3>"
+    	html += "<em>target: " + data.sparqlQueryURL.replace(/</g, "&lt;") + "</em>";
+        html += "<pre>" + data.sparql.replace(/</g,"&lt;") + "</pre>";
         // html += "<p>Processed in " + data.time + " ms</p>";
         return html;
     };

@@ -44,6 +44,8 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	String sourceName;
 	Hierarchy hierarchy;
 	
+	Resource sparqlQueryURL = null;
+	
 	Resource modifiersPosition = Dsapi.inner;
 	
 	final Set<Resource> literalTypes = new HashSet<Resource>();
@@ -61,6 +63,7 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 	
 	public API_Dataset(Resource config, DSAPIManager manager) {
 	    super(config);
+	    this.sparqlQueryURL = getResourceValue(Dsapi.qb_dataset);
 	    configureLiteralDatatypes(config);
 	    configureHierarchy();
 	    configureBaseQuery();
@@ -76,6 +79,10 @@ public class API_Dataset extends ResourceBasedConfig implements ConfigInstance {
 		}
 	}
 	
+	public String getSparqlQueryURL(String ifAbsent) {
+		return sparqlQueryURL == null ? ifAbsent : sparqlQueryURL.getURI();
+	}
+
 	private void configurePositions(Resource config) {
 		Statement s = config.getProperty(Dsapi.modifiers);
 		if (s != null) {
