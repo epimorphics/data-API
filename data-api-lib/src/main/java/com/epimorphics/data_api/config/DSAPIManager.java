@@ -35,6 +35,7 @@ import org.apache.jena.riot.RDFLanguages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.appbase.core.ComponentBase;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.data.impl.RemoteSparqlSource;
@@ -114,6 +115,10 @@ public class DSAPIManager extends ComponentBase {
         }
     }
 
+    public static Map<String, String> failures() {
+    	return AppConfig.getFailures();
+    }
+    
     public String getApiBase() {
         return apiBase;
     }
