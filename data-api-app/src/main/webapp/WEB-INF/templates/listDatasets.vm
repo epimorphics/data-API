@@ -3,7 +3,9 @@
 #parse("navbar.vm")
 #set($baseURI=$uri +"/")
 <div class="container">
+
   <h1>Available datasets</h1>
+  
   #set($datasets = $lib.json.asJson($dsapi.datasetsEndpoint("en", $baseURI)))
   #foreach($i in $datasets.iterator())
     <div class="row space-above">
@@ -16,6 +18,20 @@
     <div class="row">
       <div class="col-md-12">$i.description.value()</div>
     </div>
+  #end
+  
+  #if ($dsapi.failures().size() == 0)
+  
+  	<h2>All configurations loaded successfully.</h2>
+  
+  #else
+  
+  	<h2>some configurations did not load</h2>
+  	#foreach($k in $dsapi.failures().keySet())
+  		<div class="row" style="margin-left: 1cm"> <strong>config file</strong> $k </div>
+  		<div class="row" style="margin-left: 1cm"> <strong>reason</strong> $dsapi.failures().get($k) </div>
+  	#end
+  
   #end
   
 ## outer container div is closed in footer.vm
