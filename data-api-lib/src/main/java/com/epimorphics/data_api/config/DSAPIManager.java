@@ -164,7 +164,7 @@ public class DSAPIManager extends ComponentBase {
         public void writeTo(JSFullWriter out) {
             try { writeJson(out, lang, uribase); }
             catch (Exception e) {
-            	log.error("OH BOTHER");
+            	log.error("failed to srite JSON: " + e);
             }
         }
     }
