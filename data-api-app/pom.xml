@@ -110,7 +110,7 @@
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>${project.version}</version>
   </parent>
 
 </project>

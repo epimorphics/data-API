@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "1.0.1-SNAPSHOT";
-	public final String tagname = "_MERGE";
+	public final String string = "1.0.1-RC2";
+	public final String tagname = "r";
 }

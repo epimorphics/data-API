@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1RC1</version>
+  <version>${project.version}</version>
   <name>data-api</name>
   <description>data query API for cubish RDF data</description>
   
@@ -14,7 +14,8 @@
   </scm>
 
   <properties>
-	<project.tagname>_MERGE</project.tagname>
+  	<project.version>1.0.1-RC2</project.version>
+	<project.tagname>r</project.tagname>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
