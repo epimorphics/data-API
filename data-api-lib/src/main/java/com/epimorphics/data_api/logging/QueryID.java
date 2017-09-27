@@ -1,6 +1,7 @@
 package com.epimorphics.data_api.logging;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,7 +21,11 @@ public class QueryID implements Filter {
 	}
 
 	public static ThreadLocal<String> queryID = new ThreadLocal<String>();
-	
+
+    protected static AtomicLong queryCount = new AtomicLong(0);
+    
+    protected static String labelByTime = "ANON." + System.currentTimeMillis();
+    
 	public static final String X_REQUEST_ID  = "X-Request-Id";
 
     public static final String X_RESPONSE_ID  = "X-Response-Id";
@@ -45,11 +50,14 @@ public class QueryID implements Filter {
 		if (ID == null) ID = paramID;
 		if (ID == null) ID = headerID;
 		if (ID == null) ID = getDefaultId();
-//
-		httpResponse.setHeader(X_RESPONSE_ID, ID);
-		setQueryId(ID);
 		
-		NDC.push(ID);
+        long requestCount = queryCount.incrementAndGet();	
+        String fullID = ID + ":" + requestCount;
+//
+		httpResponse.setHeader(X_RESPONSE_ID, fullID);
+		setQueryId(fullID);
+		
+		NDC.push(fullID);
 		chain.doFilter(request, response);
 		NDC.pop();
 	}
@@ -57,7 +65,7 @@ public class QueryID implements Filter {
 	public String getDefaultId() {
 		String result = System.getProperty(DSAPI_INSTANCE);
 		if (result == null) result = System.getenv(DSAPI_INSTANCE);
-		if (result == null) result = "ANON." + System.currentTimeMillis();
+		if (result == null) result = labelByTime;
 		return result;
 	}
 
