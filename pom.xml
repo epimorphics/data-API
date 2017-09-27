@@ -3,7 +3,7 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.1-RC3</version>
+  <version>1.0.1</version>
   <name>data-api</name>
   <description>data query API for cubish RDF data</description>
   
