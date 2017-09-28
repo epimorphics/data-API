@@ -52,7 +52,7 @@ public class QueryID implements Filter {
 		if (ID == null) ID = getDefaultId();
 		
         long requestCount = queryCount.incrementAndGet();	
-        String fullID = ID ; // + ":" + requestCount;
+        String fullID = ID + ":" + requestCount;
 //
 		httpResponse.setHeader(X_RESPONSE_ID, fullID);
 		setQueryId(fullID);

@@ -53,9 +53,13 @@ public class TestQueryID {
 		filter.doFilter(httpRequest, httpResponse, chain);
 
 		assertTrue("the chain was not invoked", chain.wasInvoked);
-		assertEquals("wrong generated value: ", expect, httpResponse.headers.get(QueryID.X_RESPONSE_ID));
+		String actual = httpResponse.headers.get(QueryID.X_RESPONSE_ID);
+		assertEquals("wrong generated value: ", expect, stripSuffix(actual));
 	}
 	
+	private Object stripSuffix(String actual) {
+		return actual.replaceAll(":[0-9]*$", "");
+	}
 
 	private FilterConfig makeFilterConfig() {
 		FilterConfig f = new FilterConfig() {
