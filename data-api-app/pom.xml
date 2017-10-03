@@ -22,7 +22,7 @@
     <dependency>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api-lib</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
     </dependency>
 
     <dependency>
@@ -110,7 +110,7 @@
   <parent>
 	<groupId>com.epimorphics</groupId>
 	<artifactId>data-api</artifactId>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
   </parent>
 
 </project>

@@ -18,8 +18,6 @@ import com.epimorphics.data_api.sparql.SQ_Filter;
 import com.epimorphics.data_api.sparql.SQ_Node;
 import org.apache.jena.shared.PrefixMapping;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class Range {
 	
 	final Operator op;
@@ -75,7 +73,7 @@ public class Range {
 
 			@Override public void updateVars(Set<String> varNames) {
 				// TODO 
-				throw new NotImplementedException();
+				throw new UnsupportedOperationException();
 			}};
 	}
 	

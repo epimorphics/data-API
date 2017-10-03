@@ -16,8 +16,6 @@ import com.epimorphics.data_api.sparql.SQ_Const;
 import com.epimorphics.data_api.sparql.SQ_Variable;
 import com.epimorphics.data_api.sparql.SQ_WhereElement;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class Or extends Bool {
 	
 	public Or(List<Constraint> operands) {
@@ -60,7 +58,7 @@ public class Or extends Bool {
 
 			@Override public void updateVars(Set<String> varNames) {
 				// TODO 
-				throw new NotImplementedException();
+				throw new UnsupportedOperationException();
 			}};
 		cx.sq.addWhereElement(e);	
 	}
