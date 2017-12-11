@@ -1,0 +1,24 @@
+/**
+ * UI additions to adapt bootstrap for DS API. Dave Reynolds, 2014
+ */
+
+.space-above {
+   margin-top: 1em;
+}
+
+.space-below {
+   margin-bottom: 1em;
+}
+
+footer {
+  font-size: 0.8em;
+  padding-top: 12px;
+  margin-top: 12px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+
+.large {
+  font-size: 1.4em;
+  font-weight: 600;
+}
