@@ -16,6 +16,6 @@ package com.epimorphics.data_api;
 
 */
 public interface Version {
-	public final String string = "1.1.1";
+	public final String string = "1.1.2";
 	public final String tagname = "r";
 }

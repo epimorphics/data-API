@@ -1,8 +1,11 @@
 package com.epimorphics.data_api.server.tests;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 
 import javax.servlet.ServletException;
+import javax.validation.constraints.AssertTrue;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
@@ -14,9 +17,11 @@ public class TestVelocityPropertiesRespected {
 	
 	static Tomcat tomcat;
 	
+	static final String logFile = "/tmp/appbase-velocity.log";
+	
 	@BeforeClass public static void setUp() throws ServletException, LifecycleException {
 		
-		System.err.println(">> discard any existing logfile");
+		new File(logFile).delete();
 		
 		String root = "src/main/webapp";
 
@@ -36,9 +41,7 @@ public class TestVelocityPropertiesRespected {
 	        System.exit(1);
 	    }
 	
-	    System.err.println(">> about to add webapp.");
 	    tomcat.addWebapp(contextPath,  rootF.getAbsolutePath());
-	    System.err.println(">> starting ...");
 	    tomcat.start();
 		
 	}
@@ -48,7 +51,7 @@ public class TestVelocityPropertiesRespected {
 	}
 	
     @Test public void runMe() {
-    	System.err.println(">> test that logfile has been created.");
+    	assertTrue("velocity properties not created in initialisation", new File(logFile).exists());
     }
 
 }
