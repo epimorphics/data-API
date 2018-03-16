@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import com.epimorphics.appbase.core.AppConfig;
 import com.epimorphics.appbase.core.ComponentBase;
+import com.epimorphics.appbase.data.ClosableResultSet;
 import com.epimorphics.appbase.data.SparqlSource;
 import com.epimorphics.appbase.data.impl.RemoteSparqlSource;
 import com.epimorphics.appbase.webapi.WebApiException;
@@ -387,10 +388,17 @@ public class DSAPIManager extends ComponentBase {
             	// log.info("issuing query:\n" + sq);
             	log.info(flatten("issuing query:\n" + sq));
                 SparqlSource source = api.getSource();
+                log.info(">> retrieved SparqlSource");
                 if (source instanceof RemoteSparqlSource) {
+                	log.info(">> ... it's remote, setting content type.");
                 	((RemoteSparqlSource) source).setContentType("tsv");
+                } else {
+                	log.info(">> not remote source.");
                 }
-				so = q.getWriter(api, source.streamableSelect(sq));
+				ClosableResultSet ss = source.streamableSelect(sq);
+				log.info(">> fetched streamable select");
+				so = q.getWriter(api, ss);
+				log.info(">> got writer");
             }
 
         } catch (Exception e) {
@@ -407,6 +415,7 @@ public class DSAPIManager extends ComponentBase {
         }
                 
         if (p.isOK()) {
+        	log.info(">> returning so.");
             return so;
 
         } else {
