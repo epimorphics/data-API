@@ -1,0 +1,14 @@
+SERVING DATA FILE
+
+/home/chris/AssortedProjects/Fuseki/apache-jena-fuseki-2.4.0
+FUSEKI_HOME=ditto
+./fuseki-server --file=/home/chris/Works/data-API/testdata/sprint2/games.ttl /dsapi
+
+CONFIG LINES IN APP.CONF
+
+ssource              = com.epimorphics.appbase.data.impl.RemoteSparqlSource
+ssource.endpoint    = http://localhost:3030/dsapi
+
+APP.CONF
+
+/home/chris/Works/data-API/data-api-app/src/main/webapp/WEB-INF/app.conf

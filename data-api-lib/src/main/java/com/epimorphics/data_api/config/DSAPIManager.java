@@ -97,6 +97,9 @@ public class DSAPIManager extends ComponentBase {
     }
 
     public SparqlSource getSource(String sourceName) {
+    	
+    	System.err.println(">> --------------------------------- SOURCES: " + sources.keySet());
+    	
         if (sourceName == null) {
             return defaultSource;
         }
@@ -392,6 +395,7 @@ public class DSAPIManager extends ComponentBase {
                 if (source instanceof RemoteSparqlSource) {
                 	log.info(">> ... it's remote, setting content type.");
                 	((RemoteSparqlSource) source).setContentType("tsv");
+                	log.info(">> set the content type.");
                 } else {
                 	log.info(">> not remote source.");
                 }

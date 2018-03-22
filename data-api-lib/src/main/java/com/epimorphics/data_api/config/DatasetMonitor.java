@@ -60,6 +60,11 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
         List<API_Dataset> datasets = new ArrayList<>();
         try {
             Model config = FileManager.get().loadModel( file.getPath() );
+            
+            System.err.println(">> file is " + file);
+            System.err.println(">> Here is the config model");
+            config.write(System.err, "TTL");
+            
             Resource configRoot = RDFUtil.findRoot(config);
             
             // Set the default global prefixes
@@ -71,6 +76,7 @@ public class DatasetMonitor extends ConfigMonitor<API_Dataset>{
             SparqlSource source = manager.getSource(sourceName);
             
             if (source == null) {
+            	
                 throw new EpiException("Specified data source (" + sourceName + ") is not configured");
             }
             

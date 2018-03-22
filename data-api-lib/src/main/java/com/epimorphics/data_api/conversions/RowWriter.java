@@ -142,8 +142,11 @@ public final class RowWriter implements JSONWritable {
 	    	stream.consume(failingRow(e));
 	    }
 	    finally {
+	    	System.err.println(">> finally we can close the ResultSet ...");
 	        if (rs instanceof ClosableResultSet) {
+	        	System.err.println(">> ... which is closable ...");
 	            ((ClosableResultSet)rs).close();
+	            System.err.println(">> ... and was closed.");
 	        }
 	    }
 	}
