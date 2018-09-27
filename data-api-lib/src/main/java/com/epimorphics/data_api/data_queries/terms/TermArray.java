@@ -43,7 +43,7 @@ public class TermArray extends Term {
 	
 	/**
 	    get(i) returns the i'th element of the term array if
-	    0 <= i < size(). 
+	    <pre>0 @lt;= i @lt; size().</pre>
 	*/
 	public Term get(int i) {
 		return terms.get(i);

@@ -226,17 +226,17 @@ public class DSAPIManager extends ComponentBase {
      		TODO: alternative way of streaming from model, attaching into Jersey.
      		TODO: decide what's to be done about the dataset.
      		TODO: decide whethe the resource should be passed as a query
-     			parameter, or as a {@id: URI} object for consistency.
+     			parameter, or as a {"@id": URI} object for consistency.
      	</p>  
      	
      	<p>
      	   	I provoked this from the command line to get some results:
-     	   	
-     	   	<pre>
-     	   	wget --header='Content-Type: application/json' --header='Accept-Type: application/json' --post-data='{"@id": "http://boardgamegeek.com/boardgamedesigner/34699/matthias-cramer"}' http://localhost:8080/dsapi/dataset/games/describe
-			</pre>
-     	   	
-     	</p>
+	 	</p>
+
+		 <pre>
+		 wget --header='Content-Type: application/json' --header='Accept-Type: application/json' --post-data='{"@id": "http://boardgamegeek.com/boardgamedesigner/34699/matthias-cramer"}' http://localhost:8080/dsapi/dataset/games/describe
+		 </pre>
+
     */
     public Response datasetDescribeEndpoint(String dataset, JsonObject query) {
     	String resource = query.getAsObject().get("@id").getAsString().value();   
