@@ -34,12 +34,11 @@ public class CountWriter implements JSONWritable {
                     out.finishObject();
                 }
             }
-        out.finishArray();
-        } catch (Exception e) {
+            out.finishArray();
+        } finally {
             if (rs instanceof ClosableResultSet) {
                 ((ClosableResultSet)rs).close();
             }
-            throw e;
         }
 
     }
