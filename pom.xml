@@ -9,7 +9,7 @@
   
   <scm>
     <developerConnection>scm:git:ssh://git@github.com/epimorphics/data-API.git</developerConnection>
-    <tag>data-api-1.0.0</tag>
+    <tag>HEAD</tag>
 
   </scm>
 
