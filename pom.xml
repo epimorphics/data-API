@@ -3,13 +3,13 @@
   <groupId>com.epimorphics</groupId>
   <artifactId>data-api</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.4-SNAPSHOT</version>
+  <version>1.1.4</version>
   <name>data-api</name>
   <description>data query API for cubish RDF data</description>
   
   <scm>
     <developerConnection>scm:git:ssh://git@github.com/epimorphics/data-API.git</developerConnection>
-    <tag>data-api-1.0.0</tag>
+    <tag>data-api-1.1.4</tag>
 
   </scm>
 
