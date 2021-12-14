@@ -59,14 +59,14 @@
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-logging-log4j</artifactId>
-      <version>7.0.42</version>
+      <version>7.0.108</version>
       <scope>provided</scope>
     </dependency>
     
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
       <artifactId>tomcat-embed-jasper</artifactId>
-      <version>7.0.42</version>
+      <version>7.0.108</version>
       <scope>provided</scope>
     </dependency>
     
